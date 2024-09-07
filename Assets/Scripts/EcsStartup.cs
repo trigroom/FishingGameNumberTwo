@@ -1,5 +1,6 @@
 using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
+using Leopotam.EcsLite.ExtendedSystems;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,6 +24,11 @@ public class EcsStartUp : MonoBehaviour
             .Add(new PlayerInputSystem())
             .Add(new MovementSystem())
             .Add(new InventorySystem())
+            .Add(new EnemyDeathSystem())
+            .Add(new UiControlSystem())
+            .DelHere<AddItemEvent>()
+            .DelHere<EnemyDeathEvent>()
+            .DelHere<SetDescriptionItemEvent>()
              .Inject(_sceneService)
             .Init();
     }

@@ -15,4 +15,5 @@ public class ItemInfo : ScriptableObject
     public int maxCount;
     public float itemWeight;
     public int itemId;
+    public string itemName;
 }

@@ -10,8 +10,11 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
     private EcsPoolInject<InventoryComponent> _inventoryComponent;
     private EcsPoolInject<InventoryCellComponent> _inventoryCellsComponents;
     private EcsPoolInject<InventoryItemComponent> _inventoryItemComponent;
+    private EcsPoolInject<AddItemEvent> _addItemEventsComponent;
+    private EcsPoolInject<DroppedItemComponent> _droppedItemComponents;
 
     private EcsFilterInject<Inc<InventoryCellComponent>> _inventoryCellsFilter;
+    private EcsFilterInject<Inc<AddItemEvent>> _addItemEvents;
 
     private int inventoryEntity;
     // private EcsFilterInject<Inc<UnitCmp>> _unitCmpFilter;
@@ -23,7 +26,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
             ref var inventoryCellsCmp = ref _inventoryCellsComponents.Value.Add(cellEntity);
             inventoryCellsCmp.isEmpty = true;
-            inventoryCellsCmp.cellView = _sceneData.Value.GetInventoryCell();
+            inventoryCellsCmp.cellView = _sceneData.Value.GetInventoryCell(cellEntity, _world.Value);
 
         }
 
@@ -33,55 +36,50 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
         //выгрузка айтемов в инвентарь из сохранения
 
-
-
-
         _sceneData.Value.statsText.text = inventoryCmp.weight + "kg/ " + _sceneData.Value.maxWeight + "kg \n max cells " + _sceneData.Value.cellsCount;
 
     }
 
     public void Run(IEcsSystems systems)
     {
-        if (Input.GetKeyDown(KeyCode.A))
+        foreach (var addedItem in _addItemEvents.Value)
         {
-            AddItemToInventory(_sceneData.Value.testItem2, 2);
+           // var newItem = _addItemEventsComponent.Value.Get(addedItem);
 
+            var dropItem = _droppedItemComponents.Value.Get(addedItem);
+              dropItem.currentItemsCount = AddItemToInventory(dropItem.itemInfo, dropItem.currentItemsCount);
+            if (dropItem.currentItemsCount == 0)
+            {
+                dropItem.droppedItemView.DestroyItemFromGround();
+                _droppedItemComponents.Value.Del(addedItem);
+            }
         }
-
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            AddItemToInventory(_sceneData.Value.testItem1, 3);
-
-        }
+        //if(Input.GetKeyDown(KeyCode.O)) { AddItemToInventory(_sceneData.Value.testItem1, 3); }
         //всё что тут будет срабатывать на ивент изменения инвентаря
     }
 
 
 
-    private void AddItemToInventory(ItemInfo itemInfo, int itemsCount)
+    private int AddItemToInventory(ItemInfo itemInfo, int itemsCount)
     {
         foreach (var cell in _inventoryCellsFilter.Value)
         {
             ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(cell);
             ref var inventoryCmp = ref _inventoryComponent.Value.Get(inventoryEntity);
 
-            //некорректно считает текущий вес и 
-            // Debug.Log(_sceneData.Value.maxWeight + " < " + (inventoryCmp.weight + (itemsCount * itemInfo.itemWeight)) + "  |  " + (itemsCount * itemInfo.itemWeight));
             if (_sceneData.Value.maxWeight + 0.001f < (inventoryCmp.weight + (itemsCount * itemInfo.itemWeight)))
             {
                 float weightDelta = (inventoryCmp.weight + itemsCount * itemInfo.itemWeight) - _sceneData.Value.maxWeight;
 
                 int neededItemsToFullInventory = itemsCount - Mathf.FloorToInt(weightDelta / itemInfo.itemWeight);
 
-                //    Debug.Log("need to full "+neededItemsToFullInventory);
                 if (neededItemsToFullInventory <= 0)
-                    break;
+                {
+                    return itemsCount;
+                }
 
-
-                itemsCount = neededItemsToFullInventory;
-                // AddItemToInventory(itemInfo, neededItemsToFullInventory);
-                //   Debug.Log("ItemsCount" + itemsCount);
-                //break;
+                AddItemToInventory(itemInfo, neededItemsToFullInventory);
+                return itemsCount - neededItemsToFullInventory;
             }
 
 
@@ -101,17 +99,17 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                 {
                     itemCmp.currentItemsCount = itemCmp.itemInfo.maxCount;
                     inventoryCmp.weight += itemCmp.itemInfo.maxCount * itemCmp.itemInfo.itemWeight;
-                    AddItemToInventory(itemInfo, itemsCount - itemCmp.itemInfo.maxCount);
+                    invCellCmp.cellView.ChangeCellItemCount(itemCmp.currentItemsCount);
+                    _sceneData.Value.statsText.text = inventoryCmp.weight.ToString("0.0") + "kg/ " + _sceneData.Value.maxWeight + "kg \n max cells " + _sceneData.Value.cellsCount;
+
+                    return AddItemToInventory(itemInfo, itemsCount - itemCmp.itemInfo.maxCount);
                 }
-                else
-                {
-                    itemCmp.currentItemsCount = itemsCount;
-                    inventoryCmp.weight += itemsCount * itemCmp.itemInfo.itemWeight;
-                }
+                itemCmp.currentItemsCount = itemsCount;
+                inventoryCmp.weight += itemsCount * itemCmp.itemInfo.itemWeight;
 
                 invCellCmp.cellView.ChangeCellItemCount(itemCmp.currentItemsCount);
                 _sceneData.Value.statsText.text = inventoryCmp.weight.ToString("0.0") + "kg/ " + _sceneData.Value.maxWeight + "kg \n max cells " + _sceneData.Value.cellsCount;
-                break;
+                return 0;
             }
             else
             {
@@ -123,21 +121,21 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                     {
                         int deltaCount = itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount;
                         itemCmp.currentItemsCount = itemCmp.itemInfo.maxCount;
-                        // inventoryCmp.weight += (itemsCount - itemCmp.currentItemsCount) * itemCmp.itemInfo.itemWeight;//
                         inventoryCmp.weight += deltaCount * itemCmp.itemInfo.itemWeight;
-                        AddItemToInventory(itemInfo, itemCmp.currentItemsCount - deltaCount);
+                        _sceneData.Value.statsText.text = inventoryCmp.weight.ToString("0.0") + "kg/ " + _sceneData.Value.maxWeight + "kg \n max cells " + _sceneData.Value.cellsCount;
+                        invCellCmp.cellView.ChangeCellItemCount(itemCmp.currentItemsCount);
+                        return AddItemToInventory(itemInfo, itemCmp.currentItemsCount - deltaCount);
                     }
-                    else
-                    {
-                        itemCmp.currentItemsCount += itemsCount;
-                        inventoryCmp.weight += itemsCount * itemCmp.itemInfo.itemWeight;
-                    }
+                    itemCmp.currentItemsCount += itemsCount;
+                    inventoryCmp.weight += itemsCount * itemCmp.itemInfo.itemWeight;
 
                     _sceneData.Value.statsText.text = inventoryCmp.weight.ToString("0.0") + "kg/ " + _sceneData.Value.maxWeight + "kg \n max cells " + _sceneData.Value.cellsCount;
                     invCellCmp.cellView.ChangeCellItemCount(itemCmp.currentItemsCount);
-                    break;
+                    return 0;
                 }
             }
+
         }
+        return itemsCount;
     }
 }
