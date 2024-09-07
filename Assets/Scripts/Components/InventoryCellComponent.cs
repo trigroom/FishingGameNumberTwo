@@ -8,6 +8,5 @@ public struct InventoryCellComponent
     public InventoryCellView cellView;
     public InventoryItemComponent inventoryItemComponent;
     public bool isEmpty;
-    public int itemsCount;
     public TMP_Text inventoryCellItemCountText;
 }

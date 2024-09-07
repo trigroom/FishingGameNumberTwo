@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct SetDescriptionItemEvent 
+public struct DropItemsIvent 
 {
-    public int itemEntity;
+    public int itemsCountToDrop;
 }

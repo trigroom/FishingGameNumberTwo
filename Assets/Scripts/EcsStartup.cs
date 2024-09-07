@@ -29,6 +29,7 @@ public class EcsStartUp : MonoBehaviour
             .DelHere<AddItemEvent>()
             .DelHere<EnemyDeathEvent>()
             .DelHere<SetDescriptionItemEvent>()
+            .DelHere<DropItemsIvent>()
              .Inject(_sceneService)
             .Init();
     }

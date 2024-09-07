@@ -19,7 +19,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         _playerEntity = _world.Value.NewEntity();
 
         ref var playerTag = ref _playerTags.Value.Add(_playerEntity);
-        playerTag.view = _sceneService.Value.SpawnPlayer(_world.Value);
+        playerTag.view = _sceneService.Value.SpawnPlayer(_world.Value, _playerEntity);
 
         ref var movementComponent = ref _movementComponentPool.Value.Add(_playerEntity);
         movementComponent.movementView = playerTag.view.movementView;

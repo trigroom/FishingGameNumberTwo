@@ -11,7 +11,7 @@ public class PlayerView : MonoBehaviour
 
     private EcsWorld _world;
 
-    private int currentDroppedItem;
+    private int currentDroppedItem = -1;
 
 
     private void Start()
@@ -21,7 +21,7 @@ public class PlayerView : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.F) && currentDroppedItem != -1)
         {
             ref var itemCmp = ref _world.GetPool<AddItemEvent>().Add(currentDroppedItem);
         }
@@ -41,24 +41,26 @@ public class PlayerView : MonoBehaviour
             var droppedItem = collidedItem.collider.gameObject.GetComponent<DroppedItemView>().itemEntity;
             currentDroppedItem = droppedItem;
 
-             ref var itemCmp = ref _world.GetPool<DroppedItemComponent>().Get(droppedItem);
-            Debug.Log(itemCmp.currentItemsCount);
-            
+            ref var itemCmp = ref _world.GetPool<DroppedItemComponent>().Get(droppedItem);
 
-        SetInfoText(itemCmp.itemInfo.itemName + " " + itemCmp.currentItemsCount + " (нажми F чтобы поднять)");
+            SetInfoText(itemCmp.itemInfo.itemName + " " + itemCmp.currentItemsCount + " (нажми F чтобы поднять)");
         }
 
         else
         {
+            currentDroppedItem = -1;
             SetInfoText("");
         }
-
-
     }
     //проверка ближайших вещей для подбора
 
     private void SetInfoText(string neededText)
     {
-            itemInfoText.text = neededText;
+        itemInfoText.text = neededText;
+    }
+
+    public Vector2 GetPlayerPosition()
+    {
+        return gameObject.transform.position;
     }
 }

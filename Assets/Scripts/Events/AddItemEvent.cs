@@ -4,6 +4,4 @@ using UnityEngine;
 
 public struct AddItemEvent 
 {
-    public int itemCount;
-    public ItemInfo itemInfo;
 }

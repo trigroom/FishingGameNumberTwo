@@ -4,13 +4,18 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventoryCellView : MonoBehaviour, IPointerEnterHandler
+public class InventoryCellView : MonoBehaviour
 {
     [field: SerializeField] public Image inventoryCellItemImage;
     [field: SerializeField] public TMP_Text inventoryCellItemCountText;
+
     private int _entity;
     private EcsWorld _world;
 
+    private void Start()
+    {
+        gameObject.GetComponent<Button>().onClick.AddListener(OnClickOpenInfo);
+    }
     public void Construct(int entity, EcsWorld world)
     {
         _entity = entity;
@@ -33,17 +38,14 @@ public class InventoryCellView : MonoBehaviour, IPointerEnterHandler
     }
 
 
-    public void OnPointerEnter(PointerEventData eventData)
+    public void OnClickOpenInfo()
     {
         if (!_world.GetPool<InventoryCellComponent>().Get(_entity).isEmpty)
         {
-            var entity = _world.NewEntity();
             var pool = _world.GetPool<SetDescriptionItemEvent>();
 
-            ref var evt = ref pool.Add(entity);
-            var itemsPool = _world.GetPool<InventoryItemComponent>();
-            evt.itemInfo = itemsPool.Get(_entity).itemInfo;
+            ref var evt = ref pool.Add(_entity);
+            evt.itemEntity = _entity;
         }
-
     }
 }
