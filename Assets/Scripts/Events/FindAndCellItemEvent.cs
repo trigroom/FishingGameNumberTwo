@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct PlayerTag 
+public struct FindAndCellItemEvent 
 {
-    public PlayerView view;
 }

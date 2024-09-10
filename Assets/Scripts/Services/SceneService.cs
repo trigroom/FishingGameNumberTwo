@@ -11,6 +11,7 @@ public class SceneService : MonoBehaviour
 {
     [field: SerializeField] public DropedItemsUIView dropedItemsUIView { get; private set; }
     [field: SerializeField] public Transform inventoryCellsContainer { get; private set; }
+    [field: SerializeField] public Transform shopCellsContainer { get; private set; }
     [field: SerializeField] public GameObject inventoryCell { get; private set; }
     [field: SerializeField] public int cellsCount { get; private set; }
     [field: SerializeField] public TMP_Text statsText { get; private set; }
@@ -18,14 +19,18 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public float maxWeight { get; private set; }
     [field: SerializeField] public GameObject playerPrefab { get; private set; }
     [field: SerializeField] public GameObject droppedItemPrefab { get; private set; }
+    [field: SerializeField] public GameObject shopCellPrefab { get; private set; }
 
     [field: SerializeField] public TMP_Text hoverDescriptionText;
+    [field: SerializeField] public int playerEntity { get; private set; }
 
     //убрать после создания магазина
+    [field: SerializeField] public ShopItemInfo[] testShopItems { get; private set; }
     [field: SerializeField] public ItemInfo testItem1 { get; private set; }
     [field: SerializeField] public ItemInfo testItem2 { get; private set; }
 
-    [field: SerializeField] public int playerEntity { get; private set; }
+    [field: SerializeField] public int startMoneyForTest { get; private set; }
+
 
     public InventoryCellView GetInventoryCell(int entity, EcsWorld world)
     {
@@ -34,6 +39,12 @@ public class SceneService : MonoBehaviour
         return invCell;
     }
 
+    public ShopCellView GetShopCell(int entity, EcsWorld world)
+    {
+        var shopCell = Instantiate(shopCellPrefab, shopCellsContainer).GetComponent<ShopCellView>();
+        shopCell.Construct(entity, world);
+        return shopCell;
+    }
     public PlayerView SpawnPlayer(EcsWorld ecsWorld, int entity)
     {
         var player = Instantiate(playerPrefab, Vector2.zero, Quaternion.identity).GetComponent<PlayerView>();

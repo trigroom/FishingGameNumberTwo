@@ -26,10 +26,13 @@ public class EcsStartUp : MonoBehaviour
             .Add(new InventorySystem())
             .Add(new EnemyDeathSystem())
             .Add(new UiControlSystem())
+            .Add(new ShopCellsSystem())
             .DelHere<AddItemEvent>()
             .DelHere<EnemyDeathEvent>()
             .DelHere<SetDescriptionItemEvent>()
             .DelHere<DropItemsIvent>()
+            .DelHere<FindAndCellItemEvent>()
+            .DelHere<BuyItemFromShopEvent>()
              .Inject(_sceneService)
             .Init();
     }

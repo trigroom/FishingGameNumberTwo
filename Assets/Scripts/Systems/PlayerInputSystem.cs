@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 {
-    private EcsPoolInject<PlayerTag> _playerTags;
+    private EcsPoolInject<PlayerComponent> _playerComponentsPool;
     private EcsPoolInject<MovementComponent> _movementComponentPool;
     private EcsPoolInject<PlayerInputsComponent> _playerInputsComponentsPool;
 
@@ -18,11 +18,12 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     {
         _playerEntity = _world.Value.NewEntity();
 
-        ref var playerTag = ref _playerTags.Value.Add(_playerEntity);
-        playerTag.view = _sceneService.Value.SpawnPlayer(_world.Value, _playerEntity);
+        ref var playerCmp = ref _playerComponentsPool.Value.Add(_playerEntity);
+        playerCmp.view = _sceneService.Value.SpawnPlayer(_world.Value, _playerEntity);
+        playerCmp.money = _sceneService.Value.startMoneyForTest;
 
         ref var movementComponent = ref _movementComponentPool.Value.Add(_playerEntity);
-        movementComponent.movementView = playerTag.view.movementView;
+        movementComponent.movementView = playerCmp.view.movementView;
         movementComponent.moveSpeed = movementComponent.movementView.moveSpeed;
 
         _playerInputsComponentsPool.Value.Add(_playerEntity);
@@ -36,7 +37,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         Vector2 moveDirection = new Vector3(horizontalInput, verticalInput).normalized;
 
-            _movementComponentPool.Value.Get(_playerEntity).moveInput = moveDirection;
+        _movementComponentPool.Value.Get(_playerEntity).moveInput = moveDirection;
     }
 
 }
