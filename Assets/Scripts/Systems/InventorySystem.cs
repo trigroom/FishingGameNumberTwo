@@ -73,8 +73,9 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
             if (FindItem(shopCellCmp.itemCount, shopCellCmp.itemInfo.itemId, true))
             {
-                _playerTagsPool.Value.Get(_sceneData.Value.playerEntity).money += shopCellCmp.itemCost;
-                Debug.Log("money " + _playerTagsPool.Value.Get(_sceneData.Value.playerEntity).money);
+                ref var moneyCmp = ref _playerTagsPool.Value.Get(_sceneData.Value.playerEntity);
+                moneyCmp.money += shopCellCmp.itemCost;
+                _sceneData.Value.moneyText.text = moneyCmp.money + "$";
                 SetMoveSpeedFromWeight();
             }
             //надо проверять
@@ -92,7 +93,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
             AddItemToInventory(shopCellCmp.itemInfo, shopCellCmp.itemCount);
 
             playerCmp.money -= shopCellCmp.itemCost;
-            Debug.Log("money "+playerCmp.money);
+            _sceneData.Value.moneyText.text = playerCmp.money + "$";
             SetMoveSpeedFromWeight();
         }
     }

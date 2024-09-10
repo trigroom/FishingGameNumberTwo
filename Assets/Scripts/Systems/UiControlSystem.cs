@@ -11,6 +11,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
     private EcsPoolInject<InventoryItemComponent> _inventoryItemComponentPool;
     private EcsPoolInject<SetDescriptionItemEvent> _setDescriptionItemEventsPool;
+    private EcsPoolInject<MenuStatesComponent> _menuStatesComponentsPool;
 
     private EcsFilterInject<Inc<SetDescriptionItemEvent>> _setDescriptionItemEvents;
 
@@ -29,6 +30,13 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(true);
             _sceneData.Value.hoverDescriptionText.text = item.itemInfo.itemName + "\n" +"вес "+ item.itemInfo.itemWeight;
             _sceneData.Value.dropedItemsUIView.SetSliderParametrs(item.currentItemsCount, descriptionEvt.itemEntity);
+        }
+
+        if(Input.GetKeyDown(KeyCode.I) || (Input.GetKeyDown(KeyCode.Escape) && _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inInventoryState))
+        {
+            ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+            menusStatesCmp.inInventoryState = !menusStatesCmp.inInventoryState;
+            _sceneData.Value.inventoryMenuView.ChangeMenuState( menusStatesCmp.inInventoryState);
         }
     }
 }

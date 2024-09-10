@@ -16,7 +16,6 @@ public class MovementSystem : IEcsRunSystem
         foreach(var movableObject in _movementComponents.Value)
         {
            var moveCmp = _movementComponentPool.Value.Get(movableObject);
-            Debug.Log(moveCmp.moveSpeed);
             moveCmp.movementView.MoveUnit(moveCmp.moveSpeed * moveCmp.moveInput* Time.deltaTime);
         }
         //передвижение объекта

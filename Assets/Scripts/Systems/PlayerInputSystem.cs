@@ -7,6 +7,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<PlayerComponent> _playerComponentsPool;
     private EcsPoolInject<MovementComponent> _movementComponentPool;
     private EcsPoolInject<PlayerInputsComponent> _playerInputsComponentsPool;
+    private EcsPoolInject<MenuStatesComponent> _menuStatesComponentsPool;
 
     private EcsCustomInject<SceneService> _sceneService;
 
@@ -17,6 +18,8 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     public void Init(IEcsSystems systems)
     {
         _playerEntity = _world.Value.NewEntity();
+
+        _menuStatesComponentsPool.Value.Add(_playerEntity);
 
         ref var playerCmp = ref _playerComponentsPool.Value.Add(_playerEntity);
         playerCmp.view = _sceneService.Value.SpawnPlayer(_world.Value, _playerEntity);

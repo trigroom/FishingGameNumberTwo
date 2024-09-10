@@ -31,6 +31,8 @@ public class DropedItemsUIView : MonoBehaviour
     public void SetSliderParametrs(int maxValue, int curCellEntity)
     {
         dropSlider.maxValue = maxValue;
+        if (curCell != curCellEntity)
+            dropSlider.value = 0;
         curCell = curCellEntity;
         currentItemsCountToDrop.text = curValue + "/" + dropSlider.maxValue;
     }

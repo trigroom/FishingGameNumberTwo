@@ -9,11 +9,13 @@ using static UnityEngine.EventSystems.EventTrigger;
 
 public class SceneService : MonoBehaviour
 {
+    [field: SerializeField] public UIMenuView inventoryMenuView { get; private set; }
     [field: SerializeField] public DropedItemsUIView dropedItemsUIView { get; private set; }
     [field: SerializeField] public Transform inventoryCellsContainer { get; private set; }
     [field: SerializeField] public Transform shopCellsContainer { get; private set; }
     [field: SerializeField] public GameObject inventoryCell { get; private set; }
     [field: SerializeField] public int cellsCount { get; private set; }
+    [field: SerializeField] public TMP_Text moneyText { get; private set; }
     [field: SerializeField] public TMP_Text statsText { get; private set; }
     [field: SerializeField] public TMP_Text currentItemText { get; private set; }
     [field: SerializeField] public float maxWeight { get; private set; }
