@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class PlayerView : MonoBehaviour
 {
+    [field: SerializeField] public HealthView healthView { get; private set; }
     [field: SerializeField] public MovementView movementView { get; private set; }
     [field: SerializeField] public float checkRadius { get; private set; }
     [field: SerializeField] public LayerMask droppedItemsMask { get; private set; }
+    [field: SerializeField] public float changeWeaponTime { get; private set; }
     [field: SerializeField] public TMP_Text itemInfoText;
 
     private EcsWorld _world;
@@ -34,9 +36,9 @@ public class PlayerView : MonoBehaviour
 
     private void CheckNearestDroppedItems()
     {
-        RaycastHit2D collidedItem = Physics2D.CircleCast(gameObject.transform.position, checkRadius, Vector2.up, droppedItemsMask);
+        RaycastHit2D collidedItem = Physics2D.CircleCast(gameObject.transform.position, checkRadius, Vector2.up, checkRadius,droppedItemsMask);
 
-        if (collidedItem.collider)
+        if (collidedItem.collider != null)
         {
             var droppedItem = collidedItem.collider.gameObject.GetComponent<DroppedItemView>().itemEntity;
             currentDroppedItem = droppedItem;

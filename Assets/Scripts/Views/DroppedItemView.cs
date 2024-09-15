@@ -8,7 +8,7 @@ public class DroppedItemView : MonoBehaviour
     [SerializeField] private SpriteRenderer spriteRenderer;
     public int itemEntity {  get; private set; }
 
-    public void SetParametersToItem(Sprite sprite, string name, int entity)
+    public void SetParametersToItem(Sprite sprite, int entity)
     {
         spriteRenderer.sprite = sprite;
         itemEntity = entity;

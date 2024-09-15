@@ -6,5 +6,8 @@ public struct MovementComponent
 {
     public float moveSpeed;
     public MovementView movementView;
+    public Transform entityTransform;
     public Vector2 moveInput;
+
+    public Vector2 pointToRotateInput;
 }

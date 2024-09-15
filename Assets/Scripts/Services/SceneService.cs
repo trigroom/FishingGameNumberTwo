@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Pool;
 using UnityEngine.UI;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class SceneService : MonoBehaviour
 {
@@ -24,16 +25,40 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public GameObject shopCellPrefab { get; private set; }
 
     [field: SerializeField] public TMP_Text hoverDescriptionText;
+    [field: SerializeField] public TMP_Text ammoInfoText;
+    [field: SerializeField] public Camera mainCamera{ get; private set; }
+    [field: SerializeField] public LineRenderer bulletTracer { get; private set; }
     [field: SerializeField] public int playerEntity { get; private set; }
+    private ObjectPool<LineRenderer> _bulletTracersPool;
 
-    //убрать после создания магазина
+    //всё для тестов\/
     [field: SerializeField] public ShopItemInfo[] testShopItems { get; private set; }
     [field: SerializeField] public ItemInfo testItem1 { get; private set; }
     [field: SerializeField] public ItemInfo testItem2 { get; private set; }
-
+    [field: SerializeField] public GunInfo firstWeaponTest { get; private set; }
+    [field: SerializeField] public GunInfo secondWeaponTest { get; private set; }
     [field: SerializeField] public int startMoneyForTest { get; private set; }
+    [field: SerializeField] public GameObject testEnemy { get; private set; }
 
+    private void Awake()
+    {
+        _bulletTracersPool = new ObjectPool<LineRenderer>(() => Instantiate(bulletTracer));
+        mainCamera = Camera.main;
+    }
 
+    public LineRenderer GetBulletTracer()
+    {
+        Debug.Log("Spawntracer");
+        var view = _bulletTracersPool.Get();
+        view.gameObject.SetActive(true);
+        return view;
+    }
+
+    public void ReleaseBulletTracer(LineRenderer renderer)
+    {
+        renderer.gameObject.SetActive(false);
+        _bulletTracersPool.Release(renderer);
+    }
     public InventoryCellView GetInventoryCell(int entity, EcsWorld world)
     {
         var invCell = Instantiate(inventoryCell, inventoryCellsContainer).GetComponent<InventoryCellView>();
@@ -56,10 +81,14 @@ public class SceneService : MonoBehaviour
         return player;
     }
 
+    public HealthView GetEnemy()
+    {
+        return Instantiate(testEnemy, Vector2.zero, Quaternion.identity).GetComponent<HealthView>();
+    }
     public DroppedItemView SpawnDroppedItem(Vector2 spawnPoint, ItemInfo itemInfo, int entity)
     {
         var droppedItemObj = Instantiate(droppedItemPrefab, spawnPoint, Quaternion.identity).GetComponent<DroppedItemView>();
-        droppedItemObj.SetParametersToItem(itemInfo.itemSprite, itemInfo.itemName, entity);
+        droppedItemObj.SetParametersToItem(itemInfo.itemSprite, entity);
 
         return droppedItemObj;
     }

@@ -1,52 +1,79 @@
 using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
 using Leopotam.EcsLite.ExtendedSystems;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.UI.Button;
 
 public class EcsStartUp : MonoBehaviour
 {
     [SerializeField] private SceneService _sceneService;
 
     EcsWorld _world;
-    IEcsSystems _systems;
+    IEcsSystems _systemsFixedUpdate;
+    IEcsSystems _systemsUpdate;
 
     void Start()
     {
         _world = new EcsWorld();
-        _systems = new EcsSystems(_world);
-        _systems
+        _systemsFixedUpdate = new EcsSystems(_world);
+        _systemsUpdate = new EcsSystems(_world);
+
+       _systemsFixedUpdate
+        .Add(new MovementSystem())
+
+
+/*#if UNITY_EDITOR
+            .Add(new Leopotam.EcsLite.UnityEditor.EcsWorldDebugSystem())
+#endif*/
+
+         .Inject(_sceneService)
+
+        .Init();
+
+        _systemsUpdate
 #if UNITY_EDITOR
             .Add(new Leopotam.EcsLite.UnityEditor.EcsWorldDebugSystem())
 #endif
             .Add(new PlayerInputSystem())
-            .Add(new MovementSystem())
             .Add(new InventorySystem())
             .Add(new EnemyDeathSystem())
             .Add(new UiControlSystem())
             .Add(new ShopCellsSystem())
-            .DelHere<AddItemEvent>()
-            .DelHere<EnemyDeathEvent>()
-            .DelHere<SetDescriptionItemEvent>()
-            .DelHere<DropItemsIvent>()
-            .DelHere<FindAndCellItemEvent>()
-            .DelHere<BuyItemFromShopEvent>()
-             .Inject(_sceneService)
-            .Init();
+            .Add(new AttackSystem())
+
+        .DelHere<AddItemEvent>()
+        .DelHere<EnemyDeathEvent>()
+        .DelHere<SetDescriptionItemEvent>()
+        .DelHere<DropItemsIvent>()
+        .DelHere<FindAndCellItemEvent>()
+        .DelHere<BuyItemFromShopEvent>()
+
+         .Inject(_sceneService)
+         .Init();
+
     }
     void Update()
     {
-        _systems?.Run();
+        _systemsUpdate?.Run();
+    }
+
+    void FixedUpdate()
+    {
+        _systemsFixedUpdate?.Run();
     }
 
     void OnDestroy()
     {
-        if (_systems != null)
+
+        if (_systemsUpdate != null)
         {
-            _systems.Destroy();
-            _systems = null;
+            _systemsUpdate.Destroy();
+            _systemsUpdate = null;
+        }
+
+        if (_systemsFixedUpdate != null)
+        {
+            _systemsFixedUpdate.Destroy();
+            _systemsFixedUpdate = null;
         }
 
         if (_world != null)

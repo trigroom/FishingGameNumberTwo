@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac357f814689b0342b6a7c6efddf2e3d, type: 3}
   m_Name: Heal
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  itemSprite: {fileID: 6254422107357304797, guid: 64f574486cef7db42a671df1d7d96d6c, type: 3}
   type: 1
   maxCount: 6
   itemWeight: 0.6
