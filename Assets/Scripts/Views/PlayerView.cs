@@ -8,7 +8,6 @@ public class PlayerView : MonoBehaviour
     [field: SerializeField] public MovementView movementView { get; private set; }
     [field: SerializeField] public float checkRadius { get; private set; }
     [field: SerializeField] public LayerMask droppedItemsMask { get; private set; }
-    [field: SerializeField] public float changeWeaponTime { get; private set; }
     [field: SerializeField] public TMP_Text itemInfoText;
 
     private EcsWorld _world;

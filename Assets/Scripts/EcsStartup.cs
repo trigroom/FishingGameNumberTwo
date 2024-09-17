@@ -19,12 +19,6 @@ public class EcsStartUp : MonoBehaviour
 
        _systemsFixedUpdate
         .Add(new MovementSystem())
-
-
-/*#if UNITY_EDITOR
-            .Add(new Leopotam.EcsLite.UnityEditor.EcsWorldDebugSystem())
-#endif*/
-
          .Inject(_sceneService)
 
         .Init();
@@ -34,12 +28,13 @@ public class EcsStartUp : MonoBehaviour
             .Add(new Leopotam.EcsLite.UnityEditor.EcsWorldDebugSystem())
 #endif
             .Add(new PlayerInputSystem())
+            .Add(new AttackSystem())
             .Add(new InventorySystem())
             .Add(new EnemyDeathSystem())
             .Add(new UiControlSystem())
             .Add(new ShopCellsSystem())
-            .Add(new AttackSystem())
 
+        .DelHere<ReloadEvent>()
         .DelHere<AddItemEvent>()
         .DelHere<EnemyDeathEvent>()
         .DelHere<SetDescriptionItemEvent>()

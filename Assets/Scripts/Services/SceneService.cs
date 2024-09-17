@@ -48,7 +48,6 @@ public class SceneService : MonoBehaviour
 
     public LineRenderer GetBulletTracer()
     {
-        Debug.Log("Spawntracer");
         var view = _bulletTracersPool.Get();
         view.gameObject.SetActive(true);
         return view;

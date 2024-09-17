@@ -39,7 +39,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         attackCmp.weaponIsChanged = false;
         attackCmp.damage = weaponsInInventoryCmp.gunFirstObject.damage;
-        attackCmp.changeWeaponTime = playerCmp.view.changeWeaponTime;
+        attackCmp.changeWeaponTime = weaponsInInventoryCmp.gunFirstObject.weaponChangeSpeed;
 
         ref var gunCmp = ref _gunComponentsPool.Value.Add(_playerEntity);
         gunCmp.attackCouldown = weaponsInInventoryCmp.gunFirstObject.attackCouldown;
@@ -53,6 +53,8 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         gunCmp.spreadRecoverySpeed = weaponsInInventoryCmp.gunFirstObject.spreadRecoverySpeed;
         gunCmp.addedSpread = weaponsInInventoryCmp.gunFirstObject.addedSpread;
         gunCmp.isAuto = weaponsInInventoryCmp.gunFirstObject.isAuto;
+        gunCmp.bulletCount = weaponsInInventoryCmp.gunFirstObject.bulletCount;
+        gunCmp.bulletTypeId = weaponsInInventoryCmp.gunFirstObject.bulletTypeId;
 
 
         ref var healtCmp = ref _healthComponentsPool.Value.Add(_playerEntity);

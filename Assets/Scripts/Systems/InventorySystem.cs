@@ -15,7 +15,10 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
     private EcsPoolInject<MovementComponent> _movementComponentsPool;
     private EcsPoolInject<PlayerComponent> _playerTagsPool;
     private EcsPoolInject<ShopCellComponent> _shopCellComponentsPool;
+    private EcsPoolInject<EndReloadEvent> _endReloadEventsPool;
+    private EcsPoolInject<GunComponent> _gunComponentsPool;
 
+    private EcsFilterInject<Inc<ReloadEvent>> _reloadEventsFilter;
     private EcsFilterInject<Inc<InventoryItemComponent>> _inventoryItemsFilter;
     private EcsFilterInject<Inc<InventoryCellComponent>> _inventoryCellsFilter;
     private EcsFilterInject<Inc<AddItemEvent>> _addItemEventsFilter;
@@ -60,6 +63,24 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
             SetMoveSpeedFromWeight();
         }
 
+        foreach (var reloadEvent in _reloadEventsFilter.Value)
+        {
+            ref var gunCmp = ref _gunComponentsPool.Value.Get(reloadEvent);
+            int possibleBulletsToReload = FindItemCountInInventory(gunCmp.bulletTypeId);
+            Debug.Log(possibleBulletsToReload);
+
+            if (possibleBulletsToReload == 0)
+                return;
+
+            else if (gunCmp.magazineCapacity - gunCmp.currentMagazineCapacity < possibleBulletsToReload)
+                possibleBulletsToReload = gunCmp.magazineCapacity - gunCmp.currentMagazineCapacity;
+
+            FindItem(possibleBulletsToReload, gunCmp.bulletTypeId, true);
+            gunCmp.bulletCountToReload = possibleBulletsToReload;
+            Debug.Log(gunCmp.bulletCountToReload);
+            _endReloadEventsPool.Value.Add(reloadEvent);
+        }
+
         foreach (var droppedItem in _dropItemEventsFilter.Value)
         {
             DropItemsFromInventory(droppedItem);
@@ -78,17 +99,16 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                 _sceneData.Value.moneyText.text = moneyCmp.money + "$";
                 SetMoveSpeedFromWeight();
             }
-            //надо проверять
             //сделать функцию удаления айтемв для очистки кода
         }
 
-        foreach(var buyItem in _buyItemFromShopEventFilter.Value)
+        foreach (var buyItem in _buyItemFromShopEventFilter.Value)
         {
             ref var shopCellCmp = ref _shopCellComponentsPool.Value.Get(buyItem);
 
             ref var playerCmp = ref _playerTagsPool.Value.Get(_sceneData.Value.playerEntity);
 
-            if(playerCmp.money < shopCellCmp.itemCost || !CanAddItems(shopCellCmp.itemInfo, shopCellCmp.itemCount)) break;
+            if (playerCmp.money < shopCellCmp.itemCost || !CanAddItems(shopCellCmp.itemInfo, shopCellCmp.itemCount)) break;
 
             AddItemToInventory(shopCellCmp.itemInfo, shopCellCmp.itemCount);
 
@@ -120,15 +140,8 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
     private bool FindItem(int neededItemsCount, int neededItemId, bool isDeleteFindedItems)
     {
-        int curFindedItems = 0;
-        foreach (var invItem in _inventoryItemsFilter.Value)
-        {
-            var invItemCmp = _inventoryItemComponent.Value.Get(invItem);
-            if (invItemCmp.itemInfo.itemId == neededItemId)
-            {
-                curFindedItems += invItemCmp.currentItemsCount;
-            }
-        }
+        int curFindedItems = FindItemCountInInventory(neededItemId);
+
 
         if (curFindedItems >= neededItemsCount)
         {
@@ -176,6 +189,20 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
             return true;
         }
         return false;
+    }
+
+    private int FindItemCountInInventory(int itemId)
+    {
+        int findedItemsCount = 0;
+
+        foreach (var invItem in _inventoryItemsFilter.Value)
+        {
+            var invItemCmp = _inventoryItemComponent.Value.Get(invItem);
+            if (invItemCmp.itemInfo.itemId == itemId)
+                findedItemsCount += invItemCmp.currentItemsCount;
+        }
+
+        return findedItemsCount;
     }
 
     private void SetMoveSpeedFromWeight()

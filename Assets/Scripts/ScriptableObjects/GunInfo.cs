@@ -13,7 +13,10 @@ public class GunInfo : ScriptableObject
     public float maxSpread;
     public float minSpread;
     public float addedSpread;
+    public float weaponChangeSpeed = 2;//скорость с мены на это оружие, а не с него
     public float spreadRecoverySpeed;
     public GameObject gunObject;
     public bool isAuto;
+    public int bulletTypeId;
+    public int bulletCount = 1;
 }
