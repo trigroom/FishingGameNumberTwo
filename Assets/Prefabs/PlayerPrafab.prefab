@@ -108,8 +108,11 @@ MonoBehaviour:
   <droppedItemsMask>k__BackingField:
     serializedVersion: 2
     m_Bits: 8
-  <changeWeaponTime>k__BackingField: 2
+  <interactCharacterMask>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 256
   itemInfoText: {fileID: 0}
+  charactersInteractText: {fileID: 0}
 --- !u!114 &1730804259929462267
 MonoBehaviour:
   m_ObjectHideFlags: 0

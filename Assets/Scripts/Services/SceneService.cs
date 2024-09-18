@@ -10,6 +10,7 @@ using UnityEngine.UI;
 
 public class SceneService : MonoBehaviour
 {
+    [field: SerializeField] public UIMenuView ShopMenuView { get; private set; }
     [field: SerializeField] public UIMenuView inventoryMenuView { get; private set; }
     [field: SerializeField] public DropedItemsUIView dropedItemsUIView { get; private set; }
     [field: SerializeField] public Transform inventoryCellsContainer { get; private set; }
@@ -22,14 +23,17 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public float maxWeight { get; private set; }
     [field: SerializeField] public GameObject playerPrefab { get; private set; }
     [field: SerializeField] public GameObject droppedItemPrefab { get; private set; }
-    [field: SerializeField] public GameObject shopCellPrefab { get; private set; }
+    [field: SerializeField] public ShopCellView shopCellPrefab { get; private set; }
 
     [field: SerializeField] public TMP_Text hoverDescriptionText;
     [field: SerializeField] public TMP_Text ammoInfoText;
     [field: SerializeField] public Camera mainCamera{ get; private set; }
     [field: SerializeField] public LineRenderer bulletTracer { get; private set; }
     [field: SerializeField] public int playerEntity { get; private set; }
+
+    [field: SerializeField] public ShopCharacterView[] shoppers { get; private set; }
     private ObjectPool<LineRenderer> _bulletTracersPool;
+    private ObjectPool<ShopCellView> _shopCellsPool;
 
     //всё для тестов\/
     [field: SerializeField] public ShopItemInfo[] testShopItems { get; private set; }
@@ -43,9 +47,15 @@ public class SceneService : MonoBehaviour
     private void Awake()
     {
         _bulletTracersPool = new ObjectPool<LineRenderer>(() => Instantiate(bulletTracer));
+        _shopCellsPool = new ObjectPool<ShopCellView>(() => AddShopCellToPool());
         mainCamera = Camera.main;
     }
 
+    private ShopCellView AddShopCellToPool()
+    {
+        var shopCell = Instantiate(shopCellPrefab, shopCellsContainer);
+        return shopCell;
+    }
     public LineRenderer GetBulletTracer()
     {
         var view = _bulletTracersPool.Get();
@@ -67,10 +77,20 @@ public class SceneService : MonoBehaviour
 
     public ShopCellView GetShopCell(int entity, EcsWorld world)
     {
-        var shopCell = Instantiate(shopCellPrefab, shopCellsContainer).GetComponent<ShopCellView>();
-        shopCell.Construct(entity, world);
-        return shopCell;
+        var view = _shopCellsPool.Get();
+        view.gameObject.SetActive(true);
+
+        view.Construct(entity, world);
+
+        return view;
     }
+
+    public void ReleaseShopCell(ShopCellView shopCell)
+    {
+        shopCell.gameObject.SetActive(false);
+        _shopCellsPool.Release(shopCell);
+    }
+
     public PlayerView SpawnPlayer(EcsWorld ecsWorld, int entity)
     {
         var player = Instantiate(playerPrefab, Vector2.zero, Quaternion.identity).GetComponent<PlayerView>();

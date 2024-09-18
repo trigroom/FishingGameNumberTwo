@@ -41,6 +41,8 @@ public class EcsStartUp : MonoBehaviour
         .DelHere<DropItemsIvent>()
         .DelHere<FindAndCellItemEvent>()
         .DelHere<BuyItemFromShopEvent>()
+        .DelHere<ShopCloseEvent>()
+        .DelHere<ShopOpenEvent>()
 
          .Inject(_sceneService)
          .Init();
