@@ -10,7 +10,11 @@ using UnityEngine.UI;
 
 public class SceneService : MonoBehaviour
 {
-    [field: SerializeField] public UIMenuView ShopMenuView { get; private set; }
+    [field: SerializeField] public TMP_Text playerArmorText { get; private set; }
+    [field: SerializeField] public Image playerArmorBarFilled { get; private set; }
+    [field: SerializeField] public TMP_Text playerHealthText { get; private set; }
+    [field: SerializeField] public Image playerHealthBarFilled { get; private set; }
+    [field: SerializeField] public UIMenuView shopMenuView { get; private set; }
     [field: SerializeField] public UIMenuView inventoryMenuView { get; private set; }
     [field: SerializeField] public DropedItemsUIView dropedItemsUIView { get; private set; }
     [field: SerializeField] public Transform inventoryCellsContainer { get; private set; }
@@ -43,6 +47,8 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public GunInfo secondWeaponTest { get; private set; }
     [field: SerializeField] public int startMoneyForTest { get; private set; }
     [field: SerializeField] public GameObject testEnemy { get; private set; }
+    [field: SerializeField] public int playerStartArmor { get; private set; }
+    [field: SerializeField] public float playerStartArmorRecoverySpeed { get; private set; }
 
     private void Awake()
     {

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public struct MovementComponent 
 {
+    public bool canMove;
     public float moveSpeed;
     public MovementView movementView;
     public Transform entityTransform;

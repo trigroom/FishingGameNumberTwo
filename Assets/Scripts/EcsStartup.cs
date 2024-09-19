@@ -17,11 +17,6 @@ public class EcsStartUp : MonoBehaviour
         _systemsFixedUpdate = new EcsSystems(_world);
         _systemsUpdate = new EcsSystems(_world);
 
-       _systemsFixedUpdate
-        .Add(new MovementSystem())
-         .Inject(_sceneService)
-
-        .Init();
 
         _systemsUpdate
 #if UNITY_EDITOR
@@ -33,6 +28,7 @@ public class EcsStartUp : MonoBehaviour
             .Add(new EnemyDeathSystem())
             .Add(new UiControlSystem())
             .Add(new ShopCellsSystem())
+            .Add(new HealthSystem())
 
         .DelHere<ReloadEvent>()
         .DelHere<AddItemEvent>()
@@ -43,9 +39,15 @@ public class EcsStartUp : MonoBehaviour
         .DelHere<BuyItemFromShopEvent>()
         .DelHere<ShopCloseEvent>()
         .DelHere<ShopOpenEvent>()
+        .DelHere<ChangeHealthEvent>()
 
          .Inject(_sceneService)
          .Init();
+       _systemsFixedUpdate
+        .Add(new MovementSystem())
+         .Inject(_sceneService)
+
+        .Init();
 
     }
     void Update()

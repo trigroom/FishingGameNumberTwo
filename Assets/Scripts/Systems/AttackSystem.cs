@@ -2,7 +2,7 @@ using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
 using UnityEngine;
 
-public class AttackSystem : IEcsRunSystem
+public class AttackSystem : IEcsRunSystem, IEcsInitSystem
 {
     private EcsWorldInject _world;
     private EcsCustomInject<SceneService> _sceneData;
@@ -16,10 +16,16 @@ public class AttackSystem : IEcsRunSystem
     private EcsPoolInject<BulletTracerLifetimeComponent> _bulletTracerLifetimeComponentsPool;
     private EcsPoolInject<EndReloadEvent> _endReloadEventsPool;
     private EcsPoolInject<ReloadEvent> _reloadEventsPool;
+    private EcsPoolInject<ChangeHealthEvent> _changeHealthEventsPool;
 
     private EcsFilterInject<Inc<EndReloadEvent>> _endReloadEventFilter;
     private EcsFilterInject<Inc<PlayerComponent>> _playerComponentFilter;
     private EcsFilterInject<Inc<BulletTracerLifetimeComponent>> _bulletTracerLifetimeComponentFilter;
+    public void Init(IEcsSystems systems)
+    {
+        var gunCmp = _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+        _sceneData.Value.ammoInfoText.text = gunCmp.currentMagazineCapacity + "/" + gunCmp.magazineCapacity;
+    }
     public void Run(IEcsSystems systems)
     {
         foreach (var playerEntity in _playerComponentFilter.Value)
@@ -36,7 +42,7 @@ public class AttackSystem : IEcsRunSystem
             }
 
             gunCmp.currentAttackCouldown += Time.deltaTime;
-            if (((gunCmp.isAuto && Input.GetMouseButton(0)) || (!gunCmp.isAuto && Input.GetMouseButtonDown(0))) && !gunCmp.isReloading && gunCmp.currentMagazineCapacity > 0 && gunCmp.currentAttackCouldown >= gunCmp.attackCouldown && !attackCmp.weaponIsChanged)//потом для авто стрельбы сделать отдельную проверку isAuto && GetMouseButton || !isAuto && GetMouseButtonDown
+            if (((gunCmp.isAuto && Input.GetMouseButton(0)) || (!gunCmp.isAuto && Input.GetMouseButtonDown(0))) && !gunCmp.isReloading && gunCmp.currentMagazineCapacity > 0 && gunCmp.currentAttackCouldown >= gunCmp.attackCouldown && !attackCmp.weaponIsChanged && attackCmp.canAttack)//потом для авто стрельбы сделать отдельную проверку isAuto && GetMouseButton || !isAuto && GetMouseButtonDown
             {
                 for (int i = 0; i < gunCmp.bulletCount; i++)
                     Shoot(playerEntity, LayerMask.GetMask("Enemy"));
@@ -130,20 +136,7 @@ public class AttackSystem : IEcsRunSystem
                 if (curWeapon == 0)
                 {
                     weaponsInInventoryCmp.curWeapon = curWeapon;
-                    attackCmp.changeWeaponTime = weaponsInInventoryCmp.gunFirstObject.weaponChangeSpeed;
-                    gunCmp.reloadDuration = weaponsInInventoryCmp.gunFirstObject.reloadDuration;
-                    gunCmp.currentMagazineCapacity = weaponsInInventoryCmp.curFirstWeaponAmmo;
-                    gunCmp.magazineCapacity = weaponsInInventoryCmp.gunFirstObject.magazineCapacity;
-                    gunCmp.maxSpread = weaponsInInventoryCmp.gunFirstObject.maxSpread;
-                    gunCmp.minSpread = weaponsInInventoryCmp.gunFirstObject.minSpread;
-                    gunCmp.currentSpread = weaponsInInventoryCmp.gunFirstObject.minSpread;//временно так
-                    gunCmp.spreadRecoverySpeed = weaponsInInventoryCmp.gunFirstObject.spreadRecoverySpeed;
-                    gunCmp.addedSpread = weaponsInInventoryCmp.gunFirstObject.addedSpread;
-                    gunCmp.isAuto = weaponsInInventoryCmp.gunFirstObject.isAuto;
-                    gunCmp.bulletCount = weaponsInInventoryCmp.gunFirstObject.bulletCount;
-                    gunCmp.bulletTypeId = weaponsInInventoryCmp.gunFirstObject.bulletTypeId;
-
-                    attackCmp.damage = weaponsInInventoryCmp.gunFirstObject.damage;
+                    ChangeWeaponStats(weaponsInInventoryCmp.gunFirstObject, weaponsInInventoryCmp.curFirstWeaponAmmo, ref gunCmp, ref attackCmp);
 
                     //менять модельку оружия
                     //переместить всё что в скобках в отдельный метод
@@ -152,20 +145,7 @@ public class AttackSystem : IEcsRunSystem
                 else
                 {
                     weaponsInInventoryCmp.curWeapon = curWeapon;
-                    attackCmp.changeWeaponTime = weaponsInInventoryCmp.gunSecondObject.weaponChangeSpeed;
-                    gunCmp.reloadDuration = weaponsInInventoryCmp.gunSecondObject.reloadDuration;
-                    gunCmp.currentMagazineCapacity = weaponsInInventoryCmp.curSecondWeaponAmmo;
-                    gunCmp.magazineCapacity = weaponsInInventoryCmp.gunSecondObject.magazineCapacity;
-                    gunCmp.maxSpread = weaponsInInventoryCmp.gunSecondObject.maxSpread;
-                    gunCmp.minSpread = weaponsInInventoryCmp.gunSecondObject.minSpread;
-                    gunCmp.currentSpread = weaponsInInventoryCmp.gunSecondObject.minSpread;//временно так
-                    gunCmp.spreadRecoverySpeed = weaponsInInventoryCmp.gunSecondObject.spreadRecoverySpeed;
-                    gunCmp.addedSpread = weaponsInInventoryCmp.gunSecondObject.addedSpread;
-                    gunCmp.isAuto = weaponsInInventoryCmp.gunSecondObject.isAuto;
-                    gunCmp.bulletCount = weaponsInInventoryCmp.gunSecondObject.bulletCount;
-                    gunCmp.bulletTypeId = weaponsInInventoryCmp.gunSecondObject.bulletTypeId;
-
-                    attackCmp.damage = weaponsInInventoryCmp.gunSecondObject.damage;
+                    ChangeWeaponStats(weaponsInInventoryCmp.gunSecondObject, weaponsInInventoryCmp.curSecondWeaponAmmo, ref gunCmp, ref attackCmp);
                 }
 
             }
@@ -179,6 +159,24 @@ public class AttackSystem : IEcsRunSystem
             attackCmp.weaponIsChanged = true;
 
         }
+    }
+
+    private void ChangeWeaponStats(GunInfo gunInfo, int curBullets, ref GunComponent gunCmp, ref CurrentAttackComponent curAttackCmp)
+    {
+        curAttackCmp.changeWeaponTime = gunInfo.weaponChangeSpeed;
+        gunCmp.reloadDuration = gunInfo.reloadDuration;
+        gunCmp.currentMagazineCapacity = curBullets;
+        gunCmp.magazineCapacity = gunInfo.magazineCapacity;
+        gunCmp.maxSpread = gunInfo.maxSpread;
+        gunCmp.minSpread = gunInfo.minSpread;
+        gunCmp.currentSpread = gunInfo.minSpread;
+        gunCmp.spreadRecoverySpeed = gunInfo.spreadRecoverySpeed;
+        gunCmp.addedSpread = gunInfo.addedSpread;
+        gunCmp.isAuto = gunInfo.isAuto;
+        gunCmp.bulletCount = gunInfo.bulletCount;
+        gunCmp.bulletTypeId = gunInfo.bulletTypeId;
+
+        curAttackCmp.damage = gunInfo.damage;
     }
     private void Shoot(int currentEntity, LayerMask targetLayer)// 6 маска игрока 7 враг
     {
@@ -207,13 +205,15 @@ public class AttackSystem : IEcsRunSystem
 
             foreach (var target in targets)
             {
-                ref var health = ref _healthComponentsPool.Value.Get(target.collider.gameObject.GetComponent<HealthView>()._entity);
+                var hpEntity = target.collider.gameObject.GetComponent<HealthView>()._entity;
+                ref var health = ref _healthComponentsPool.Value.Get(hpEntity);
                 int startedHealth = health.healthPoint;
-                health.healthPoint -= damageReminder;
+                //health.healthPoint -= damageReminder;//сделать ивент и запихнуть в систему здоровья
+                _changeHealthEventsPool.Value.Add(hpEntity);
+
                 if (health.healthPoint <= 0)
                 {
                     Debug.Log(health.healthPoint + "hp and death");
-                    health.healthView.Death();
                     _world.Value.DelEntity(target.collider.gameObject.GetComponent<HealthView>()._entity);
                     damageReminder -= startedHealth;
                     continue;
@@ -266,4 +266,5 @@ public class AttackSystem : IEcsRunSystem
             _world.Value.DelEntity(bulletTracerEntity);
         }
     }
+
 }

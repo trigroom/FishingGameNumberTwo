@@ -12,6 +12,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
     private EcsPoolInject<PlayerWeaponsInInventoryComponent> _playerWeaponsInInventoryComponentsPool;
     private EcsPoolInject<GunComponent> _gunComponentsPool;
+    private EcsPoolInject<ArmorComponent> _armorComponentsPool;
 
     private EcsCustomInject<SceneService> _sceneService;
 
@@ -28,7 +29,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         ref var playerCmp = ref _playerComponentsPool.Value.Add(_playerEntity);
         playerCmp.view = _sceneService.Value.SpawnPlayer(_world.Value, _playerEntity);
-        playerCmp.money = _sceneService.Value.startMoneyForTest;
+        playerCmp.money = _sceneService.Value.startMoneyForTest; 
 
         ref var weaponsInInventoryCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Add(_playerEntity);
         weaponsInInventoryCmp.gunFirstObject = _sceneService.Value.firstWeaponTest;
@@ -40,6 +41,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         attackCmp.weaponIsChanged = false;
         attackCmp.damage = weaponsInInventoryCmp.gunFirstObject.damage;
         attackCmp.changeWeaponTime = weaponsInInventoryCmp.gunFirstObject.weaponChangeSpeed;
+        attackCmp.canAttack = true;
 
         ref var gunCmp = ref _gunComponentsPool.Value.Add(_playerEntity);
         gunCmp.attackCouldown = weaponsInInventoryCmp.gunFirstObject.attackCouldown;
@@ -56,11 +58,16 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         gunCmp.bulletCount = weaponsInInventoryCmp.gunFirstObject.bulletCount;
         gunCmp.bulletTypeId = weaponsInInventoryCmp.gunFirstObject.bulletTypeId;
 
+        ref var healthCmp = ref _healthComponentsPool.Value.Add(_playerEntity);
+        healthCmp.healthView = playerCmp.view.healthView;
+        healthCmp.healthPoint = healthCmp.healthView.maxHealth;
+        healthCmp.maxHealthPoint = healthCmp.healthView.maxHealth;
 
-        ref var healtCmp = ref _healthComponentsPool.Value.Add(_playerEntity);
-        healtCmp.healthView = playerCmp.view.healthView;
-        healtCmp.healthPoint = healtCmp.healthView.maxHealth;
-        healtCmp.maxHealthPoint = healtCmp.healthView.maxHealth;
+        ref var armorCmp = ref _armorComponentsPool.Value.Add(_playerEntity);
+        armorCmp.maxArmorPoint = _sceneService.Value.playerStartArmor;
+        //armorCmp.armorPoint = armorCmp.maxArmorPoint;
+        armorCmp.armorPoint = 0;
+        armorCmp.armorRecoverySpeed = _sceneService.Value.playerStartArmorRecoverySpeed;
 
         //задать переменные на текущие оружие
 
@@ -68,6 +75,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         movementComponent.movementView = playerCmp.view.movementView;
         movementComponent.moveSpeed = movementComponent.movementView.moveSpeed;
         movementComponent.entityTransform = movementComponent.movementView.objectTransform;
+        movementComponent.canMove = true;
 
         gunCmp.firePoint = movementComponent.movementView.firePoint;//временно, потом разделить точку спавна и точку стрельбы
         gunCmp.weaponContainer = movementComponent.movementView.weaponContainer;

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public struct CurrentAttackComponent 
 {
+    public bool canAttack;
     public bool weaponIsChanged;
     public int damage;
 
