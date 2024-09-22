@@ -17,10 +17,14 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<EndReloadEvent> _endReloadEventsPool;
     private EcsPoolInject<ReloadEvent> _reloadEventsPool;
     private EcsPoolInject<ChangeHealthEvent> _changeHealthEventsPool;
+    private EcsPoolInject<ChangeWeaponFromInventoryEvent> _changeWeaponFromInventoryEventsPool;
+    private EcsPoolInject<GunInventoryCellComponent> _gunInventoryCellComponentsPool;
+    private EcsPoolInject<InventoryItemComponent> _inventoryItemComponentsPool;
 
     private EcsFilterInject<Inc<EndReloadEvent>> _endReloadEventFilter;
     private EcsFilterInject<Inc<PlayerComponent>> _playerComponentFilter;
     private EcsFilterInject<Inc<BulletTracerLifetimeComponent>> _bulletTracerLifetimeComponentFilter;
+    private EcsFilterInject<Inc<ChangeWeaponFromInventoryEvent>> _changeWeaponFromInventoryEventsFilter;
     public void Init(IEcsSystems systems)
     {
         var gunCmp = _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
@@ -28,20 +32,74 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
     }
     public void Run(IEcsSystems systems)
     {
+        foreach (var changeWeaponFromInvEvt in _changeWeaponFromInventoryEventsFilter.Value)
+        {
+            ref var changeWeaponFromInvCmp = ref _changeWeaponFromInventoryEventsPool.Value.Get(changeWeaponFromInvEvt);
+            if (changeWeaponFromInvCmp.weaponCellNumberToChange < 2)
+            {
+                ref var weaponsInInventoryCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+                ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(changeWeaponFromInvEvt);
+
+                if (changeWeaponFromInvCmp.isDeleteWeapon)
+                {
+                    if (changeWeaponFromInvCmp.weaponCellNumberToChange == 0)//first gun
+                    {
+                        gunInInvCmp.currentAmmo = weaponsInInventoryCmp.curFirstWeaponAmmo;//
+                        weaponsInInventoryCmp.gunFirstObject = null;
+                        Debug.Log("first null");
+                    }
+
+                    else //second gun
+                    {
+                        gunInInvCmp.currentAmmo = weaponsInInventoryCmp.curSecondWeaponAmmo;//
+                        weaponsInInventoryCmp.gunSecondObject = null;
+                        Debug.Log("second null");
+                    }
+
+                    if (0 != changeWeaponFromInvCmp.weaponCellNumberToChange && weaponsInInventoryCmp.gunFirstObject != null)
+                        ChangeWeapon(0);
+                    else if (1 != changeWeaponFromInvCmp.weaponCellNumberToChange && weaponsInInventoryCmp.gunSecondObject != null)
+                        ChangeWeapon(1);
+                    else
+                        ChangeWeapon(2);
+                }
+                else
+                {
+                    //gunInInvCmp.gunInfo = _inventoryItemComponentsPool.Value.Get(changeWeaponFromInvEvt).itemInfo.gunInfo;//потом добавть в место где оружие будет напрямую добавляться из сохранения в быстрый слот в начале игры
+                    if (changeWeaponFromInvCmp.weaponCellNumberToChange == 0)
+                    {
+                        weaponsInInventoryCmp.gunFirstObject = gunInInvCmp.gunInfo;
+                        weaponsInInventoryCmp.curFirstWeaponAmmo = gunInInvCmp.currentAmmo;//
+                        Debug.Log("first full");
+                    }
+                    else
+                    {
+                        weaponsInInventoryCmp.gunSecondObject = gunInInvCmp.gunInfo;
+                        weaponsInInventoryCmp.curSecondWeaponAmmo = gunInInvCmp.currentAmmo;//
+                        Debug.Log("second full");
+                    }
+
+                    ChangeWeapon(changeWeaponFromInvCmp.weaponCellNumberToChange);
+                }
+
+            }
+            _changeWeaponFromInventoryEventsPool.Value.Del(changeWeaponFromInvEvt);
+            //если милишка
+        }
+
         foreach (var playerEntity in _playerComponentFilter.Value)
         {
             ref var gunCmp = ref _gunComponentsPool.Value.Get(playerEntity);
             ref var attackCmp = ref _attackComponentsPool.Value.Get(playerEntity);
-
             foreach (var reloadEvt in _endReloadEventFilter.Value)
             {
-                Debug.Log("Reload gun");
                 gunCmp.isReloading = true;
                 _sceneData.Value.ammoInfoText.text = "перезарядка...";
                 _endReloadEventsPool.Value.Del(reloadEvt);
             }
-
+            // Debug.Log((!gunCmp.isReloading) +"&&"+( gunCmp.currentMagazineCapacity > 0 )+"&&"+ (gunCmp.currentAttackCouldown >= gunCmp.attackCouldown) +"&& "+!attackCmp.weaponIsChanged +"&&"+ attackCmp.canAttack);
             gunCmp.currentAttackCouldown += Time.deltaTime;
+            //  Debug.Log("cur couldown" + gunCmp.currentAttackCouldown);
             if (((gunCmp.isAuto && Input.GetMouseButton(0)) || (!gunCmp.isAuto && Input.GetMouseButtonDown(0))) && !gunCmp.isReloading && gunCmp.currentMagazineCapacity > 0 && gunCmp.currentAttackCouldown >= gunCmp.attackCouldown && !attackCmp.weaponIsChanged && attackCmp.canAttack)//потом для авто стрельбы сделать отдельную проверку isAuto && GetMouseButton || !isAuto && GetMouseButtonDown
             {
                 for (int i = 0; i < gunCmp.bulletCount; i++)
@@ -180,6 +238,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
     }
     private void Shoot(int currentEntity, LayerMask targetLayer)// 6 маска игрока 7 враг
     {
+        Debug.Log("Shot");
         ref var attackCmp = ref _attackComponentsPool.Value.Get(currentEntity);
         ref var gunCmp = ref _gunComponentsPool.Value.Get(currentEntity);
         gunCmp.firePoint.rotation = gunCmp.weaponContainer.rotation * Quaternion.Euler(0, 0, Random.Range(-gunCmp.currentSpread, gunCmp.currentSpread));//некорректный расчёт разброса, переделать

@@ -15,7 +15,7 @@ public class ShopCellsSystem : IEcsInitSystem, IEcsRunSystem
 
     public void Init(IEcsSystems systems)
     {
-        foreach(var shopper in _sceneData.Value.shoppers)
+        foreach (var shopper in _sceneData.Value.shoppers)
         {
             int shopperEntity = _world.Value.NewEntity();
 
@@ -30,6 +30,7 @@ public class ShopCellsSystem : IEcsInitSystem, IEcsRunSystem
     {
         foreach (var shopOpenEvt in _shopOpenEventsFilter.Value)
         {
+
             var shopCharacterCmp = _shopCharacterComponentsPool.Value.Get(shopOpenEvt);
 
             foreach (var shopCell in shopCharacterCmp.items)
@@ -52,7 +53,7 @@ public class ShopCellsSystem : IEcsInitSystem, IEcsRunSystem
             {
                 ref var shopCellCmp = ref _shopCellComponentsPool.Value.Get(shopCell);
 
-                _sceneData.Value.ReleaseShopCell( shopCellCmp.cellView);
+                _sceneData.Value.ReleaseShopCell(shopCellCmp.cellView);
                 _shopCellComponentsPool.Value.Del(shopCell);
             }
 

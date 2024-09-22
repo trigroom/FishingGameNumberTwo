@@ -6,14 +6,21 @@ public class ItemInfo : ScriptableObject
 {
     public enum itemType
     {
-        weapon,
+        gun,
+        meleeWeapon,
         heal,
-        bullet
+        bullet,
+        drop
     }
+    [Header("Item stats")]
     public Sprite itemSprite;
     public itemType type;
     public int maxCount;
     public float itemWeight;
     public int itemId;
     public string itemName;
+    [Header("Weapons")]
+    public GunInfo gunInfo;
+
+    
 }

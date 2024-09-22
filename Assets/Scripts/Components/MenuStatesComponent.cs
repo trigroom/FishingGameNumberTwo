@@ -6,4 +6,5 @@ public struct MenuStatesComponent
 {
     public bool inInventoryState;
     public bool inShopState;
+    public bool inStorageState;
 }

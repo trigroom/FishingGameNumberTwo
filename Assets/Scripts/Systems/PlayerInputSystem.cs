@@ -32,19 +32,20 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         playerCmp.money = _sceneService.Value.startMoneyForTest; 
 
         ref var weaponsInInventoryCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Add(_playerEntity);
-        weaponsInInventoryCmp.gunFirstObject = _sceneService.Value.firstWeaponTest;
-        weaponsInInventoryCmp.gunSecondObject = _sceneService.Value.secondWeaponTest;
-        weaponsInInventoryCmp.curWeapon = 0;
+        //Брать оружия из сэйва
+        //weaponsInInventoryCmp.gunFirstObject = _sceneService.Value.firstWeaponTest;
+        //weaponsInInventoryCmp.gunSecondObject = _sceneService.Value.secondWeaponTest;
+        //weaponsInInventoryCmp.curWeapon = 0;
 
         ref var attackCmp = ref _currentAttackComponentsPool.Value.Add(_playerEntity);
 
         attackCmp.weaponIsChanged = false;
-        attackCmp.damage = weaponsInInventoryCmp.gunFirstObject.damage;
-        attackCmp.changeWeaponTime = weaponsInInventoryCmp.gunFirstObject.weaponChangeSpeed;
+        //attackCmp.damage = weaponsInInventoryCmp.gunFirstObject.damage;
+        //attackCmp.changeWeaponTime = weaponsInInventoryCmp.gunFirstObject.weaponChangeSpeed;
         attackCmp.canAttack = true;
 
         ref var gunCmp = ref _gunComponentsPool.Value.Add(_playerEntity);
-        gunCmp.attackCouldown = weaponsInInventoryCmp.gunFirstObject.attackCouldown;
+        /*gunCmp.attackCouldown = weaponsInInventoryCmp.gunFirstObject.attackCouldown;
         gunCmp.currentMagazineCapacity = weaponsInInventoryCmp.gunFirstObject.magazineCapacity;
         gunCmp.magazineCapacity = gunCmp.currentMagazineCapacity;
         gunCmp.reloadDuration = weaponsInInventoryCmp.gunFirstObject.reloadDuration;
@@ -56,7 +57,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         gunCmp.addedSpread = weaponsInInventoryCmp.gunFirstObject.addedSpread;
         gunCmp.isAuto = weaponsInInventoryCmp.gunFirstObject.isAuto;
         gunCmp.bulletCount = weaponsInInventoryCmp.gunFirstObject.bulletCount;
-        gunCmp.bulletTypeId = weaponsInInventoryCmp.gunFirstObject.bulletTypeId;
+        gunCmp.bulletTypeId = weaponsInInventoryCmp.gunFirstObject.bulletTypeId;*/
 
         ref var healthCmp = ref _healthComponentsPool.Value.Add(_playerEntity);
         healthCmp.healthView = playerCmp.view.healthView;

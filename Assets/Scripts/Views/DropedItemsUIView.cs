@@ -7,9 +7,13 @@ public class DropedItemsUIView : MonoBehaviour
 {
     [SerializeField] public Slider dropSlider;
     [field: SerializeField] public TMP_Text currentItemsCountToDrop { get; private set; }
+    [field: SerializeField] public TMP_Text currentWeaponButtonActionText { get; private set; }
     [field: SerializeField] public Button dropButton { get; private set; }
 
+    [field: SerializeField] public Button weaponEquipButton { get; private set; }
+
     [field: SerializeField] public Transform itemInfoContainer { get; set; }
+    public bool isEquipWeapon;
 
     private int curCell;
 
@@ -19,6 +23,7 @@ public class DropedItemsUIView : MonoBehaviour
 
     private void Start()
     {
+        weaponEquipButton.onClick.AddListener(EquipWeapon);
         dropButton.onClick.AddListener(DropItems);
         dropSlider.onValueChanged.AddListener(delegate { OnSliderChange(); });
         itemInfoContainer.gameObject.SetActive(false);
@@ -42,6 +47,16 @@ public class DropedItemsUIView : MonoBehaviour
         currentItemsCountToDrop.text = curValue + "/" + dropSlider.maxValue;
     }
 
+    public void CangeActiveStateWeaponEquipButton(bool isActive)
+    {
+        weaponEquipButton.gameObject.SetActive(isActive);
+    }
+
+    public void EquipWeapon()
+    {
+            _world.GetPool<MoveWeaponToInventoryEvent>().Add(curCell);
+      
+    }
     public void DropItems()
     {
         if (curValue == 0)

@@ -9,7 +9,7 @@ public class InventoryCellView : MonoBehaviour
     [field: SerializeField] public Image inventoryCellItemImage;
     [field: SerializeField] public TMP_Text inventoryCellItemCountText;
 
-    private int _entity;
+    public int _entity {  get; private set; }
     private EcsWorld _world;
 
     private void Start()
@@ -30,7 +30,6 @@ public class InventoryCellView : MonoBehaviour
     {
         inventoryCellItemCountText.text = count.ToString();
     }
-
     public void ClearInventoryCell()
     {
         inventoryCellItemImage.sprite = null;//надо ставить невидимый спрайт

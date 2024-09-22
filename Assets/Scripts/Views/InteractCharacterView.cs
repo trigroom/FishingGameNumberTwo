@@ -8,7 +8,8 @@ public class InteractCharacterView : MonoBehaviour
     public enum InteractNPCType
     {
         shop,
-        dialogeNpc
+        dialogeNpc,
+        storage
     }
 
     public int _entity { get; private set; }

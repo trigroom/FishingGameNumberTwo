@@ -40,6 +40,9 @@ public class EcsStartUp : MonoBehaviour
         .DelHere<ShopCloseEvent>()
         .DelHere<ShopOpenEvent>()
         .DelHere<ChangeHealthEvent>()
+        .DelHere<StorageOpenEvent>()
+        .DelHere<MoveWeaponToInventoryEvent>()
+      //  .DelHere<ChangeWeaponFromInventoryEvent>()
 
          .Inject(_sceneService)
          .Init();

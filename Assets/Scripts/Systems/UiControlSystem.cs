@@ -11,12 +11,14 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<SetDescriptionItemEvent> _setDescriptionItemEventsPool;
     private EcsPoolInject<MenuStatesComponent> _menuStatesComponentsPool;
     private EcsPoolInject<ShopCloseEvent> _shopCloseEventsPool;
-    private EcsPoolInject<PlayerComponent> _playerComponent;
+    private EcsPoolInject<PlayerComponent> _playerComponentsPool;
     private EcsPoolInject<MovementComponent> _movementComponentsPool;
     private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
+    private EcsPoolInject<GunInventoryCellComponent> _gunInventoryCellComponentsPool;
 
-    private EcsFilterInject<Inc<SetDescriptionItemEvent>> _setDescriptionItemEvents;
-    private EcsFilterInject<Inc<ShopOpenEvent>> _shopOpenEvents;
+    private EcsFilterInject<Inc<SetDescriptionItemEvent>> _setDescriptionItemEventsFilter;
+    private EcsFilterInject<Inc<StorageOpenEvent>> _storageOpenEventsFilter;
+    private EcsFilterInject<Inc<ShopOpenEvent>> _shopOpenEventsFilter;
 
     public void Init(IEcsSystems systems)
     {
@@ -25,18 +27,43 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
     public void Run(IEcsSystems systems)
     {
-        foreach (var shopOpen in _shopOpenEvents.Value)
+        foreach (var storageOpen in _storageOpenEventsFilter.Value)
         {
-            Debug.Log("shop open");
+
+        }
+        foreach (var shopOpen in _shopOpenEventsFilter.Value)
+        {
             ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-            ChangeInventoryMenuState(ref menusStatesCmp);
+            
             ChangeShopMenuState(ref menusStatesCmp);
+            ChangeInventoryMenuState(ref menusStatesCmp);
         }
 
-        foreach (var desription in _setDescriptionItemEvents.Value)
+        foreach (var desription in _setDescriptionItemEventsFilter.Value)
         {
-            var descriptionEvt = _setDescriptionItemEventsPool.Value.Get(desription);
+            ref var descriptionEvt = ref _setDescriptionItemEventsPool.Value.Get(desription);
             var item = _inventoryItemComponentPool.Value.Get(descriptionEvt.itemEntity);
+
+            if (item.itemInfo.type == ItemInfo.itemType.gun )
+            {
+                var gunInInvCellCmp = _gunInventoryCellComponentsPool.Value.Get(descriptionEvt.itemEntity);
+                if (gunInInvCellCmp.isEquipedWeapon)
+                {
+                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "Снять";
+                    _sceneData.Value.dropedItemsUIView.isEquipWeapon = true;
+                }
+                else
+                {
+                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "Снарядить";
+                    _sceneData.Value.dropedItemsUIView.isEquipWeapon = false;
+                }
+            }
+
+            else if(item.itemInfo.type == ItemInfo.itemType.meleeWeapon)
+            {
+                //смена на милишку
+            }
+
 
             _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(true);
             _sceneData.Value.hoverDescriptionText.text = item.itemInfo.itemName + "\n" + "вес " + item.itemInfo.itemWeight;
@@ -53,7 +80,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             {
                 ChangeShopMenuState(ref menusStatesCmp);
                 _shopCloseEventsPool.Value.Add(_world.Value.NewEntity());
-                _playerComponent.Value.Get(_sceneData.Value.playerEntity).view.canShoping = true;
+            _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.canShoping = true;
             }
         }
     }
@@ -65,6 +92,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
         _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).canMove = !menusStatesCmp.inInventoryState;
         _currentAttackComponentsPool.Value.Get(_sceneData.Value.playerEntity).canAttack = !menusStatesCmp.inInventoryState;
+        _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.usedInventory = menusStatesCmp.inInventoryState; ;
         //изменение состояния стрелбы и ходьбы
     }
 
@@ -72,5 +100,11 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     {
         menusStatesCmp.inShopState = !menusStatesCmp.inShopState;
         _sceneData.Value.shopMenuView.ChangeMenuState(menusStatesCmp.inShopState);
+    }
+
+    private void ChangeStorageMenuState(ref MenuStatesComponent menusStatesCmp)
+    {
+        menusStatesCmp.inStorageState = !menusStatesCmp.inStorageState;
+        _sceneData.Value.storageMenuView.ChangeMenuState(menusStatesCmp.inStorageState);
     }
 }

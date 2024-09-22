@@ -17,14 +17,21 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
     private EcsPoolInject<ShopCellComponent> _shopCellComponentsPool;
     private EcsPoolInject<EndReloadEvent> _endReloadEventsPool;
     private EcsPoolInject<GunComponent> _gunComponentsPool;
+    private EcsPoolInject<GunInventoryCellComponent> _gunInventoryCellComponentsPool;
+    private EcsPoolInject<PlayerWeaponsInInventoryComponent> _playerWeaponsInInventoryComponentsPool;
+    private EcsPoolInject<ChangeWeaponFromInventoryEvent> _changeWeaponFromInventoryEventsPool;
+    private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
+    private EcsPoolInject<WeaponInventoryCellTag> _weaponInventoryCellTagsPool;
 
     private EcsFilterInject<Inc<ReloadEvent>> _reloadEventsFilter;
-    private EcsFilterInject<Inc<InventoryItemComponent>> _inventoryItemsFilter;
-    private EcsFilterInject<Inc<InventoryCellComponent>> _inventoryCellsFilter;
+    private EcsFilterInject<Inc<InventoryItemComponent>, Exc<StorageCellTag>> _inventoryItemsFilter;
+    private EcsFilterInject<Inc<InventoryCellComponent>, Exc<WeaponInventoryCellTag, StorageCellTag>> _inventoryCellsFilter;
     private EcsFilterInject<Inc<AddItemEvent>> _addItemEventsFilter;
     private EcsFilterInject<Inc<DropItemsIvent>> _dropItemEventsFilter;
     private EcsFilterInject<Inc<FindAndCellItemEvent>> _findAndCellItemEventsFilter;
     private EcsFilterInject<Inc<BuyItemFromShopEvent>> _buyItemFromShopEventFilter;
+    private EcsFilterInject<Inc<MoveWeaponToInventoryEvent>> _moveWeaponToInventoryEventsFilter;
+    //private EcsFilterInject<Inc<MoveWeaponToInventoryEvent>> _moveWeaponToInventoryEventsFilter; удалить этот ивент
 
     private int inventoryEntity;
     public void Init(IEcsSystems systems)
@@ -39,9 +46,71 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
         }
 
+        #region -weapon cells setup-
+        int firstCell = _world.Value.NewEntity();
+        _sceneData.Value.firstGunCellView.Construct(firstCell, _world.Value);
+        ref var invCellCmpFirstWeapon = ref _inventoryCellsComponents.Value.Add(firstCell);
+        invCellCmpFirstWeapon.isEmpty = true;
+        invCellCmpFirstWeapon.cellView = _sceneData.Value.firstGunCellView;
+        _weaponInventoryCellTagsPool.Value.Add(firstCell);
+
+        int secondCell = _world.Value.NewEntity();
+        _sceneData.Value.secondGunCellView.Construct(secondCell, _world.Value);
+        ref var invCellCmpSecondWeapon = ref _inventoryCellsComponents.Value.Add(secondCell);
+        invCellCmpSecondWeapon.isEmpty = true;
+        invCellCmpSecondWeapon.cellView = _sceneData.Value.secondGunCellView;
+        _weaponInventoryCellTagsPool.Value.Add(secondCell);
+
+        int meleeCell = _world.Value.NewEntity();
+        _sceneData.Value.meleeWeaponCellView.Construct(meleeCell, _world.Value);
+        ref var invCellCmpMeleeWeapon = ref _inventoryCellsComponents.Value.Add(meleeCell);
+        invCellCmpMeleeWeapon.isEmpty = true;
+        invCellCmpMeleeWeapon.cellView = _sceneData.Value.meleeWeaponCellView;
+        _weaponInventoryCellTagsPool.Value.Add(meleeCell);
+        #endregion
+
+
         inventoryEntity = _world.Value.NewEntity();
 
         ref var inventoryCmp = ref _inventoryComponent.Value.Add(inventoryEntity);
+
+        //for test
+
+        _sceneData.Value.firstGunCellView.ChangeCellItemSprite(_sceneData.Value.gunItemInfoStarted.itemSprite);
+
+        //_inventoryItemComponent.Value.Get(_sceneData.Value.firstGunCellView._entity);
+        ref var invItemCmp = ref _inventoryItemComponent.Value.Add(_sceneData.Value.firstGunCellView._entity);
+        ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(_sceneData.Value.firstGunCellView._entity);
+        ref var gunCmp = ref _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+        ref var curAttackCmp = ref _currentAttackComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+        ref var playerWeaponsInInvCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+        ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(_sceneData.Value.firstGunCellView._entity);
+
+        invCellCmp.isEmpty = false;
+
+        invItemCmp.currentItemsCount = 1;
+        invItemCmp.itemInfo = _sceneData.Value.gunItemInfoStarted;
+        gunInInvCmp.gunInfo = invItemCmp.itemInfo.gunInfo;
+        gunInInvCmp.isEquipedWeapon = true;
+
+        playerWeaponsInInvCmp.gunFirstObject = gunInInvCmp.gunInfo;
+        playerWeaponsInInvCmp.curEquipedWeaponsCount++;
+
+        curAttackCmp.changeWeaponTime = invItemCmp.itemInfo.gunInfo.weaponChangeSpeed;
+        gunCmp.reloadDuration = invItemCmp.itemInfo.gunInfo.reloadDuration;
+        gunCmp.currentMagazineCapacity = invItemCmp.itemInfo.gunInfo.magazineCapacity;//менять на сохранённые
+        gunCmp.magazineCapacity = invItemCmp.itemInfo.gunInfo.magazineCapacity;
+        gunCmp.maxSpread = invItemCmp.itemInfo.gunInfo.maxSpread;
+        gunCmp.minSpread = invItemCmp.itemInfo.gunInfo.minSpread;
+        gunCmp.currentSpread = invItemCmp.itemInfo.gunInfo.minSpread;
+        gunCmp.spreadRecoverySpeed = invItemCmp.itemInfo.gunInfo.spreadRecoverySpeed;
+        gunCmp.addedSpread = invItemCmp.itemInfo.gunInfo.addedSpread;
+        gunCmp.isAuto = invItemCmp.itemInfo.gunInfo.isAuto;
+        gunCmp.bulletCount = invItemCmp.itemInfo.gunInfo.bulletCount;
+        gunCmp.bulletTypeId = invItemCmp.itemInfo.gunInfo.bulletTypeId;
+        gunCmp.attackCouldown = invItemCmp.itemInfo.gunInfo.attackCouldown;
+        curAttackCmp.damage = invItemCmp.itemInfo.gunInfo.damage;
+        gunCmp.currentMagazineCapacity = invItemCmp.itemInfo.gunInfo.magazineCapacity;
 
         //выгрузка айтемов в инвентарь из сохранения
 
@@ -50,6 +119,126 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
     public void Run(IEcsSystems systems)
     {
+        foreach (var movedToFastCellWeapon in _moveWeaponToInventoryEventsFilter.Value)
+        {
+            ref var oldInvCellCmp = ref _inventoryCellsComponents.Value.Get(movedToFastCellWeapon);
+            ref var oldInvItemCmp = ref _inventoryItemComponent.Value.Get(movedToFastCellWeapon);
+            ref var playerWeaponsInInvCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+            if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.gun)
+            {
+                ref var gunInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(movedToFastCellWeapon);
+
+                if (gunInvCmp.isEquipedWeapon && _sceneData.Value.cellsCount > _inventoryItemsFilter.Value.GetEntitiesCount() && playerWeaponsInInvCmp.curEquipedWeaponsCount != 1)
+                {
+                    playerWeaponsInInvCmp.curEquipedWeaponsCount--;
+                    Debug.Log(playerWeaponsInInvCmp.curEquipedWeaponsCount + "cur weapons");
+                    // кастомное  добавление одного айтема без пибавления веса
+                    foreach (var cell in _inventoryCellsFilter.Value)
+                    {
+                        if (_inventoryCellsComponents.Value.Get(cell).isEmpty)
+                        {
+                            Debug.Log(_inventoryCellsFilter.Value.GetEntitiesCount() + "take weapon to inv");
+                            ref var curInvCellCmp = ref _inventoryCellsComponents.Value.Get(cell);
+
+                            _inventoryItemComponent.Value.Copy(movedToFastCellWeapon, cell);
+                            _gunInventoryCellComponentsPool.Value.Copy(movedToFastCellWeapon, cell);
+
+                            ref var itemCmp = ref _inventoryItemComponent.Value.Get(cell);
+                            ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(cell);
+
+                            gunInInvCmp.isEquipedWeapon = false;
+
+                            if (_sceneData.Value.firstGunCellView._entity == movedToFastCellWeapon)
+                                _changeWeaponFromInventoryEventsPool.Value.Add(cell).SetValues(true, 0);
+
+                            else
+                                _changeWeaponFromInventoryEventsPool.Value.Add(cell).SetValues(true, 1);
+
+                            oldInvCellCmp.isEmpty = true;
+                            curInvCellCmp.isEmpty = false;
+                            curInvCellCmp.inventoryItemComponent = itemCmp;
+                            curInvCellCmp.cellView.ChangeCellItemSprite(itemCmp.itemInfo.itemSprite);
+                            //доделать что то
+                            Debug.Log("del weapon from fast cells");
+                            break;
+                        }
+                    }
+                }
+                else if (!gunInvCmp.isEquipedWeapon && (playerWeaponsInInvCmp.gunSecondObject == null || playerWeaponsInInvCmp.gunFirstObject == null))
+                {
+                    playerWeaponsInInvCmp.curEquipedWeaponsCount++;
+                    Debug.Log(playerWeaponsInInvCmp.curEquipedWeaponsCount + "cur weapons");
+                    if (playerWeaponsInInvCmp.gunFirstObject == null)
+                    {
+                        Debug.Log("add 1st weapon to fast cell");
+                        int firstGunCellEntity = _sceneData.Value.firstGunCellView._entity;
+
+                        _inventoryItemComponent.Value.Copy(movedToFastCellWeapon, firstGunCellEntity);
+                        _gunInventoryCellComponentsPool.Value.Copy(movedToFastCellWeapon, firstGunCellEntity);
+
+                        oldInvCellCmp.isEmpty = true;
+                        _inventoryCellsComponents.Value.Get(firstGunCellEntity).isEmpty = false;
+
+                        ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(firstGunCellEntity);
+
+                        gunInInvCmp.isEquipedWeapon = true;
+
+                        ref var curInvCell = ref _inventoryItemComponent.Value.Get(firstGunCellEntity);
+                        var curCellView = _sceneData.Value.firstGunCellView;
+
+                        curCellView.ChangeCellItemSprite(curInvCell.itemInfo.itemSprite);
+                        curCellView.ChangeCellItemCount(curInvCell.currentItemsCount);
+                        _changeWeaponFromInventoryEventsPool.Value.Add(firstGunCellEntity).SetValues(false, 0);
+                    }
+                    else if (playerWeaponsInInvCmp.gunSecondObject == null)
+                    {
+                        Debug.Log("add 2nd weapon to fast cell");
+                        int secondGunCellEntity = _sceneData.Value.secondGunCellView._entity;
+
+                        _inventoryItemComponent.Value.Copy(movedToFastCellWeapon, secondGunCellEntity);
+                        _gunInventoryCellComponentsPool.Value.Copy(movedToFastCellWeapon, secondGunCellEntity);
+
+                        oldInvCellCmp.isEmpty = true;
+                        _inventoryCellsComponents.Value.Get(secondGunCellEntity).isEmpty = false;
+
+                        ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(secondGunCellEntity);
+
+                        gunInInvCmp.isEquipedWeapon = true;
+
+                        ref var curInvCell = ref _inventoryItemComponent.Value.Get(secondGunCellEntity);
+                        var curCellView = _sceneData.Value.secondGunCellView;
+
+                        curCellView.ChangeCellItemSprite(curInvCell.itemInfo.itemSprite);
+                        curCellView.ChangeCellItemCount(curInvCell.currentItemsCount);
+                        _changeWeaponFromInventoryEventsPool.Value.Add(secondGunCellEntity).SetValues(false, 1);
+                    }
+                }
+                else
+                {
+                    Debug.Log("return null weapon");
+                    return;
+                }
+            }
+            else if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.meleeWeapon)
+            {
+                //
+            }
+
+            if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.gun)
+                _gunInventoryCellComponentsPool.Value.Del(movedToFastCellWeapon);
+            //иначе удалять ближнее
+            Debug.Log("clear inv cell");
+            _inventoryItemComponent.Value.Del(movedToFastCellWeapon);
+            oldInvCellCmp.cellView.ClearInventoryCell();
+            oldInvCellCmp.isEmpty = true;
+            _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
+        }
+
+        /* foreach (var movedToInvWeapon in _moveWeaponToInventoryEventsFilter.Value)
+         {
+
+         }*/
+
         foreach (var addedItem in _addItemEventsFilter.Value)
         {
             ref var dropItem = ref _droppedItemComponents.Value.Get(addedItem);
@@ -67,7 +256,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         {
             ref var gunCmp = ref _gunComponentsPool.Value.Get(reloadEvent);
             int possibleBulletsToReload = FindItemCountInInventory(gunCmp.bulletTypeId);
-            Debug.Log(possibleBulletsToReload);
+            // Debug.Log(possibleBulletsToReload);
 
             if (possibleBulletsToReload == 0)
                 return;
@@ -117,6 +306,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
             SetMoveSpeedFromWeight();
         }
     }
+
 
     private bool CanAddItems(ItemInfo addedItemInfo, int addedItemCount)
     {
@@ -245,7 +435,6 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
             _inventoryItemComponent.Value.Del(itemInventoryCell);
             invCellCmp.cellView.ClearInventoryCell();
             invCellCmp.isEmpty = true;
-            _inventoryItemComponent.Value.Del(itemInventoryCell);
         }
         else
         {
@@ -257,7 +446,6 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
     private int AddItemToInventory(ItemInfo itemInfo, int itemsCount)
     {
-
         foreach (var cell in _inventoryCellsFilter.Value)
         {
             ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(cell);
@@ -278,14 +466,21 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                 return itemsCount - neededItemsToFullInventory;
             }
 
-
-
-
             else if (invCellCmp.isEmpty)
             {
                 ref var itemCmp = ref _inventoryItemComponent.Value.Add(cell);
 
                 itemCmp.itemInfo = itemInfo;
+
+                if (itemCmp.itemInfo.type == ItemInfo.itemType.gun)
+                {
+                    ref var gunInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(cell);
+
+                    gunInvCmp.isEquipedWeapon = false;
+                    gunInvCmp.gunInfo = itemCmp.itemInfo.gunInfo;
+                }
+
+
 
                 invCellCmp.isEmpty = false;
                 invCellCmp.inventoryItemComponent = itemCmp;

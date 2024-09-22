@@ -1,19 +1,19 @@
 using Leopotam.EcsLite;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using Unity.Collections.LowLevel.Unsafe;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.UI;
 
 public class SceneService : MonoBehaviour
 {
+    [field: SerializeField] public InventoryCellView firstGunCellView { get; private set; }
+    [field: SerializeField] public InventoryCellView secondGunCellView { get; private set; }
+    [field: SerializeField] public InventoryCellView meleeWeaponCellView { get; private set; }
     [field: SerializeField] public TMP_Text playerArmorText { get; private set; }
     [field: SerializeField] public Image playerArmorBarFilled { get; private set; }
     [field: SerializeField] public TMP_Text playerHealthText { get; private set; }
     [field: SerializeField] public Image playerHealthBarFilled { get; private set; }
+    [field: SerializeField] public UIMenuView storageMenuView { get; private set; }
     [field: SerializeField] public UIMenuView shopMenuView { get; private set; }
     [field: SerializeField] public UIMenuView inventoryMenuView { get; private set; }
     [field: SerializeField] public DropedItemsUIView dropedItemsUIView { get; private set; }
@@ -31,7 +31,7 @@ public class SceneService : MonoBehaviour
 
     [field: SerializeField] public TMP_Text hoverDescriptionText;
     [field: SerializeField] public TMP_Text ammoInfoText;
-    [field: SerializeField] public Camera mainCamera{ get; private set; }
+    [field: SerializeField] public Camera mainCamera { get; private set; }
     [field: SerializeField] public LineRenderer bulletTracer { get; private set; }
     [field: SerializeField] public int playerEntity { get; private set; }
 
@@ -40,6 +40,7 @@ public class SceneService : MonoBehaviour
     private ObjectPool<ShopCellView> _shopCellsPool;
 
     //всё для тестов\/
+    [field: SerializeField] public ItemInfo gunItemInfoStarted { get; private set; }
     [field: SerializeField] public ShopItemInfo[] testShopItems { get; private set; }
     [field: SerializeField] public ItemInfo testItem1 { get; private set; }
     [field: SerializeField] public ItemInfo testItem2 { get; private set; }
@@ -100,7 +101,7 @@ public class SceneService : MonoBehaviour
     public PlayerView SpawnPlayer(EcsWorld ecsWorld, int entity)
     {
         var player = Instantiate(playerPrefab, Vector2.zero, Quaternion.identity).GetComponent<PlayerView>();
-        player.Construct(ecsWorld);
+        player.Construct(ecsWorld, entity);
         player.itemInfoText = currentItemText;
         playerEntity = entity;
         return player;

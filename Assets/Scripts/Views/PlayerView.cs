@@ -14,10 +14,13 @@ public class PlayerView : MonoBehaviour
     [field: SerializeField] public TMP_Text charactersInteractText;
 
     private EcsWorld _world;
+    private int _entity;
 
     private int currentDroppedItem = -1;
     private int currentActiveShopper = -1;
     public bool canShoping = true;
+    public bool canUseStorage = false;
+    public bool usedInventory = false;
 
     private void Start()
     {
@@ -32,17 +35,23 @@ public class PlayerView : MonoBehaviour
             {
                 _world.GetPool<AddItemEvent>().Add(currentDroppedItem);
             }
-            else if (currentActiveShopper != -1 && canShoping)
+            else if (currentActiveShopper != -1 && canShoping && !usedInventory)
             {
                 canShoping = false;
                 _world.GetPool<ShopOpenEvent>().Add(currentActiveShopper);
             }
+            else if (canUseStorage && !usedInventory)
+            {
+                canUseStorage = false;
+                _world.GetPool<StorageOpenEvent>().Add(_entity);
+            }
         }
     }
 
-    public void Construct(EcsWorld world)
+    public void Construct(EcsWorld world, int entity)
     {
         _world = world;
+        _entity = entity;
     }
 
     private void CheckNearestDroppedItems()
@@ -75,6 +84,12 @@ public class PlayerView : MonoBehaviour
                 else if (interactCharacter._characterType == InteractNPCType.dialogeNpc)
                 {
                     SetInfoDroppedItemsText(" (нажми F чтобы поговорить)");
+                }
+                else if (interactCharacter._characterType == InteractNPCType.storage)
+                {
+                    canUseStorage = true;
+
+                    SetInfoDroppedItemsText(" (нажми F чтобы зайти в хранилище)");
                 }
 
             }
