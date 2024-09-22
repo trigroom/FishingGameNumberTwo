@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class DropedItemsUIView : MonoBehaviour
 {
+    [field: SerializeField] public Transform dropItemsUI { get; set; }
     [SerializeField] public Slider dropSlider;
     [field: SerializeField] public TMP_Text currentItemsCountToDrop { get; private set; }
     [field: SerializeField] public TMP_Text currentWeaponButtonActionText { get; private set; }
@@ -47,15 +48,14 @@ public class DropedItemsUIView : MonoBehaviour
         currentItemsCountToDrop.text = curValue + "/" + dropSlider.maxValue;
     }
 
-    public void CangeActiveStateWeaponEquipButton(bool isActive)
+    public void ChangeActiveStateWeaponEquipButton(bool isActive)
     {
         weaponEquipButton.gameObject.SetActive(isActive);
     }
 
     public void EquipWeapon()
     {
-            _world.GetPool<MoveWeaponToInventoryEvent>().Add(curCell);
-      
+        _world.GetPool<MoveWeaponToInventoryEvent>().Add(curCell);
     }
     public void DropItems()
     {

@@ -44,14 +44,14 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     if (changeWeaponFromInvCmp.weaponCellNumberToChange == 0)//first gun
                     {
-                        gunInInvCmp.currentAmmo = weaponsInInventoryCmp.curFirstWeaponAmmo;//
+                        gunInInvCmp.currentAmmo = _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity).currentMagazineCapacity;//
                         weaponsInInventoryCmp.gunFirstObject = null;
                         Debug.Log("first null");
                     }
 
                     else //second gun
                     {
-                        gunInInvCmp.currentAmmo = weaponsInInventoryCmp.curSecondWeaponAmmo;//
+                        gunInInvCmp.currentAmmo = _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity).currentMagazineCapacity;//
                         weaponsInInventoryCmp.gunSecondObject = null;
                         Debug.Log("second null");
                     }

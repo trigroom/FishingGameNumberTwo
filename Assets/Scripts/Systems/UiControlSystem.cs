@@ -34,7 +34,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         foreach (var shopOpen in _shopOpenEventsFilter.Value)
         {
             ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-            
+
             ChangeShopMenuState(ref menusStatesCmp);
             ChangeInventoryMenuState(ref menusStatesCmp);
         }
@@ -44,11 +44,16 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             ref var descriptionEvt = ref _setDescriptionItemEventsPool.Value.Get(desription);
             var item = _inventoryItemComponentPool.Value.Get(descriptionEvt.itemEntity);
 
-            if (item.itemInfo.type == ItemInfo.itemType.gun )
+            if (!_sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.activeSelf)
+                _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(true);
+
+            if (item.itemInfo.type == ItemInfo.itemType.gun)
             {
+                _sceneData.Value.dropedItemsUIView.ChangeActiveStateWeaponEquipButton(true);
                 var gunInInvCellCmp = _gunInventoryCellComponentsPool.Value.Get(descriptionEvt.itemEntity);
                 if (gunInInvCellCmp.isEquipedWeapon)
                 {
+                    _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(false);
                     _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "Снять";
                     _sceneData.Value.dropedItemsUIView.isEquipWeapon = true;
                 }
@@ -59,9 +64,15 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 }
             }
 
-            else if(item.itemInfo.type == ItemInfo.itemType.meleeWeapon)
+            else if (item.itemInfo.type == ItemInfo.itemType.meleeWeapon)
             {
+                _sceneData.Value.dropedItemsUIView.ChangeActiveStateWeaponEquipButton(true);
                 //смена на милишку
+            }
+
+            else
+            {
+                _sceneData.Value.dropedItemsUIView.ChangeActiveStateWeaponEquipButton(false);
             }
 
 
@@ -80,7 +91,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             {
                 ChangeShopMenuState(ref menusStatesCmp);
                 _shopCloseEventsPool.Value.Add(_world.Value.NewEntity());
-            _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.canShoping = true;
+                _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.canShoping = true;
             }
         }
     }

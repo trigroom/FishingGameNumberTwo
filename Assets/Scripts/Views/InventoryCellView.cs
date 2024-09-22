@@ -28,7 +28,10 @@ public class InventoryCellView : MonoBehaviour
 
     public void ChangeCellItemCount(int count)
     {
-        inventoryCellItemCountText.text = count.ToString();
+        if (count != 1)
+            inventoryCellItemCountText.text = count.ToString();
+        else
+            inventoryCellItemCountText.text = "";
     }
     public void ClearInventoryCell()
     {

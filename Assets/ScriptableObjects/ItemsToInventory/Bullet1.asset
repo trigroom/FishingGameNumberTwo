@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Bullet1
   m_EditorClassIdentifier: 
   itemSprite: {fileID: 5575686202437202363, guid: 64f574486cef7db42a671df1d7d96d6c, type: 3}
-  type: 2
+  type: 3
   maxCount: 4
   itemWeight: 0.2
   itemId: 2
   itemName: "\u041F\u0443\u043B\u044F"
+  gunInfo: {fileID: 0}
