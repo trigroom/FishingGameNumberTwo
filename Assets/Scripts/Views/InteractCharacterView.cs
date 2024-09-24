@@ -15,7 +15,7 @@ public class InteractCharacterView : MonoBehaviour
     public int _entity { get; private set; }
     public EcsWorld _world { get; private set; }
 
-    public InteractNPCType _characterType { get; protected set; }
+    [field: SerializeField] public InteractNPCType _characterType { get; protected set; }
 
 
     public void Construct(EcsWorld world, int entity)

@@ -15,6 +15,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<MovementComponent> _movementComponentsPool;
     private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
     private EcsPoolInject<GunInventoryCellComponent> _gunInventoryCellComponentsPool;
+    private EcsPoolInject<StorageCellTag> _storageCellTagsPool;
 
     private EcsFilterInject<Inc<SetDescriptionItemEvent>> _setDescriptionItemEventsFilter;
     private EcsFilterInject<Inc<StorageOpenEvent>> _storageOpenEventsFilter;
@@ -29,7 +30,10 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     {
         foreach (var storageOpen in _storageOpenEventsFilter.Value)
         {
+            ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
 
+            ChangeStorageMenuState(ref menusStatesCmp);
+            ChangeInventoryMenuState(ref menusStatesCmp);
         }
         foreach (var shopOpen in _shopOpenEventsFilter.Value)
         {
@@ -43,11 +47,24 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         {
             ref var descriptionEvt = ref _setDescriptionItemEventsPool.Value.Get(desription);
             var item = _inventoryItemComponentPool.Value.Get(descriptionEvt.itemEntity);
+            ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
 
             if (!_sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.activeSelf)
                 _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(true);
 
-            if (item.itemInfo.type == ItemInfo.itemType.gun)
+            if (menusStatesCmp.inStorageState)
+            {
+                if (_storageCellTagsPool.Value.Has(descriptionEvt.itemEntity))
+                {
+                    _sceneData.Value.dropedItemsUIView.storageButtonText.text = "ѕоложить в инвентарь";
+                }
+                else
+                {
+                    _sceneData.Value.dropedItemsUIView.storageButtonText.text = "ѕоложить в хранилище";
+                }
+            }
+
+            if (item.itemInfo.type == ItemInfo.itemType.gun || item.itemInfo.type == ItemInfo.itemType.meleeWeapon)//скорей всего милишка останетс€ в этой проверке
             {
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateWeaponEquipButton(true);
                 var gunInInvCellCmp = _gunInventoryCellComponentsPool.Value.Get(descriptionEvt.itemEntity);
@@ -64,11 +81,11 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 }
             }
 
-            else if (item.itemInfo.type == ItemInfo.itemType.meleeWeapon)
+            /*else if (item.itemInfo.type == ItemInfo.itemType.meleeWeapon)
             {
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateWeaponEquipButton(true);
                 //смена на милишку
-            }
+            }*/
 
             else
             {
@@ -93,6 +110,14 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 _shopCloseEventsPool.Value.Add(_world.Value.NewEntity());
                 _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.canShoping = true;
             }
+
+            else if (menusStatesCmp.inStorageState)
+            {
+                ChangeStorageMenuState(ref menusStatesCmp);
+
+              //  _shopCloseEventsPool.Value.Add(_world.Value.NewEntity());пока никаких ивентов по закритии хранлища
+                _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.canUseStorage = true;
+            }
         }
     }
 
@@ -116,6 +141,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     private void ChangeStorageMenuState(ref MenuStatesComponent menusStatesCmp)
     {
         menusStatesCmp.inStorageState = !menusStatesCmp.inStorageState;
+        _sceneData.Value.dropedItemsUIView.storageUIContainer.gameObject.SetActive(menusStatesCmp.inStorageState);//
         _sceneData.Value.storageMenuView.ChangeMenuState(menusStatesCmp.inStorageState);
     }
 }

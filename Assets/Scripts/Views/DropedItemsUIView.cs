@@ -5,29 +5,42 @@ using UnityEngine.UI;
 
 public class DropedItemsUIView : MonoBehaviour
 {
+    [Header("General Item Info UI")]
     [field: SerializeField] public Transform dropItemsUI { get; set; }
     [SerializeField] public Slider dropSlider;
     [field: SerializeField] public TMP_Text currentItemsCountToDrop { get; private set; }
-    [field: SerializeField] public TMP_Text currentWeaponButtonActionText { get; private set; }
-    [field: SerializeField] public Button dropButton { get; private set; }
-
-    [field: SerializeField] public Button weaponEquipButton { get; private set; }
-
     [field: SerializeField] public Transform itemInfoContainer { get; set; }
+    [field: SerializeField] public Button dropButton { get; private set; }
+    [Header("Weapon UI")]
+    [field: SerializeField] public Button weaponEquipButton { get; private set; }
+    [field: SerializeField] public TMP_Text currentWeaponButtonActionText { get; private set; }
+
+    [Header("Storage UI")]
+    [field: SerializeField] public Slider storageTransportSlider { get; private set; }
+    [field: SerializeField] public Button storageButton { get; private set; }
+    [field: SerializeField] public TMP_Text storageButtonText { get; private set; }
+    [field: SerializeField] public TMP_Text storageTransportCountText { get; private set; }
+    [field: SerializeField] public Transform storageUIContainer { get; set; }
+
     public bool isEquipWeapon;
 
     private int curCell;
 
     private EcsWorld _world;
 
-    public int curValue { get; private set; }
+    public int curInventorySliderValue { get; private set; }
+    public int curStorageSliderValue { get; private set; }
+
 
     private void Start()
     {
         weaponEquipButton.onClick.AddListener(EquipWeapon);
         dropButton.onClick.AddListener(DropItems);
-        dropSlider.onValueChanged.AddListener(delegate { OnSliderChange(); });
+        storageButton.onClick.AddListener(TransportItemsBetweenInventoryAndStorage);
+        dropSlider.onValueChanged.AddListener(delegate { OnInventorySliderChange(); });
+        storageTransportSlider.onValueChanged.AddListener(delegate { OnStorageSliderChange(); });
         itemInfoContainer.gameObject.SetActive(false);
+        storageUIContainer.gameObject.SetActive(false);
     }
     public void Construct(EcsWorld world)
     {
@@ -40,12 +53,29 @@ public class DropedItemsUIView : MonoBehaviour
         if (curCell != curCellEntity)
             dropSlider.value = 0;
         curCell = curCellEntity;
-        currentItemsCountToDrop.text = curValue + "/" + dropSlider.maxValue;
+        currentItemsCountToDrop.text = curInventorySliderValue + "/" + dropSlider.maxValue;
+
+        if (storageUIContainer.gameObject.activeSelf)
+        {
+            storageTransportSlider.maxValue = dropSlider.maxValue;
+            if (curCell != curCellEntity)
+                storageTransportSlider.value = 0;
+
+            storageTransportCountText.text = curStorageSliderValue + "/" + dropSlider.maxValue;
+
+        }
     }
-    private void OnSliderChange()
+
+    private void OnInventorySliderChange()
     {
-        curValue = (int)dropSlider.value;
-        currentItemsCountToDrop.text = curValue + "/" + dropSlider.maxValue;
+        curInventorySliderValue = (int)dropSlider.value;
+        currentItemsCountToDrop.text = curInventorySliderValue + "/" + dropSlider.maxValue;
+    }
+
+    private void OnStorageSliderChange()
+    {
+        curStorageSliderValue = (int)storageTransportSlider.value;
+        storageTransportCountText.text = curStorageSliderValue + "/" + storageTransportSlider.maxValue;
     }
 
     public void ChangeActiveStateWeaponEquipButton(bool isActive)
@@ -59,17 +89,40 @@ public class DropedItemsUIView : MonoBehaviour
     }
     public void DropItems()
     {
-        if (curValue == 0)
+        if (curInventorySliderValue == 0)
             return;
 
-        _world.GetPool<DropItemsIvent>().Add(curCell).itemsCountToDrop = curValue;
+        _world.GetPool<DropItemsIvent>().Add(curCell).itemsCountToDrop = curInventorySliderValue;
 
 
-        if (curValue == dropSlider.maxValue)
+        if (curInventorySliderValue == dropSlider.maxValue)
         {
             itemInfoContainer.gameObject.SetActive(false);
         }
         dropSlider.value = 0;
         //закрывать описание предмета
+    }
+
+    public void TransportItemsBetweenInventoryAndStorage()
+    {
+        if (curStorageSliderValue == 0)
+            return;
+
+        _world.GetPool<AddItemFromCellEvent>().Add(curCell).addedItemCount = curStorageSliderValue;
+
+
+        if (curStorageSliderValue == storageTransportSlider.maxValue)
+        {
+            itemInfoContainer.gameObject.SetActive(false);
+        }
+        else
+        {
+            OnInventorySliderChange();
+            OnStorageSliderChange();
+        }
+        dropSlider.value = 0;
+        storageTransportSlider.value = 0;
+
+
     }
 }

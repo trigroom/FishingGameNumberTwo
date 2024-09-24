@@ -19,7 +19,7 @@ public class PlayerView : MonoBehaviour
     private int currentDroppedItem = -1;
     private int currentActiveShopper = -1;
     public bool canShoping = true;
-    public bool canUseStorage = false;
+    public bool canUseStorage = true;
     public bool usedInventory = false;
 
     private void Start()
@@ -42,9 +42,11 @@ public class PlayerView : MonoBehaviour
             }
             else if (canUseStorage && !usedInventory)
             {
+                Debug.Log(" use storage");
                 canUseStorage = false;
                 _world.GetPool<StorageOpenEvent>().Add(_entity);
             }
+            Debug.Log((canUseStorage && !usedInventory) + " can use storage");
         }
     }
 
@@ -87,8 +89,6 @@ public class PlayerView : MonoBehaviour
                 }
                 else if (interactCharacter._characterType == InteractNPCType.storage)
                 {
-                    canUseStorage = true;
-
                     SetInfoDroppedItemsText(" (нажми F чтобы зайти в хранилище)");
                 }
 

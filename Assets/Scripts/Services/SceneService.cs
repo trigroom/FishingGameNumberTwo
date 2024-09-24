@@ -18,13 +18,17 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public UIMenuView inventoryMenuView { get; private set; }
     [field: SerializeField] public DropedItemsUIView dropedItemsUIView { get; private set; }
     [field: SerializeField] public Transform inventoryCellsContainer { get; private set; }
+    [field: SerializeField] public Transform storageCellsContainer { get; private set; }
     [field: SerializeField] public Transform shopCellsContainer { get; private set; }
     [field: SerializeField] public GameObject inventoryCell { get; private set; }
-    [field: SerializeField] public int cellsCount { get; private set; }
+    [field: SerializeField] public int inventoryCellsCount { get; private set; }
+    [field: SerializeField] public int storageCellsCount { get; private set; }
     [field: SerializeField] public TMP_Text moneyText { get; private set; }
-    [field: SerializeField] public TMP_Text statsText { get; private set; }
+    [field: SerializeField] public TMP_Text statsInventoryText { get; private set; }
+    [field: SerializeField] public TMP_Text statsStorageText { get; private set; }
     [field: SerializeField] public TMP_Text currentItemText { get; private set; }
-    [field: SerializeField] public float maxWeight { get; private set; }
+    [field: SerializeField] public float maxInInventoryWeight { get; private set; }
+    [field: SerializeField] public float maxInStorageWeight { get; private set; }
     [field: SerializeField] public GameObject playerPrefab { get; private set; }
     [field: SerializeField] public GameObject droppedItemPrefab { get; private set; }
     [field: SerializeField] public ShopCellView shopCellPrefab { get; private set; }
@@ -75,9 +79,9 @@ public class SceneService : MonoBehaviour
         renderer.gameObject.SetActive(false);
         _bulletTracersPool.Release(renderer);
     }
-    public InventoryCellView GetInventoryCell(int entity, EcsWorld world)
+    public InventoryCellView GetInventoryCell(int entity, EcsWorld world, Transform cellsContainer)
     {
-        var invCell = Instantiate(inventoryCell, inventoryCellsContainer).GetComponent<InventoryCellView>();
+        var invCell = Instantiate(inventoryCell, cellsContainer).GetComponent<InventoryCellView>();
         invCell.Construct(entity, world);
         return invCell;
     }
@@ -103,6 +107,7 @@ public class SceneService : MonoBehaviour
         var player = Instantiate(playerPrefab, Vector2.zero, Quaternion.identity).GetComponent<PlayerView>();
         player.Construct(ecsWorld, entity);
         player.itemInfoText = currentItemText;
+        mainCamera.gameObject.transform.SetParent(player.transform);
         playerEntity = entity;
         return player;
     }

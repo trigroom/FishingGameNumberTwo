@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac357f814689b0342b6a7c6efddf2e3d, type: 3}
   m_Name: secondGunInfo
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: -547061453843054363, guid: 64f574486cef7db42a671df1d7d96d6c, type: 3}
+  itemSprite: {fileID: 733190676690857246, guid: 84820276c33f64e4da24de4a5ad61098, type: 3}
   type: 0
   maxCount: 1
   itemWeight: 2
