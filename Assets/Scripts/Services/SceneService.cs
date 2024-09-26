@@ -38,6 +38,7 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public Camera mainCamera { get; private set; }
     [field: SerializeField] public LineRenderer bulletTracer { get; private set; }
     [field: SerializeField] public int playerEntity { get; private set; }
+    //[field: SerializeField] public int cameraMoveSpeed { get; private set; }
 
     [field: SerializeField] public ShopCharacterView[] shoppers { get; private set; }
     private ObjectPool<LineRenderer> _bulletTracersPool;

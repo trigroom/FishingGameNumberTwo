@@ -124,17 +124,22 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         gunCmp.attackLeght = invItemCmp.itemInfo.gunInfo.attackLenght;
         gunCmp.currentMagazineCapacity = invItemCmp.itemInfo.gunInfo.magazineCapacity;//менять на сохранённые
         gunCmp.magazineCapacity = invItemCmp.itemInfo.gunInfo.magazineCapacity;
-        gunCmp.maxSpread = invItemCmp.itemInfo.gunInfo.maxSpread;
-        gunCmp.minSpread = invItemCmp.itemInfo.gunInfo.minSpread;
+        gunCmp.currentMaxSpread = invItemCmp.itemInfo.gunInfo.maxSpread;
+        gunCmp.scopeMultiplicity = invItemCmp.itemInfo.gunInfo.scopeMultiplicity;
+        gunCmp.currentMinSpread = invItemCmp.itemInfo.gunInfo.minSpread;
         gunCmp.currentSpread = invItemCmp.itemInfo.gunInfo.minSpread;
         gunCmp.spreadRecoverySpeed = invItemCmp.itemInfo.gunInfo.spreadRecoverySpeed;
-        gunCmp.addedSpread = invItemCmp.itemInfo.gunInfo.addedSpread;
+        gunCmp.currentAddedSpread = invItemCmp.itemInfo.gunInfo.addedSpread;
         gunCmp.isAuto = invItemCmp.itemInfo.gunInfo.isAuto;
         gunCmp.bulletCount = invItemCmp.itemInfo.gunInfo.bulletCount;
         gunCmp.bulletTypeId = invItemCmp.itemInfo.gunInfo.bulletTypeId;
         gunCmp.attackCouldown = invItemCmp.itemInfo.gunInfo.attackCouldown;
         curAttackCmp.damage = invItemCmp.itemInfo.gunInfo.damage;
         gunCmp.currentMagazineCapacity = invItemCmp.itemInfo.gunInfo.magazineCapacity;
+
+        gunCmp.maxSpread = invItemCmp.itemInfo.gunInfo.maxSpread;
+        gunCmp.minSpread = invItemCmp.itemInfo.gunInfo.minSpread;
+        gunCmp.addedSpread = invItemCmp.itemInfo.gunInfo.addedSpread;
 
         //выгрузка айтемов в инвентарь из сохранения
 

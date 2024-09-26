@@ -23,6 +23,7 @@ public class EcsStartUp : MonoBehaviour
             .Add(new Leopotam.EcsLite.UnityEditor.EcsWorldDebugSystem())
 #endif
             .Add(new PlayerInputSystem())
+            .Add(new CameraMovementSystem())
             .Add(new AttackSystem())
             .Add(new InventorySystem())
             .Add(new EnemyDeathSystem())

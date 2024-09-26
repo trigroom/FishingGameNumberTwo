@@ -26,3 +26,4 @@ MonoBehaviour:
   isAuto: 1
   bulletTypeId: 2
   bulletCount: 4
+  scopeMultiplicity: 8

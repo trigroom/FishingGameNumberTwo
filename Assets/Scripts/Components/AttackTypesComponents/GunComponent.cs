@@ -12,6 +12,9 @@ public struct GunComponent
     public float attackCouldown;
     public float attackLeght;
     public float currentSpread;
+    public float currentMaxSpread;
+    public float currentMinSpread;
+    public float currentAddedSpread;
     public float maxSpread;
     public float minSpread;
     public float addedSpread;
@@ -21,6 +24,9 @@ public struct GunComponent
     public int bulletCountToReload;
     public int bulletCount;
     public int bulletTypeId;
+
+    public int scopeMultiplicity;
+    public bool inScope;
 
     public Transform weaponContainer;
     public Transform firePoint;

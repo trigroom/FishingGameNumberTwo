@@ -13,6 +13,7 @@ public class PlayerView : MonoBehaviour
     [field: SerializeField] public LayerMask spawnZoneMask { get; private set; }
     [field: SerializeField] public TMP_Text itemInfoText;
     [field: SerializeField] public TMP_Text charactersInteractText;
+    [field: SerializeField] public PolygonCollider2D visionZoneCollider;
 
     private EcsWorld _world;
     private int _entity;

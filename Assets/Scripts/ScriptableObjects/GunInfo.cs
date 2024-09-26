@@ -5,6 +5,7 @@ using UnityEngine;
     [CreateAssetMenu(fileName = "GunInfo", menuName = "ScriptableObjects/GunInfo", order = 2)]
 public class GunInfo : ScriptableObject
 {
+    [Header("Gun settings")]
     public float attackLenght;
     public float reloadDuration;
     public int magazineCapacity;
@@ -19,4 +20,7 @@ public class GunInfo : ScriptableObject
     public bool isAuto;
     public int bulletTypeId;
     public int bulletCount = 1;
+
+    [Header("Scope settings")]
+    public int scopeMultiplicity;
 }

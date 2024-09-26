@@ -6,4 +6,5 @@ public struct PlayerComponent
 {
     public PlayerView view;
     public int money;
+    public PolygonCollider2D visionZoneCollider;
 }

@@ -30,6 +30,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         ref var playerCmp = ref _playerComponentsPool.Value.Add(_playerEntity);
         playerCmp.view = _sceneService.Value.SpawnPlayer(_world.Value, _playerEntity);
         playerCmp.money = _sceneService.Value.startMoneyForTest; 
+        playerCmp.visionZoneCollider = playerCmp.view.visionZoneCollider;
 
         ref var weaponsInInventoryCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Add(_playerEntity);
         //Брать оружия из сэйва
@@ -40,24 +41,9 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         ref var attackCmp = ref _currentAttackComponentsPool.Value.Add(_playerEntity);
 
         attackCmp.weaponIsChanged = false;
-        //attackCmp.damage = weaponsInInventoryCmp.gunFirstObject.damage;
-        //attackCmp.changeWeaponTime = weaponsInInventoryCmp.gunFirstObject.weaponChangeSpeed;
         attackCmp.canAttack = true;
 
         ref var gunCmp = ref _gunComponentsPool.Value.Add(_playerEntity);
-        /*gunCmp.attackCouldown = weaponsInInventoryCmp.gunFirstObject.attackCouldown;
-        gunCmp.currentMagazineCapacity = weaponsInInventoryCmp.gunFirstObject.magazineCapacity;
-        gunCmp.magazineCapacity = gunCmp.currentMagazineCapacity;
-        gunCmp.reloadDuration = weaponsInInventoryCmp.gunFirstObject.reloadDuration;
-        gunCmp.attackLeght = weaponsInInventoryCmp.gunFirstObject.attackLenght;
-        gunCmp.maxSpread = weaponsInInventoryCmp.gunFirstObject.maxSpread;
-        gunCmp.minSpread = weaponsInInventoryCmp.gunFirstObject.minSpread;
-        gunCmp.currentSpread = weaponsInInventoryCmp.gunFirstObject.minSpread;//временно так
-        gunCmp.spreadRecoverySpeed = weaponsInInventoryCmp.gunFirstObject.spreadRecoverySpeed;
-        gunCmp.addedSpread = weaponsInInventoryCmp.gunFirstObject.addedSpread;
-        gunCmp.isAuto = weaponsInInventoryCmp.gunFirstObject.isAuto;
-        gunCmp.bulletCount = weaponsInInventoryCmp.gunFirstObject.bulletCount;
-        gunCmp.bulletTypeId = weaponsInInventoryCmp.gunFirstObject.bulletTypeId;*/
 
         ref var healthCmp = ref _healthComponentsPool.Value.Add(_playerEntity);
         healthCmp.healthView = playerCmp.view.healthView;
@@ -66,11 +52,9 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         ref var armorCmp = ref _armorComponentsPool.Value.Add(_playerEntity);
         armorCmp.maxArmorPoint = _sceneService.Value.playerStartArmor;
-        //armorCmp.armorPoint = armorCmp.maxArmorPoint;
+        armorCmp.armorPoint = armorCmp.maxArmorPoint;
         armorCmp.armorPoint = 0;
         armorCmp.armorRecoverySpeed = _sceneService.Value.playerStartArmorRecoverySpeed;
-
-        //задать переменные на текущие оружие
 
         ref var movementComponent = ref _movementComponentPool.Value.Add(_playerEntity);
         movementComponent.movementView = playerCmp.view.movementView;

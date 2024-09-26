@@ -20,6 +20,10 @@ MonoBehaviour:
   maxSpread: 20
   minSpread: 10
   addedSpread: 3
+  weaponChangeSpeed: 2
   spreadRecoverySpeed: 0.6
   gunObject: {fileID: 3298653357006452315, guid: c302a60fd436f064b89e84f1cd1b1a8a, type: 3}
   isAuto: 0
+  bulletTypeId: 0
+  bulletCount: 1
+  scopeMultiplicity: 2
