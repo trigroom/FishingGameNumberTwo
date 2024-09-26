@@ -29,6 +29,7 @@ public class EcsStartUp : MonoBehaviour
             .Add(new UiControlSystem())
             .Add(new ShopCellsSystem())
             .Add(new HealthSystem())
+            .Add(new SpawnSystem())
 
         .DelHere<ReloadEvent>()
         .DelHere<AddItemEvent>()
@@ -43,6 +44,8 @@ public class EcsStartUp : MonoBehaviour
         .DelHere<StorageOpenEvent>()
         .DelHere<MoveWeaponToInventoryEvent>()
         .DelHere<AddItemFromCellEvent>()
+        .DelHere<EntrySpawnZoneEvent>()
+        .DelHere<ExitSpawnZoneEvent>()
       //  .DelHere<ChangeWeaponFromInventoryEvent>()
 
          .Inject(_sceneService)

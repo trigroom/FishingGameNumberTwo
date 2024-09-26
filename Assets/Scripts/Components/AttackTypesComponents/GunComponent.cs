@@ -21,6 +21,7 @@ public struct GunComponent
     public int bulletCountToReload;
     public int bulletCount;
     public int bulletTypeId;
+
     public Transform weaponContainer;
     public Transform firePoint;
 }

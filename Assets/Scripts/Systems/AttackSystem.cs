@@ -1,5 +1,6 @@
 using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
+using System.Collections;
 using UnityEngine;
 
 public class AttackSystem : IEcsRunSystem, IEcsInitSystem
@@ -23,6 +24,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
 
     private EcsFilterInject<Inc<EndReloadEvent>> _endReloadEventFilter;
     private EcsFilterInject<Inc<PlayerComponent>> _playerComponentFilter;
+    private EcsFilterInject<Inc<GunComponent, PlayerComponent>> _gunComponentsFilter;
     private EcsFilterInject<Inc<BulletTracerLifetimeComponent>> _bulletTracerLifetimeComponentFilter;
     private EcsFilterInject<Inc<ChangeWeaponFromInventoryEvent>> _changeWeaponFromInventoryEventsFilter;
     public void Init(IEcsSystems systems)
@@ -87,6 +89,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
             //если милишка
         }
 
+
         foreach (var playerEntity in _playerComponentFilter.Value)
         {
             ref var gunCmp = ref _gunComponentsPool.Value.Get(playerEntity);
@@ -104,6 +107,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
             {
                 for (int i = 0; i < gunCmp.bulletCount; i++)
                     Shoot(playerEntity, LayerMask.GetMask("Enemy"));
+
 
                 if (gunCmp.currentSpread < gunCmp.maxSpread)
                     gunCmp.currentSpread += gunCmp.addedSpread;
@@ -171,7 +175,6 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
     }
 
 
-
     private void ChangeWeapon(int curWeapon)
     {
         ref var weaponsInInventoryCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
@@ -223,6 +226,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
     {
         curAttackCmp.changeWeaponTime = gunInfo.weaponChangeSpeed;
         gunCmp.reloadDuration = gunInfo.reloadDuration;
+        gunCmp.attackLeght = gunInfo.attackLenght;
         gunCmp.currentMagazineCapacity = curBullets;
         gunCmp.magazineCapacity = gunInfo.magazineCapacity;
         gunCmp.maxSpread = gunInfo.maxSpread;
@@ -241,13 +245,23 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
         Debug.Log("Shot");
         ref var attackCmp = ref _attackComponentsPool.Value.Get(currentEntity);
         ref var gunCmp = ref _gunComponentsPool.Value.Get(currentEntity);
-        gunCmp.firePoint.rotation = gunCmp.weaponContainer.rotation * Quaternion.Euler(0, 0, Random.Range(-gunCmp.currentSpread, gunCmp.currentSpread));//некорректный расчёт разброса, переделать
+        gunCmp.firePoint.rotation = gunCmp.weaponContainer.rotation * Quaternion.Euler(0, 0, Random.Range(-gunCmp.currentSpread, gunCmp.currentSpread));
 
-        Debug.Log(gunCmp.currentSpread + " curSpread");
-        var targets = Physics2D.RaycastAll(gunCmp.firePoint.position, gunCmp.firePoint.up, gunCmp.attackLeght, targetLayer);
-        //сделать чтобы игрок поворачивал оружие
+       /* var targetsTest = Physics2D.RaycastAll(gunCmp.firePoint.position, gunCmp.firePoint.up, gunCmp.attackLeght);
+        foreach(var targ in targetsTest)
+        {
+            Debug.Log(targ.collider.gameObject.layer);
+        }*/
+        var targets = Physics2D.RaycastAll(gunCmp.firePoint.position, gunCmp.firePoint.up, gunCmp.attackLeght, targetLayer/**/);
+
+       /* foreach (var targ in targetsTest)
+        {
+            Debug.Log(targ.collider.gameObject.layer + "enemy");
+        }*/
+
         if (targets.Length == 0)
         {
+            Debug.Log("promax");
             var tracer = CreateTracer();
             tracer.SetPosition(0, gunCmp.firePoint.position);
 
@@ -268,12 +282,13 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                 ref var health = ref _healthComponentsPool.Value.Get(hpEntity);
                 int startedHealth = health.healthPoint;
                 //health.healthPoint -= damageReminder;//сделать ивент и запихнуть в систему здоровья
-                _changeHealthEventsPool.Value.Add(hpEntity);
-
+                if(!health.healthView.isDeath)
+                _changeHealthEventsPool.Value.Add(_world.Value.NewEntity()).SetParametrs(damageReminder, hpEntity);
+                Debug.Log(damageReminder + "dmg");
                 if (health.healthPoint <= 0)
                 {
                     Debug.Log(health.healthPoint + "hp and death");
-                    _world.Value.DelEntity(target.collider.gameObject.GetComponent<HealthView>()._entity);
+                    //_world.Value.DelEntity(target.collider.gameObject.GetComponent<HealthView>()._entity);
                     damageReminder -= startedHealth;
                     continue;
                 }

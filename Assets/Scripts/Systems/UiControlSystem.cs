@@ -54,6 +54,9 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
             if (menusStatesCmp.inStorageState)
             {
+                if (!_sceneData.Value.dropedItemsUIView.storageUIContainer.gameObject.activeSelf)
+                    _sceneData.Value.dropedItemsUIView.storageUIContainer.gameObject.SetActive(true);
+
                 if (_storageCellTagsPool.Value.Has(descriptionEvt.itemEntity))
                 {
                     _sceneData.Value.dropedItemsUIView.storageButtonText.text = "Положить в инвентарь";
@@ -70,6 +73,8 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 var gunInInvCellCmp = _gunInventoryCellComponentsPool.Value.Get(descriptionEvt.itemEntity);
                 if (gunInInvCellCmp.isEquipedWeapon)
                 {
+                    if (menusStatesCmp.inStorageState)
+                        _sceneData.Value.dropedItemsUIView.storageUIContainer.gameObject.SetActive(false);
                     _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(false);
                     _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "Снять";
                     _sceneData.Value.dropedItemsUIView.isEquipWeapon = true;
@@ -115,7 +120,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             {
                 ChangeStorageMenuState(ref menusStatesCmp);
 
-              //  _shopCloseEventsPool.Value.Add(_world.Value.NewEntity());пока никаких ивентов по закритии хранлища
+                //  _shopCloseEventsPool.Value.Add(_world.Value.NewEntity());пока никаких ивентов по закритии хранлища
                 _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.canUseStorage = true;
             }
         }

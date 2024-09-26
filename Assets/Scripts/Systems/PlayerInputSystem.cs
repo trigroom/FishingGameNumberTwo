@@ -87,15 +87,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
     public void Run(IEcsSystems systems)
     {
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            var enemy = _world.Value.NewEntity();
-            ref var enemyHealthCmp = ref _healthComponentsPool.Value.Add(enemy);
-            enemyHealthCmp.healthView = _sceneService.Value.GetEnemy();
-            enemyHealthCmp.healthView.Construct(enemy);
-            enemyHealthCmp.maxHealthPoint = enemyHealthCmp.healthView.maxHealth;
-            enemyHealthCmp.healthPoint = enemyHealthCmp.maxHealthPoint;
-        }
 
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");

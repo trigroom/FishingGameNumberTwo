@@ -43,10 +43,13 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             }
         }
 
-        foreach (var hpEvent in _changeHealthEventsFilter.Value)
+        foreach (var changeEvent in _changeHealthEventsFilter.Value)
         {
             // для хила в ивент надо отрицательные числа вбивать
-            var changedHealthCount = _changeHealthEventsPool.Value.Get(hpEvent).changedHealth;
+            var changedHealthCount = _changeHealthEventsPool.Value.Get(changeEvent).changedHealth;
+            int hpEvent = _changeHealthEventsPool.Value.Get(changeEvent).changedEntity;
+            if (!_healthComponentsPool.Value.Has(hpEvent))
+                return;
             ref var healthCmp = ref _healthComponentsPool.Value.Get(hpEvent);
 
             if (changedHealthCount < 0)
@@ -95,13 +98,17 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                     ChangeHealthBarInfo(healthCmp);
             }
 
-            if (healthCmp.healthPoint >= 0)
+            if (healthCmp.healthPoint <= 0)
             {
                 healthCmp.healthView.Death();
                 //акие то доп действия при смерти(ивент смерти можн)
                 healthCmp.healthPoint = 0;
+                _healthComponentsPool.Value.Del(hpEvent);
+                if (_armorComponentsPool.Value.Has(hpEvent))
+                    _armorComponentsPool.Value.Del(hpEvent);
                 if (hpEvent == _sceneData.Value.playerEntity)
                     ChangeHealthBarInfo(healthCmp);
+                //анимация смерти и в конце неё полностью энтити удалять
             }
         }
     }

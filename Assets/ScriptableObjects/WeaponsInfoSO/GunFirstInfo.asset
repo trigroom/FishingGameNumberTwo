@@ -25,4 +25,4 @@ MonoBehaviour:
   gunObject: {fileID: 3298653357006452315, guid: c302a60fd436f064b89e84f1cd1b1a8a, type: 3}
   isAuto: 1
   bulletTypeId: 2
-  bulletCount: 3
+  bulletCount: 4

@@ -10,6 +10,7 @@ public class PlayerView : MonoBehaviour
     [field: SerializeField] public float checkRadius { get; private set; }
     [field: SerializeField] public LayerMask droppedItemsMask { get; private set; }
     [field: SerializeField] public LayerMask interactCharacterMask { get; private set; }
+    [field: SerializeField] public LayerMask spawnZoneMask { get; private set; }
     [field: SerializeField] public TMP_Text itemInfoText;
     [field: SerializeField] public TMP_Text charactersInteractText;
 
@@ -103,6 +104,23 @@ public class PlayerView : MonoBehaviour
     }
     //проверка ближайших вещей для подбора
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.layer == 9)
+        {
+            Debug.Log("in zone");
+            _world.GetPool<EntrySpawnZoneEvent>().Add(_entity).zoneView = collision.gameObject.GetComponent<SpawnZoneView>();
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.layer == 9)
+        {
+            Debug.Log("no zone");
+            _world.GetPool<ExitSpawnZoneEvent>().Add(_entity).zoneView = collision.gameObject.GetComponent<SpawnZoneView>();
+        }
+    }
 
     private void SetInfoDroppedItemsText(string neededText)
     {

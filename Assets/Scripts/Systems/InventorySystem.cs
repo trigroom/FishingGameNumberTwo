@@ -1,5 +1,6 @@
 using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class InventorySystem : IEcsInitSystem, IEcsRunSystem
@@ -120,6 +121,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
         curAttackCmp.changeWeaponTime = invItemCmp.itemInfo.gunInfo.weaponChangeSpeed;
         gunCmp.reloadDuration = invItemCmp.itemInfo.gunInfo.reloadDuration;
+        gunCmp.attackLeght = invItemCmp.itemInfo.gunInfo.attackLenght;
         gunCmp.currentMagazineCapacity = invItemCmp.itemInfo.gunInfo.magazineCapacity;//менять на сохранённые
         gunCmp.magazineCapacity = invItemCmp.itemInfo.gunInfo.magazineCapacity;
         gunCmp.maxSpread = invItemCmp.itemInfo.gunInfo.maxSpread;

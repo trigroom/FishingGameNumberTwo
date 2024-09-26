@@ -5,4 +5,11 @@ using UnityEngine;
 public struct ChangeHealthEvent 
 {
     public int changedHealth;
+    public int changedEntity;
+
+    public void SetParametrs(int health, int entity)
+    {
+        changedHealth = health;
+        changedEntity = entity;
+    }
 }

@@ -51,7 +51,6 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public GunInfo firstWeaponTest { get; private set; }
     [field: SerializeField] public GunInfo secondWeaponTest { get; private set; }
     [field: SerializeField] public int startMoneyForTest { get; private set; }
-    [field: SerializeField] public GameObject testEnemy { get; private set; }
     [field: SerializeField] public int playerStartArmor { get; private set; }
     [field: SerializeField] public float playerStartArmorRecoverySpeed { get; private set; }
 
@@ -112,9 +111,9 @@ public class SceneService : MonoBehaviour
         return player;
     }
 
-    public HealthView GetEnemy()
+    public HealthView GetCreature(Transform spawnObject, Vector2 spawnPosition)
     {
-        return Instantiate(testEnemy, Vector2.zero, Quaternion.identity).GetComponent<HealthView>();
+        return Instantiate(spawnObject, spawnPosition, Quaternion.identity).GetComponent<HealthView>();
     }
     public DroppedItemView SpawnDroppedItem(Vector2 spawnPoint, ItemInfo itemInfo, int entity)
     {
@@ -122,5 +121,16 @@ public class SceneService : MonoBehaviour
         droppedItemObj.SetParametersToItem(itemInfo.itemSprite, entity);
 
         return droppedItemObj;
+    }
+
+    public Vector3 GetOutOfScreenPosition()
+    {
+        var randomX = Random.Range(-1000, 1000);
+        var randomY = Random.Range(-1000, 1000);
+        var randomPosition = new Vector3(randomX, randomY);
+        var randomDirection = (mainCamera.transform.position - randomPosition).normalized;
+        var cameraHeight = mainCamera.orthographicSize * 2;
+        var cameraWidth = cameraHeight * mainCamera.aspect;
+        return new Vector3(randomDirection.x * cameraHeight, randomDirection.y * cameraWidth);
     }
 }
