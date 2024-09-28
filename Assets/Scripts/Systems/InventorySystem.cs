@@ -147,6 +147,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         gunCmp.attackCouldown = invItemCmp.itemInfo.gunInfo.attackCouldown;
         curAttackCmp.damage = invItemCmp.itemInfo.gunInfo.damage;
         gunCmp.currentMagazineCapacity = invItemCmp.itemInfo.gunInfo.magazineCapacity;
+        gunCmp.isOneBulletReload = invItemCmp.itemInfo.gunInfo.isOneBulletReloaded;
 
         gunCmp.maxSpread = invItemCmp.itemInfo.gunInfo.maxSpread;
         gunCmp.minSpread = invItemCmp.itemInfo.gunInfo.minSpread;
@@ -190,7 +191,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
             var playerHealthComponent = _healthComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             ref var healingItemPlayer = ref _currentHealingItemComponentsPool.Value.Get(_sceneData.Value.playerEntity);
 
-            UseHealItem(ref playerHealthComponent,ref healingItemPlayer, healFromInvItemEntity);
+            UseHealItem(ref playerHealthComponent, ref healingItemPlayer, healFromInvItemEntity);
         }
         foreach (var healItemEntity in _healFromHealItemCellEventsFilter.Value)//через H и быстрый слот 
         {
@@ -547,17 +548,28 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         {
             ref var gunCmp = ref _gunComponentsPool.Value.Get(reloadEvent);
             int possibleBulletsToReload = FindItemCountInInventory(gunCmp.bulletTypeId);
-            // Debug.Log(possibleBulletsToReload);
-
             if (possibleBulletsToReload == 0)
+            {
+                gunCmp.currentReloadDuration = 0;
+                gunCmp.isReloading = false;
+                gunCmp.isContinueReload = false;
+                _sceneData.Value.ammoInfoText.text = gunCmp.currentMagazineCapacity + "/" + gunCmp.magazineCapacity;
                 return;
+            }
+
+            else if (gunCmp.isOneBulletReload)
+            {
+                FindItem(1, gunCmp.bulletTypeId, true);
+                gunCmp.bulletCountToReload = 1;
+                _endReloadEventsPool.Value.Add(reloadEvent);
+                return;
+            }
 
             else if (gunCmp.magazineCapacity - gunCmp.currentMagazineCapacity < possibleBulletsToReload)
                 possibleBulletsToReload = gunCmp.magazineCapacity - gunCmp.currentMagazineCapacity;
 
             FindItem(possibleBulletsToReload, gunCmp.bulletTypeId, true);
             gunCmp.bulletCountToReload = possibleBulletsToReload;
-            //Debug.Log(gunCmp.bulletCountToReload);
             _endReloadEventsPool.Value.Add(reloadEvent);
         }
         #endregion

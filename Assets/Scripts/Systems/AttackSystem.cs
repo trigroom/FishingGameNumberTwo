@@ -99,9 +99,10 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
             ref var gunCmp = ref _gunComponentsPool.Value.Get(playerEntity);
             ref var attackCmp = ref _attackComponentsPool.Value.Get(playerEntity);
             ref var curHealCmp = ref _currentHealingItemComponentsPool.Value.Get(playerEntity);
-                
+
             foreach (var reloadEvt in _endReloadEventFilter.Value)
             {
+                Debug.Log(gunCmp.currentMagazineCapacity);
                 gunCmp.isReloading = true;
                 _sceneData.Value.ammoInfoText.text = "перезарядка...";
                 _endReloadEventsPool.Value.Del(reloadEvt);
@@ -126,7 +127,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                     _reloadEventsPool.Value.Add(playerEntity);
                 }
             }
-            else if (Input.GetMouseButtonDown(1) && gunCmp.scopeMultiplicity != 1&& !gunCmp.isReloading && !attackCmp.weaponIsChanged && attackCmp.canAttack && !curHealCmp.isHealing)
+            else if (Input.GetMouseButtonDown(1) && gunCmp.scopeMultiplicity != 1 && !gunCmp.isReloading && !attackCmp.weaponIsChanged && attackCmp.canAttack && !curHealCmp.isHealing)
                 ChangeScopeMultiplicity();
 
             else if (gunCmp.isReloading)
@@ -137,15 +138,26 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     gunCmp.currentReloadDuration = 0;
                     gunCmp.currentMagazineCapacity += gunCmp.bulletCountToReload;
-                    _sceneData.Value.ammoInfoText.text = gunCmp.currentMagazineCapacity + "/" + gunCmp.magazineCapacity;
+                    if(gunCmp.isOneBulletReload && gunCmp.currentMagazineCapacity != gunCmp.magazineCapacity && gunCmp.isContinueReload)
+                    {
+                        _reloadEventsPool.Value.Add(playerEntity);
+                        return;
+                    }
                     gunCmp.isReloading = false;
+                    _sceneData.Value.ammoInfoText.text = gunCmp.currentMagazineCapacity + "/" + gunCmp.magazineCapacity;
                 }
             }
 
             else if (Input.GetKeyDown(KeyCode.R) && gunCmp.currentMagazineCapacity != gunCmp.magazineCapacity && !gunCmp.inScope && !curHealCmp.isHealing)
             {
                 Debug.Log("try reload");
+                if (!gunCmp.isReloading)
+                {
+                gunCmp.isContinueReload = true;
                 _reloadEventsPool.Value.Add(playerEntity);
+                }
+                else
+                    gunCmp.isContinueReload = !gunCmp.isContinueReload;
             }
 
             else if (!gunCmp.isReloading && !gunCmp.inScope && !curHealCmp.isHealing)
@@ -201,7 +213,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
             Vector2[] pointsArray = new Vector2[] { oldPointsArray[0], oldPointsArray[1], new Vector2(oldPointsArray[2].x, -0.4f - gunCmp.scopeMultiplicity), new Vector2(oldPointsArray[3].x, -0.4f - gunCmp.scopeMultiplicity) };
             playerCmp.visionZoneCollider.SetPath(1, pointsArray);
             gunCmp.currentAddedSpread = gunCmp.addedSpread / gunCmp.scopeMultiplicity;
-            gunCmp.currentMaxSpread = gunCmp.maxSpread /gunCmp.scopeMultiplicity;
+            gunCmp.currentMaxSpread = gunCmp.maxSpread / gunCmp.scopeMultiplicity;
             gunCmp.currentMinSpread = gunCmp.minSpread / gunCmp.scopeMultiplicity;
         }
         else
@@ -282,6 +294,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
         gunCmp.isAuto = gunInfo.isAuto;
         gunCmp.bulletCount = gunInfo.bulletCount;
         gunCmp.bulletTypeId = gunInfo.bulletTypeId;
+        gunCmp.isOneBulletReload = gunInfo.isOneBulletReloaded;
 
         gunCmp.maxSpread = gunInfo.maxSpread;
         gunCmp.minSpread = gunInfo.minSpread;

@@ -24,6 +24,8 @@ public struct GunComponent
     public int bulletCountToReload;
     public int bulletCount;
     public int bulletTypeId;
+    public bool isOneBulletReload;
+    public bool isContinueReload;
 
     public int scopeMultiplicity;
     public bool inScope;

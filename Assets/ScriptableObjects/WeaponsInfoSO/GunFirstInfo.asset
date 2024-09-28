@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GunFirstInfo
   m_EditorClassIdentifier: 
   attackLenght: 20
-  reloadDuration: 3
+  reloadDuration: 1
   magazineCapacity: 5
   damage: 5
   attackCouldown: 0.5
@@ -26,4 +26,5 @@ MonoBehaviour:
   isAuto: 1
   bulletTypeId: 2
   bulletCount: 4
+  isOneBulletReloaded: 1
   scopeMultiplicity: 8

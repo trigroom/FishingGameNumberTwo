@@ -20,6 +20,7 @@ public class GunInfo : ScriptableObject
     public bool isAuto;
     public int bulletTypeId;
     public int bulletCount = 1;
+    public bool isOneBulletReloaded;
 
     [Header("Scope settings")]
     public int scopeMultiplicity;
