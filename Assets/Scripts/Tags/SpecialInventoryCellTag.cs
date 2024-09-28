@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct MoveWeaponToInventoryEvent 
+public struct SpecialInventoryCellTag 
 {
-    public int movedItemEntity;
+  
 }

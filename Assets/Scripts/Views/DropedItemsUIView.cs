@@ -11,6 +11,8 @@ public class DropedItemsUIView : MonoBehaviour
     [field: SerializeField] public TMP_Text currentItemsCountToDrop { get; private set; }
     [field: SerializeField] public Transform itemInfoContainer { get; set; }
     [field: SerializeField] public Button dropButton { get; private set; }
+    [Header("Heal UI")]
+    [field: SerializeField] public Button healUseButton { get; private set; }
     [Header("Weapon UI")]
     [field: SerializeField] public Button weaponEquipButton { get; private set; }
     [field: SerializeField] public TMP_Text currentWeaponButtonActionText { get; private set; }
@@ -21,8 +23,9 @@ public class DropedItemsUIView : MonoBehaviour
     [field: SerializeField] public TMP_Text storageButtonText { get; private set; }
     [field: SerializeField] public TMP_Text storageTransportCountText { get; private set; }
     [field: SerializeField] public Transform storageUIContainer { get; set; }
+    private ItemInfo.itemType _currentItemType;
 
-    public bool isEquipWeapon;
+    //[field: SerializeField] public bool isEquipWeapon { get; set; }
 
     private int curCell;
 
@@ -34,7 +37,8 @@ public class DropedItemsUIView : MonoBehaviour
 
     private void Start()
     {
-        weaponEquipButton.onClick.AddListener(EquipWeapon);
+        weaponEquipButton.onClick.AddListener(EquipSomething);
+        healUseButton.onClick.AddListener(UseHealItem);
         dropButton.onClick.AddListener(DropItems);
         storageButton.onClick.AddListener(TransportItemsBetweenInventoryAndStorage);
         dropSlider.onValueChanged.AddListener(delegate { OnInventorySliderChange(); });
@@ -78,15 +82,16 @@ public class DropedItemsUIView : MonoBehaviour
         storageTransportCountText.text = curStorageSliderValue + "/" + storageTransportSlider.maxValue;
     }
 
-    public void ChangeActiveStateWeaponEquipButton(bool isActive)
+    public void ChangeActiveStateEquipButton(bool isActive)
     {
         weaponEquipButton.gameObject.SetActive(isActive);
     }
 
-    public void EquipWeapon()
+    public void ChangeActiveStateIsUseButton(bool isActive)
     {
-        _world.GetPool<MoveWeaponToInventoryEvent>().Add(curCell);
+        healUseButton.gameObject.SetActive(isActive);
     }
+    public void EquipSomething() =>_world.GetPool<MoveSpecialItemToInventoryEvent>().Add(curCell);
     public void DropItems()
     {
         if (curInventorySliderValue == 0)
@@ -101,6 +106,11 @@ public class DropedItemsUIView : MonoBehaviour
         }
         dropSlider.value = 0;
         //закрывать описание предмета
+    }
+
+    public void UseHealItem()
+    {
+        _world.GetPool<HealFromInventoryEvent>().Add(curCell);
     }
 
     public void TransportItemsBetweenInventoryAndStorage()
@@ -122,7 +132,5 @@ public class DropedItemsUIView : MonoBehaviour
         }
         dropSlider.value = 0;
         storageTransportSlider.value = 0;
-
-
     }
 }

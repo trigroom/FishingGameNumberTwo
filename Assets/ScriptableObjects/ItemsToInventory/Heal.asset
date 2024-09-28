@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemSprite: {fileID: 6254422107357304797, guid: 64f574486cef7db42a671df1d7d96d6c, type: 3}
   type: 2
-  maxCount: 6
-  itemWeight: 0.6
+  maxCount: 2
+  itemWeight: 0.1
   itemId: 1
   itemName: "\u0425\u0438\u043B\u043A\u0430"
   gunInfo: {fileID: 0}
+  healInfo: {fileID: 11400000, guid: 9090315e38632c644a229aab74a5f49e, type: 2}

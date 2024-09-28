@@ -16,6 +16,7 @@ MonoBehaviour:
   type: 0
   maxCount: 1
   itemWeight: 2
-  itemId: 1
+  itemId: 4
   itemName: guuun
   gunInfo: {fileID: 11400000, guid: 33d111d6ac7f8b048994ddfaff4da9d8, type: 2}
+  healInfo: {fileID: 0}

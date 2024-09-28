@@ -2,10 +2,13 @@ using Leopotam.EcsLite;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Pool;
+using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.UI;
 
 public class SceneService : MonoBehaviour
 {
+    [field: SerializeField] public PostProcessVolume postProcessingCamera { get; private set; }
+    [field: SerializeField] public InventoryCellView healingItemCellView { get; private set; }
     [field: SerializeField] public InventoryCellView firstGunCellView { get; private set; }
     [field: SerializeField] public InventoryCellView secondGunCellView { get; private set; }
     [field: SerializeField] public InventoryCellView meleeWeaponCellView { get; private set; }
@@ -39,7 +42,6 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public LineRenderer bulletTracer { get; private set; }
     [field: SerializeField] public int playerEntity { get; private set; }
     //[field: SerializeField] public int cameraMoveSpeed { get; private set; }
-
     [field: SerializeField] public ShopCharacterView[] shoppers { get; private set; }
     private ObjectPool<LineRenderer> _bulletTracersPool;
     private ObjectPool<ShopCellView> _shopCellsPool;

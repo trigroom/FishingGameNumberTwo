@@ -1,6 +1,5 @@
 using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class InventorySystem : IEcsInitSystem, IEcsRunSystem
@@ -9,6 +8,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
     private EcsCustomInject<SceneService> _sceneData;
 
     private EcsPoolInject<InventoryComponent> _inventoryComponent;
+    private EcsPoolInject<HealthComponent> _healthComponentsPool;
     private EcsPoolInject<InventoryCellComponent> _inventoryCellsComponents;
     private EcsPoolInject<InventoryItemComponent> _inventoryItemComponent;
     private EcsPoolInject<DroppedItemComponent> _droppedItemComponents;
@@ -22,22 +22,26 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
     private EcsPoolInject<PlayerWeaponsInInventoryComponent> _playerWeaponsInInventoryComponentsPool;
     private EcsPoolInject<ChangeWeaponFromInventoryEvent> _changeWeaponFromInventoryEventsPool;
     private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
-    private EcsPoolInject<WeaponInventoryCellTag> _weaponInventoryCellTagsPool;
+    private EcsPoolInject<SpecialInventoryCellTag> _weaponInventoryCellTagsPool;
     private EcsPoolInject<StorageCellTag> _storageCellTagsPool;
     private EcsPoolInject<AddItemFromCellEvent> _addItemFromCellEventsPool;
+    private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
+    //private EcsPoolInject<HealingItemCellTag> _healingItemCellTagsPool;
 
     private EcsFilterInject<Inc<ReloadEvent>> _reloadEventsFilter;
-    private EcsFilterInject<Inc<InventoryItemComponent>, Exc<StorageCellTag>> _inventoryItemsFilter;
+    private EcsFilterInject<Inc<InventoryItemComponent>, Exc<StorageCellTag, SpecialInventoryCellTag>> _inventoryItemsFilter;
     private EcsFilterInject<Inc<InventoryItemComponent, StorageCellTag>> _storageItemsFilter;
-    private EcsFilterInject<Inc<InventoryCellComponent>, Exc<WeaponInventoryCellTag, StorageCellTag>> _inventoryCellsFilter;
-    private EcsFilterInject<Inc<InventoryCellComponent, StorageCellTag>, Exc<WeaponInventoryCellTag>> _storageCellsFilter;
+    private EcsFilterInject<Inc<InventoryCellComponent>, Exc<SpecialInventoryCellTag, StorageCellTag/*, HealingItemCellTag*/>> _inventoryCellsFilter;
+    private EcsFilterInject<Inc<InventoryCellComponent, StorageCellTag>, Exc<SpecialInventoryCellTag>> _storageCellsFilter;
     private EcsFilterInject<Inc<AddItemEvent>> _addItemEventsFilter;
     private EcsFilterInject<Inc<AddItemFromCellEvent>, Exc<StorageCellTag>> _addItemToStorageEventsFilter;
     private EcsFilterInject<Inc<AddItemFromCellEvent, StorageCellTag>> _addItemFromStorageEventsFilter;
     private EcsFilterInject<Inc<DropItemsIvent>> _dropItemEventsFilter;
     private EcsFilterInject<Inc<FindAndCellItemEvent>> _findAndCellItemEventsFilter;
     private EcsFilterInject<Inc<BuyItemFromShopEvent>> _buyItemFromShopEventFilter;
-    private EcsFilterInject<Inc<MoveWeaponToInventoryEvent>> _moveWeaponToInventoryEventsFilter;
+    private EcsFilterInject<Inc<MoveSpecialItemToInventoryEvent>> _moveWeaponToInventoryEventsFilter;
+    private EcsFilterInject<Inc<HealFromInventoryEvent>> _healFromInventoryEventsFilter;
+    private EcsFilterInject<Inc<HealFromHealItemCellEvent>> _healFromHealItemCellEventsFilter;
     //private EcsFilterInject<Inc<MoveWeaponToInventoryEvent>> _moveWeaponToInventoryEventsFilter; удалить этот ивент
 
     private int inventoryEntity;
@@ -65,7 +69,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
         }
 
-        #region -weapon cells setup-
+        #region -special cells setup-
         int firstCell = _world.Value.NewEntity();
         _sceneData.Value.firstGunCellView.Construct(firstCell, _world.Value);
         ref var invCellCmpFirstWeapon = ref _inventoryCellsComponents.Value.Add(firstCell);
@@ -86,6 +90,13 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         invCellCmpMeleeWeapon.isEmpty = true;
         invCellCmpMeleeWeapon.cellView = _sceneData.Value.meleeWeaponCellView;
         _weaponInventoryCellTagsPool.Value.Add(meleeCell);
+
+        int healingItemCell = _world.Value.NewEntity();
+        _sceneData.Value.healingItemCellView.Construct(healingItemCell, _world.Value);
+        ref var invCellCmpHealingItem = ref _inventoryCellsComponents.Value.Add(healingItemCell);
+        invCellCmpHealingItem.isEmpty = true;
+        invCellCmpHealingItem.cellView = _sceneData.Value.healingItemCellView;
+        _weaponInventoryCellTagsPool.Value.Add(healingItemCell);
         #endregion
 
 
@@ -145,16 +156,79 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
         _sceneData.Value.statsInventoryText.text = inventoryCmp.weight + "kg/ " + _sceneData.Value.maxInInventoryWeight + "kg \n max cells " + _sceneData.Value.inventoryCellsCount;
     }
+    private void UseHealItem(ref HealthComponent playerHealthComponent, ref CurrentHealingItemComponent healingItemPlayer, int changedCell)
+    {
+        if (playerHealthComponent.healthPoint != playerHealthComponent.maxHealthPoint && !healingItemPlayer.isHealing)
+        {
+            ref var invItmCmp = ref _inventoryItemComponent.Value.Get(changedCell);
 
+            healingItemPlayer.isHealing = true;
+            healingItemPlayer.healingHealthPoints = invItmCmp.itemInfo.healInfo.healingHealthPoints;
+            healingItemPlayer.healingTime = invItmCmp.itemInfo.healInfo.healingTime;
+
+            invItmCmp.currentItemsCount--;
+            ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(changedCell);
+            if (invItmCmp.currentItemsCount == 0)
+            {
+                _inventoryItemComponent.Value.Del(changedCell);
+
+                invCellCmp.isEmpty = true;
+                invCellCmp.cellView.ClearInventoryCell();
+                _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
+            }
+            else
+            {
+                invCellCmp.cellView.ChangeCellItemCount(invItmCmp.currentItemsCount);
+                _sceneData.Value.dropedItemsUIView.SetSliderParametrs(invItmCmp.currentItemsCount, changedCell);
+            }
+        }
+    }
     public void Run(IEcsSystems systems)
     {
+        foreach (var healFromInvItemEntity in _healFromInventoryEventsFilter.Value)
+        {
+            var playerHealthComponent = _healthComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+            ref var healingItemPlayer = ref _currentHealingItemComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+
+            UseHealItem(ref playerHealthComponent,ref healingItemPlayer, healFromInvItemEntity);
+        }
+        foreach (var healItemEntity in _healFromHealItemCellEventsFilter.Value)//через H и быстрый слот 
+        {
+            int cellEntity = _sceneData.Value.healingItemCellView._entity;
+            var playerHealthComponent = _healthComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+            ref var healingItemPlayer = ref _currentHealingItemComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+
+            UseHealItem(ref playerHealthComponent, ref healingItemPlayer, cellEntity);
+            /*if (playerHealthComponent.healthPoint != playerHealthComponent.maxHealthPoint)//_inventoryItemComponent.Value.Has(cellEntity) && 
+            {
+                ref var invItmCmp = ref _inventoryItemComponent.Value.Get(cellEntity);
+
+                healingItemPlayer.isHealing = true;
+                healingItemPlayer.healingHealthPoints = invItmCmp.itemInfo.healInfo.healingHealthPoints;
+                healingItemPlayer.healingTime = invItmCmp.itemInfo.healInfo.healingTime;
+
+                invItmCmp.currentItemsCount--;
+                ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(cellEntity);
+                if (invItmCmp.currentItemsCount == 0)
+                {
+                    _inventoryItemComponent.Value.Del(cellEntity);
+
+                    invCellCmp.isEmpty = true;
+                    invCellCmp.cellView.ClearInventoryCell();
+                }
+                else
+                    invCellCmp.cellView.ChangeCellItemCount(invItmCmp.currentItemsCount);
+            }*/
+        }
         foreach (var movedToFastCellWeapon in _moveWeaponToInventoryEventsFilter.Value)
         {
+            if (_currentHealingItemComponentsPool.Value.Get(_sceneData.Value.playerEntity).isHealing)
+                return;
             ref var oldInvCellCmp = ref _inventoryCellsComponents.Value.Get(movedToFastCellWeapon);
             ref var oldInvItemCmp = ref _inventoryItemComponent.Value.Get(movedToFastCellWeapon);
-            ref var playerWeaponsInInvCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.gun)
             {
+                ref var playerWeaponsInInvCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                 ref var gunInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(movedToFastCellWeapon);
 
                 if (gunInvCmp.isEquipedWeapon && _sceneData.Value.inventoryCellsCount > _inventoryItemsFilter.Value.GetEntitiesCount() && playerWeaponsInInvCmp.curEquipedWeaponsCount != 1)
@@ -242,25 +316,100 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                         curCellView.ChangeCellItemCount(curInvCell.currentItemsCount);
                         _changeWeaponFromInventoryEventsPool.Value.Add(secondGunCellEntity).SetValues(false, 1);
                     }
+                    _gunInventoryCellComponentsPool.Value.Del(movedToFastCellWeapon);
                 }
                 else
                 {
                     Debug.Log("return null weapon");
                     return;
                 }
+
+                _inventoryItemComponent.Value.Del(movedToFastCellWeapon);
+                oldInvCellCmp.cellView.ClearInventoryCell();
+                oldInvCellCmp.isEmpty = true;
+                _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
+
             }
             else if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.meleeWeapon)
             {
                 //
             }
+            else if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.heal)
+            {
+                var healItemCellEntity = _sceneData.Value.healingItemCellView._entity;
 
-            if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.gun)
-                _gunInventoryCellComponentsPool.Value.Del(movedToFastCellWeapon);
+                ref var invCellForHealItemsCmp = ref _inventoryCellsComponents.Value.Get(healItemCellEntity);
+                if (movedToFastCellWeapon == healItemCellEntity)//если убираем из клетки с хилом
+                {
+                    Debug.Log(oldInvItemCmp.currentItemsCount + " items to add in inv from heal cell");
+                    int neededItems = oldInvItemCmp.currentItemsCount - AddItemToInventory(oldInvItemCmp.itemInfo, oldInvItemCmp.currentItemsCount, false);
+                    ref var invCmp = ref _inventoryComponent.Value.Get(inventoryEntity);
+                    invCmp.weight -= neededItems * oldInvItemCmp.itemInfo.itemWeight;
+                    _sceneData.Value.statsInventoryText.text = invCmp.weight.ToString("0.0") + "kg/ " + _sceneData.Value.maxInInventoryWeight + "kg \n max cells " + _sceneData.Value.inventoryCellsCount;
+                    if (neededItems == oldInvItemCmp.currentItemsCount)
+                    {
+                        _inventoryItemComponent.Value.Del(movedToFastCellWeapon);
+                        oldInvCellCmp.cellView.ClearInventoryCell();
+                        oldInvCellCmp.isEmpty = true;
+                    }
+
+                    else
+                    {
+                        oldInvItemCmp.currentItemsCount -= neededItems;
+                        oldInvCellCmp.cellView.ChangeCellItemCount(oldInvItemCmp.currentItemsCount);
+                    }
+
+                }
+                else
+                {//перемещение из инвентаря в хил клетку
+                    if (_inventoryItemComponent.Value.Has(healItemCellEntity) && _inventoryItemComponent.Value.Get(healItemCellEntity).itemInfo.itemId == oldInvItemCmp.itemInfo.itemId)//если какой то хил айтем уже лежит в клетке
+                    {
+                        ref var healInvItemCell = ref _inventoryItemComponent.Value.Get(healItemCellEntity);
+                        if (healInvItemCell.currentItemsCount == healInvItemCell.itemInfo.maxCount)
+                            return;
+
+                        if (oldInvItemCmp.currentItemsCount + healInvItemCell.currentItemsCount > healInvItemCell.itemInfo.maxCount)
+                        {
+                            oldInvItemCmp.currentItemsCount -= healInvItemCell.itemInfo.maxCount - healInvItemCell.currentItemsCount;
+                            healInvItemCell.currentItemsCount = healInvItemCell.itemInfo.maxCount;
+                            oldInvCellCmp.cellView.ChangeCellItemCount(oldInvItemCmp.currentItemsCount);
+                            invCellForHealItemsCmp.cellView.ChangeCellItemCount(healInvItemCell.currentItemsCount);
+                        }
+                        else
+                        {
+                            healInvItemCell.currentItemsCount += oldInvItemCmp.currentItemsCount;
+                            oldInvItemCmp.currentItemsCount = 0;
+                            invCellForHealItemsCmp.cellView.ChangeCellItemCount(healInvItemCell.currentItemsCount);
+                            oldInvCellCmp.cellView.ClearInventoryCell();
+                            oldInvCellCmp.isEmpty = true;
+                            _inventoryItemComponent.Value.Del(movedToFastCellWeapon);
+                        }
+                    }
+                    else
+                    {
+                        _inventoryItemComponent.Value.Copy(movedToFastCellWeapon, healItemCellEntity);
+
+                        ref var healInvItemCell = ref _inventoryItemComponent.Value.Get(healItemCellEntity);
+                        ref var healInvCellCmp = ref _inventoryCellsComponents.Value.Get(healItemCellEntity);
+
+                        healInvCellCmp.cellView
+                            .ChangeCellItemSprite
+                            (healInvItemCell.itemInfo.itemSprite);
+                        healInvCellCmp.cellView.ChangeCellItemCount(healInvItemCell.currentItemsCount);
+                        oldInvCellCmp.cellView.ClearInventoryCell();
+
+                        healInvCellCmp.isEmpty = false;
+                        oldInvCellCmp.isEmpty = true;
+
+                        _inventoryItemComponent.Value.Del(movedToFastCellWeapon);
+                    }
+                    _inventoryItemComponent.Value.Copy(movedToFastCellWeapon, healItemCellEntity);
+                }
+                _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
+            }
+            // if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.gun)
+            //     _gunInventoryCellComponentsPool.Value.Del(movedToFastCellWeapon);
             //иначе удалять ближнее
-            _inventoryItemComponent.Value.Del(movedToFastCellWeapon);
-            oldInvCellCmp.cellView.ClearInventoryCell();
-            oldInvCellCmp.isEmpty = true;
-            _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
         }
 
         /* foreach (var movedToInvWeapon in _moveWeaponToInventoryEventsFilter.Value)
@@ -800,7 +949,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         return itemsCount;
     }
 
-    private int AddItemToInventory(ItemInfo itemInfo, int itemsCount, ref int invCellToAdd, bool toStorage)
+    private int AddItemToInventory(ItemInfo itemInfo, int itemsCount, ref int invCellToAdd, bool toStorage)//работает только для еденичных вещей(оружия напрмер)
     {
         if (!toStorage)
             foreach (var cell in _inventoryCellsFilter.Value)

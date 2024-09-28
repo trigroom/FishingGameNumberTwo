@@ -13,6 +13,10 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<PlayerWeaponsInInventoryComponent> _playerWeaponsInInventoryComponentsPool;
     private EcsPoolInject<GunComponent> _gunComponentsPool;
     private EcsPoolInject<ArmorComponent> _armorComponentsPool;
+    private EcsPoolInject<CameraComponent> _cameraComponentsPool;
+    private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
+    private EcsPoolInject<HealFromHealItemCellEvent> _healFromHealItemCellEventsPool;
+    private EcsPoolInject<InventoryCellComponent> _inventoryCellComponentsPool;
 
     private EcsCustomInject<SceneService> _sceneService;
 
@@ -37,8 +41,13 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         //weaponsInInventoryCmp.gunFirstObject = _sceneService.Value.firstWeaponTest;
         //weaponsInInventoryCmp.gunSecondObject = _sceneService.Value.secondWeaponTest;
         //weaponsInInventoryCmp.curWeapon = 0;
+        ref var cameraCmp = ref _cameraComponentsPool.Value.Add(_playerEntity);
+        cameraCmp.cursorPositonPart = 1;
+        cameraCmp.playerPositonPart = 6;
 
         ref var attackCmp = ref _currentAttackComponentsPool.Value.Add(_playerEntity);
+
+        _currentHealingItemComponentsPool.Value.Add(_playerEntity);
 
         attackCmp.weaponIsChanged = false;
         attackCmp.canAttack = true;
@@ -47,7 +56,8 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         ref var healthCmp = ref _healthComponentsPool.Value.Add(_playerEntity);
         healthCmp.healthView = playerCmp.view.healthView;
-        healthCmp.healthPoint = healthCmp.healthView.maxHealth;
+        //healthCmp.healthPoint = healthCmp.healthView.maxHealth;//для тестов
+        healthCmp.healthPoint = 2;
         healthCmp.maxHealthPoint = healthCmp.healthView.maxHealth;
 
         ref var armorCmp = ref _armorComponentsPool.Value.Add(_playerEntity);
@@ -71,7 +81,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
     public void Run(IEcsSystems systems)
     {
-
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
@@ -80,8 +89,15 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         ref var moveCmp = ref _movementComponentPool.Value.Get(_playerEntity);
         moveCmp.moveInput = moveDirection;
 
+        var healthCmp = _healthComponentsPool.Value.Get(_playerEntity);
+
         moveCmp.pointToRotateInput = _sceneService.Value.mainCamera.ScreenToWorldPoint(Input.mousePosition);
 
+        if(Input.GetKeyDown(KeyCode.H) && !_currentHealingItemComponentsPool.Value.Get(_playerEntity).isHealing && !_currentAttackComponentsPool.Value.Get(_playerEntity).weaponIsChanged && !_gunComponentsPool.Value.Get(_playerEntity).inScope && !_gunComponentsPool.Value.Get(_playerEntity).isReloading && healthCmp.maxHealthPoint != healthCmp.healthPoint && !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.healingItemCellView._entity).isEmpty) //возможно что то ещё
+        {
+            _healFromHealItemCellEventsPool.Value.Add(_playerEntity);
+            _sceneService.Value.ammoInfoText.text = "восстановление здоровья...";
+        }
     }
 
 }

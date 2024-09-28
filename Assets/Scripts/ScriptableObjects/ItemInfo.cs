@@ -21,6 +21,7 @@ public class ItemInfo : ScriptableObject
     public string itemName;
     [Header("Weapons")]
     public GunInfo gunInfo;
+    [Header("Heal items")]
+    public HealingItemInfo healInfo;
 
-    
 }

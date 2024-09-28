@@ -44,11 +44,9 @@ public class PlayerView : MonoBehaviour
             }
             else if (canUseStorage && !usedInventory)
             {
-                Debug.Log(" use storage");
                 canUseStorage = false;
                 _world.GetPool<StorageOpenEvent>().Add(_entity);
             }
-            Debug.Log((canUseStorage && !usedInventory) + " can use storage");
         }
     }
 

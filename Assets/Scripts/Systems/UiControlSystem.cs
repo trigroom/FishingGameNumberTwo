@@ -2,11 +2,13 @@ using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
 using UnityEngine;
 
+
 public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 {
     private EcsCustomInject<SceneService> _sceneData;
     private EcsWorldInject _world;
 
+    private EcsPoolInject<InventoryCellComponent> _inventoryCellComponentPool;
     private EcsPoolInject<InventoryItemComponent> _inventoryItemComponentPool;
     private EcsPoolInject<SetDescriptionItemEvent> _setDescriptionItemEventsPool;
     private EcsPoolInject<MenuStatesComponent> _menuStatesComponentsPool;
@@ -16,6 +18,8 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
     private EcsPoolInject<GunInventoryCellComponent> _gunInventoryCellComponentsPool;
     private EcsPoolInject<StorageCellTag> _storageCellTagsPool;
+    private EcsPoolInject<GunComponent> _gunComponentsPool;
+    //private EcsPoolInject<HealingItemCellComponent> _healingItemCellComponentsPool;
 
     private EcsFilterInject<Inc<SetDescriptionItemEvent>> _setDescriptionItemEventsFilter;
     private EcsFilterInject<Inc<StorageOpenEvent>> _storageOpenEventsFilter;
@@ -68,8 +72,9 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             }
 
             if (item.itemInfo.type == ItemInfo.itemType.gun || item.itemInfo.type == ItemInfo.itemType.meleeWeapon)//скорей всего милишка останется в этой проверке
-            {
-                _sceneData.Value.dropedItemsUIView.ChangeActiveStateWeaponEquipButton(true);
+            {//поменять на проверку пустоты клетки
+                _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(false);
+                _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(true);
                 var gunInInvCellCmp = _gunInventoryCellComponentsPool.Value.Get(descriptionEvt.itemEntity);
                 if (gunInInvCellCmp.isEquipedWeapon)
                 {
@@ -77,15 +82,31 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                         _sceneData.Value.dropedItemsUIView.storageUIContainer.gameObject.SetActive(false);
                     _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(false);
                     _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "Снять";
-                    _sceneData.Value.dropedItemsUIView.isEquipWeapon = true;
                 }
                 else
                 {
                     _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "Снарядить";
-                    _sceneData.Value.dropedItemsUIView.isEquipWeapon = false;
                 }
             }
 
+            else if (item.itemInfo.type == ItemInfo.itemType.heal)
+            {
+                _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(true);
+                var healItemCellCmp = _inventoryCellComponentPool.Value.Get(descriptionEvt.itemEntity);
+                //кнопка использовать
+                _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(true);
+                if (descriptionEvt.itemEntity == _sceneData.Value.healingItemCellView._entity && !healItemCellCmp.isEmpty)
+                {
+                    if (menusStatesCmp.inStorageState)
+                        _sceneData.Value.dropedItemsUIView.storageUIContainer.gameObject.SetActive(false);
+                    _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(false);
+                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "Снять все";
+                }
+                else
+                {
+                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "Снарядить все";
+                }
+            }
             /*else if (item.itemInfo.type == ItemInfo.itemType.meleeWeapon)
             {
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateWeaponEquipButton(true);
@@ -94,7 +115,8 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
             else
             {
-                _sceneData.Value.dropedItemsUIView.ChangeActiveStateWeaponEquipButton(false);
+                _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(false);
+                _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(false);
             }
 
 
@@ -106,6 +128,9 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
         if (Input.GetKeyDown(KeyCode.I) || (Input.GetKeyDown(KeyCode.Escape) && _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inInventoryState))
         {
+            var gunCmp = _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+            if (gunCmp.inScope)
+                return;
             ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             ChangeInventoryMenuState(ref menusStatesCmp);
 
@@ -130,10 +155,11 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     {
         menusStatesCmp.inInventoryState = !menusStatesCmp.inInventoryState;
         _sceneData.Value.inventoryMenuView.ChangeMenuState(menusStatesCmp.inInventoryState);
-
+        //
+        _sceneData.Value.postProcessingCamera.enabled = menusStatesCmp.inInventoryState;
         _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).canMove = !menusStatesCmp.inInventoryState;
         _currentAttackComponentsPool.Value.Get(_sceneData.Value.playerEntity).canAttack = !menusStatesCmp.inInventoryState;
-        _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.usedInventory = menusStatesCmp.inInventoryState; ;
+        _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.usedInventory = menusStatesCmp.inInventoryState;
         //изменение состояния стрелбы и ходьбы
     }
 

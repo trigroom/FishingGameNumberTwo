@@ -10,9 +10,12 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<ChangeHealthEvent> _changeHealthEventsPool;
     private EcsPoolInject<HealthComponent> _healthComponentsPool;
     private EcsPoolInject<ArmorComponent> _armorComponentsPool;
+    private EcsPoolInject<GunComponent> _gunComponentsPool;
+    private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
 
     private EcsFilterInject<Inc<ChangeHealthEvent>> _changeHealthEventsFilter;
     private EcsFilterInject<Inc<ArmorComponent>> _armorComponentsFilter;
+    private EcsFilterInject<Inc<CurrentHealingItemComponent>> _currentHealingItemComponentsFilter;
     public void Init(IEcsSystems systems)
     {
         ref var healthCmp = ref _healthComponentsPool.Value.Get(_sceneData.Value.playerEntity);
@@ -23,6 +26,24 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
     }
     public void Run(IEcsSystems systems)
     {
+        foreach(var curHealingItem in _currentHealingItemComponentsFilter.Value)
+        {
+            ref var curHealthCmp = ref _currentHealingItemComponentsPool.Value.Get(curHealingItem);
+            if (curHealthCmp.isHealing)
+            {
+                curHealthCmp.currentHealingTime += Time.deltaTime;
+                //менять скорость возможно
+                if (curHealthCmp.currentHealingTime >= curHealthCmp.healingTime)
+                {
+                    curHealthCmp.currentHealingTime = 0;
+                    curHealthCmp.isHealing = false;
+                    ChangeHealth(curHealingItem, -curHealthCmp.healingHealthPoints);//для хила - надо
+                    var gunCmp = _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+                    _sceneData.Value.ammoInfoText.text = gunCmp.currentMagazineCapacity + "/" + gunCmp.magazineCapacity; ;
+                }
+            }
+
+        }
         foreach (var armorEntity in _armorComponentsFilter.Value)
         {
             ref var armorCmp = ref _armorComponentsPool.Value.Get(armorEntity);
@@ -46,8 +67,15 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
         foreach (var changeEvent in _changeHealthEventsFilter.Value)
         {
             // для хила в ивент надо отрицательные числа вбивать
-            var changedHealthCount = _changeHealthEventsPool.Value.Get(changeEvent).changedHealth;
+            int changedHealthCount = _changeHealthEventsPool.Value.Get(changeEvent).changedHealth;
             int hpEvent = _changeHealthEventsPool.Value.Get(changeEvent).changedEntity;
+
+            ChangeHealth(hpEvent, changedHealthCount);
+        }
+    }
+
+    private void ChangeHealth(int hpEvent, int changedHealthCount)
+    {
             if (!_healthComponentsPool.Value.Has(hpEvent))
                 return;
             ref var healthCmp = ref _healthComponentsPool.Value.Get(hpEvent);
@@ -110,9 +138,8 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                     ChangeHealthBarInfo(healthCmp);
                 //анимация смерти и в конце неё полностью энтити удалять
             }
-        }
-    }
 
+    }
     private void ChangeHealthBarInfo(HealthComponent healthComponent)
     {
         _sceneData.Value.playerHealthBarFilled.fillAmount = (float)healthComponent.healthPoint / healthComponent.maxHealthPoint;
