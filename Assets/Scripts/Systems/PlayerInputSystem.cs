@@ -12,6 +12,8 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
     private EcsPoolInject<PlayerWeaponsInInventoryComponent> _playerWeaponsInInventoryComponentsPool;
     private EcsPoolInject<GunComponent> _gunComponentsPool;
+    private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
+    //private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
     private EcsPoolInject<ArmorComponent> _armorComponentsPool;
     private EcsPoolInject<CameraComponent> _cameraComponentsPool;
     private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
@@ -30,11 +32,13 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         _menuStatesComponentsPool.Value.Add(_playerEntity);
 
+        _playerGunComponentsPool.Value.Add(_playerEntity);
+       
 
         ref var playerCmp = ref _playerComponentsPool.Value.Add(_playerEntity);
         playerCmp.view = _sceneService.Value.SpawnPlayer(_world.Value, _playerEntity);
         playerCmp.money = _sceneService.Value.startMoneyForTest; 
-        playerCmp.visionZoneCollider = playerCmp.view.visionZoneCollider;
+        playerCmp.visionZoneCollider = playerCmp.view.playerInputView.visionZoneCollider;
 
         ref var weaponsInInventoryCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Add(_playerEntity);
         //Брать оружия из сэйва
@@ -93,7 +97,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         moveCmp.pointToRotateInput = _sceneService.Value.mainCamera.ScreenToWorldPoint(Input.mousePosition);
 
-        if(Input.GetKeyDown(KeyCode.H) && !_currentHealingItemComponentsPool.Value.Get(_playerEntity).isHealing && !_currentAttackComponentsPool.Value.Get(_playerEntity).weaponIsChanged && !_gunComponentsPool.Value.Get(_playerEntity).inScope && !_gunComponentsPool.Value.Get(_playerEntity).isReloading && healthCmp.maxHealthPoint != healthCmp.healthPoint && !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.healingItemCellView._entity).isEmpty) //возможно что то ещё
+        if(Input.GetKeyDown(KeyCode.H) && !_currentHealingItemComponentsPool.Value.Get(_playerEntity).isHealing && !_currentAttackComponentsPool.Value.Get(_playerEntity).weaponIsChanged && !_playerGunComponentsPool.Value.Get(_playerEntity).inScope && !_gunComponentsPool.Value.Get(_playerEntity).isReloading && healthCmp.maxHealthPoint != healthCmp.healthPoint && !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.healingItemCellView._entity).isEmpty) //возможно что то ещё
         {
             _healFromHealItemCellEventsPool.Value.Add(_playerEntity);
             _sceneService.Value.ammoInfoText.text = "восстановление здоровья...";

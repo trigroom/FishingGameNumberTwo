@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4251702924322038649}
   - component: {fileID: 8733589046329938564}
-  - component: {fileID: 2532692663385714232}
   - component: {fileID: 1730804259929462267}
+  - component: {fileID: 6896498490808765514}
   m_Layer: 0
   m_Name: PlayerPrafab
   m_TagString: Untagged
@@ -90,36 +90,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2532692663385714232
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1612917882637120095}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6334dd361bef16842992d39b090b1017, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <healthView>k__BackingField: {fileID: 619211170298126792}
-  <movementView>k__BackingField: {fileID: 1730804259929462267}
-  <checkRadius>k__BackingField: 2
-  <droppedItemsMask>k__BackingField:
-    serializedVersion: 2
-    m_Bits: 8
-  <interactCharacterMask>k__BackingField:
-    serializedVersion: 2
-    m_Bits: 256
-  <spawnZoneMask>k__BackingField:
-    serializedVersion: 2
-    m_Bits: 512
-  itemInfoText: {fileID: 0}
-  charactersInteractText: {fileID: 0}
-  visionZoneCollider: {fileID: 5729438685437731722}
-  canShoping: 1
-  canUseStorage: 1
-  usedInventory: 0
 --- !u!114 &1730804259929462267
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,9 +105,24 @@ MonoBehaviour:
   <moveSpeed>k__BackingField: 3
   <weaponCentre>k__BackingField: 0
   <objectTransform>k__BackingField: {fileID: 189824724216820252}
-  <firePoint>k__BackingField: {fileID: 2613038281591024725}
+  <firePoint>k__BackingField: {fileID: 6947560722341546818}
   <weaponContainer>k__BackingField: {fileID: 4874330830914768536}
   <offsetToWeapon>k__BackingField: -90
+--- !u!114 &6896498490808765514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1612917882637120095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6334dd361bef16842992d39b090b1017, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <healthView>k__BackingField: {fileID: 619211170298126792}
+  <movementView>k__BackingField: {fileID: 1730804259929462267}
+  <playerInputView>k__BackingField: {fileID: 8744793180983620791}
 --- !u!1 &3733995695931070876
 GameObject:
   m_ObjectHideFlags: 0
@@ -236,6 +221,7 @@ GameObject:
   - component: {fileID: 6066860049569775501}
   - component: {fileID: 6334172917753666086}
   - component: {fileID: 619211170298126792}
+  - component: {fileID: 8744793180983620791}
   m_Layer: 6
   m_Name: PlayerCollider
   m_TagString: Player
@@ -320,7 +306,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 3
 --- !u!114 &619211170298126792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,6 +320,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <maxHealth>k__BackingField: 10
+--- !u!114 &8744793180983620791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5671705832983200859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1deaed184dcb8340b75db427371ea4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <checkRadius>k__BackingField: 2
+  <droppedItemsMask>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 8
+  <interactCharacterMask>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 256
+  <spawnZoneMask>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 512
+  itemInfoText: {fileID: 0}
+  charactersInteractText: {fileID: 0}
+  visionZoneCollider: {fileID: 5729438685437731722}
+  canShoping: 1
+  canUseStorage: 1
+  usedInventory: 0
 --- !u!1 &7545544340018192010
 GameObject:
   m_ObjectHideFlags: 0

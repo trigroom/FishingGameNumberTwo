@@ -22,14 +22,16 @@ public class EcsStartUp : MonoBehaviour
 #if UNITY_EDITOR
             .Add(new Leopotam.EcsLite.UnityEditor.EcsWorldDebugSystem())
 #endif
+            .Add(new CreatureInputSystem())
             .Add(new PlayerInputSystem())
             .Add(new CameraMovementSystem())
+            .Add(new CreatureStatesControlSystem())
             .Add(new AttackSystem())
             .Add(new InventorySystem())
             .Add(new EnemyDeathSystem())
+            .Add(new HealthSystem())
             .Add(new UiControlSystem())
             .Add(new ShopCellsSystem())
-            .Add(new HealthSystem())
             .Add(new SpawnSystem())
 
         .DelHere<ReloadEvent>()

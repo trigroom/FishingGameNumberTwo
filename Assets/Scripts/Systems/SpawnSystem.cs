@@ -15,6 +15,10 @@ public class SpawnSystem : IEcsRunSystem
     private EcsPoolInject<ExitSpawnZoneEvent> _exitCollisionWithSpawnZoneEventsPool;
     private EcsPoolInject<CreatureTag> _creatureTagsPool;
     private EcsPoolInject<SpawnZoneTag> _spawnZoneTagsPool;
+    private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
+    private EcsPoolInject<MovementComponent> _movementComponentsPool;
+    private EcsPoolInject<GunComponent> _gunComponentsPool;
+    private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
 
     private EcsFilterInject<Inc<ActiveSpawnComponent>> _activeSpawnComponentsFilter;
     private EcsFilterInject<Inc<EntrySpawnZoneEvent>> _entrySpawnZoneEventsFilter;
@@ -27,18 +31,63 @@ public class SpawnSystem : IEcsRunSystem
             ref var curSpawnCmp = ref _activeSpawnComponentsPool.Value.Get(spawnCmpEntity);
 
             curSpawnCmp.curSpawnTime += Time.deltaTime;
-
             if (curSpawnCmp.curSpawnTime >= curSpawnCmp.spawnTime)
             {
+                Debug.Log("spawn");
                 curSpawnCmp.curSpawnTime = 0;
                 int creatureEntity = _world.Value.NewEntity();
                 ref var creatureHealthCmp = ref _healthComponentsPool.Value.Add(creatureEntity);
                 _creatureTagsPool.Value.Add(creatureEntity);
+                ref var creatureAiStatesCmp = ref _creatureAIComponentsPool.Value.Add(creatureEntity);
+                ref var moveCmp = ref _movementComponentsPool.Value.Add(creatureEntity);
 
-                creatureHealthCmp.healthView = _sceneData.Value.GetCreature(curSpawnCmp.spawnObjects[Random.Range(0, curSpawnCmp.spawnObjects.Length)], _sceneData.Value.GetOutOfScreenPosition());
+                creatureAiStatesCmp.creatureView = _sceneData.Value.GetCreature(curSpawnCmp.spawnObjects[Random.Range(0, curSpawnCmp.spawnObjects.Length)], _sceneData.Value.GetOutOfScreenPosition());
+                creatureAiStatesCmp.safeDistance = creatureAiStatesCmp.creatureView.aiCreatureView.safeDistance;
+                creatureAiStatesCmp.minSafeDistance = creatureAiStatesCmp.creatureView.aiCreatureView.minSafeDistance;
+                creatureAiStatesCmp.followDistance = creatureAiStatesCmp.creatureView.aiCreatureView.followDistance;
+                creatureAiStatesCmp.isAttackWhenRetreat = creatureAiStatesCmp.creatureView.aiCreatureView.isAttackWhenRetreat;
+                creatureAiStatesCmp.currentState = CreatureAIComponent.CreatureStates.idle;
+                creatureAiStatesCmp.isPeaceful = creatureAiStatesCmp.creatureView.aiCreatureView.isPeaceful;
+
+
+                moveCmp.movementView = creatureAiStatesCmp.creatureView.movementView;
+                moveCmp.entityTransform = moveCmp.movementView.objectTransform;
+                moveCmp.moveSpeed = moveCmp.movementView.moveSpeed;
+                //добавить уравнение всяких оффсетов
+                moveCmp.canMove = true;
+
+                if (creatureAiStatesCmp.creatureView.creatureGunView != null)
+                {
+                   var creatureGunInfo = creatureAiStatesCmp.creatureView.creatureGunView;
+                   ref var gunCmp = ref _gunComponentsPool.Value.Add(creatureEntity);
+                    ref var attackCmp = ref _currentAttackComponentsPool.Value.Add(creatureEntity);
+                    gunCmp.reloadDuration = creatureGunInfo.reloadDuration;
+                    gunCmp.isOneBulletReload = creatureGunInfo.isOneBulletReloaded;
+
+                    gunCmp.currentAddedSpread = creatureGunInfo.addedSpread;
+                    gunCmp.currentMaxSpread = creatureGunInfo.maxSpread;
+                    gunCmp.currentMinSpread = creatureGunInfo.minSpread;
+                    gunCmp.currentSpread = creatureGunInfo.minSpread;
+
+                    gunCmp.attackCouldown = creatureGunInfo.attackCouldown;
+                    gunCmp.attackLeght = creatureGunInfo.attackLenght;
+                    gunCmp.bulletInShotCount = creatureGunInfo.bulletInShotCount;
+                    gunCmp.magazineCapacity = creatureGunInfo.magazineCapacity;
+                    gunCmp.currentMagazineCapacity = gunCmp.magazineCapacity;
+                    gunCmp.spreadRecoverySpeed = creatureGunInfo.spreadRecoverySpeed;
+                    gunCmp.firePoint = moveCmp.movementView.firePoint;
+                    gunCmp.weaponContainer = moveCmp.movementView.weaponContainer;
+
+                    attackCmp.canAttack = true;
+                    attackCmp.damage = creatureGunInfo.damage;
+                }
+
+                creatureHealthCmp.healthView = creatureAiStatesCmp.creatureView.healthView;
                 creatureHealthCmp.healthView.Construct(creatureEntity);
                 creatureHealthCmp.maxHealthPoint = creatureHealthCmp.healthView.maxHealth;
-                creatureHealthCmp.healthPoint = creatureHealthCmp.maxHealthPoint;Debug.Log(creatureHealthCmp.healthPoint + "curEnemyHealth");
+               // creatureHealthCmp.healthPoint = creatureHealthCmp.maxHealthPoint;Debug.Log(creatureHealthCmp.healthPoint + "curEnemyHealth");
+
+
             }
         }
 

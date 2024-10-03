@@ -19,6 +19,7 @@ public class ItemInfo : ScriptableObject
     public float itemWeight;
     public int itemId;
     public string itemName;
+    public string itemDescription;
     [Header("Weapons")]
     public GunInfo gunInfo;
     [Header("Heal items")]

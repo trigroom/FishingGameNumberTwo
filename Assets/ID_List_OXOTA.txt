@@ -1,0 +1,43 @@
+1 .38 Special Round
+2 .357 Magnum Round
+3 12 Gauge Birdshot
+4 12 Gauge Buckshot
+5 12 Gauge Slug
+6 7.62 Russian Round
+7 7.62 NATO Round
+8 .50 BMG Round
+9 Dynamite Stick
+10 S&W Victory (.38 Special Round)
+11 Colt Python (.357 Magnum Round)
+12 Big Boy Rifle (.357 Magnum Round)
+13 Mossberg 500 (12 Gauge)
+14 Remington 870 (12 Gauge)
+15 Double Barrel Shotgun (12 Gauge)
+16 Sawed Off Shotgun (12 Gauge)
+17 Mosin Nagant Rifle (7.62 Russian)
+18 Obrez (7.62 Russian)
+19 Remington M700 Rifle (7.62 NATO)
+20 M1 Garand Rifle (7.62 NATO)
+21 M14 Rifle (7.62 NATO)
+22 Bandage
+23 Painkillers
+24 Army Medkit
+25 Knife
+26 Fishing Pole
+27 Can Of Worms
+28 Opened Can Of Worms
+29 Meat
+30 Hide (Perfect)
+31 Hide (Scarred)
+32 Hide (Ruined)
+33 Fish
+34 Safe Berry
+35 Poison Berry
+36 Safe Mushroom
+37 Poison Mushroom
+38 Potion Of The Hunt
+39 Rusted key (Quest item)
+40 Crowbar (Quest item)
+41 Bear Head (Quest item\Trophy)
+42 Boar Head (Quest item\Trophy)
+43 Poacher's Head (Trophy)

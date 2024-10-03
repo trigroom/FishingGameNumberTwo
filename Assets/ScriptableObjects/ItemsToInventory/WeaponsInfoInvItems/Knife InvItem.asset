@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac357f814689b0342b6a7c6efddf2e3d, type: 3}
+  m_Name: Knife InvItem
+  m_EditorClassIdentifier: 
+  itemSprite: {fileID: 733190676690857246, guid: 84820276c33f64e4da24de4a5ad61098, type: 3}
+  type: 1
+  maxCount: 1
+  itemWeight: 1
+  itemId: 25
+  itemName: Knife
+  itemDescription: 
+  gunInfo: {fileID: 0}
+  healInfo: {fileID: 0}

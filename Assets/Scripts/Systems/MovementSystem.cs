@@ -6,6 +6,7 @@ public class MovementSystem : IEcsRunSystem
 {
     //private EcsCustomInject<SceneService> _sceneData;
     private EcsPoolInject<MovementComponent> _movementComponentPool;
+    //private EcsPoolInject<HealthComponent> _healthComponentsPool;
 
     private EcsFilterInject<Inc<MovementComponent>> _movementComponentFilter;
 
@@ -13,10 +14,10 @@ public class MovementSystem : IEcsRunSystem
     {
         foreach (var movableObject in _movementComponentFilter.Value)
         {
+            //if (!_movementComponentPool.Value.Has(movableObject)) continue;
             var moveCmp = _movementComponentPool.Value.Get(movableObject);
             if(moveCmp.canMove)
             moveCmp.movementView.MoveUnit(moveCmp.moveSpeed * moveCmp.moveInput * Time.deltaTime);
-
 
             Vector2 direction = (moveCmp.pointToRotateInput - (Vector2)moveCmp.entityTransform.position).normalized;
             float rotateZ = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;

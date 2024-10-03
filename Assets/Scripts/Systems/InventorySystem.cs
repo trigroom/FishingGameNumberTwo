@@ -25,6 +25,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
     private EcsPoolInject<SpecialInventoryCellTag> _weaponInventoryCellTagsPool;
     private EcsPoolInject<StorageCellTag> _storageCellTagsPool;
     private EcsPoolInject<AddItemFromCellEvent> _addItemFromCellEventsPool;
+    private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
     private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
     //private EcsPoolInject<HealingItemCellTag> _healingItemCellTagsPool;
 
@@ -108,6 +109,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
         //for test
 
+
         _sceneData.Value.firstGunCellView.ChangeCellItemSprite(_sceneData.Value.gunItemInfoStarted.itemSprite);
 
         //_inventoryItemComponent.Value.Get(_sceneData.Value.firstGunCellView._entity);
@@ -117,6 +119,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         ref var curAttackCmp = ref _currentAttackComponentsPool.Value.Get(_sceneData.Value.playerEntity);
         ref var playerWeaponsInInvCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
         ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(_sceneData.Value.firstGunCellView._entity);
+        ref var playerGunCmp = ref _playerGunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
 
         invCellCmp.isEmpty = false;
 
@@ -136,22 +139,22 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         gunCmp.currentMagazineCapacity = invItemCmp.itemInfo.gunInfo.magazineCapacity;//менять на сохранённые
         gunCmp.magazineCapacity = invItemCmp.itemInfo.gunInfo.magazineCapacity;
         gunCmp.currentMaxSpread = invItemCmp.itemInfo.gunInfo.maxSpread;
-        gunCmp.scopeMultiplicity = invItemCmp.itemInfo.gunInfo.scopeMultiplicity;
+        playerGunCmp.scopeMultiplicity = invItemCmp.itemInfo.gunInfo.scopeMultiplicity;
         gunCmp.currentMinSpread = invItemCmp.itemInfo.gunInfo.minSpread;
         gunCmp.currentSpread = invItemCmp.itemInfo.gunInfo.minSpread;
         gunCmp.spreadRecoverySpeed = invItemCmp.itemInfo.gunInfo.spreadRecoverySpeed;
         gunCmp.currentAddedSpread = invItemCmp.itemInfo.gunInfo.addedSpread;
-        gunCmp.isAuto = invItemCmp.itemInfo.gunInfo.isAuto;
-        gunCmp.bulletCount = invItemCmp.itemInfo.gunInfo.bulletCount;
-        gunCmp.bulletTypeId = invItemCmp.itemInfo.gunInfo.bulletTypeId;
+        playerGunCmp.isAuto = invItemCmp.itemInfo.gunInfo.isAuto;
+        gunCmp.bulletInShotCount = invItemCmp.itemInfo.gunInfo.bulletCount;
+        playerGunCmp.bulletTypeId = invItemCmp.itemInfo.gunInfo.bulletTypeId;
         gunCmp.attackCouldown = invItemCmp.itemInfo.gunInfo.attackCouldown;
         curAttackCmp.damage = invItemCmp.itemInfo.gunInfo.damage;
         gunCmp.currentMagazineCapacity = invItemCmp.itemInfo.gunInfo.magazineCapacity;
         gunCmp.isOneBulletReload = invItemCmp.itemInfo.gunInfo.isOneBulletReloaded;
 
-        gunCmp.maxSpread = invItemCmp.itemInfo.gunInfo.maxSpread;
-        gunCmp.minSpread = invItemCmp.itemInfo.gunInfo.minSpread;
-        gunCmp.addedSpread = invItemCmp.itemInfo.gunInfo.addedSpread;
+        playerGunCmp.maxSpread = invItemCmp.itemInfo.gunInfo.maxSpread;
+        playerGunCmp.minSpread = invItemCmp.itemInfo.gunInfo.minSpread;
+        playerGunCmp.addedSpread = invItemCmp.itemInfo.gunInfo.addedSpread;
 
         //выгрузка айтемов в инвентарь из сохранения
 
@@ -546,21 +549,22 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         #region -reload event-
         foreach (var reloadEvent in _reloadEventsFilter.Value)
         {
+            ref var playerGunCmp = ref _playerGunComponentsPool.Value.Get(reloadEvent);
             ref var gunCmp = ref _gunComponentsPool.Value.Get(reloadEvent);
-            int possibleBulletsToReload = FindItemCountInInventory(gunCmp.bulletTypeId);
+            int possibleBulletsToReload = FindItemCountInInventory(playerGunCmp.bulletTypeId);
             if (possibleBulletsToReload == 0)
             {
                 gunCmp.currentReloadDuration = 0;
                 gunCmp.isReloading = false;
-                gunCmp.isContinueReload = false;
+                playerGunCmp.isContinueReload = false;
                 _sceneData.Value.ammoInfoText.text = gunCmp.currentMagazineCapacity + "/" + gunCmp.magazineCapacity;
                 return;
             }
 
             else if (gunCmp.isOneBulletReload)
             {
-                FindItem(1, gunCmp.bulletTypeId, true);
-                gunCmp.bulletCountToReload = 1;
+                FindItem(1, playerGunCmp.bulletTypeId, true);
+                playerGunCmp.bulletCountToReload = 1;
                 _endReloadEventsPool.Value.Add(reloadEvent);
                 return;
             }
@@ -568,8 +572,8 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
             else if (gunCmp.magazineCapacity - gunCmp.currentMagazineCapacity < possibleBulletsToReload)
                 possibleBulletsToReload = gunCmp.magazineCapacity - gunCmp.currentMagazineCapacity;
 
-            FindItem(possibleBulletsToReload, gunCmp.bulletTypeId, true);
-            gunCmp.bulletCountToReload = possibleBulletsToReload;
+            FindItem(possibleBulletsToReload, playerGunCmp.bulletTypeId, true);
+            playerGunCmp.bulletCountToReload = possibleBulletsToReload;
             _endReloadEventsPool.Value.Add(reloadEvent);
         }
         #endregion

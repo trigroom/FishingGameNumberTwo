@@ -9,6 +9,8 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
 
     private EcsPoolInject<ChangeHealthEvent> _changeHealthEventsPool;
     private EcsPoolInject<HealthComponent> _healthComponentsPool;
+    private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
+    private EcsPoolInject<MovementComponent> _movementComponentsPool;
     private EcsPoolInject<ArmorComponent> _armorComponentsPool;
     private EcsPoolInject<GunComponent> _gunComponentsPool;
     private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
@@ -26,7 +28,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
     }
     public void Run(IEcsSystems systems)
     {
-        foreach(var curHealingItem in _currentHealingItemComponentsFilter.Value)
+        foreach (var curHealingItem in _currentHealingItemComponentsFilter.Value)
         {
             ref var curHealthCmp = ref _currentHealingItemComponentsPool.Value.Get(curHealingItem);
             if (curHealthCmp.isHealing)
@@ -76,68 +78,70 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
 
     private void ChangeHealth(int hpEvent, int changedHealthCount)
     {
-            if (!_healthComponentsPool.Value.Has(hpEvent))
-                return;
-            ref var healthCmp = ref _healthComponentsPool.Value.Get(hpEvent);
+        if (!_healthComponentsPool.Value.Has(hpEvent))
+            return;
+        ref var healthCmp = ref _healthComponentsPool.Value.Get(hpEvent);
 
-            if (changedHealthCount < 0)
+        if (changedHealthCount < 0)
+        {
+            healthCmp.healthPoint -= changedHealthCount;
+            if (healthCmp.healthPoint > healthCmp.maxHealthPoint)
+                healthCmp.healthPoint = healthCmp.maxHealthPoint;
+            if (hpEvent == _sceneData.Value.playerEntity)
+                ChangeHealthBarInfo(healthCmp);
+        }
+
+        else if (_armorComponentsPool.Value.Has(hpEvent))
+        {
+            ref var armorCmp = ref _armorComponentsPool.Value.Get(hpEvent);
+            if (armorCmp.armorPoint == 0)
             {
                 healthCmp.healthPoint -= changedHealthCount;
-                if (healthCmp.healthPoint > healthCmp.maxHealthPoint)
-                    healthCmp.healthPoint = healthCmp.maxHealthPoint;
                 if (hpEvent == _sceneData.Value.playerEntity)
                     ChangeHealthBarInfo(healthCmp);
             }
 
-            else if (_armorComponentsPool.Value.Has(hpEvent))
+            else if (armorCmp.armorPoint >= changedHealthCount)
             {
-                ref var armorCmp = ref _armorComponentsPool.Value.Get(hpEvent);
-                if (armorCmp.armorPoint == 0)
-                {
-                    healthCmp.healthPoint -= changedHealthCount;
-                    if (hpEvent == _sceneData.Value.playerEntity)
-                        ChangeHealthBarInfo(healthCmp);
-                }
-
-                else if (armorCmp.armorPoint >= changedHealthCount)
-                {
-                    armorCmp.armorPoint -= changedHealthCount;
-                    if (hpEvent == _sceneData.Value.playerEntity)
-                        ChangeArmorBarInfo(armorCmp);
-                }
-
-                else
-                {
-                    changedHealthCount -= armorCmp.armorPoint;
-                    healthCmp.healthPoint -= changedHealthCount;
-                    armorCmp.armorPoint = 0;
-                    if (hpEvent == _sceneData.Value.playerEntity)
-                    {
-                        ChangeHealthBarInfo(healthCmp);
-                        ChangeArmorBarInfo(armorCmp);
-                    }
-                }
+                armorCmp.armorPoint -= changedHealthCount;
+                if (hpEvent == _sceneData.Value.playerEntity)
+                    ChangeArmorBarInfo(armorCmp);
             }
 
             else
             {
+                changedHealthCount -= armorCmp.armorPoint;
                 healthCmp.healthPoint -= changedHealthCount;
+                armorCmp.armorPoint = 0;
                 if (hpEvent == _sceneData.Value.playerEntity)
+                {
                     ChangeHealthBarInfo(healthCmp);
+                    ChangeArmorBarInfo(armorCmp);
+                }
             }
+        }
 
-            if (healthCmp.healthPoint <= 0)
-            {
-                healthCmp.healthView.Death();
-                //акие то доп действи€ при смерти(ивент смерти можн)
-                healthCmp.healthPoint = 0;
-                _healthComponentsPool.Value.Del(hpEvent);
-                if (_armorComponentsPool.Value.Has(hpEvent))
-                    _armorComponentsPool.Value.Del(hpEvent);
-                if (hpEvent == _sceneData.Value.playerEntity)
-                    ChangeHealthBarInfo(healthCmp);
-                //анимаци€ смерти и в конце неЄ полностью энтити удал€ть
-            }
+        else
+        {
+            healthCmp.healthPoint -= changedHealthCount;
+            if (hpEvent == _sceneData.Value.playerEntity)
+                ChangeHealthBarInfo(healthCmp);
+        }
+
+        if (healthCmp.healthPoint <= 0)
+        {
+            healthCmp.healthView.Death();
+            //акие то доп действи€ при смерти(ивент смерти можн)
+            healthCmp.healthPoint = 0;
+            _healthComponentsPool.Value.Del(hpEvent);
+            _creatureAIComponentsPool.Value.Del(hpEvent);
+            _movementComponentsPool.Value.Del(hpEvent);
+            if (_armorComponentsPool.Value.Has(hpEvent))
+                _armorComponentsPool.Value.Del(hpEvent);
+            if (hpEvent == _sceneData.Value.playerEntity)
+                ChangeHealthBarInfo(healthCmp);
+            //анимаци€ смерти и в конце неЄ полностью энтити удал€ть
+        }
 
     }
     private void ChangeHealthBarInfo(HealthComponent healthComponent)

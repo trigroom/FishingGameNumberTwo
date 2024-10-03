@@ -106,17 +106,17 @@ public class SceneService : MonoBehaviour
 
     public PlayerView SpawnPlayer(EcsWorld ecsWorld, int entity)
     {
-        var player = Instantiate(playerPrefab, Vector2.zero, Quaternion.identity).GetComponent<PlayerView>();
-        player.Construct(ecsWorld, entity);
-        player.itemInfoText = currentItemText;
-        mainCamera.gameObject.transform.SetParent(player.transform);
         playerEntity = entity;
+        var player = Instantiate(playerPrefab, Vector2.zero, Quaternion.identity).GetComponent<PlayerView>();
+        player.playerInputView.Construct(ecsWorld, entity);
+        player.playerInputView.itemInfoText = currentItemText;
+        mainCamera.gameObject.transform.SetParent(player.transform);
         return player;
     }
 
-    public HealthView GetCreature(Transform spawnObject, Vector2 spawnPosition)
+    public CreatureView GetCreature(Transform spawnObject, Vector2 spawnPosition)
     {
-        return Instantiate(spawnObject, spawnPosition, Quaternion.identity).GetComponent<HealthView>();
+        return Instantiate(spawnObject, spawnPosition, Quaternion.identity).GetComponent<CreatureView>();
     }
     public DroppedItemView SpawnDroppedItem(Vector2 spawnPoint, ItemInfo itemInfo, int entity)
     {

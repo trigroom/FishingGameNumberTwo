@@ -18,7 +18,8 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
     private EcsPoolInject<GunInventoryCellComponent> _gunInventoryCellComponentsPool;
     private EcsPoolInject<StorageCellTag> _storageCellTagsPool;
-    private EcsPoolInject<GunComponent> _gunComponentsPool;
+    //private EcsPoolInject<GunComponent> _gunComponentsPool;
+    private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
     //private EcsPoolInject<HealingItemCellComponent> _healingItemCellComponentsPool;
 
     private EcsFilterInject<Inc<SetDescriptionItemEvent>> _setDescriptionItemEventsFilter;
@@ -128,8 +129,8 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
         if (Input.GetKeyDown(KeyCode.I) || (Input.GetKeyDown(KeyCode.Escape) && _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inInventoryState))
         {
-            var gunCmp = _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-            if (gunCmp.inScope)
+            var playerGunCmp = _playerGunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+            if (playerGunCmp.inScope)
                 return;
             ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             ChangeInventoryMenuState(ref menusStatesCmp);
@@ -138,7 +139,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             {
                 ChangeShopMenuState(ref menusStatesCmp);
                 _shopCloseEventsPool.Value.Add(_world.Value.NewEntity());
-                _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.canShoping = true;
+                _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.playerInputView.canShoping = true;
             }
 
             else if (menusStatesCmp.inStorageState)
@@ -146,7 +147,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 ChangeStorageMenuState(ref menusStatesCmp);
 
                 //  _shopCloseEventsPool.Value.Add(_world.Value.NewEntity());пока никаких ивентов по закритии хранлища
-                _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.canUseStorage = true;
+                _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.playerInputView.canUseStorage = true;
             }
         }
     }
@@ -159,7 +160,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         _sceneData.Value.postProcessingCamera.enabled = menusStatesCmp.inInventoryState;
         _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).canMove = !menusStatesCmp.inInventoryState;
         _currentAttackComponentsPool.Value.Get(_sceneData.Value.playerEntity).canAttack = !menusStatesCmp.inInventoryState;
-        _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.usedInventory = menusStatesCmp.inInventoryState;
+        _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.playerInputView.usedInventory = menusStatesCmp.inInventoryState;
         //изменение состояния стрелбы и ходьбы
     }
 
