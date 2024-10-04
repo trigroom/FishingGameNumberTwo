@@ -10,6 +10,10 @@ public struct PlayerWeaponsInInventoryComponent
 
     public int curFirstWeaponAmmo;
     public int curSecondWeaponAmmo;
+
+    public int curFirstWeaponDurability;
+    public int curSecondWeaponDurability;
+
     public int curEquipedWeaponsCount;
 
     public int curWeapon;

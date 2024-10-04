@@ -54,6 +54,8 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             var item = _inventoryItemComponentPool.Value.Get(descriptionEvt.itemEntity);
             ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
 
+            _sceneData.Value.dropedItemsUIView.itemDescriptionText.text = "<b>" + item.itemInfo.itemName + "</b>" + "\n" + "Type: " + item.itemInfo.type + "\n" + "Weight: " + item.itemInfo.itemWeight * item.currentItemsCount + "\n";
+
             if (!_sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.activeSelf)
                 _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(true);
 
@@ -77,7 +79,28 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(false);
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(true);
                 var gunInInvCellCmp = _gunInventoryCellComponentsPool.Value.Get(descriptionEvt.itemEntity);
-                if (gunInInvCellCmp.isEquipedWeapon)
+                if (item.itemInfo.type == ItemInfo.itemType.gun)
+                {
+                    var playerGunCmp = _playerGunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+
+                    _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Gun info" + "\n" + "Damage: " + item.itemInfo.gunInfo.damage + "\n" + "Shot couldown: " + item.itemInfo.gunInfo.attackCouldown + "\n" + "Max magazine capacity: " + item.itemInfo.gunInfo.magazineCapacity + "\n" + "Reload time: " + item.itemInfo.gunInfo.reloadDuration
+                        + "\n" + "Durability points: " + playerGunCmp.durabilityPoints + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n" + "Spread: " + item.itemInfo.gunInfo.minSpread + "to" + item.itemInfo.gunInfo.maxSpread + "\n" + "Shot distance: " + item.itemInfo.gunInfo.attackLenght + "\n";
+                    if (item.itemInfo.gunInfo.isOneBulletReloaded)
+                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "reloads one cartridge at a time" + "\n";
+                    else
+                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "reloads immediately" + "\n";
+                    if (item.itemInfo.gunInfo.isAuto)
+                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "is Auto" + "\n";
+                    else
+                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "is one shoted" + "\n";
+                }
+
+                else
+                {
+                    //описание милишки
+                }
+                //мб выдел€ть красным цветом низкую прочность оруж€
+                if (gunInInvCellCmp.isEquipedWeapon)//помен€ть на проверку заполненности клетки инвентар€ а не ганкмп
                 {
                     if (menusStatesCmp.inStorageState)
                         _sceneData.Value.dropedItemsUIView.storageUIContainer.gameObject.SetActive(false);
@@ -94,6 +117,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             {
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(true);
                 var healItemCellCmp = _inventoryCellComponentPool.Value.Get(descriptionEvt.itemEntity);
+                _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Healed health points: " + item.itemInfo.healInfo.healingHealthPoints + "\n" + "Heal time: " + item.itemInfo.healInfo.healingTime + "\n";
                 //кнопка использовать
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(true);
                 if (descriptionEvt.itemEntity == _sceneData.Value.healingItemCellView._entity && !healItemCellCmp.isEmpty)
@@ -119,10 +143,9 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(false);
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(false);
             }
-
+            _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += item.itemInfo.itemDescription;
 
             _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(true);
-            _sceneData.Value.hoverDescriptionText.text = item.itemInfo.itemName + "\n" + "вес " + item.itemInfo.itemWeight;
             _sceneData.Value.dropedItemsUIView.SetSliderParametrs(item.currentItemsCount, descriptionEvt.itemEntity);
         }
 

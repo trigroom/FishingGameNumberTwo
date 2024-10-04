@@ -23,6 +23,7 @@ public class PlayerInputView : MonoBehaviour
     public bool canShoping = true;
     public bool canUseStorage = true;
     public bool usedInventory = false;
+    public bool isColliderInteract = false;
 
     private void Start()
     {
@@ -31,13 +32,13 @@ public class PlayerInputView : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.F) && isColliderInteract)
         {
             if (currentDroppedItem != -1)
             {
                 _world.GetPool<AddItemEvent>().Add(currentDroppedItem);
             }
-            else if (currentActiveShopper != -1 && canShoping && !usedInventory)
+            else if (canShoping && !usedInventory)
             {
                 canShoping = false;
                 _world.GetPool<ShopOpenEvent>().Add(currentActiveShopper);
@@ -79,23 +80,26 @@ public class PlayerInputView : MonoBehaviour
 
                 if (interactCharacter._characterType == InteractNPCType.shop)
                 {
+                    isColliderInteract = true; 
                     currentActiveShopper = interactCharacter._entity;
 
                     SetInfoDroppedItemsText(" (нажми F чтобы зайти в магазин)");
                 }
                 else if (interactCharacter._characterType == InteractNPCType.dialogeNpc)
                 {
+                    isColliderInteract = true;
                     SetInfoDroppedItemsText(" (нажми F чтобы поговорить)");
                 }
                 else if (interactCharacter._characterType == InteractNPCType.storage)
                 {
+                    isColliderInteract = true;
                     SetInfoDroppedItemsText(" (нажми F чтобы зайти в хранилище)");
                 }
 
             }
             else
             {
-                currentActiveShopper = -1;
+                isColliderInteract = false;
                 SetInfoDroppedItemsText("");
             }
         }

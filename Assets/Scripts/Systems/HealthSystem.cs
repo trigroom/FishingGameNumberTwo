@@ -149,7 +149,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                     {
                         if (Random.Range(0, 101) <= dropItems.droopedItems[i].dropPercent)
                         {
-                            int droopedCount = Random.Range(dropItems.droopedItems[i].itemsCountMin, dropItems.droopedItems[i].itemsCountMax+1);
+                            int droopedCount = Random.Range(dropItems.droopedItems[i].itemsCountMin, dropItems.droopedItems[i].itemsCountMax + 1);
 
                             var droppedItem = _world.Value.NewEntity();
 
@@ -163,7 +163,6 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                             droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(new Vector2(Random.Range(deathPos.x - 1, deathPos.x + 1), Random.Range(deathPos.y - 1, deathPos.y + 1)), dropItems.droopedItems[i].droopedItem, droppedItem);
                         }
                     }
-
                     _creatureDropComponentsPool.Value.Del(hpEvent);
                 }
 

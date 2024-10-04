@@ -1,5 +1,6 @@
 using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class InventorySystem : IEcsInitSystem, IEcsRunSystem
@@ -149,8 +150,10 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         playerGunCmp.bulletTypeId = invItemCmp.itemInfo.gunInfo.bulletTypeId;
         gunCmp.attackCouldown = invItemCmp.itemInfo.gunInfo.attackCouldown;
         curAttackCmp.damage = invItemCmp.itemInfo.gunInfo.damage;
+        playerGunCmp.gunInfo = invItemCmp.itemInfo.gunInfo;
         gunCmp.currentMagazineCapacity = invItemCmp.itemInfo.gunInfo.magazineCapacity;
         gunCmp.isOneBulletReload = invItemCmp.itemInfo.gunInfo.isOneBulletReloaded;
+        playerGunCmp.durabilityPoints = invItemCmp.itemInfo.gunInfo.maxDurabilityPoints;//временно, пока система сохранений нормальная не появится
 
         playerGunCmp.maxSpread = invItemCmp.itemInfo.gunInfo.maxSpread;
         playerGunCmp.minSpread = invItemCmp.itemInfo.gunInfo.minSpread;
@@ -169,7 +172,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
             healingItemPlayer.isHealing = true;
             healingItemPlayer.healingHealthPoints = invItmCmp.itemInfo.healInfo.healingHealthPoints;
             healingItemPlayer.healingTime = invItmCmp.itemInfo.healInfo.healingTime;
-
+            _sceneData.Value.ammoInfoText.text = "восстановление здоровья...";
             invItmCmp.currentItemsCount--;
             ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(changedCell);
             if (invItmCmp.currentItemsCount == 0)

@@ -100,7 +100,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         if(Input.GetKeyDown(KeyCode.H) && !_currentHealingItemComponentsPool.Value.Get(_playerEntity).isHealing && !_currentAttackComponentsPool.Value.Get(_playerEntity).weaponIsChanged && !_playerGunComponentsPool.Value.Get(_playerEntity).inScope && !_gunComponentsPool.Value.Get(_playerEntity).isReloading && healthCmp.maxHealthPoint != healthCmp.healthPoint && !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.healingItemCellView._entity).isEmpty) //возможно что то ещё
         {
             _healFromHealItemCellEventsPool.Value.Add(_playerEntity);
-            _sceneService.Value.ammoInfoText.text = "восстановление здоровья...";
+           // _sceneService.Value.ammoInfoText.text = "восстановление здоровья...";
         }
     }
 

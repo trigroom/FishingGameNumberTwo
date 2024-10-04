@@ -36,7 +36,6 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public GameObject droppedItemPrefab { get; private set; }
     [field: SerializeField] public ShopCellView shopCellPrefab { get; private set; }
 
-    [field: SerializeField] public TMP_Text hoverDescriptionText;
     [field: SerializeField] public TMP_Text ammoInfoText;
     [field: SerializeField] public Camera mainCamera { get; private set; }
     [field: SerializeField] public LineRenderer bulletTracer { get; private set; }

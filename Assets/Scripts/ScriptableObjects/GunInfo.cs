@@ -21,6 +21,7 @@ public class GunInfo : ScriptableObject
     public int bulletTypeId;
     public int bulletCount = 1;
     public bool isOneBulletReloaded;
+    public int maxDurabilityPoints;
 
     [Header("Scope settings")]
     public int scopeMultiplicity;

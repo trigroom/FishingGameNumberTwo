@@ -28,7 +28,6 @@ public class EcsStartUp : MonoBehaviour
             .Add(new CreatureStatesControlSystem())
             .Add(new AttackSystem())
             .Add(new InventorySystem())
-            .Add(new EnemyDeathSystem())
             .Add(new HealthSystem())
             .Add(new UiControlSystem())
             .Add(new ShopCellsSystem())

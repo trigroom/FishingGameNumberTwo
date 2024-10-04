@@ -11,6 +11,7 @@ public class DropedItemsUIView : MonoBehaviour
     [field: SerializeField] public TMP_Text currentItemsCountToDrop { get; private set; }
     [field: SerializeField] public Transform itemInfoContainer { get; set; }
     [field: SerializeField] public Button dropButton { get; private set; }
+    [field: SerializeField] public TMP_Text itemDescriptionText { get; private set; }
     [Header("Heal UI")]
     [field: SerializeField] public Button healUseButton { get; private set; }
     [Header("Weapon UI")]

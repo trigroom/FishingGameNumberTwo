@@ -41,7 +41,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
             ref var creatureAi = ref _creatureAIComponentsPool.Value.Get(aiCreature);
             ref var gunCmp = ref _gunComponentsPool.Value.Get(aiCreature);
             ref var attackCmp = ref _attackComponentsPool.Value.Get(aiCreature);
-                    Debug.Log(gunCmp.currentSpread + "curSpread " + gunCmp.currentMinSpread + "minSpread ");
+            Debug.Log(gunCmp.currentSpread + "curSpread " + gunCmp.currentMinSpread + "minSpread ");
 
             gunCmp.currentAttackCouldown += Time.deltaTime;
 
@@ -96,7 +96,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
             {
                 ref var weaponsInInventoryCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                 ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(changeWeaponFromInvEvt);
-                ref var plyerGunCmp = ref _playerGunComponentsPool.Value.Get(changeWeaponFromInvEvt);
+                ref var plyerGunCmp = ref _playerGunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                 ref var gunCmp = ref _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                 if (plyerGunCmp.inScope)
                 {
@@ -108,14 +108,12 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                     {
                         gunInInvCmp.currentAmmo = gunCmp.currentMagazineCapacity;//
                         weaponsInInventoryCmp.gunFirstObject = null;
-                        Debug.Log("first null");
                     }
 
                     else //second gun
                     {
                         gunInInvCmp.currentAmmo = gunCmp.currentMagazineCapacity;//
                         weaponsInInventoryCmp.gunSecondObject = null;
-                        Debug.Log("second null");
                     }
 
                     if (0 != changeWeaponFromInvCmp.weaponCellNumberToChange && weaponsInInventoryCmp.gunFirstObject != null)
@@ -131,14 +129,12 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                     if (changeWeaponFromInvCmp.weaponCellNumberToChange == 0)
                     {
                         weaponsInInventoryCmp.gunFirstObject = gunInInvCmp.gunInfo;
-                        weaponsInInventoryCmp.curFirstWeaponAmmo = gunInInvCmp.currentAmmo;//
-                        Debug.Log("first full");
+                        weaponsInInventoryCmp.curFirstWeaponAmmo = gunInInvCmp.currentAmmo;
                     }
                     else
                     {
                         weaponsInInventoryCmp.gunSecondObject = gunInInvCmp.gunInfo;
-                        weaponsInInventoryCmp.curSecondWeaponAmmo = gunInInvCmp.currentAmmo;//
-                        Debug.Log("second full");
+                        weaponsInInventoryCmp.curSecondWeaponAmmo = gunInInvCmp.currentAmmo;
                     }
 
                     ChangeWeapon(changeWeaponFromInvCmp.weaponCellNumberToChange);
@@ -155,36 +151,56 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
             ref var gunCmp = ref _gunComponentsPool.Value.Get(playerEntity);
             ref var attackCmp = ref _attackComponentsPool.Value.Get(playerEntity);
             ref var curHealCmp = ref _currentHealingItemComponentsPool.Value.Get(playerEntity);
-            ref var plyerGunCmp = ref _playerGunComponentsPool.Value.Get(playerEntity);
+            ref var playerGunCmp = ref _playerGunComponentsPool.Value.Get(playerEntity);
 
             foreach (var reloadEvt in _endReloadEventFilter.Value)
             {
-                Debug.Log(gunCmp.currentMagazineCapacity);
                 gunCmp.isReloading = true;
                 _sceneData.Value.ammoInfoText.text = "перезарядка...";
                 _endReloadEventsPool.Value.Del(reloadEvt);
             }
-            // Debug.Log((!gunCmp.isReloading) +"&&"+( gunCmp.currentMagazineCapacity > 0 )+"&&"+ (gunCmp.currentAttackCouldown >= gunCmp.attackCouldown) +"&& "+!attackCmp.weaponIsChanged +"&&"+ attackCmp.canAttack);
             gunCmp.currentAttackCouldown += Time.deltaTime;
-            //  Debug.Log("cur couldown" + gunCmp.currentAttackCouldown);
-            if (((plyerGunCmp.isAuto && Input.GetMouseButton(0)) || (!plyerGunCmp.isAuto && Input.GetMouseButtonDown(0))) && !gunCmp.isReloading && gunCmp.currentMagazineCapacity > 0 && gunCmp.currentAttackCouldown >= gunCmp.attackCouldown && !attackCmp.weaponIsChanged && attackCmp.canAttack && !curHealCmp.isHealing)
+            // стрельба
+            if (((playerGunCmp.isAuto && Input.GetMouseButton(0)) || (!playerGunCmp.isAuto && Input.GetMouseButtonDown(0))) && !gunCmp.isReloading && gunCmp.currentMagazineCapacity > 0 && gunCmp.currentAttackCouldown >= gunCmp.attackCouldown && !attackCmp.weaponIsChanged && attackCmp.canAttack && !curHealCmp.isHealing && playerGunCmp.durabilityPoints != 0)
             {
-                for (int i = 0; i < gunCmp.bulletInShotCount; i++)
-                    Shoot(playerEntity, LayerMask.GetMask("Enemy"));
+                int random = Random.Range(0, 101);
+                if ((playerGunCmp.misfirePercent > 0 && random > playerGunCmp.misfirePercent) || playerGunCmp.misfirePercent == 0)
+                {
+                    for (int i = 0; i < gunCmp.bulletInShotCount; i++)
+                        Shoot(playerEntity, LayerMask.GetMask("Enemy"));
 
 
-                if (gunCmp.currentSpread < gunCmp.currentMaxSpread)
-                    gunCmp.currentSpread += gunCmp.currentAddedSpread;
+                    if (gunCmp.currentSpread < gunCmp.currentMaxSpread)
+                        gunCmp.currentSpread += gunCmp.currentAddedSpread;
+                }
 
                 gunCmp.currentAttackCouldown = 0;
                 gunCmp.currentMagazineCapacity--;
-                _sceneData.Value.ammoInfoText.text = gunCmp.currentMagazineCapacity + "/" + gunCmp.magazineCapacity;
-                if (gunCmp.currentMagazineCapacity == 0 && !plyerGunCmp.inScope)
+                playerGunCmp.durabilityPoints--;
+
+                //изменять харки и визуал от повреждения оружия
+                if (playerGunCmp.durabilityPoints < playerGunCmp.gunInfo.maxDurabilityPoints * 0.6f)
                 {
-                    _reloadEventsPool.Value.Add(playerEntity);
+                    playerGunCmp.durabilityGunMultiplayer =(float)System.Math.Round(1-((float)playerGunCmp.durabilityPoints / ((float)playerGunCmp.gunInfo.maxDurabilityPoints * 1.6f)+0.4f), 2);
+                    playerGunCmp.misfirePercent = Mathf.FloorToInt((playerGunCmp.durabilityGunMultiplayer) * 60);
+
+                    CalculateRecoil(ref gunCmp, playerGunCmp, false);
+                }
+
+
+                _sceneData.Value.ammoInfoText.text = gunCmp.currentMagazineCapacity + "/" + gunCmp.magazineCapacity;
+                if (gunCmp.currentMagazineCapacity == 0 && !playerGunCmp.inScope)
+                {
+                    if (!gunCmp.isReloading)
+                    {
+                        playerGunCmp.isContinueReload = true;
+                        _reloadEventsPool.Value.Add(playerEntity);
+                    }
+                    else
+                        playerGunCmp.isContinueReload = !playerGunCmp.isContinueReload;
                 }
             }
-            else if (Input.GetMouseButtonDown(1) && plyerGunCmp.scopeMultiplicity != 1 && !gunCmp.isReloading && !attackCmp.weaponIsChanged && attackCmp.canAttack && !curHealCmp.isHealing)
+            else if (Input.GetMouseButtonDown(1) && playerGunCmp.scopeMultiplicity != 1 && !gunCmp.isReloading && !attackCmp.weaponIsChanged && attackCmp.canAttack && !curHealCmp.isHealing)
                 ChangeScopeMultiplicity();
 
             else if (gunCmp.isReloading)
@@ -194,8 +210,8 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                 if (gunCmp.currentReloadDuration >= gunCmp.reloadDuration)
                 {
                     gunCmp.currentReloadDuration = 0;
-                    gunCmp.currentMagazineCapacity += plyerGunCmp.bulletCountToReload;
-                    if (gunCmp.isOneBulletReload && gunCmp.currentMagazineCapacity != gunCmp.magazineCapacity && plyerGunCmp.isContinueReload)
+                    gunCmp.currentMagazineCapacity += playerGunCmp.bulletCountToReload;
+                    if (gunCmp.isOneBulletReload && gunCmp.currentMagazineCapacity != gunCmp.magazineCapacity && playerGunCmp.isContinueReload)
                     {
                         _reloadEventsPool.Value.Add(playerEntity);
                         return;
@@ -205,19 +221,19 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                 }
             }
 
-            else if (Input.GetKeyDown(KeyCode.R) && gunCmp.currentMagazineCapacity != gunCmp.magazineCapacity && !plyerGunCmp.inScope && !curHealCmp.isHealing)
+            else if (Input.GetKeyDown(KeyCode.R) && gunCmp.currentMagazineCapacity != gunCmp.magazineCapacity && !playerGunCmp.inScope && !curHealCmp.isHealing)
             {
                 Debug.Log("try reload");
                 if (!gunCmp.isReloading)
                 {
-                    plyerGunCmp.isContinueReload = true;
+                    playerGunCmp.isContinueReload = true;
                     _reloadEventsPool.Value.Add(playerEntity);
                 }
                 else
-                    plyerGunCmp.isContinueReload = !plyerGunCmp.isContinueReload;
+                    playerGunCmp.isContinueReload = !playerGunCmp.isContinueReload;
             }
 
-            else if (!gunCmp.isReloading && !plyerGunCmp.inScope && !curHealCmp.isHealing)
+            else if (!gunCmp.isReloading && !playerGunCmp.inScope && !curHealCmp.isHealing)
             {
                 if (Input.GetKeyDown(KeyCode.Alpha1))
                     ChangeWeapon(0);
@@ -251,6 +267,29 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
         //для других сущностей отдельно
     }
 
+    private void CalculateRecoil(ref GunComponent gunCmp, PlayerGunComponent playerGunComponent, bool isScopeCalculate)
+    {
+        gunCmp.currentAddedSpread = playerGunComponent.addedSpread+playerGunComponent.addedSpread * playerGunComponent.durabilityGunMultiplayer;
+        gunCmp.currentMaxSpread = playerGunComponent.maxSpread + playerGunComponent.maxSpread * playerGunComponent.durabilityGunMultiplayer;
+        gunCmp.currentMinSpread = playerGunComponent.minSpread + playerGunComponent.minSpread * playerGunComponent.durabilityGunMultiplayer;
+        if (isScopeCalculate)
+        {
+            if (playerGunComponent.inScope)
+            {
+                gunCmp.currentAddedSpread /= playerGunComponent.scopeMultiplicity;
+                gunCmp.currentMaxSpread /= playerGunComponent.scopeMultiplicity;
+                gunCmp.currentMinSpread /= playerGunComponent.scopeMultiplicity;
+            }
+            else
+            {
+                gunCmp.currentAddedSpread *= playerGunComponent.scopeMultiplicity;
+                gunCmp.currentMaxSpread *= playerGunComponent.scopeMultiplicity;
+                gunCmp.currentMinSpread *= playerGunComponent.scopeMultiplicity;
+            }
+        }
+
+        Debug.Log("cur sp " + gunCmp.currentMinSpread);
+    }
     private void ChangeScopeMultiplicity()
     {
         int playerEntity = _sceneData.Value.playerEntity;
@@ -272,9 +311,6 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
             moveCmp.moveSpeed /= plyerGunCmp.scopeMultiplicity;//придумать ураввнение скорости получше
             Vector2[] pointsArray = new Vector2[] { oldPointsArray[0], oldPointsArray[1], new Vector2(oldPointsArray[2].x, -0.4f - plyerGunCmp.scopeMultiplicity), new Vector2(oldPointsArray[3].x, -0.4f - plyerGunCmp.scopeMultiplicity) };
             playerCmp.visionZoneCollider.SetPath(1, pointsArray);
-            gunCmp.currentAddedSpread = plyerGunCmp.addedSpread / plyerGunCmp.scopeMultiplicity;
-            gunCmp.currentMaxSpread = plyerGunCmp.maxSpread / plyerGunCmp.scopeMultiplicity;
-            gunCmp.currentMinSpread = plyerGunCmp.minSpread / plyerGunCmp.scopeMultiplicity;
         }
         else
         {
@@ -284,10 +320,8 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
             moveCmp.moveSpeed *= plyerGunCmp.scopeMultiplicity;
             Vector2[] pointsArray = new Vector2[] { oldPointsArray[0], oldPointsArray[1], new Vector2(oldPointsArray[2].x, -0.4f), new Vector2(oldPointsArray[3].x, -0.4f) };
             playerCmp.visionZoneCollider.SetPath(1, pointsArray);
-            gunCmp.currentAddedSpread = plyerGunCmp.addedSpread;
-            gunCmp.currentMaxSpread = plyerGunCmp.maxSpread;
-            gunCmp.currentMinSpread = plyerGunCmp.minSpread;
         }
+        CalculateRecoil(ref gunCmp, plyerGunCmp,true);
         plyerGunCmp.inScope = !plyerGunCmp.inScope;
 
     }
@@ -306,24 +340,29 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                 ref var playerGunCmp = ref _playerGunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
 
                 if (weaponsInInventoryCmp.curWeapon == 0)
+                {
                     weaponsInInventoryCmp.curFirstWeaponAmmo = gunCmp.currentMagazineCapacity;
+                    weaponsInInventoryCmp.curFirstWeaponDurability = playerGunCmp.durabilityPoints;
+                }
 
-                if (weaponsInInventoryCmp.curWeapon == 1)
+                else /*if (weaponsInInventoryCmp.curWeapon == 1)*/
+                {
                     weaponsInInventoryCmp.curSecondWeaponAmmo = gunCmp.currentMagazineCapacity;
+                    weaponsInInventoryCmp.curSecondWeaponDurability = playerGunCmp.durabilityPoints;
+                }
 
                 if (curWeapon == 0)
                 {
                     weaponsInInventoryCmp.curWeapon = curWeapon;
-                    ChangeWeaponStats(weaponsInInventoryCmp.gunFirstObject, weaponsInInventoryCmp.curFirstWeaponAmmo, ref gunCmp, ref playerGunCmp, ref attackCmp);
+                    ChangeWeaponStats(weaponsInInventoryCmp.gunFirstObject, weaponsInInventoryCmp.curFirstWeaponAmmo, weaponsInInventoryCmp.curFirstWeaponDurability, ref gunCmp, ref playerGunCmp, ref attackCmp);
 
                     //менять модельку оружия
-                    //переместить всё что в скобках в отдельный метод
                 }
 
                 else
                 {
                     weaponsInInventoryCmp.curWeapon = curWeapon;
-                    ChangeWeaponStats(weaponsInInventoryCmp.gunSecondObject, weaponsInInventoryCmp.curSecondWeaponAmmo, ref gunCmp, ref playerGunCmp, ref attackCmp);
+                    ChangeWeaponStats(weaponsInInventoryCmp.gunSecondObject, weaponsInInventoryCmp.curSecondWeaponAmmo, weaponsInInventoryCmp.curSecondWeaponDurability, ref gunCmp, ref playerGunCmp, ref attackCmp);
                 }
 
             }
@@ -339,13 +378,15 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
         }
     }
 
-    private void ChangeWeaponStats(GunInfo gunInfo, int curBullets, ref GunComponent gunCmp, ref PlayerGunComponent playerGunCmp, ref CurrentAttackComponent curAttackCmp)
+    private void ChangeWeaponStats(GunInfo gunInfo, int currentAmmo, int gunDurability, ref GunComponent gunCmp, ref PlayerGunComponent playerGunCmp, ref CurrentAttackComponent curAttackCmp)
     {
         curAttackCmp.changeWeaponTime = gunInfo.weaponChangeSpeed;
         gunCmp.reloadDuration = gunInfo.reloadDuration;
         gunCmp.attackLeght = gunInfo.attackLenght;
         playerGunCmp.scopeMultiplicity = gunInfo.scopeMultiplicity;
-        gunCmp.currentMagazineCapacity = curBullets;
+        gunCmp.currentMagazineCapacity = currentAmmo;
+        playerGunCmp.durabilityPoints = gunDurability;
+        playerGunCmp.gunInfo = gunInfo;
         gunCmp.magazineCapacity = gunInfo.magazineCapacity;
         gunCmp.spreadRecoverySpeed = gunInfo.spreadRecoverySpeed;
         gunCmp.currentAddedSpread = gunInfo.addedSpread;
