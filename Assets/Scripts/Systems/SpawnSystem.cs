@@ -19,6 +19,7 @@ public class SpawnSystem : IEcsRunSystem
     private EcsPoolInject<MovementComponent> _movementComponentsPool;
     private EcsPoolInject<GunComponent> _gunComponentsPool;
     private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
+    private EcsPoolInject<CreatureDropComponent> _creatureDropComponentsPool;
 
     private EcsFilterInject<Inc<ActiveSpawnComponent>> _activeSpawnComponentsFilter;
     private EcsFilterInject<Inc<EntrySpawnZoneEvent>> _entrySpawnZoneEventsFilter;
@@ -40,6 +41,7 @@ public class SpawnSystem : IEcsRunSystem
                 _creatureTagsPool.Value.Add(creatureEntity);
                 ref var creatureAiStatesCmp = ref _creatureAIComponentsPool.Value.Add(creatureEntity);
                 ref var moveCmp = ref _movementComponentsPool.Value.Add(creatureEntity);
+                ref var creatureDropCmp = ref _creatureDropComponentsPool.Value.Add(creatureEntity);
 
                 creatureAiStatesCmp.creatureView = _sceneData.Value.GetCreature(curSpawnCmp.spawnObjects[Random.Range(0, curSpawnCmp.spawnObjects.Length)], _sceneData.Value.GetOutOfScreenPosition());
                 creatureAiStatesCmp.safeDistance = creatureAiStatesCmp.creatureView.aiCreatureView.safeDistance;
@@ -49,6 +51,7 @@ public class SpawnSystem : IEcsRunSystem
                 creatureAiStatesCmp.currentState = CreatureAIComponent.CreatureStates.idle;
                 creatureAiStatesCmp.isPeaceful = creatureAiStatesCmp.creatureView.aiCreatureView.isPeaceful;
 
+                creatureDropCmp.droopedItems = creatureAiStatesCmp.creatureView.dropFromCreatureView.droopedItems;
 
                 moveCmp.movementView = creatureAiStatesCmp.creatureView.movementView;
                 moveCmp.entityTransform = moveCmp.movementView.objectTransform;

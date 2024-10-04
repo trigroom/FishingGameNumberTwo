@@ -8,5 +8,6 @@ public class CreatureView : MonoBehaviour
     public HealthView healthView;
     public AiCreatureView aiCreatureView;
     public CreatureGunView creatureGunView;
-   //для ближней атаки другую сделать
+    public DropFromCreatureView dropFromCreatureView;
+    //для ближней атаки другую сделать
 }

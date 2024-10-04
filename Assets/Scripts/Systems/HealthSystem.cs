@@ -14,6 +14,8 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<ArmorComponent> _armorComponentsPool;
     private EcsPoolInject<GunComponent> _gunComponentsPool;
     private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
+    private EcsPoolInject<CreatureDropComponent> _creatureDropComponentsPool;
+    private EcsPoolInject<DroppedItemComponent> _droppedItemComponentsPool;
 
     private EcsFilterInject<Inc<ChangeHealthEvent>> _changeHealthEventsFilter;
     private EcsFilterInject<Inc<ArmorComponent>> _armorComponentsFilter;
@@ -131,15 +133,49 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
         if (healthCmp.healthPoint <= 0)
         {
             healthCmp.healthView.Death();
-            //акие то доп действи€ при смерти(ивент смерти можн)
-            healthCmp.healthPoint = 0;
-            _healthComponentsPool.Value.Del(hpEvent);
-            _creatureAIComponentsPool.Value.Del(hpEvent);
-            _movementComponentsPool.Value.Del(hpEvent);
-            if (_armorComponentsPool.Value.Has(hpEvent))
-                _armorComponentsPool.Value.Del(hpEvent);
             if (hpEvent == _sceneData.Value.playerEntity)
+            {
                 ChangeHealthBarInfo(healthCmp);
+                //кудато как то возродить игрока и выкинуть ему какую то менюшку
+            }
+
+            else
+            {
+                if (_creatureDropComponentsPool.Value.Has(hpEvent))
+                {
+                    var dropItems = _creatureDropComponentsPool.Value.Get(hpEvent);
+
+                    for (int i = 0; i < dropItems.droopedItems.Length; i++)
+                    {
+                        if (Random.Range(0, 101) <= dropItems.droopedItems[i].dropPercent)
+                        {
+                            int droopedCount = Random.Range(dropItems.droopedItems[i].itemsCountMin, dropItems.droopedItems[i].itemsCountMax+1);
+
+                            var droppedItem = _world.Value.NewEntity();
+
+                            ref var droppedItemComponent = ref _droppedItemComponentsPool.Value.Add(droppedItem);
+
+                            droppedItemComponent.currentItemsCount = droopedCount;
+
+                            Vector2 deathPos = _movementComponentsPool.Value.Get(hpEvent).entityTransform.position;
+                            //если будет ган то ещЄ и ган инв комп добавл€ть с почти убитым оружием и парочкой патронов
+                            droppedItemComponent.itemInfo = dropItems.droopedItems[i].droopedItem;
+                            droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(new Vector2(Random.Range(deathPos.x - 1, deathPos.x + 1), Random.Range(deathPos.y - 1, deathPos.y + 1)), dropItems.droopedItems[i].droopedItem, droppedItem);
+                        }
+                    }
+
+                    _creatureDropComponentsPool.Value.Del(hpEvent);
+                }
+
+                healthCmp.healthPoint = 0;
+                _healthComponentsPool.Value.Del(hpEvent);
+                _creatureAIComponentsPool.Value.Del(hpEvent);
+                _movementComponentsPool.Value.Del(hpEvent);
+                if (_armorComponentsPool.Value.Has(hpEvent))
+                    _armorComponentsPool.Value.Del(hpEvent);
+
+            }
+            //акие то доп действи€ при смерти(ивент смерти можн)
             //анимаци€ смерти и в конце неЄ полностью энтити удал€ть
         }
 

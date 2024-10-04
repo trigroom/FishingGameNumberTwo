@@ -10,8 +10,9 @@ public class EnemyDeathSystem : IEcsRunSystem
     private EcsCustomInject<SceneService> _sceneData;
 
     private EcsPoolInject<DroppedItemComponent> _droppedItemComponent;
-    private EcsPoolInject<EnemyComponent> _enemyComponents;
-    private EcsPoolInject<EnemyDeathEvent> _enemyDeathEventComponents;
+    private EcsPoolInject<MovementComponent> _movementComponentsPool;
+    private EcsPoolInject<CreatureDropComponent> _creatureDropComponentsPool;
+   // private EcsPoolInject<EnemyDeathEvent> _enemyDeathEventComponents;
 
 
     private EcsFilterInject<Inc<EnemyDeathEvent>> _enemyDeathEventFilter;

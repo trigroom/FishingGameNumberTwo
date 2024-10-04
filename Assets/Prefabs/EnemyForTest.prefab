@@ -167,6 +167,7 @@ GameObject:
   - component: {fileID: 5375867495861106499}
   - component: {fileID: 5657345655258025684}
   - component: {fileID: 5513790491215936250}
+  - component: {fileID: 1308195724300216008}
   m_Layer: 7
   m_Name: EnemyForTest
   m_TagString: Untagged
@@ -309,6 +310,7 @@ MonoBehaviour:
   healthView: {fileID: 8928570964350680024}
   aiCreatureView: {fileID: 36946619433447471}
   creatureGunView: {fileID: 5513790491215936250}
+  dropFromCreatureView: {fileID: 1308195724300216008}
 --- !u!114 &36946619433447471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,3 +396,20 @@ MonoBehaviour:
   addedSpread: 3
   spreadRecoverySpeed: 0.5
   isOneBulletReloaded: 0
+--- !u!114 &1308195724300216008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7507285538399009112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81e66a1159e8d804ebe8654ea613e508, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <droopedItems>k__BackingField:
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 17bc52fc22abae347abf9446ca864705, type: 2}
+    <itemsCountMax>k__BackingField: 2
+    <itemsCountMin>k__BackingField: 5
+    <dropPercent>k__BackingField: 100

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct EnemyComponent
+public struct CreatureDropComponent
 {
-    public EnemyView enemyView;
+    public CreatureDropElement[] droopedItems;
 }
