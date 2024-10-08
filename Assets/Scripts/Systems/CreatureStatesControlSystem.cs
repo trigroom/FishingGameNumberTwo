@@ -7,6 +7,7 @@ public class CreatureStatesControlSystem : IEcsRunSystem
     private EcsWorldInject _world;
     private EcsCustomInject<SceneService> _sceneData;
 
+    private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
     private EcsPoolInject<MovementComponent> _movementComponentsPool;
     private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
 
@@ -53,7 +54,10 @@ public class CreatureStatesControlSystem : IEcsRunSystem
                 break;
 
             case CreatureAIComponent.CreatureStates.shootingToTarget:
-               // Debug.Log(distanceBetweenPlayer + "<=" + aiEntityCmp.minSafeDistance);
+                ref var curAtkCmp = ref _currentAttackComponentsPool.Value.Get(aiEntity);
+                if (!curAtkCmp.canAttack)
+                    curAtkCmp.canAttack = true;
+                // Debug.Log(distanceBetweenPlayer + "<=" + aiEntityCmp.minSafeDistance);
                 if (distanceBetweenPlayer <= aiEntityCmp.minSafeDistance)
                     aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.runAwayFromTarget;
                 else if (distanceBetweenPlayer >= aiEntityCmp.safeDistance*1.15f)
@@ -64,7 +68,10 @@ public class CreatureStatesControlSystem : IEcsRunSystem
                 if (distanceBetweenPlayer >= aiEntityCmp.safeDistance)
                 {
                     if (!aiEntityCmp.isPeaceful)
+                    {
+                        _currentAttackComponentsPool.Value.Get(aiEntity).canAttack = false;
                         aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.shootingToTarget;
+                    }
                     else
                         aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.idle;
                 }

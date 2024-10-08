@@ -24,6 +24,9 @@ public class DropedItemsUIView : MonoBehaviour
     [field: SerializeField] public TMP_Text storageButtonText { get; private set; }
     [field: SerializeField] public TMP_Text storageTransportCountText { get; private set; }
     [field: SerializeField] public Transform storageUIContainer { get; set; }
+
+    [Header("Clock UI")]
+    [field: SerializeField] public TMP_Text dayTimeText { get; private set; }
     private ItemInfo.itemType _currentItemType;
 
     //[field: SerializeField] public bool isEquipWeapon { get; set; }

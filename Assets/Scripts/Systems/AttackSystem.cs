@@ -23,6 +23,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
     private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
     private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
+    private EcsPoolInject<NowUsedWeaponTag> _nowUsedWeaponTagsPool;
 
     private EcsFilterInject<Inc<EndReloadEvent>> _endReloadEventFilter;
     private EcsFilterInject<Inc<PlayerComponent>> _playerComponentFilter;
@@ -106,14 +107,35 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     if (changeWeaponFromInvCmp.weaponCellNumberToChange == 0)//first gun
                     {
+                        if (_nowUsedWeaponTagsPool.Value.Has(_sceneData.Value.firstGunCellView._entity))
+                        {
                         gunInInvCmp.currentAmmo = gunCmp.currentMagazineCapacity;//
+                        gunInInvCmp.gunDurability = plyerGunCmp.durabilityPoints;
+                        Debug.Log(gunInInvCmp.gunDurability + "gun db");
+                        }
+                        else
+                        {
+                            gunInInvCmp.currentAmmo = weaponsInInventoryCmp.curFirstWeaponAmmo;
+                            gunInInvCmp.gunDurability = weaponsInInventoryCmp.curFirstWeaponDurability;
+                        }
                         weaponsInInventoryCmp.gunFirstObject = null;
                     }
 
                     else //second gun
                     {
-                        gunInInvCmp.currentAmmo = gunCmp.currentMagazineCapacity;//
+                        if (_nowUsedWeaponTagsPool.Value.Has(_sceneData.Value.secondGunCellView._entity))
+                        {
+                            gunInInvCmp.currentAmmo = gunCmp.currentMagazineCapacity;//
+                            gunInInvCmp.gunDurability = plyerGunCmp.durabilityPoints;
+                            Debug.Log(gunInInvCmp.gunDurability + "gun db");
+                        }
+                        else
+                        {
+                            gunInInvCmp.currentAmmo = weaponsInInventoryCmp.curSecondWeaponAmmo;
+                            gunInInvCmp.gunDurability = weaponsInInventoryCmp.curSecondWeaponDurability;
+                        }
                         weaponsInInventoryCmp.gunSecondObject = null;
+                        Debug.Log(gunInInvCmp.gunDurability + "gun db");
                     }
 
                     if (0 != changeWeaponFromInvCmp.weaponCellNumberToChange && weaponsInInventoryCmp.gunFirstObject != null)
@@ -130,11 +152,13 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                     {
                         weaponsInInventoryCmp.gunFirstObject = gunInInvCmp.gunInfo;
                         weaponsInInventoryCmp.curFirstWeaponAmmo = gunInInvCmp.currentAmmo;
+                        weaponsInInventoryCmp.curFirstWeaponDurability = gunInInvCmp.gunDurability;
                     }
                     else
                     {
                         weaponsInInventoryCmp.gunSecondObject = gunInInvCmp.gunInfo;
                         weaponsInInventoryCmp.curSecondWeaponAmmo = gunInInvCmp.currentAmmo;
+                        weaponsInInventoryCmp.curSecondWeaponDurability = gunInInvCmp.gunDurability;
                     }
 
                     ChangeWeapon(changeWeaponFromInvCmp.weaponCellNumberToChange);
@@ -181,7 +205,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                 //изменять харки и визуал от повреждения оружия
                 if (playerGunCmp.durabilityPoints < playerGunCmp.gunInfo.maxDurabilityPoints * 0.6f)
                 {
-                    playerGunCmp.durabilityGunMultiplayer =(float)System.Math.Round(1-((float)playerGunCmp.durabilityPoints / ((float)playerGunCmp.gunInfo.maxDurabilityPoints * 1.6f)+0.4f), 2);
+                    playerGunCmp.durabilityGunMultiplayer = (float)System.Math.Round(1 - ((float)playerGunCmp.durabilityPoints / ((float)playerGunCmp.gunInfo.maxDurabilityPoints * 1.6f) + 0.4f), 2);
                     playerGunCmp.misfirePercent = Mathf.FloorToInt((playerGunCmp.durabilityGunMultiplayer) * 60);
 
                     CalculateRecoil(ref gunCmp, playerGunCmp, false);
@@ -269,22 +293,22 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
 
     private void CalculateRecoil(ref GunComponent gunCmp, PlayerGunComponent playerGunComponent, bool isScopeCalculate)
     {
-        gunCmp.currentAddedSpread = playerGunComponent.addedSpread+playerGunComponent.addedSpread * playerGunComponent.durabilityGunMultiplayer;
+        gunCmp.currentAddedSpread = playerGunComponent.addedSpread + playerGunComponent.addedSpread * playerGunComponent.durabilityGunMultiplayer;
         gunCmp.currentMaxSpread = playerGunComponent.maxSpread + playerGunComponent.maxSpread * playerGunComponent.durabilityGunMultiplayer;
         gunCmp.currentMinSpread = playerGunComponent.minSpread + playerGunComponent.minSpread * playerGunComponent.durabilityGunMultiplayer;
         if (isScopeCalculate)
         {
             if (playerGunComponent.inScope)
             {
-                gunCmp.currentAddedSpread /= playerGunComponent.scopeMultiplicity;
-                gunCmp.currentMaxSpread /= playerGunComponent.scopeMultiplicity;
-                gunCmp.currentMinSpread /= playerGunComponent.scopeMultiplicity;
+                gunCmp.currentAddedSpread -= playerGunComponent.addedSpread / playerGunComponent.scopeMultiplicity * 0.25f;
+                gunCmp.currentMaxSpread -= playerGunComponent.maxSpread / playerGunComponent.scopeMultiplicity * 0.25f;
+                gunCmp.currentMinSpread -= playerGunComponent.minSpread / playerGunComponent.scopeMultiplicity * 0.25f;
             }
             else
             {
-                gunCmp.currentAddedSpread *= playerGunComponent.scopeMultiplicity;
-                gunCmp.currentMaxSpread *= playerGunComponent.scopeMultiplicity;
-                gunCmp.currentMinSpread *= playerGunComponent.scopeMultiplicity;
+                gunCmp.currentAddedSpread += playerGunComponent.addedSpread / playerGunComponent.scopeMultiplicity * 0.25f;
+                gunCmp.currentMaxSpread += playerGunComponent.maxSpread / playerGunComponent.scopeMultiplicity * 0.25f;
+                gunCmp.currentMinSpread += playerGunComponent.minSpread / playerGunComponent.scopeMultiplicity * 0.25f;
             }
         }
 
@@ -321,7 +345,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
             Vector2[] pointsArray = new Vector2[] { oldPointsArray[0], oldPointsArray[1], new Vector2(oldPointsArray[2].x, -0.4f), new Vector2(oldPointsArray[3].x, -0.4f) };
             playerCmp.visionZoneCollider.SetPath(1, pointsArray);
         }
-        CalculateRecoil(ref gunCmp, plyerGunCmp,true);
+        CalculateRecoil(ref gunCmp, plyerGunCmp, true);
         plyerGunCmp.inScope = !plyerGunCmp.inScope;
 
     }
@@ -341,12 +365,14 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
 
                 if (weaponsInInventoryCmp.curWeapon == 0)
                 {
+                    _nowUsedWeaponTagsPool.Value.Del(_sceneData.Value.firstGunCellView._entity);
                     weaponsInInventoryCmp.curFirstWeaponAmmo = gunCmp.currentMagazineCapacity;
                     weaponsInInventoryCmp.curFirstWeaponDurability = playerGunCmp.durabilityPoints;
                 }
 
                 else /*if (weaponsInInventoryCmp.curWeapon == 1)*/
                 {
+                    _nowUsedWeaponTagsPool.Value.Del(_sceneData.Value.secondGunCellView._entity);
                     weaponsInInventoryCmp.curSecondWeaponAmmo = gunCmp.currentMagazineCapacity;
                     weaponsInInventoryCmp.curSecondWeaponDurability = playerGunCmp.durabilityPoints;
                 }
@@ -354,6 +380,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                 if (curWeapon == 0)
                 {
                     weaponsInInventoryCmp.curWeapon = curWeapon;
+                    _nowUsedWeaponTagsPool.Value.Add(_sceneData.Value.firstGunCellView._entity);
                     ChangeWeaponStats(weaponsInInventoryCmp.gunFirstObject, weaponsInInventoryCmp.curFirstWeaponAmmo, weaponsInInventoryCmp.curFirstWeaponDurability, ref gunCmp, ref playerGunCmp, ref attackCmp);
 
                     //менять модельку оружия
@@ -362,6 +389,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                 else
                 {
                     weaponsInInventoryCmp.curWeapon = curWeapon;
+                    _nowUsedWeaponTagsPool.Value.Add(_sceneData.Value.secondGunCellView._entity);
                     ChangeWeaponStats(weaponsInInventoryCmp.gunSecondObject, weaponsInInventoryCmp.curSecondWeaponAmmo, weaponsInInventoryCmp.curSecondWeaponDurability, ref gunCmp, ref playerGunCmp, ref attackCmp);
                 }
 
@@ -412,17 +440,8 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
         ref var gunCmp = ref _gunComponentsPool.Value.Get(currentEntity);
         gunCmp.firePoint.rotation = gunCmp.weaponContainer.rotation * Quaternion.Euler(0, 0, Random.Range(-gunCmp.currentSpread, gunCmp.currentSpread));
 
-        /* var targetsTest = Physics2D.RaycastAll(gunCmp.firePoint.position, gunCmp.firePoint.up, gunCmp.attackLeght);
-         foreach(var targ in targetsTest)
-         {
-             Debug.Log(targ.collider.gameObject.layer);
-         }*/
         var targets = Physics2D.RaycastAll(gunCmp.firePoint.position, gunCmp.firePoint.up, gunCmp.attackLeght, targetLayer/**/);
 
-        /* foreach (var targ in targetsTest)
-         {
-             Debug.Log(targ.collider.gameObject.layer + "enemy");
-         }*/
 
         if (targets.Length == 0)
         {

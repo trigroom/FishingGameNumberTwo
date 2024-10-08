@@ -7,5 +7,5 @@ public struct GunInventoryCellComponent
     public GunInfo gunInfo;
     public bool isEquipedWeapon;
     public int currentAmmo;
-    public float gunDurability;
+    public int gunDurability { get; set; }
 }

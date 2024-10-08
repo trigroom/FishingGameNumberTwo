@@ -24,6 +24,7 @@ public class EcsStartUp : MonoBehaviour
 #endif
             .Add(new CreatureInputSystem())
             .Add(new PlayerInputSystem())
+           .Add(new DayChangeSystem())
             .Add(new CameraMovementSystem())
             .Add(new CreatureStatesControlSystem())
             .Add(new AttackSystem())
@@ -50,15 +51,17 @@ public class EcsStartUp : MonoBehaviour
         .DelHere<ExitSpawnZoneEvent>()
         .DelHere<HealFromHealItemCellEvent>()
         .DelHere<HealFromInventoryEvent>()
+        .DelHere<ChangeToNightEvent>()
+        .DelHere<ChangeToDayEvent>()
          //  .DelHere<ChangeWeaponFromInventoryEvent>()
 
          .Inject(_sceneService)
          .Init();
-       _systemsFixedUpdate
-        .Add(new MovementSystem())
-         .Inject(_sceneService)
+        _systemsFixedUpdate
+         .Add(new MovementSystem())
+          .Inject(_sceneService)
 
-        .Init();
+         .Init();
 
     }
     void Update()
@@ -73,7 +76,6 @@ public class EcsStartUp : MonoBehaviour
 
     void OnDestroy()
     {
-
         if (_systemsUpdate != null)
         {
             _systemsUpdate.Destroy();

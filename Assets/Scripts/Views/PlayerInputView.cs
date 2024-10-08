@@ -38,7 +38,7 @@ public class PlayerInputView : MonoBehaviour
             {
                 _world.GetPool<AddItemEvent>().Add(currentDroppedItem);
             }
-            else if (canShoping && !usedInventory)
+            else if (canShoping && !usedInventory && currentActiveShopper != -1)
             {
                 canShoping = false;
                 _world.GetPool<ShopOpenEvent>().Add(currentActiveShopper);
@@ -63,6 +63,8 @@ public class PlayerInputView : MonoBehaviour
 
         if (collidedItem.collider != null)
         {
+            isColliderInteract = true;
+
             var droppedItem = collidedItem.collider.gameObject.GetComponent<DroppedItemView>().itemEntity;
             currentDroppedItem = droppedItem;
 
@@ -88,17 +90,20 @@ public class PlayerInputView : MonoBehaviour
                 else if (interactCharacter._characterType == InteractNPCType.dialogeNpc)
                 {
                     isColliderInteract = true;
+                    currentActiveShopper = -1;
                     SetInfoDroppedItemsText(" (нажми F чтобы поговорить)");
                 }
                 else if (interactCharacter._characterType == InteractNPCType.storage)
                 {
                     isColliderInteract = true;
+                    currentActiveShopper = -1;
                     SetInfoDroppedItemsText(" (нажми F чтобы зайти в хранилище)");
                 }
 
             }
             else
             {
+                
                 isColliderInteract = false;
                 SetInfoDroppedItemsText("");
             }

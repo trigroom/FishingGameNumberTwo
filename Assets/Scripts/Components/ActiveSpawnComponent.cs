@@ -4,7 +4,7 @@ using UnityEngine;
 
 public struct ActiveSpawnComponent 
 {
-    public Transform[] spawnObjects;//всё будет браться из spawninfoview
+    public Transform[] currentSpawnCreaturesPool;//всё будет браться из spawninfoview
     public float curSpawnTime;
     public float spawnTime;
     public SpawnZoneView zoneView;

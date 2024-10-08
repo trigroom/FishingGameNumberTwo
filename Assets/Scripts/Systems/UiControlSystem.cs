@@ -17,7 +17,9 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<MovementComponent> _movementComponentsPool;
     private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
     private EcsPoolInject<GunInventoryCellComponent> _gunInventoryCellComponentsPool;
+    private EcsPoolInject<PlayerWeaponsInInventoryComponent> _playerWeaponsInInventoryComponent;
     private EcsPoolInject<StorageCellTag> _storageCellTagsPool;
+    private EcsPoolInject<NowUsedWeaponTag> _nowUsedWeaponTagsPool;
     //private EcsPoolInject<GunComponent> _gunComponentsPool;
     private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
     //private EcsPoolInject<HealingItemCellComponent> _healingItemCellComponentsPool;
@@ -84,7 +86,23 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                     var playerGunCmp = _playerGunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
 
                     _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Gun info" + "\n" + "Damage: " + item.itemInfo.gunInfo.damage + "\n" + "Shot couldown: " + item.itemInfo.gunInfo.attackCouldown + "\n" + "Max magazine capacity: " + item.itemInfo.gunInfo.magazineCapacity + "\n" + "Reload time: " + item.itemInfo.gunInfo.reloadDuration
-                        + "\n" + "Durability points: " + playerGunCmp.durabilityPoints + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n" + "Spread: " + item.itemInfo.gunInfo.minSpread + "to" + item.itemInfo.gunInfo.maxSpread + "\n" + "Shot distance: " + item.itemInfo.gunInfo.attackLenght + "\n";
+                        + "\n" + "Spread: " + item.itemInfo.gunInfo.minSpread + "to" + item.itemInfo.gunInfo.maxSpread + "\n" + "Shot distance: " + item.itemInfo.gunInfo.attackLenght + "\n";
+                    ref var playerInvWeaponsCmp = ref _playerWeaponsInInventoryComponent.Value.Get(_sceneData.Value.playerEntity);
+                    if (gunInInvCellCmp.isEquipedWeapon)
+                    {
+                        if (_nowUsedWeaponTagsPool.Value.Has(desription))
+                            _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + playerGunCmp.durabilityPoints + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
+                        else if (desription == _sceneData.Value.firstGunCellView._entity)
+                            _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + playerInvWeaponsCmp.curFirstWeaponDurability + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
+                        else if (desription == _sceneData.Value.secondGunCellView._entity)
+                            _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + playerInvWeaponsCmp.curSecondWeaponDurability + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
+                    }
+                    else
+                    {
+                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + gunInInvCellCmp.gunDurability + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
+                    }
+                    // баги с отображением дурабилити
+
                     if (item.itemInfo.gunInfo.isOneBulletReloaded)
                         _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "reloads one cartridge at a time" + "\n";
                     else

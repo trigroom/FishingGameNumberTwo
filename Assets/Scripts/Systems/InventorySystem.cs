@@ -1,6 +1,5 @@
 using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class InventorySystem : IEcsInitSystem, IEcsRunSystem
@@ -28,6 +27,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
     private EcsPoolInject<AddItemFromCellEvent> _addItemFromCellEventsPool;
     private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
     private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
+    private EcsPoolInject<NowUsedWeaponTag> _nowUsedWeaponTagsPool;
     //private EcsPoolInject<HealingItemCellTag> _healingItemCellTagsPool;
 
     private EcsFilterInject<Inc<ReloadEvent>> _reloadEventsFilter;
@@ -121,6 +121,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         ref var playerWeaponsInInvCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
         ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(_sceneData.Value.firstGunCellView._entity);
         ref var playerGunCmp = ref _playerGunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+        _nowUsedWeaponTagsPool.Value.Add(_sceneData.Value.firstGunCellView._entity);
 
         invCellCmp.isEmpty = false;
 
@@ -153,7 +154,8 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         playerGunCmp.gunInfo = invItemCmp.itemInfo.gunInfo;
         gunCmp.currentMagazineCapacity = invItemCmp.itemInfo.gunInfo.magazineCapacity;
         gunCmp.isOneBulletReload = invItemCmp.itemInfo.gunInfo.isOneBulletReloaded;
-        playerGunCmp.durabilityPoints = invItemCmp.itemInfo.gunInfo.maxDurabilityPoints;//временно, пока система сохранений нормальная не появится
+        gunInInvCmp.gunDurability = invItemCmp.itemInfo.gunInfo.maxDurabilityPoints;//временно, пока система сохранений нормальная не появится
+        playerGunCmp.durabilityPoints = gunInInvCmp.gunDurability;
 
         playerGunCmp.maxSpread = invItemCmp.itemInfo.gunInfo.maxSpread;
         playerGunCmp.minSpread = invItemCmp.itemInfo.gunInfo.minSpread;
@@ -271,6 +273,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                             curInvCellCmp.cellView.ChangeCellItemCount(itemCmp.currentItemsCount);
                             //доделать что то
                             Debug.Log("del weapon from fast cells");
+                            _gunInventoryCellComponentsPool.Value.Del(movedToFastCellWeapon);//
                             break;
                         }
                     }
@@ -283,7 +286,8 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                     {
                         Debug.Log("add 1st weapon to fast cell");
                         int firstGunCellEntity = _sceneData.Value.firstGunCellView._entity;
-
+                        
+                        //уравнение дурабилити  опинтов
                         _inventoryItemComponent.Value.Copy(movedToFastCellWeapon, firstGunCellEntity);
                         _gunInventoryCellComponentsPool.Value.Copy(movedToFastCellWeapon, firstGunCellEntity);
 
@@ -613,7 +617,15 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
             if (playerCmp.money < shopCellCmp.itemCost || !CanAddItems(shopCellCmp.itemInfo, shopCellCmp.itemCount, false)) break;
 
-            AddItemToInventory(shopCellCmp.itemInfo, shopCellCmp.itemCount, false);
+            int weaponCellCount = 0;
+            AddItemToInventory(shopCellCmp.itemInfo, shopCellCmp.itemCount, ref weaponCellCount, false);
+
+            Debug.Log(weaponCellCount + "buyed weapon entity");
+            if (shopCellCmp.itemInfo.type == ItemInfo.itemType.gun)
+            {
+                ref var gunCmp = ref _gunInventoryCellComponentsPool.Value.Get(weaponCellCount);
+                gunCmp.gunDurability = gunCmp.gunInfo.maxDurabilityPoints;//в магазине покупается целое оружие
+            }
 
             playerCmp.money -= shopCellCmp.itemCost;
             _sceneData.Value.moneyText.text = playerCmp.money + "$";
@@ -1000,6 +1012,15 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
                     itemCmp.itemInfo = itemInfo;
 
+
+                    if (itemCmp.itemInfo.type == ItemInfo.itemType.gun)
+                    {
+                        ref var gunInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(cell);
+
+                        gunInvCmp.isEquipedWeapon = false;
+                        gunInvCmp.gunInfo = itemCmp.itemInfo.gunInfo;
+                    }
+
                     invCellCmp.isEmpty = false;
                     invCellCmp.inventoryItemComponent = itemCmp;
                     invCellCmp.cellView.ChangeCellItemSprite(itemCmp.itemInfo.itemSprite);
@@ -1085,6 +1106,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
                         gunInvCmp.isEquipedWeapon = false;
                         gunInvCmp.gunInfo = itemCmp.itemInfo.gunInfo;
+                        Debug.Log(cell);
                     }
 
 

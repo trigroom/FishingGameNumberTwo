@@ -7,6 +7,10 @@ using UnityEngine.UI;
 
 public class SceneService : MonoBehaviour
 {
+    [field: SerializeField] public int timeHourOffset { get; private set; }
+    [field: SerializeField] public float dayTime { get; private set; }
+    [field: SerializeField] public Gradient nightLightColor { get; private set; }
+  //  [field: SerializeField] public Color dayLightColor { get; private set; }
     [field: SerializeField] public PostProcessVolume postProcessingCamera { get; private set; }
     [field: SerializeField] public InventoryCellView healingItemCellView { get; private set; }
     [field: SerializeField] public InventoryCellView firstGunCellView { get; private set; }
@@ -37,6 +41,7 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public ShopCellView shopCellPrefab { get; private set; }
 
     [field: SerializeField] public TMP_Text ammoInfoText;
+    [field: SerializeField] public Light gloabalLight { get; set; }
     [field: SerializeField] public Camera mainCamera { get; private set; }
     [field: SerializeField] public LineRenderer bulletTracer { get; private set; }
     [field: SerializeField] public int playerEntity { get; private set; }

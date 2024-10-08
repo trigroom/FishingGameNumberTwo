@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class SpawnZoneView : MonoBehaviour
 {
-    public Transform[] spawnObjects;
+    public Transform[] daySpawnCreaturesPool;
+    public Transform[] nightSpawnCreaturesPool;
     public float spawnTime;
     public int _entity { get; private set; }
 

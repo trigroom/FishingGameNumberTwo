@@ -326,7 +326,7 @@ MonoBehaviour:
   followDistance: 7
   safeDistance: 6
   minSafeDistance: 3
-  isAttackWhenRetreat: 1
+  isAttackWhenRetreat: 0
   isPeaceful: 0
 --- !u!114 &5375867495861106499
 MonoBehaviour:
