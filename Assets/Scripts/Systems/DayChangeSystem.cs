@@ -28,7 +28,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
         foreach (var entity in _globalTimeComponentsFilter.Value)
         {
             ref var globalTimeCmp = ref _globalTimeComponentsPool.Value.Get(entity);
-            float curTime = 1440 * globalTimeCmp.currentDayTime / _sceneService.Value.dayTime;
+            /*float curTime = 1440 * globalTimeCmp.currentDayTime / _sceneService.Value.dayTime;
             globalTimeCmp.minutesToTimerTextCount += curTime;
             if(globalTimeCmp.minutesToTimerTextCount >=1) 
             {
@@ -37,10 +37,10 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 if (hours < 0)
                     hours += 24;
             _sceneService.Value.dropedItemsUIView.dayTimeText.text = hours.ToString() + ":" + ((int)(curTime % 60)).ToString("00"); 
-            }
+            }*/
 
             globalTimeCmp.currentDayTime += Time.deltaTime;
-            if(globalTimeCmp.currentDayTime > _sceneService.Value.dayTime*0.4f && !globalTimeCmp.isNight)
+            if(globalTimeCmp.currentDayTime > _sceneService.Value.dayTime*0.7f && !globalTimeCmp.isNight)
             {
                 globalTimeCmp.changeGloabalLightTime = 0;
                 globalTimeCmp.isNight = true;

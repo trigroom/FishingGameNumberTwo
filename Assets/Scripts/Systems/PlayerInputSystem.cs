@@ -19,6 +19,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
     private EcsPoolInject<HealFromHealItemCellEvent> _healFromHealItemCellEventsPool;
     private EcsPoolInject<InventoryCellComponent> _inventoryCellComponentsPool;
+    private EcsPoolInject<FlashLightInInventoryComponent> _flashLightInInventoryComponentsPool;
 
     private EcsCustomInject<SceneService> _sceneService;
 
@@ -33,12 +34,12 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         _menuStatesComponentsPool.Value.Add(_playerEntity);
 
         _playerGunComponentsPool.Value.Add(_playerEntity);
-       
+
 
         ref var playerCmp = ref _playerComponentsPool.Value.Add(_playerEntity);
         playerCmp.view = _sceneService.Value.SpawnPlayer(_world.Value, _playerEntity);
-        playerCmp.money = _sceneService.Value.startMoneyForTest; 
-        playerCmp.visionZoneCollider = playerCmp.view.playerInputView.visionZoneCollider;
+        playerCmp.money = _sceneService.Value.startMoneyForTest;
+        //playerCmp.visionZoneCollider = playerCmp.view.playerInputView.visionZoneCollider;
 
         ref var weaponsInInventoryCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Add(_playerEntity);
         //Брать оружия из сэйва
@@ -97,10 +98,34 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         moveCmp.pointToRotateInput = _sceneService.Value.mainCamera.ScreenToWorldPoint(Input.mousePosition);
 
-        if(Input.GetKeyDown(KeyCode.H) && !_currentHealingItemComponentsPool.Value.Get(_playerEntity).isHealing && !_currentAttackComponentsPool.Value.Get(_playerEntity).weaponIsChanged && !_playerGunComponentsPool.Value.Get(_playerEntity).inScope && !_gunComponentsPool.Value.Get(_playerEntity).isReloading && healthCmp.maxHealthPoint != healthCmp.healthPoint && !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.healingItemCellView._entity).isEmpty) //возможно что то ещё
+        if (Input.GetKeyDown(KeyCode.H) && !_currentHealingItemComponentsPool.Value.Get(_playerEntity).isHealing && !_currentAttackComponentsPool.Value.Get(_playerEntity).weaponIsChanged && !_playerGunComponentsPool.Value.Get(_playerEntity).inScope && !_gunComponentsPool.Value.Get(_playerEntity).isReloading && healthCmp.maxHealthPoint != healthCmp.healthPoint && !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.healingItemCellView._entity).isEmpty) //возможно что то ещё
         {
             _healFromHealItemCellEventsPool.Value.Add(_playerEntity);
-           // _sceneService.Value.ammoInfoText.text = "восстановление здоровья...";
+            // _sceneService.Value.ammoInfoText.text = "восстановление здоровья...";
+        }
+        //Ниже использование фонарика
+        else if (Input.GetKeyDown(KeyCode.L) && _playerComponentsPool.Value.Get(_sceneService.Value.playerEntity).canUseFlashlight)
+        {
+            ref var playerCmp = ref _playerComponentsPool.Value.Get(_sceneService.Value.playerEntity);
+            playerCmp.useFlashlight = !playerCmp.useFlashlight;
+            playerCmp.view.flashLightObject.gameObject.SetActive(playerCmp.useFlashlight);
+        }
+
+        if (!_inventoryCellComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity).isEmpty)
+        {
+            ref var flashlightCmp = ref _flashLightInInventoryComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity);
+            ref var playerCmp = ref _playerComponentsPool.Value.Get(_sceneService.Value.playerEntity);
+
+            if (flashlightCmp.currentChargeRemainigTime > 0 && playerCmp.useFlashlight)
+                flashlightCmp.currentChargeRemainigTime -= Time.deltaTime;
+
+            else if (playerCmp.useFlashlight && flashlightCmp.currentChargeRemainigTime <= 0)
+            {
+                playerCmp.useFlashlight = false;
+                playerCmp.canUseFlashlight = false;
+                flashlightCmp.currentChargeRemainigTime = 0;
+                playerCmp.view.flashLightObject.gameObject.SetActive(false);
+            }
         }
     }
 

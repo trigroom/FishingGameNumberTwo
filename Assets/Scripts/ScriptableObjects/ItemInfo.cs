@@ -9,7 +9,9 @@ public class ItemInfo : ScriptableObject
         gun,
         meleeWeapon,
         heal,
-        bullet,
+        bullet,//можно потом убрать
+        flashlight,
+        watch,
         drop
     }
     [Header("Item stats")]
@@ -24,5 +26,6 @@ public class ItemInfo : ScriptableObject
     public GunInfo gunInfo;
     [Header("Heal items")]
     public HealingItemInfo healInfo;
-
+    [Header("Flashlights")]
+    public float maxWorkTime;
 }

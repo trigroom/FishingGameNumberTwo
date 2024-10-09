@@ -323,7 +323,9 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
         ref var cameraCmp = ref _cameraComponentsPool.Value.Get(playerEntity);
         ref var moveCmp = ref _movementComponentsPool.Value.Get(playerEntity);
         ref var playerCmp = ref _playerComponentsPool.Value.Get(playerEntity);
-        Vector2[] oldPointsArray = playerCmp.visionZoneCollider.GetPath(1);
+        //Vector2[] oldPointsArray = playerCmp.visionZoneCollider.GetPath(1);
+         var spriteMaskVision = playerCmp.view.visionZoneSprite;
+        var spriteMaskVisionZone = playerCmp.view.visionZoneSpriteMask;
         if (!plyerGunCmp.inScope)
         {
             cameraCmp.cursorPositonPart = 1;
@@ -331,10 +333,20 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                 cameraCmp.playerPositonPart = 6 / plyerGunCmp.scopeMultiplicity;
             else
                 cameraCmp.playerPositonPart = 2;
+            if(plyerGunCmp.scopeMultiplicity == 2)
+            {
+                spriteMaskVision.sprite = _sceneData.Value.scopeSpriteMasks[1];
+                spriteMaskVisionZone.sprite = _sceneData.Value.scopeSpriteMasks[1];
+            }
+            else if (plyerGunCmp.scopeMultiplicity == 8)
+            {
+                spriteMaskVisionZone.sprite = _sceneData.Value.scopeSpriteMasks[2];
+                spriteMaskVision.sprite = _sceneData.Value.scopeSpriteMasks[2];//сделал так, потому что прицелов мало, иначе через словарь можно
+            }
             _sceneData.Value.mainCamera.orthographicSize = plyerGunCmp.scopeMultiplicity * 5;
             moveCmp.moveSpeed /= plyerGunCmp.scopeMultiplicity;//придумать ураввнение скорости получше
-            Vector2[] pointsArray = new Vector2[] { oldPointsArray[0], oldPointsArray[1], new Vector2(oldPointsArray[2].x, -0.4f - plyerGunCmp.scopeMultiplicity), new Vector2(oldPointsArray[3].x, -0.4f - plyerGunCmp.scopeMultiplicity) };
-            playerCmp.visionZoneCollider.SetPath(1, pointsArray);
+           // Vector2[] pointsArray = new Vector2[] { oldPointsArray[0], oldPointsArray[1], new Vector2(oldPointsArray[2].x, -0.4f - plyerGunCmp.scopeMultiplicity), new Vector2(oldPointsArray[3].x, -0.4f - plyerGunCmp.scopeMultiplicity) };
+           // playerCmp.visionZoneCollider.SetPath(1, pointsArray);
         }
         else
         {
@@ -342,8 +354,10 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
             cameraCmp.playerPositonPart = 6;
             _sceneData.Value.mainCamera.orthographicSize = 5;
             moveCmp.moveSpeed *= plyerGunCmp.scopeMultiplicity;
-            Vector2[] pointsArray = new Vector2[] { oldPointsArray[0], oldPointsArray[1], new Vector2(oldPointsArray[2].x, -0.4f), new Vector2(oldPointsArray[3].x, -0.4f) };
-            playerCmp.visionZoneCollider.SetPath(1, pointsArray);
+            spriteMaskVisionZone.sprite = _sceneData.Value.scopeSpriteMasks[0];
+            spriteMaskVision.sprite = _sceneData.Value.scopeSpriteMasks[0];
+            //Vector2[] pointsArray = new Vector2[] { oldPointsArray[0], oldPointsArray[1], new Vector2(oldPointsArray[2].x, -0.4f), new Vector2(oldPointsArray[3].x, -0.4f) };
+            // playerCmp.visionZoneCollider.SetPath(1, pointsArray);
         }
         CalculateRecoil(ref gunCmp, plyerGunCmp, true);
         plyerGunCmp.inScope = !plyerGunCmp.inScope;

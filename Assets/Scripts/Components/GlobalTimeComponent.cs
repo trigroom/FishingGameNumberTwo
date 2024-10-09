@@ -10,5 +10,5 @@ public struct GlobalTimeComponent
     public bool lightStateIsChanged;
     public float changeGloabalLightTime;
 
-    public float minutesToTimerTextCount;
+   // public float minutesToTimerTextCount;
 }

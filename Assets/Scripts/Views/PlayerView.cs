@@ -1,7 +1,6 @@
 using Leopotam.EcsLite;
 using TMPro;
 using UnityEngine;
-using static InteractCharacterView;
 
 public class PlayerView : MonoBehaviour
 {
@@ -9,6 +8,9 @@ public class PlayerView : MonoBehaviour
     [field: SerializeField] public MovementView movementView { get; private set; }
     [field: SerializeField] public PlayerInputView playerInputView { get; private set; }
     [field: SerializeField] public Light flashLight { get; private set; }
+    [field: SerializeField] public SpriteRenderer visionZoneSprite { get; private set; }
+    [field: SerializeField] public SpriteMask visionZoneSpriteMask { get; private set; }
+    [field: SerializeField] public Transform flashLightObject { get; private set; }
     public Vector2 GetPlayerPosition()
     {
         return gameObject.transform.position;

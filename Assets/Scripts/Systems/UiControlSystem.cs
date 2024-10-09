@@ -20,9 +20,11 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<PlayerWeaponsInInventoryComponent> _playerWeaponsInInventoryComponent;
     private EcsPoolInject<StorageCellTag> _storageCellTagsPool;
     private EcsPoolInject<NowUsedWeaponTag> _nowUsedWeaponTagsPool;
+    private EcsPoolInject<GlobalTimeComponent> _globalTimeComponentsPool;
     //private EcsPoolInject<GunComponent> _gunComponentsPool;
     private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
     //private EcsPoolInject<HealingItemCellComponent> _healingItemCellComponentsPool;
+    private EcsPoolInject<FlashLightInInventoryComponent> _flashlightInInventoryComponentsPool;
 
     private EcsFilterInject<Inc<SetDescriptionItemEvent>> _setDescriptionItemEventsFilter;
     private EcsFilterInject<Inc<StorageOpenEvent>> _storageOpenEventsFilter;
@@ -123,31 +125,31 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                     if (menusStatesCmp.inStorageState)
                         _sceneData.Value.dropedItemsUIView.storageUIContainer.gameObject.SetActive(false);
                     _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(false);
-                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "Снять";
+                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "take off";
                 }
                 else
                 {
-                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "Снарядить";
+                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "equip";
                 }
             }
 
             else if (item.itemInfo.type == ItemInfo.itemType.heal)
             {
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(true);
-                var healItemCellCmp = _inventoryCellComponentPool.Value.Get(descriptionEvt.itemEntity);
+                //var healItemCellCmp = _inventoryCellComponentPool.Value.Get(descriptionEvt.itemEntity);
                 _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Healed health points: " + item.itemInfo.healInfo.healingHealthPoints + "\n" + "Heal time: " + item.itemInfo.healInfo.healingTime + "\n";
                 //кнопка использовать
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(true);
-                if (descriptionEvt.itemEntity == _sceneData.Value.healingItemCellView._entity && !healItemCellCmp.isEmpty)
+                if (descriptionEvt.itemEntity == _sceneData.Value.healingItemCellView._entity /*&& !healItemCellCmp.isEmpty*/)
                 {
                     if (menusStatesCmp.inStorageState)
                         _sceneData.Value.dropedItemsUIView.storageUIContainer.gameObject.SetActive(false);
                     _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(false);
-                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "Снять все";
+                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "take off all";
                 }
                 else
                 {
-                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "Снарядить все";
+                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "equip all";
                 }
             }
             /*else if (item.itemInfo.type == ItemInfo.itemType.meleeWeapon)
@@ -155,6 +157,38 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateWeaponEquipButton(true);
                 //смена на милишку
             }*/
+
+            else if (item.itemInfo.type == ItemInfo.itemType.watch)
+            {
+                // var flashlightItemCellCmp = _inventoryCellComponentPool.Value.Get(descriptionEvt.itemEntity);
+                ref var globalTimeCmp = ref _globalTimeComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+                float curTime = 1440 * globalTimeCmp.currentDayTime / _sceneData.Value.dayTime;
+
+                int hours = (int)(curTime / 60) - _sceneData.Value.timeHourOffset;
+                if (hours < 0)
+                    hours += 24;
+                _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Time: " + hours.ToString() + ":" + ((int)(curTime % 60)).ToString("00") + "\n";
+                _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(false);
+                _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(false);
+            }
+
+            else if (item.itemInfo.type == ItemInfo.itemType.flashlight)
+            {
+                _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Remaining charge time : " + ((int)_flashlightInInventoryComponentsPool.Value.Get(desription).currentChargeRemainigTime).ToString() +" / "+item.itemInfo.maxWorkTime+ "\n";
+                if (descriptionEvt.itemEntity == _sceneData.Value.flashlightItemCellView._entity)
+                {
+                    if (menusStatesCmp.inStorageState)
+                        _sceneData.Value.dropedItemsUIView.storageUIContainer.gameObject.SetActive(false);
+                    _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(false);
+                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "take off";
+                }
+                else
+                {
+                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "equip ";
+                }
+                _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(false);
+                _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(true);
+            }
 
             else
             {

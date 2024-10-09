@@ -1,4 +1,5 @@
 using Leopotam.EcsLite;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -7,11 +8,13 @@ using UnityEngine.UI;
 
 public class SceneService : MonoBehaviour
 {
+    [field: SerializeField] public Sprite[] scopeSpriteMasks { get; private set; }//x1,x2,x8
     [field: SerializeField] public int timeHourOffset { get; private set; }
     [field: SerializeField] public float dayTime { get; private set; }
     [field: SerializeField] public Gradient nightLightColor { get; private set; }
   //  [field: SerializeField] public Color dayLightColor { get; private set; }
     [field: SerializeField] public PostProcessVolume postProcessingCamera { get; private set; }
+    [field: SerializeField] public InventoryCellView flashlightItemCellView { get; private set; }
     [field: SerializeField] public InventoryCellView healingItemCellView { get; private set; }
     [field: SerializeField] public InventoryCellView firstGunCellView { get; private set; }
     [field: SerializeField] public InventoryCellView secondGunCellView { get; private set; }
