@@ -19,6 +19,8 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public InventoryCellView firstGunCellView { get; private set; }
     [field: SerializeField] public InventoryCellView secondGunCellView { get; private set; }
     [field: SerializeField] public InventoryCellView meleeWeaponCellView { get; private set; }
+    [field: SerializeField] public TMP_Text playerStaminaText { get; private set; }
+    [field: SerializeField] public Image playerStaminaBarFilled { get; private set; }
     [field: SerializeField] public TMP_Text playerArmorText { get; private set; }
     [field: SerializeField] public Image playerArmorBarFilled { get; private set; }
     [field: SerializeField] public TMP_Text playerHealthText { get; private set; }

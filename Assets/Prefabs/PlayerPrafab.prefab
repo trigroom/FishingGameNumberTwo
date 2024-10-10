@@ -123,10 +123,12 @@ MonoBehaviour:
   <healthView>k__BackingField: {fileID: 619211170298126792}
   <movementView>k__BackingField: {fileID: 1730804259929462267}
   <playerInputView>k__BackingField: {fileID: 8744793180983620791}
-  <flashLight>k__BackingField: {fileID: 5666626340128336633}
   <visionZoneSprite>k__BackingField: {fileID: 1198210903838960601}
   <visionZoneSpriteMask>k__BackingField: {fileID: 1167775629039129379}
   <flashLightObject>k__BackingField: {fileID: 7259790024309383796}
+  <runTime>k__BackingField: 6
+  <runTimeRecoverySpeed>k__BackingField: 1
+  <runSpeedMultiplayer>k__BackingField: 1.5
 --- !u!1 &5671705832983200859
 GameObject:
   m_ObjectHideFlags: 0

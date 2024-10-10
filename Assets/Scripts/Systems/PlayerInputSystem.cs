@@ -19,6 +19,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
     private EcsPoolInject<HealFromHealItemCellEvent> _healFromHealItemCellEventsPool;
     private EcsPoolInject<InventoryCellComponent> _inventoryCellComponentsPool;
+    private EcsPoolInject<PlayerMoveComponent> _playerMoveComponentsPool;
     private EcsPoolInject<FlashLightInInventoryComponent> _flashLightInInventoryComponentsPool;
 
     private EcsCustomInject<SceneService> _sceneService;
@@ -57,6 +58,12 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         attackCmp.weaponIsChanged = false;
         attackCmp.canAttack = true;
 
+        ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Add(_playerEntity);
+        playerMoveCmp.playerView = playerCmp.view;
+        playerMoveCmp.currentRunTime = playerMoveCmp.playerView.runTime;
+
+        _sceneService.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.playerView.runTime;
+
         ref var gunCmp = ref _gunComponentsPool.Value.Add(_playerEntity);
 
         ref var healthCmp = ref _healthComponentsPool.Value.Add(_playerEntity);
@@ -88,11 +95,34 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     {
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
-
         Vector2 moveDirection = new Vector3(horizontalInput, verticalInput).normalized;
 
+        ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Get(_sceneService.Value.playerEntity);
         ref var moveCmp = ref _movementComponentPool.Value.Get(_playerEntity);
         moveCmp.moveInput = moveDirection;
+
+        if (playerMoveCmp.isRun)
+        {
+            playerMoveCmp.currentRunTime -= Time.deltaTime;
+            if (playerMoveCmp.currentRunTime <= 0 || moveDirection == Vector2.zero)
+            {
+                //playerMoveCmp.currentRunTime = 0;
+                playerMoveCmp.isRun = false;
+                moveCmp.moveSpeed /= playerMoveCmp.playerView.runSpeedMultiplayer;
+            }
+            _sceneService.Value.playerStaminaBarFilled.fillAmount = playerMoveCmp.currentRunTime / playerMoveCmp.playerView.runTime;
+            _sceneService.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.playerView.runTime;
+        }
+        else if (playerMoveCmp.currentRunTime < playerMoveCmp.playerView.runTime)
+        {
+            playerMoveCmp.currentRunTime += Time.deltaTime * playerMoveCmp.playerView.runTimeRecoverySpeed;
+            _sceneService.Value.playerStaminaBarFilled.fillAmount = playerMoveCmp.currentRunTime / playerMoveCmp.playerView.runTime;
+            _sceneService.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.playerView.runTime;
+        }
+        else if (playerMoveCmp.currentRunTime > playerMoveCmp.playerView.runTime)
+            playerMoveCmp.currentRunTime = playerMoveCmp.playerView.runTime;
+        Debug.Log(playerMoveCmp.currentRunTime);
+        //обновление шкалы стамины
 
         var healthCmp = _healthComponentsPool.Value.Get(_playerEntity);
 
@@ -110,16 +140,25 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             playerCmp.useFlashlight = !playerCmp.useFlashlight;
             playerCmp.view.flashLightObject.gameObject.SetActive(playerCmp.useFlashlight);
         }
+        else if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
 
-        if (!_inventoryCellComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity).isEmpty)
+            playerMoveCmp.isRun = !playerMoveCmp.isRun;
+            if (playerMoveCmp.isRun)
+                moveCmp.moveSpeed *= playerMoveCmp.playerView.runSpeedMultiplayer;
+            else
+                moveCmp.moveSpeed /= playerMoveCmp.playerView.runSpeedMultiplayer;
+        }
+
+        if (!_inventoryCellComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity).isEmpty && _playerComponentsPool.Value.Get(_sceneService.Value.playerEntity).useFlashlight)
         {
             ref var flashlightCmp = ref _flashLightInInventoryComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity);
             ref var playerCmp = ref _playerComponentsPool.Value.Get(_sceneService.Value.playerEntity);
 
-            if (flashlightCmp.currentChargeRemainigTime > 0 && playerCmp.useFlashlight)
+            if (flashlightCmp.currentChargeRemainigTime > 0)
                 flashlightCmp.currentChargeRemainigTime -= Time.deltaTime;
 
-            else if (playerCmp.useFlashlight && flashlightCmp.currentChargeRemainigTime <= 0)
+            else
             {
                 playerCmp.useFlashlight = false;
                 playerCmp.canUseFlashlight = false;

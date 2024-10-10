@@ -41,11 +41,13 @@ public class PlayerInputView : MonoBehaviour
             else if (canShoping && !usedInventory && currentActiveShopper != -1)
             {
                 canShoping = false;
+                _world.GetPool<OffInScopeStateEvent>().Add(currentActiveShopper);
                 _world.GetPool<ShopOpenEvent>().Add(currentActiveShopper);
             }
             else if (canUseStorage && !usedInventory)
             {
                 canUseStorage = false;
+                _world.GetPool<OffInScopeStateEvent>().Add(_world.NewEntity());
                 _world.GetPool<StorageOpenEvent>().Add(_entity);
             }
         }

@@ -25,6 +25,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
     //private EcsPoolInject<HealingItemCellComponent> _healingItemCellComponentsPool;
     private EcsPoolInject<FlashLightInInventoryComponent> _flashlightInInventoryComponentsPool;
+    private EcsPoolInject<OffInScopeStateEvent> _offInScopeStateEventsPool;
 
     private EcsFilterInject<Inc<SetDescriptionItemEvent>> _setDescriptionItemEventsFilter;
     private EcsFilterInject<Inc<StorageOpenEvent>> _storageOpenEventsFilter;
@@ -174,7 +175,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
             else if (item.itemInfo.type == ItemInfo.itemType.flashlight)
             {
-                _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Remaining charge time : " + ((int)_flashlightInInventoryComponentsPool.Value.Get(desription).currentChargeRemainigTime).ToString() +" / "+item.itemInfo.maxWorkTime+ "\n";
+                _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Remaining charge time : " + ((int)_flashlightInInventoryComponentsPool.Value.Get(desription).currentChargeRemainigTime).ToString() + " / " + item.itemInfo.maxWorkTime + "\n";
                 if (descriptionEvt.itemEntity == _sceneData.Value.flashlightItemCellView._entity)
                 {
                     if (menusStatesCmp.inStorageState)
@@ -204,10 +205,11 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
         if (Input.GetKeyDown(KeyCode.I) || (Input.GetKeyDown(KeyCode.Escape) && _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inInventoryState))
         {
-            var playerGunCmp = _playerGunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-            if (playerGunCmp.inScope)
-                return;
+            Debug.Log("open inv");
             ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+            if (!menusStatesCmp.inInventoryState)
+                _offInScopeStateEventsPool.Value.Add(_sceneData.Value.playerEntity);
+
             ChangeInventoryMenuState(ref menusStatesCmp);
 
             if (menusStatesCmp.inShopState)

@@ -14,6 +14,8 @@ public struct PlayerGunComponent
     public float minSpread;
     public float addedSpread;
 
+    public float currentCameraSpread;//а нужна ли?
+
     public int durabilityPoints;
 
     public int scopeMultiplicity;

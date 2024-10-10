@@ -24,7 +24,9 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
     private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
     private EcsPoolInject<NowUsedWeaponTag> _nowUsedWeaponTagsPool;
+    private EcsPoolInject<OffInScopeStateEvent> _offInScopeStateEventsPool;
 
+    private EcsFilterInject<Inc<OffInScopeStateEvent>> _offInScopeStateEventsFilter;
     private EcsFilterInject<Inc<EndReloadEvent>> _endReloadEventFilter;
     private EcsFilterInject<Inc<PlayerComponent>> _playerComponentFilter;
     private EcsFilterInject<Inc<GunComponent, CreatureAIComponent>> _gunCreatureAiComponentsFilter;
@@ -109,9 +111,9 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                     {
                         if (_nowUsedWeaponTagsPool.Value.Has(_sceneData.Value.firstGunCellView._entity))
                         {
-                        gunInInvCmp.currentAmmo = gunCmp.currentMagazineCapacity;//
-                        gunInInvCmp.gunDurability = plyerGunCmp.durabilityPoints;
-                        Debug.Log(gunInInvCmp.gunDurability + "gun db");
+                            gunInInvCmp.currentAmmo = gunCmp.currentMagazineCapacity;//
+                            gunInInvCmp.gunDurability = plyerGunCmp.durabilityPoints;
+                            Debug.Log(gunInInvCmp.gunDurability + "gun db");
                         }
                         else
                         {
@@ -177,6 +179,13 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
             ref var curHealCmp = ref _currentHealingItemComponentsPool.Value.Get(playerEntity);
             ref var playerGunCmp = ref _playerGunComponentsPool.Value.Get(playerEntity);
 
+            foreach (var offInScopeEvent in _offInScopeStateEventsFilter.Value)
+            {
+                if (playerGunCmp.inScope)
+                    ChangeScopeMultiplicity();
+                _offInScopeStateEventsPool.Value.Del(offInScopeEvent);
+            }
+
             foreach (var reloadEvt in _endReloadEventFilter.Value)
             {
                 gunCmp.isReloading = true;
@@ -184,6 +193,20 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                 _endReloadEventsPool.Value.Del(reloadEvt);
             }
             gunCmp.currentAttackCouldown += Time.deltaTime;
+            if (!playerGunCmp.inScope)
+            {
+                if (_sceneData.Value.mainCamera.orthographicSize > 5)//если без прицела
+                    _sceneData.Value.mainCamera.orthographicSize -= Time.deltaTime * playerGunCmp.gunInfo.recoveryCameraSpread;
+                else if (_sceneData.Value.mainCamera.orthographicSize < 5)
+                    _sceneData.Value.mainCamera.orthographicSize = 5;
+            }
+            else
+            {
+                if (_sceneData.Value.mainCamera.orthographicSize > 5 * playerGunCmp.scopeMultiplicity)//если без прицела
+                    _sceneData.Value.mainCamera.orthographicSize -= Time.deltaTime * playerGunCmp.gunInfo.recoveryCameraSpread * playerGunCmp.scopeMultiplicity;
+                else if (_sceneData.Value.mainCamera.orthographicSize < 5 * playerGunCmp.scopeMultiplicity)
+                    _sceneData.Value.mainCamera.orthographicSize = 5 * playerGunCmp.scopeMultiplicity;
+            }
             // стрельба
             if (((playerGunCmp.isAuto && Input.GetMouseButton(0)) || (!playerGunCmp.isAuto && Input.GetMouseButtonDown(0))) && !gunCmp.isReloading && gunCmp.currentMagazineCapacity > 0 && gunCmp.currentAttackCouldown >= gunCmp.attackCouldown && !attackCmp.weaponIsChanged && attackCmp.canAttack && !curHealCmp.isHealing && playerGunCmp.durabilityPoints != 0)
             {
@@ -193,11 +216,19 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                     for (int i = 0; i < gunCmp.bulletInShotCount; i++)
                         Shoot(playerEntity, LayerMask.GetMask("Enemy"));
 
-
                     if (gunCmp.currentSpread < gunCmp.currentMaxSpread)
                         gunCmp.currentSpread += gunCmp.currentAddedSpread;
-                }
 
+
+                    if (!playerGunCmp.inScope && _sceneData.Value.mainCamera.orthographicSize < playerGunCmp.gunInfo.maxCameraSpread)
+                        _sceneData.Value.mainCamera.orthographicSize += playerGunCmp.gunInfo.addedCameraSpread * (1 - ((_sceneData.Value.mainCamera.orthographicSize - 5f) / (playerGunCmp.gunInfo.maxCameraSpread - 5f)));
+                    else if(playerGunCmp.inScope && _sceneData.Value.mainCamera.orthographicSize < playerGunCmp.gunInfo.maxCameraSpread * playerGunCmp.scopeMultiplicity)
+                        _sceneData.Value.mainCamera.orthographicSize += playerGunCmp.gunInfo.addedCameraSpread * playerGunCmp.scopeMultiplicity * (1 - ((_sceneData.Value.mainCamera.orthographicSize - 5f) / (playerGunCmp.gunInfo.maxCameraSpread * playerGunCmp.scopeMultiplicity - 5f)));
+
+                    Debug.Log("add cam spread" + (playerGunCmp.gunInfo.addedCameraSpread * playerGunCmp.scopeMultiplicity * (1 - ((_sceneData.Value.mainCamera.orthographicSize * playerGunCmp.scopeMultiplicity - 5f) / (playerGunCmp.gunInfo.maxCameraSpread * playerGunCmp.scopeMultiplicity - 5f)))));
+
+                }
+                Debug.Log("misshot prc" + playerGunCmp.misfirePercent);
                 gunCmp.currentAttackCouldown = 0;
                 gunCmp.currentMagazineCapacity--;
                 playerGunCmp.durabilityPoints--;
@@ -312,7 +343,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
             }
         }
 
-        Debug.Log("cur sp " + gunCmp.currentMinSpread);
+        // Debug.Log("cur sp " + gunCmp.currentMinSpread);
     }
     private void ChangeScopeMultiplicity()
     {
@@ -324,7 +355,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
         ref var moveCmp = ref _movementComponentsPool.Value.Get(playerEntity);
         ref var playerCmp = ref _playerComponentsPool.Value.Get(playerEntity);
         //Vector2[] oldPointsArray = playerCmp.visionZoneCollider.GetPath(1);
-         var spriteMaskVision = playerCmp.view.visionZoneSprite;
+        var spriteMaskVision = playerCmp.view.visionZoneSprite;
         var spriteMaskVisionZone = playerCmp.view.visionZoneSpriteMask;
         if (!plyerGunCmp.inScope)
         {
@@ -333,7 +364,7 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                 cameraCmp.playerPositonPart = 6 / plyerGunCmp.scopeMultiplicity;
             else
                 cameraCmp.playerPositonPart = 2;
-            if(plyerGunCmp.scopeMultiplicity == 2)
+            if (plyerGunCmp.scopeMultiplicity == 2)
             {
                 spriteMaskVision.sprite = _sceneData.Value.scopeSpriteMasks[1];
                 spriteMaskVisionZone.sprite = _sceneData.Value.scopeSpriteMasks[1];
@@ -343,16 +374,16 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
                 spriteMaskVisionZone.sprite = _sceneData.Value.scopeSpriteMasks[2];
                 spriteMaskVision.sprite = _sceneData.Value.scopeSpriteMasks[2];//сделал так, потому что прицелов мало, иначе через словарь можно
             }
-            _sceneData.Value.mainCamera.orthographicSize = plyerGunCmp.scopeMultiplicity * 5;
+            _sceneData.Value.mainCamera.orthographicSize *= plyerGunCmp.scopeMultiplicity;
             moveCmp.moveSpeed /= plyerGunCmp.scopeMultiplicity;//придумать ураввнение скорости получше
-           // Vector2[] pointsArray = new Vector2[] { oldPointsArray[0], oldPointsArray[1], new Vector2(oldPointsArray[2].x, -0.4f - plyerGunCmp.scopeMultiplicity), new Vector2(oldPointsArray[3].x, -0.4f - plyerGunCmp.scopeMultiplicity) };
-           // playerCmp.visionZoneCollider.SetPath(1, pointsArray);
+                                                               // Vector2[] pointsArray = new Vector2[] { oldPointsArray[0], oldPointsArray[1], new Vector2(oldPointsArray[2].x, -0.4f - plyerGunCmp.scopeMultiplicity), new Vector2(oldPointsArray[3].x, -0.4f - plyerGunCmp.scopeMultiplicity) };
+                                                               // playerCmp.visionZoneCollider.SetPath(1, pointsArray);
         }
         else
         {
             cameraCmp.cursorPositonPart = 1;
             cameraCmp.playerPositonPart = 6;
-            _sceneData.Value.mainCamera.orthographicSize = 5;
+            _sceneData.Value.mainCamera.orthographicSize /= plyerGunCmp.scopeMultiplicity;
             moveCmp.moveSpeed *= plyerGunCmp.scopeMultiplicity;
             spriteMaskVisionZone.sprite = _sceneData.Value.scopeSpriteMasks[0];
             spriteMaskVision.sprite = _sceneData.Value.scopeSpriteMasks[0];
@@ -444,6 +475,21 @@ public class AttackSystem : IEcsRunSystem, IEcsInitSystem
         playerGunCmp.maxSpread = gunInfo.maxSpread;
         playerGunCmp.minSpread = gunInfo.minSpread;
         playerGunCmp.addedSpread = gunInfo.addedSpread;
+
+        if (playerGunCmp.durabilityPoints < playerGunCmp.gunInfo.maxDurabilityPoints * 0.6f)
+        {
+            playerGunCmp.durabilityGunMultiplayer = (float)System.Math.Round(1 - ((float)playerGunCmp.durabilityPoints / ((float)playerGunCmp.gunInfo.maxDurabilityPoints * 1.6f) + 0.4f), 2);
+            playerGunCmp.misfirePercent = Mathf.FloorToInt((playerGunCmp.durabilityGunMultiplayer) * 60);
+            Debug.Log(playerGunCmp.misfirePercent + "dur chnge ");
+
+            CalculateRecoil(ref gunCmp, playerGunCmp, false);
+        }
+        else
+        {
+            playerGunCmp.durabilityGunMultiplayer = 0;
+            playerGunCmp.misfirePercent = 0;
+            CalculateRecoil(ref gunCmp, playerGunCmp, false);
+        }
 
         curAttackCmp.damage = gunInfo.damage;
     }

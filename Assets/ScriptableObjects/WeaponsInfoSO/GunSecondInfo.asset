@@ -28,4 +28,7 @@ MonoBehaviour:
   bulletCount: 1
   isOneBulletReloaded: 0
   maxDurabilityPoints: 50
+  maxCameraSpread: 7
+  addedCameraSpread: 0.4
+  recoveryCameraSpread: 0.5
   scopeMultiplicity: 2

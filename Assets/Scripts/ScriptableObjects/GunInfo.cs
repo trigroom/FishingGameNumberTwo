@@ -23,6 +23,11 @@ public class GunInfo : ScriptableObject
     public bool isOneBulletReloaded;
     public int maxDurabilityPoints;
 
+    public float maxCameraSpread;
+    public float addedCameraSpread;
+    public float recoveryCameraSpread;
+
+
     [Header("Scope settings")]
     public int scopeMultiplicity;
 }
