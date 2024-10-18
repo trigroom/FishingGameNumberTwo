@@ -21,6 +21,7 @@ public class ShopCellsSystem : IEcsInitSystem, IEcsRunSystem
 
             ref var shopperCmp = ref _shopCharacterComponentsPool.Value.Add(shopperEntity);
             shopperCmp.items = shopper.shopItems;
+            shopperCmp.characterView = shopper;
 
             shopper.Construct(_world.Value, shopperEntity);
         }
@@ -30,8 +31,8 @@ public class ShopCellsSystem : IEcsInitSystem, IEcsRunSystem
     {
         foreach (var shopOpenEvt in _shopOpenEventsFilter.Value)
         {
-
             var shopCharacterCmp = _shopCharacterComponentsPool.Value.Get(shopOpenEvt);
+            _sceneData.Value.dropedItemsUIView.shopTableImage.sprite = shopCharacterCmp.characterView.shopperTable;
 
             foreach (var shopCell in shopCharacterCmp.items)
             {

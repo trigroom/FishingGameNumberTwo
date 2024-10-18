@@ -24,6 +24,7 @@ public class ItemInfo : ScriptableObject
     public string itemDescription;
     [Header("Weapons")]
     public GunInfo gunInfo;
+    public MeleeWeaponInfo meleeWeaponInfo;
     [Header("Heal items")]
     public HealingItemInfo healInfo;
     [Header("Flashlights")]

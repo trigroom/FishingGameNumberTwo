@@ -20,7 +20,7 @@ public class MovementView : MonoBehaviour
 
     public void RotateWeaponCentre(float rotateZ)
     {
-        objectTransform.rotation = Quaternion.Euler(0f, 0f, rotateZ + offsetToWeapon);
+        weaponContainer.rotation = Quaternion.Euler(0f, 0f, rotateZ + offsetToWeapon);
     }
 
 }

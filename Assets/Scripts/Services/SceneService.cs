@@ -56,6 +56,7 @@ public class SceneService : MonoBehaviour
     private ObjectPool<ShopCellView> _shopCellsPool;
 
     //всё для тестов\/
+    [field: SerializeField] public ItemInfo meleeWeaponItemInfoStarted { get; private set; }
     [field: SerializeField] public ItemInfo gunItemInfoStarted { get; private set; }
     [field: SerializeField] public ShopItemInfo[] testShopItems { get; private set; }
     [field: SerializeField] public ItemInfo testItem1 { get; private set; }

@@ -6,8 +6,6 @@ public struct GunComponent
     public int currentMagazineCapacity;
     public float reloadDuration;
     public float currentReloadDuration;
-    public float currentAttackCouldown;
-    public float attackCouldown;
     public float attackLeght;
     public float currentSpread;
     public float currentMaxSpread;

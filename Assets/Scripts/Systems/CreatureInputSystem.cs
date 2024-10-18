@@ -6,7 +6,7 @@ public class CreatureInputSystem : IEcsRunSystem
 {
     private EcsPoolInject<MovementComponent> _movementComponentPool;
     private EcsPoolInject<HealthComponent> _healthComponentsPool;
-    private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
+    private EcsPoolInject<AttackComponent> _currentAttackComponentsPool;
     //private EcsPoolInject<GunComponent> _gunComponentsPool;
     //private EcsPoolInject<ArmorComponent> _armorComponentsPool;
     private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
@@ -24,6 +24,7 @@ public class CreatureInputSystem : IEcsRunSystem
             ref var aiCmp = ref _creatureAIComponentsPool.Value.Get(aiCreatureEntity);
             ref var moveCmp = ref _movementComponentPool.Value.Get(aiCreatureEntity);
 
+            if (moveCmp.isStunned) continue;
             //если не идл, то точка на которую смотрит будет равна направлению движения
             //если убегает и не стреляет то тоже в сторону движения поворачивается
 

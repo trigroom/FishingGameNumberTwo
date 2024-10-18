@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8306913821782544876}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: WeaponSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7322949419245453381}
   - component: {fileID: 5888361362764265850}
-  m_Layer: 7
+  - component: {fileID: 5761320077560926607}
+  - component: {fileID: 7264318335773482940}
+  m_Layer: 0
   m_Name: WeaponFirepoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -58,8 +60,8 @@ Transform:
   m_GameObject: {fileID: 6032313994760209948}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.001, y: 0.366, z: 0}
-  m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
+  m_LocalPosition: {x: 0.001, y: 0.7065, z: 0}
+  m_LocalScale: {x: 0.83100003, y: 0.83100003, z: 0.83100003}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 8306913821782544876}
@@ -107,7 +109,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 74f515cd0d8efca4cb0397e33e3a05f6, type: 3}
   m_Color: {r: 0.8584906, g: 0.7331952, b: 0.31990921, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -118,6 +120,65 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!61 &5761320077560926607
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6032313994760209948}
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.0072521865, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.44883794, y: 1}
+  m_EdgeRadius: 0
+--- !u!114 &7264318335773482940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6032313994760209948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f672f1591b436a041b643f8cd4f8a78c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLayer: 6
 --- !u!1 &6706233299948100729
 GameObject:
   m_ObjectHideFlags: 0
@@ -127,7 +188,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5820210545519620084}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: WeaponRotateCentre
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -166,10 +227,10 @@ GameObject:
   - component: {fileID: 36946619433447471}
   - component: {fileID: 5375867495861106499}
   - component: {fileID: 5657345655258025684}
-  - component: {fileID: 5513790491215936250}
   - component: {fileID: 1308195724300216008}
+  - component: {fileID: 7450008750984502828}
   m_Layer: 7
-  m_Name: EnemyForTest
+  m_Name: EnemyForTestMelee
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -235,7 +296,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.8301887, g: 0.29369885, b: 0.29369885, a: 1}
+  m_Color: {r: 0.2941176, g: 0.83137256, b: 0.73579526, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -309,7 +370,8 @@ MonoBehaviour:
   movementView: {fileID: 5375867495861106499}
   healthView: {fileID: 8928570964350680024}
   aiCreatureView: {fileID: 36946619433447471}
-  creatureGunView: {fileID: 5513790491215936250}
+  creatureGunView: {fileID: 0}
+  creatureMeleeView: {fileID: 7450008750984502828}
   dropFromCreatureView: {fileID: 1308195724300216008}
 --- !u!114 &36946619433447471
 MonoBehaviour:
@@ -324,9 +386,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   followDistance: 7
-  safeDistance: 6
-  minSafeDistance: 3
-  isAttackWhenRetreat: 0
+  safeDistance: 2
+  minSafeDistance: 0
+  isAttackWhenRetreat: 1
   isPeaceful: 0
 --- !u!114 &5375867495861106499
 MonoBehaviour:
@@ -373,29 +435,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &5513790491215936250
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7507285538399009112}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15bb1546ddcd58345bcbf51555b44f5f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attackLenght: 20
-  reloadDuration: 2
-  magazineCapacity: 10
-  damage: 1
-  attackCouldown: 1
-  bulletInShotCount: 1
-  maxSpread: 15
-  minSpread: 5
-  addedSpread: 3
-  spreadRecoverySpeed: 0.5
-  isOneBulletReloaded: 0
 --- !u!114 &1308195724300216008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -413,3 +452,25 @@ MonoBehaviour:
     <itemsCountMax>k__BackingField: 2
     <itemsCountMin>k__BackingField: 5
     <dropPercent>k__BackingField: 100
+--- !u!114 &7450008750984502828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7507285538399009112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5e90cc5f86cc2478323eec313e51a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackLenght: 20
+  damage: 1
+  attackCouldown: 3
+  isWideHit: 0
+  attackSpeed: 10
+  knockbackSpeed: 4
+  stunTime: 0.6
+  meleeWeaponCollider: {fileID: 5761320077560926607}
+  weaponTransform: {fileID: 8306913821782544876}
+  meleeWeaponColliderView: {fileID: 7264318335773482940}

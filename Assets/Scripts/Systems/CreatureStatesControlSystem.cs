@@ -7,7 +7,7 @@ public class CreatureStatesControlSystem : IEcsRunSystem
     private EcsWorldInject _world;
     private EcsCustomInject<SceneService> _sceneData;
 
-    private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
+    private EcsPoolInject<AttackComponent> _currentAttackComponentsPool;
     private EcsPoolInject<MovementComponent> _movementComponentsPool;
     private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
 

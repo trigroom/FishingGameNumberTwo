@@ -5,4 +5,5 @@ using UnityEngine;
 public struct ShopCharacterComponent 
 {
     public ShopItemInfo[] items;
+    public ShopCharacterView characterView;
 }

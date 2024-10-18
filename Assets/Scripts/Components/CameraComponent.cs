@@ -6,4 +6,7 @@ public struct CameraComponent
 {
     public float cursorPositonPart;
     public float playerPositonPart;
+
+    public float currentRunCameraOffset;
+    public Vector2 lastPlayerInput;
 }

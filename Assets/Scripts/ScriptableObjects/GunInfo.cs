@@ -27,6 +27,11 @@ public class GunInfo : ScriptableObject
     public float addedCameraSpread;
     public float recoveryCameraSpread;
 
+    public Vector2 firepointPosition;
+    [Header("Visual settings")]
+    public float spriteScaleMultiplayer;
+    public float spriteRotation;
+    public Sprite weaponSprite;
 
     [Header("Scope settings")]
     public int scopeMultiplicity;

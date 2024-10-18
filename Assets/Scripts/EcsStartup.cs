@@ -53,6 +53,7 @@ public class EcsStartUp : MonoBehaviour
         .DelHere<HealFromInventoryEvent>()
         .DelHere<ChangeToNightEvent>()
         .DelHere<ChangeToDayEvent>()
+         .DelHere<MeleeWeaponContactEvent>()
          //  .DelHere<ChangeWeaponFromInventoryEvent>()
 
          .Inject(_sceneService)

@@ -9,7 +9,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<PlayerInputsComponent> _playerInputsComponentsPool;
     private EcsPoolInject<MenuStatesComponent> _menuStatesComponentsPool;
     private EcsPoolInject<HealthComponent> _healthComponentsPool;
-    private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
+    private EcsPoolInject<AttackComponent> _currentAttackComponentsPool;
     private EcsPoolInject<PlayerWeaponsInInventoryComponent> _playerWeaponsInInventoryComponentsPool;
     private EcsPoolInject<GunComponent> _gunComponentsPool;
     private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
@@ -21,6 +21,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<InventoryCellComponent> _inventoryCellComponentsPool;
     private EcsPoolInject<PlayerMoveComponent> _playerMoveComponentsPool;
     private EcsPoolInject<FlashLightInInventoryComponent> _flashLightInInventoryComponentsPool;
+    private EcsPoolInject<MeleeWeaponComponent> _meleeWeaponComponentsPool;
 
     private EcsCustomInject<SceneService> _sceneService;
 
@@ -58,6 +59,8 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         attackCmp.weaponIsChanged = false;
         attackCmp.canAttack = true;
 
+        playerCmp.view.meleeColliderView.Construct(_world.Value, _playerEntity);
+
         ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Add(_playerEntity);
         playerMoveCmp.playerView = playerCmp.view;
         playerMoveCmp.currentRunTime = playerMoveCmp.playerView.runTime;
@@ -68,6 +71,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         ref var healthCmp = ref _healthComponentsPool.Value.Add(_playerEntity);
         healthCmp.healthView = playerCmp.view.healthView;
+        playerCmp.view.healthView.Construct(_playerEntity);
         //healthCmp.healthPoint = healthCmp.healthView.maxHealth;//для тестов
         healthCmp.healthPoint = 2;
         healthCmp.maxHealthPoint = healthCmp.healthView.maxHealth;
@@ -87,6 +91,8 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         gunCmp.firePoint = movementComponent.movementView.firePoint;//временно, потом разделить точку спавна и точку стрельбы
         gunCmp.weaponContainer = movementComponent.movementView.weaponContainer;
 
+        _meleeWeaponComponentsPool.Value.Add(_playerEntity).startHitPoint = playerCmp.view.movementView.weaponContainer.localPosition;
+
         _playerInputsComponentsPool.Value.Add(_playerEntity);
 
     }
@@ -99,34 +105,38 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Get(_sceneService.Value.playerEntity);
         ref var moveCmp = ref _movementComponentPool.Value.Get(_playerEntity);
-        moveCmp.moveInput = moveDirection;
-
-        if (playerMoveCmp.isRun)
+        if (!moveCmp.isStunned)
         {
-            playerMoveCmp.currentRunTime -= Time.deltaTime;
-            if (playerMoveCmp.currentRunTime <= 0 || moveDirection == Vector2.zero)
+            moveCmp.moveInput = moveDirection;
+
+
+            if (playerMoveCmp.isRun)
             {
-                //playerMoveCmp.currentRunTime = 0;
-                playerMoveCmp.isRun = false;
-                moveCmp.moveSpeed /= playerMoveCmp.playerView.runSpeedMultiplayer;
+                playerMoveCmp.currentRunTime -= Time.deltaTime;
+                if (playerMoveCmp.currentRunTime <= 0 || moveDirection == Vector2.zero)
+                {
+                    //playerMoveCmp.currentRunTime = 0;
+                    playerMoveCmp.isRun = false;
+                    moveCmp.moveSpeed /= playerMoveCmp.playerView.runSpeedMultiplayer;
+                }
+                _sceneService.Value.playerStaminaBarFilled.fillAmount = playerMoveCmp.currentRunTime / playerMoveCmp.playerView.runTime;
+                _sceneService.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.playerView.runTime;
             }
-            _sceneService.Value.playerStaminaBarFilled.fillAmount = playerMoveCmp.currentRunTime / playerMoveCmp.playerView.runTime;
-            _sceneService.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.playerView.runTime;
-        }
-        else if (playerMoveCmp.currentRunTime < playerMoveCmp.playerView.runTime)
-        {
-            playerMoveCmp.currentRunTime += Time.deltaTime * playerMoveCmp.playerView.runTimeRecoverySpeed;
-            _sceneService.Value.playerStaminaBarFilled.fillAmount = playerMoveCmp.currentRunTime / playerMoveCmp.playerView.runTime;
-            _sceneService.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.playerView.runTime;
-        }
-        else if (playerMoveCmp.currentRunTime > playerMoveCmp.playerView.runTime)
-            playerMoveCmp.currentRunTime = playerMoveCmp.playerView.runTime;
-        Debug.Log(playerMoveCmp.currentRunTime);
-        //обновление шкалы стамины
+            else if (playerMoveCmp.currentRunTime < playerMoveCmp.playerView.runTime)
+            {
+                playerMoveCmp.currentRunTime += Time.deltaTime * playerMoveCmp.playerView.runTimeRecoverySpeed;
+                _sceneService.Value.playerStaminaBarFilled.fillAmount = playerMoveCmp.currentRunTime / playerMoveCmp.playerView.runTime;
+                _sceneService.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.playerView.runTime;
+            }
+            else if (playerMoveCmp.currentRunTime > playerMoveCmp.playerView.runTime)
+                playerMoveCmp.currentRunTime = playerMoveCmp.playerView.runTime;
+            // Debug.Log(playerMoveCmp.currentRunTime);
+            //обновление шкалы стамины
 
+
+            moveCmp.pointToRotateInput = _sceneService.Value.mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        }
         var healthCmp = _healthComponentsPool.Value.Get(_playerEntity);
-
-        moveCmp.pointToRotateInput = _sceneService.Value.mainCamera.ScreenToWorldPoint(Input.mousePosition);
 
         if (Input.GetKeyDown(KeyCode.H) && !_currentHealingItemComponentsPool.Value.Get(_playerEntity).isHealing && !_currentAttackComponentsPool.Value.Get(_playerEntity).weaponIsChanged && !_playerGunComponentsPool.Value.Get(_playerEntity).inScope && !_gunComponentsPool.Value.Get(_playerEntity).isReloading && healthCmp.maxHealthPoint != healthCmp.healthPoint && !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.healingItemCellView._entity).isEmpty) //возможно что то ещё
         {

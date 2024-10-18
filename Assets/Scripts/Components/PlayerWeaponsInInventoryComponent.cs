@@ -6,7 +6,7 @@ public struct PlayerWeaponsInInventoryComponent
 {
     public GunInfo gunFirstObject;
     public GunInfo gunSecondObject;
-    public GameObject meleeWeaponObject;
+    public MeleeWeaponInfo meleeWeaponObject;
 
     public int curFirstWeaponAmmo;
     public int curSecondWeaponAmmo;

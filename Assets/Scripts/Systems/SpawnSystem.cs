@@ -16,7 +16,8 @@ public class SpawnSystem : IEcsRunSystem
     private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
     private EcsPoolInject<MovementComponent> _movementComponentsPool;
     private EcsPoolInject<GunComponent> _gunComponentsPool;
-    private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
+    private EcsPoolInject<MeleeWeaponComponent> _meleeWeaponComponentsPool;
+    private EcsPoolInject<AttackComponent> _currentAttackComponentsPool;
     private EcsPoolInject<CreatureDropComponent> _creatureDropComponentsPool;
     private EcsPoolInject<GlobalTimeComponent> _globalTimeComponentsPool;
 
@@ -28,7 +29,7 @@ public class SpawnSystem : IEcsRunSystem
 
     public void Run(IEcsSystems systems)
     {
-        foreach(var dayEvent in _changeToDayEventsFilter.Value) 
+        foreach (var dayEvent in _changeToDayEventsFilter.Value)
         {
             foreach (var spawnCmpEntity in _activeSpawnComponentsFilter.Value)
             {
@@ -58,6 +59,7 @@ public class SpawnSystem : IEcsRunSystem
                 var gloabalTimeCmp = _globalTimeComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                 Debug.Log("spawn");
                 curSpawnCmp.curSpawnTime = 0;
+
                 int creatureEntity = _world.Value.NewEntity();
                 ref var creatureHealthCmp = ref _healthComponentsPool.Value.Add(creatureEntity);
                 _creatureTagsPool.Value.Add(creatureEntity);
@@ -90,11 +92,12 @@ public class SpawnSystem : IEcsRunSystem
                 //добавить уравнение всяких оффсетов
                 moveCmp.canMove = true;
 
+                ref var attackCmp = ref _currentAttackComponentsPool.Value.Add(creatureEntity);
+
                 if (creatureAiStatesCmp.creatureView.creatureGunView != null)
                 {
                     var creatureGunInfo = creatureAiStatesCmp.creatureView.creatureGunView;
                     ref var gunCmp = ref _gunComponentsPool.Value.Add(creatureEntity);
-                    ref var attackCmp = ref _currentAttackComponentsPool.Value.Add(creatureEntity);
                     gunCmp.reloadDuration = creatureGunInfo.reloadDuration;
                     gunCmp.isOneBulletReload = creatureGunInfo.isOneBulletReloaded;
 
@@ -103,7 +106,7 @@ public class SpawnSystem : IEcsRunSystem
                     gunCmp.currentMinSpread = creatureGunInfo.minSpread;
                     gunCmp.currentSpread = creatureGunInfo.minSpread;
 
-                    gunCmp.attackCouldown = creatureGunInfo.attackCouldown;
+                    attackCmp.attackCouldown = creatureGunInfo.attackCouldown;
                     gunCmp.attackLeght = creatureGunInfo.attackLenght;
                     gunCmp.bulletInShotCount = creatureGunInfo.bulletInShotCount;
                     gunCmp.magazineCapacity = creatureGunInfo.magazineCapacity;
@@ -116,10 +119,21 @@ public class SpawnSystem : IEcsRunSystem
                     attackCmp.damage = creatureGunInfo.damage;
                 }
 
+                else if (creatureAiStatesCmp.creatureView.creatureMeleeView != null)
+                {
+                    creatureAiStatesCmp.creatureView.creatureMeleeView.meleeWeaponColliderView.Construct(_world.Value, creatureEntity);
+                    /*ref var meleeCmp = ref */
+                    _meleeWeaponComponentsPool.Value.Add(creatureEntity);
+
+                    attackCmp.canAttack = true;
+                    attackCmp.damage = creatureAiStatesCmp.creatureView.creatureMeleeView.damage;
+                    attackCmp.attackCouldown = creatureAiStatesCmp.creatureView.creatureMeleeView.attackCouldown;
+                }
+
                 creatureHealthCmp.healthView = creatureAiStatesCmp.creatureView.healthView;
                 creatureHealthCmp.healthView.Construct(creatureEntity);
                 creatureHealthCmp.maxHealthPoint = creatureHealthCmp.healthView.maxHealth;
-                // creatureHealthCmp.healthPoint = creatureHealthCmp.maxHealthPoint;Debug.Log(creatureHealthCmp.healthPoint + "curEnemyHealth");
+                creatureHealthCmp.healthPoint = creatureHealthCmp.maxHealthPoint; Debug.Log(creatureHealthCmp.healthPoint + "curEnemyHealth");
 
 
             }

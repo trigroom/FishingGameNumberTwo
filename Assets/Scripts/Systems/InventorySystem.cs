@@ -21,7 +21,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
     private EcsPoolInject<GunInventoryCellComponent> _gunInventoryCellComponentsPool;
     private EcsPoolInject<PlayerWeaponsInInventoryComponent> _playerWeaponsInInventoryComponentsPool;
     private EcsPoolInject<ChangeWeaponFromInventoryEvent> _changeWeaponFromInventoryEventsPool;
-    private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
+    private EcsPoolInject<AttackComponent> _currentAttackComponentsPool;
     private EcsPoolInject<SpecialInventoryCellTag> _weaponInventoryCellTagsPool;
     private EcsPoolInject<StorageCellTag> _storageCellTagsPool;
     private EcsPoolInject<AddItemFromCellEvent> _addItemFromCellEventsPool;
@@ -29,6 +29,8 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
     private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
     private EcsPoolInject<NowUsedWeaponTag> _nowUsedWeaponTagsPool;
     private EcsPoolInject<FlashLightInInventoryComponent> _flashLightInInventoryComponentsPool;
+    private EcsPoolInject<MeleeWeaponComponent> _meleeWeaponComponentsPool;
+    private EcsPoolInject<PlayerMeleeWeaponComponent> _playerMeleeWeaponComponentsPool;
     //private EcsPoolInject<HealingItemCellTag> _healingItemCellTagsPool;
 
     private EcsFilterInject<Inc<ReloadEvent>> _reloadEventsFilter;
@@ -118,10 +120,44 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         //for test
 
 
-        _sceneData.Value.firstGunCellView.ChangeCellItemSprite(_sceneData.Value.gunItemInfoStarted.itemSprite);
 
         //_inventoryItemComponent.Value.Get(_sceneData.Value.firstGunCellView._entity);
-        ref var invItemCmp = ref _inventoryItemComponent.Value.Add(_sceneData.Value.firstGunCellView._entity);
+
+        ref var invItemCmp = ref _inventoryItemComponent.Value.Add(_sceneData.Value.meleeWeaponCellView._entity);
+        // ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(_sceneData.Value.meleeWeaponCellView._entity);
+        ref var meleeCmp = ref _meleeWeaponComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+        ref var curAttackCmp = ref _currentAttackComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+        ref var playerWeaponsInInvCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+        ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(_sceneData.Value.meleeWeaponCellView._entity);
+        ref var playerMeleeCmp = ref _playerMeleeWeaponComponentsPool.Value.Add(_sceneData.Value.playerEntity);
+        _nowUsedWeaponTagsPool.Value.Add(_sceneData.Value.meleeWeaponCellView._entity);
+
+        invCellCmp.isEmpty = false;
+
+        invItemCmp.currentItemsCount++;
+        _sceneData.Value.meleeWeaponCellView.ChangeCellItemCount(invItemCmp.currentItemsCount);
+
+        invItemCmp.itemInfo = _sceneData.Value.meleeWeaponItemInfoStarted;
+        //gunInInvCmp.gunInfo = invItemCmp.itemInfo.gunInfo;
+        //gunInInvCmp.isEquipedWeapon = true;
+
+        //playerWeaponsInInvCmp.meleeWeaponObject = invItemCmp..gunInfo;
+        playerWeaponsInInvCmp.curEquipedWeaponsCount++;
+        playerWeaponsInInvCmp.curWeapon = 2;//номер клетки с милишкой
+        curAttackCmp.changeWeaponTime = invItemCmp.itemInfo.meleeWeaponInfo.weaponChangeSpeed;
+        //.attackLeght = invItemCmp.itemInfo.gunInfo.attackLenght;///
+        curAttackCmp.attackCouldown = invItemCmp.itemInfo.meleeWeaponInfo.attackCouldown;
+        curAttackCmp.damage = invItemCmp.itemInfo.meleeWeaponInfo.damage;
+        playerMeleeCmp.weaponInfo = invItemCmp.itemInfo.meleeWeaponInfo;
+        playerWeaponsInInvCmp.meleeWeaponObject = playerMeleeCmp.weaponInfo;
+
+        var playerView = _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view;
+        playerView.weaponSpriteRenderer.sprite = playerMeleeCmp.weaponInfo.weaponSprite;
+        playerView.weaponTransform.localScale = Vector3.one * playerMeleeCmp.weaponInfo.spriteScaleMultiplayer;
+        playerView.weaponTransform.localEulerAngles = new Vector3(0, 0, playerMeleeCmp.weaponInfo.spriteRotation);
+
+        _sceneData.Value.meleeWeaponCellView.ChangeCellItemSprite(invItemCmp.itemInfo.itemSprite);
+        /*ref var invItemCmp = ref _inventoryItemComponent.Value.Add(_sceneData.Value.firstGunCellView._entity);
         ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(_sceneData.Value.firstGunCellView._entity);
         ref var gunCmp = ref _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
         ref var curAttackCmp = ref _currentAttackComponentsPool.Value.Get(_sceneData.Value.playerEntity);
@@ -156,7 +192,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         playerGunCmp.isAuto = invItemCmp.itemInfo.gunInfo.isAuto;
         gunCmp.bulletInShotCount = invItemCmp.itemInfo.gunInfo.bulletCount;
         playerGunCmp.bulletTypeId = invItemCmp.itemInfo.gunInfo.bulletTypeId;
-        gunCmp.attackCouldown = invItemCmp.itemInfo.gunInfo.attackCouldown;
+        curAttackCmp.attackCouldown = invItemCmp.itemInfo.gunInfo.attackCouldown;
         curAttackCmp.damage = invItemCmp.itemInfo.gunInfo.damage;
         playerGunCmp.gunInfo = invItemCmp.itemInfo.gunInfo;
         gunCmp.currentMagazineCapacity = invItemCmp.itemInfo.gunInfo.magazineCapacity;
@@ -167,6 +203,8 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         playerGunCmp.maxSpread = invItemCmp.itemInfo.gunInfo.maxSpread;
         playerGunCmp.minSpread = invItemCmp.itemInfo.gunInfo.minSpread;
         playerGunCmp.addedSpread = invItemCmp.itemInfo.gunInfo.addedSpread;
+
+        _sceneData.Value.ammoInfoText.text = gunCmp.currentMagazineCapacity + "/" + gunCmp.magazineCapacity;*/
 
         //выгрузка айтемов в инвентарь из сохранения
 
@@ -247,7 +285,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                 ref var playerWeaponsInInvCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                 ref var gunInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(movedToFastCellWeapon);
 
-                if (gunInvCmp.isEquipedWeapon && _sceneData.Value.inventoryCellsCount > _inventoryItemsFilter.Value.GetEntitiesCount() && playerWeaponsInInvCmp.curEquipedWeaponsCount != 1)
+                if (gunInvCmp.isEquipedWeapon && _sceneData.Value.inventoryCellsCount > _inventoryItemsFilter.Value.GetEntitiesCount() && playerWeaponsInInvCmp.curEquipedWeaponsCount != 1)//проверку на 1 можно убрать
                 {
                     playerWeaponsInInvCmp.curEquipedWeaponsCount--;
                     Debug.Log(playerWeaponsInInvCmp.curEquipedWeaponsCount + "cur weapons");
@@ -256,7 +294,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                     {
                         if (_inventoryCellsComponents.Value.Get(cell).isEmpty)
                         {
-                            Debug.Log(_inventoryCellsFilter.Value.GetEntitiesCount() + "take weapon to inv");
+                            // Debug.Log(_inventoryCellsFilter.Value.GetEntitiesCount() + "take weapon to inv");
                             ref var curInvCellCmp = ref _inventoryCellsComponents.Value.Get(cell);
 
                             _inventoryItemComponent.Value.Copy(movedToFastCellWeapon, cell);
@@ -289,7 +327,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                     oldInvCellCmp.isEmpty = true;
                     _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
                 }
-                else if (!gunInvCmp.isEquipedWeapon && (playerWeaponsInInvCmp.gunSecondObject == null || playerWeaponsInInvCmp.gunFirstObject == null))
+                else if (!gunInvCmp.isEquipedWeapon && /*(playerWeaponsInInvCmp.gunSecondObject == null || playerWeaponsInInvCmp.gunFirstObject == null)*/ playerWeaponsInInvCmp.curEquipedWeaponsCount < 3)
                 {
                     playerWeaponsInInvCmp.curEquipedWeaponsCount++;
                     Debug.Log(playerWeaponsInInvCmp.curEquipedWeaponsCount + "cur weapons");
@@ -354,7 +392,31 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
             }
             else if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.meleeWeapon)
             {
-                //
+                if (_currentHealingItemComponentsPool.Value.Get(_sceneData.Value.playerEntity).isHealing)
+                    return;
+
+                int meleeCellEntity = _sceneData.Value.meleeWeaponCellView._entity;
+                var changedWeaponInvCellCmp = _inventoryItemComponent.Value.Get(meleeCellEntity);
+                _inventoryItemComponent.Value.Copy(movedToFastCellWeapon, meleeCellEntity);//
+
+                ref var fastCellItemCmp = ref _inventoryItemComponent.Value.Get(meleeCellEntity);
+                ref var inventoryItemCmp = ref _inventoryItemComponent.Value.Get(movedToFastCellWeapon) ;
+                inventoryItemCmp = changedWeaponInvCellCmp;
+
+                ref var curInvCell = ref _inventoryCellsComponents.Value.Get(movedToFastCellWeapon);
+                var curCellView = _sceneData.Value.meleeWeaponCellView;
+
+                curCellView.ChangeCellItemSprite(fastCellItemCmp.itemInfo.itemSprite);
+              //  curCellView.ChangeCellItemCount(fastCellItemCmp.currentItemsCount);
+
+                curInvCell.cellView.ChangeCellItemSprite(inventoryItemCmp.itemInfo.itemSprite);
+                //curInvCell.cellView.ChangeCellItemCount(fastCellItemCmp.currentItemsCount);
+
+
+                _changeWeaponFromInventoryEventsPool.Value.Add(meleeCellEntity).SetValues(false, 2);
+
+                _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
+                //pзамена одного милишного оружие на другое и не удаление компонента предмета
             }
             else if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.flashlight)
             {
@@ -800,7 +862,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
                     ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(invItem);
 
-                    if(invItemCmp.itemInfo.type == ItemInfo.itemType.gun)
+                    if (invItemCmp.itemInfo.type == ItemInfo.itemType.gun)
                         _gunInventoryCellComponentsPool.Value.Del(invItem);
                     else if (invItemCmp.itemInfo.type == ItemInfo.itemType.flashlight)
                         _flashLightInInventoryComponentsPool.Value.Del(invItem);

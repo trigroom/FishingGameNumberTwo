@@ -14,6 +14,8 @@ public class DropedItemsUIView : MonoBehaviour
     [field: SerializeField] public TMP_Text itemDescriptionText { get; private set; }
     [Header("Heal UI")]
     [field: SerializeField] public Button healUseButton { get; private set; }
+    [Header("Shop UI")]
+    [field: SerializeField] public Image shopTableImage { get; private set; }
     [Header("Weapon UI")]
     [field: SerializeField] public Button weaponEquipButton { get; private set; }
     [field: SerializeField] public TMP_Text currentWeaponButtonActionText { get; private set; }
@@ -24,9 +26,6 @@ public class DropedItemsUIView : MonoBehaviour
     [field: SerializeField] public TMP_Text storageButtonText { get; private set; }
     [field: SerializeField] public TMP_Text storageTransportCountText { get; private set; }
     [field: SerializeField] public Transform storageUIContainer { get; set; }
-
-    [Header("Clock UI")]
-    [field: SerializeField] public TMP_Text dayTimeText { get; private set; }
     private ItemInfo.itemType _currentItemType;
 
     //[field: SerializeField] public bool isEquipWeapon { get; set; }

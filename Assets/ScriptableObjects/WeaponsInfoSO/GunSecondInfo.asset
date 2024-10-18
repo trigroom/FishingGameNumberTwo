@@ -16,7 +16,7 @@ MonoBehaviour:
   reloadDuration: 5
   magazineCapacity: 30
   damage: 10
-  attackCouldown: 1
+  attackCouldown: 0.2
   maxSpread: 20
   minSpread: 10
   addedSpread: 3
@@ -31,4 +31,8 @@ MonoBehaviour:
   maxCameraSpread: 7
   addedCameraSpread: 0.4
   recoveryCameraSpread: 0.5
+  firepointPosition: {x: 0, y: 0}
+  spriteScaleMultiplayer: 2
+  spriteRotation: 90
+  weaponSprite: {fileID: 733190676690857246, guid: 84820276c33f64e4da24de4a5ad61098, type: 3}
   scopeMultiplicity: 2

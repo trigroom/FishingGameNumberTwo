@@ -15,7 +15,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<ShopCloseEvent> _shopCloseEventsPool;
     private EcsPoolInject<PlayerComponent> _playerComponentsPool;
     private EcsPoolInject<MovementComponent> _movementComponentsPool;
-    private EcsPoolInject<CurrentAttackComponent> _currentAttackComponentsPool;
+    private EcsPoolInject<AttackComponent> _currentAttackComponentsPool;
     private EcsPoolInject<GunInventoryCellComponent> _gunInventoryCellComponentsPool;
     private EcsPoolInject<PlayerWeaponsInInventoryComponent> _playerWeaponsInInventoryComponent;
     private EcsPoolInject<StorageCellTag> _storageCellTagsPool;
@@ -83,55 +83,80 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             {//помен€ть на проверку пустоты клетки
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(false);
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(true);
-                var gunInInvCellCmp = _gunInventoryCellComponentsPool.Value.Get(descriptionEvt.itemEntity);
+
+                var invCellCmp = _inventoryCellComponentPool.Value.Get(descriptionEvt.itemEntity);
+                ref var playerInvWeaponsCmp = ref _playerWeaponsInInventoryComponent.Value.Get(_sceneData.Value.playerEntity);
+
                 if (item.itemInfo.type == ItemInfo.itemType.gun)
                 {
+                    var gunInInvCellCmp = _gunInventoryCellComponentsPool.Value.Get(descriptionEvt.itemEntity);
                     var playerGunCmp = _playerGunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
 
-                    _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Gun info" + "\n" + "Damage: " + item.itemInfo.gunInfo.damage + "\n" + "Shot couldown: " + item.itemInfo.gunInfo.attackCouldown + "\n" + "Max magazine capacity: " + item.itemInfo.gunInfo.magazineCapacity + "\n" + "Reload time: " + item.itemInfo.gunInfo.reloadDuration
+                    _sceneData.Value.dropedItemsUIView.itemDescriptionText.text +=  "Gun info" + "\n" + "Damage: " + item.itemInfo.gunInfo.damage + "\n" + "Shot couldown: " + item.itemInfo.gunInfo.attackCouldown + "\n" + "Max magazine capacity: " + item.itemInfo.gunInfo.magazineCapacity + "\n" + "Reload time: " + item.itemInfo.gunInfo.reloadDuration
                         + "\n" + "Spread: " + item.itemInfo.gunInfo.minSpread + "to" + item.itemInfo.gunInfo.maxSpread + "\n" + "Shot distance: " + item.itemInfo.gunInfo.attackLenght + "\n";
-                    ref var playerInvWeaponsCmp = ref _playerWeaponsInInventoryComponent.Value.Get(_sceneData.Value.playerEntity);
-                    if (gunInInvCellCmp.isEquipedWeapon)
-                    {
-                        if (_nowUsedWeaponTagsPool.Value.Has(desription))
-                            _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + playerGunCmp.durabilityPoints + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
-                        else if (desription == _sceneData.Value.firstGunCellView._entity)
-                            _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + playerInvWeaponsCmp.curFirstWeaponDurability + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
-                        else if (desription == _sceneData.Value.secondGunCellView._entity)
-                            _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + playerInvWeaponsCmp.curSecondWeaponDurability + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
-                    }
-                    else
-                    {
-                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + gunInInvCellCmp.gunDurability + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
-                    }
+                    // if (gunInInvCellCmp.isEquipedWeapon)
+                    // {
+                    if (_nowUsedWeaponTagsPool.Value.Has(desription))
+                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + playerGunCmp.durabilityPoints + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
+                    else if (desription == _sceneData.Value.firstGunCellView._entity)
+                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + playerInvWeaponsCmp.curFirstWeaponDurability + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
+                    else if (desription == _sceneData.Value.secondGunCellView._entity)
+                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + playerInvWeaponsCmp.curSecondWeaponDurability + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
+                    // }
+                    // else
+                    // {
+                    _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + gunInInvCellCmp.gunDurability + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
+                    //  }
                     // баги с отображением дурабилити
 
                     if (item.itemInfo.gunInfo.isOneBulletReloaded)
-                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "reloads one cartridge at a time" + "\n";
+                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "reloads one bullet at a time" + "\n";
                     else
                         _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "reloads immediately" + "\n";
                     if (item.itemInfo.gunInfo.isAuto)
                         _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "is Auto" + "\n";
                     else
                         _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "is one shoted" + "\n";
+
+
+                    if (descriptionEvt.itemEntity == _sceneData.Value.firstGunCellView._entity || descriptionEvt.itemEntity == _sceneData.Value.secondGunCellView._entity)
+                    {
+                        if (menusStatesCmp.inStorageState)
+                            _sceneData.Value.dropedItemsUIView.storageUIContainer.gameObject.SetActive(false);
+                        _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(false);
+                        _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "take off";
+                    }
+                    else
+                        _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "equip";
                 }
 
                 else
                 {
+                    _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Melee wapon info" + "\n" + "Damage: " + item.itemInfo.meleeWeaponInfo.damage + "\n" + "Shot couldown: " + item.itemInfo.meleeWeaponInfo.attackCouldown + "\n" + "Hit lenght: " + item.itemInfo.meleeWeaponInfo.attackLenght + "\n" + "Hit speed: " + item.itemInfo.meleeWeaponInfo.attackSpeed + "\n";
+
+                    if (item.itemInfo.meleeWeaponInfo.isWideHit)
+                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Hit type: wide hit \n";
+                    else
+                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Hit type: thrust hit \n";
+
+                    if (item.itemInfo.meleeWeaponInfo.isAuto)
+                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "is Auto" + "\n";
+                    else
+                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "is one shoted" + "\n";
+
+                    if (descriptionEvt.itemEntity == _sceneData.Value.meleeWeaponCellView._entity)
+                    {
+                        if (menusStatesCmp.inStorageState)
+                            _sceneData.Value.dropedItemsUIView.storageUIContainer.gameObject.SetActive(false);
+                        _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(false);
+                        _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(false);
+                    }
+                    else
+                        _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "change melee";
+                    //милишку нельз€ выкинуть
                     //описание милишки
                 }
                 //мб выдел€ть красным цветом низкую прочность оруж€
-                if (gunInInvCellCmp.isEquipedWeapon)//помен€ть на проверку заполненности клетки инвентар€ а не ганкмп
-                {
-                    if (menusStatesCmp.inStorageState)
-                        _sceneData.Value.dropedItemsUIView.storageUIContainer.gameObject.SetActive(false);
-                    _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(false);
-                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "take off";
-                }
-                else
-                {
-                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "equip";
-                }
             }
 
             else if (item.itemInfo.type == ItemInfo.itemType.heal)

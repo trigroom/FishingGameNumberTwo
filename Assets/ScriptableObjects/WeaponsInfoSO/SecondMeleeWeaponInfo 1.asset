@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1165650e88487624db5f6a5e4760df72, type: 3}
+  m_Name: SecondMeleeWeaponInfo 1
+  m_EditorClassIdentifier: 
+  attackLenght: 0.7
+  damage: 5
+  attackCouldown: 1.5
+  weaponChangeSpeed: 3
+  gunObject: {fileID: 0}
+  isWideHit: 1
+  isAuto: 1
+  attackSpeed: 2
+  knockbackSpeed: 5
+  stunTime: 0.4
+  staminaUsage: 2
+  spriteScaleMultiplayer: 1
+  spriteRotation: 90
+  weaponSprite: {fileID: 21300000, guid: 74f515cd0d8efca4cb0397e33e3a05f6, type: 3}

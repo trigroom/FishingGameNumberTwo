@@ -31,4 +31,8 @@ MonoBehaviour:
   maxCameraSpread: 10
   addedCameraSpread: 1
   recoveryCameraSpread: 0.5
+  firepointPosition: {x: 0, y: 0}
+  spriteScaleMultiplayer: 2
+  spriteRotation: 90
+  weaponSprite: {fileID: 7215963696650291028, guid: bc0d9c633283c3d4c8476fc0f5fb64de, type: 3}
   scopeMultiplicity: 8
