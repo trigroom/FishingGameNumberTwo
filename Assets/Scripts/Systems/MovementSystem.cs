@@ -37,6 +37,8 @@ public class MovementSystem : IEcsRunSystem
             if (moveCmp.canMove)
                 moveCmp.movementView.MoveUnit(moveCmp.moveSpeed * moveCmp.moveInput * Time.deltaTime);
 
+
+
             if (_meleeWeaponComponentsPool.Value.Has(movableObject) && _meleeWeaponComponentsPool.Value.Get(movableObject).isHitting)  continue; //возможно что то поправить
 
             Vector2 direction = (moveCmp.pointToRotateInput - (Vector2)moveCmp.entityTransform.position).normalized;

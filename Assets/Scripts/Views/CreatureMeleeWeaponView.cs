@@ -16,4 +16,6 @@ public class CreatureMeleeWeaponView : MonoBehaviour
     public BoxCollider2D meleeWeaponCollider;
     public Transform weaponTransform;
     public MeleeWeaponColliderView meleeWeaponColliderView;
+
+    public ItemInfoForCreatureElement itemVisualInfo;
 }

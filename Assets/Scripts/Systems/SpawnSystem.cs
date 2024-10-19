@@ -20,6 +20,8 @@ public class SpawnSystem : IEcsRunSystem
     private EcsPoolInject<AttackComponent> _currentAttackComponentsPool;
     private EcsPoolInject<CreatureDropComponent> _creatureDropComponentsPool;
     private EcsPoolInject<GlobalTimeComponent> _globalTimeComponentsPool;
+    private EcsPoolInject<HealingItemComponent> _currentHealingItemComponentsPool;
+    private EcsPoolInject<CreatureInventoryComponent> _creatureInventoryComponentsPool;
 
     private EcsFilterInject<Inc<ActiveSpawnComponent>> _activeSpawnComponentsFilter;
     private EcsFilterInject<Inc<EntrySpawnZoneEvent>> _entrySpawnZoneEventsFilter;
@@ -81,18 +83,39 @@ public class SpawnSystem : IEcsRunSystem
                     creatureAiStatesCmp.followDistance = creatureAiStatesCmp.creatureView.aiCreatureView.followDistance * 1.5f;
                 }
                 creatureAiStatesCmp.isAttackWhenRetreat = creatureAiStatesCmp.creatureView.aiCreatureView.isAttackWhenRetreat;
-                creatureAiStatesCmp.currentState = CreatureAIComponent.CreatureStates.idle;
+                //creatureAiStatesCmp.currentState = CreatureAIComponent.CreatureStates.idle;//
+
+                creatureAiStatesCmp.targetTransform = _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform;
+                moveCmp.movementView = creatureAiStatesCmp.creatureView.movementView;
+                moveCmp.entityTransform = moveCmp.movementView.objectTransform;
+
+                float distanceBetweenTarget = Vector2.Distance(moveCmp.entityTransform.position, creatureAiStatesCmp.targetTransform.position);
+
+                if (distanceBetweenTarget > creatureAiStatesCmp.followDistance)
+                    creatureAiStatesCmp.currentState = CreatureAIComponent.CreatureStates.idle;
+                else if (distanceBetweenTarget > creatureAiStatesCmp.safeDistance)
+                    creatureAiStatesCmp.currentState = CreatureAIComponent.CreatureStates.follow;
+                else if (distanceBetweenTarget > creatureAiStatesCmp.minSafeDistance)
+                    creatureAiStatesCmp.currentState = CreatureAIComponent.CreatureStates.shootingToTarget;
+                else
+                    creatureAiStatesCmp.currentState = CreatureAIComponent.CreatureStates.runAwayFromTarget;
+
                 creatureAiStatesCmp.isPeaceful = creatureAiStatesCmp.creatureView.aiCreatureView.isPeaceful;
+
 
                 creatureDropCmp.droopedItems = creatureAiStatesCmp.creatureView.dropFromCreatureView.droopedItems;
 
-                moveCmp.movementView = creatureAiStatesCmp.creatureView.movementView;
-                moveCmp.entityTransform = moveCmp.movementView.objectTransform;
                 moveCmp.moveSpeed = moveCmp.movementView.moveSpeed;
                 //добавить уравнение всяких оффсетов
                 moveCmp.canMove = true;
 
                 ref var attackCmp = ref _currentAttackComponentsPool.Value.Add(creatureEntity);
+
+                if (creatureAiStatesCmp.creatureView.healingItemInfo != null)
+                {
+                    ref var healItemCmp = ref _currentHealingItemComponentsPool.Value.Add(creatureEntity);
+                    healItemCmp.healingItemInfo = creatureAiStatesCmp.creatureView.healingItemInfo;
+                }
 
                 if (creatureAiStatesCmp.creatureView.creatureGunView != null)
                 {
@@ -106,7 +129,6 @@ public class SpawnSystem : IEcsRunSystem
                     gunCmp.currentMinSpread = creatureGunInfo.minSpread;
                     gunCmp.currentSpread = creatureGunInfo.minSpread;
 
-                    attackCmp.attackCouldown = creatureGunInfo.attackCouldown;
                     gunCmp.attackLeght = creatureGunInfo.attackLenght;
                     gunCmp.bulletInShotCount = creatureGunInfo.bulletInShotCount;
                     gunCmp.magazineCapacity = creatureGunInfo.magazineCapacity;
@@ -115,19 +137,38 @@ public class SpawnSystem : IEcsRunSystem
                     gunCmp.firePoint = moveCmp.movementView.firePoint;
                     gunCmp.weaponContainer = moveCmp.movementView.weaponContainer;
 
+                    attackCmp.attackCouldown = creatureGunInfo.attackCouldown;
                     attackCmp.canAttack = true;
                     attackCmp.damage = creatureGunInfo.damage;
+
+                    creatureAiStatesCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureGunInfo.itemVisualInfo.itemSprite;
+
+                    creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localScale = Vector3.one * creatureGunInfo.itemVisualInfo.itemScale;
+                    creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureGunInfo.itemVisualInfo.itemRotateZ);
                 }
 
-                else if (creatureAiStatesCmp.creatureView.creatureMeleeView != null)
+                if (creatureAiStatesCmp.creatureView.creatureMeleeView != null)
                 {
                     creatureAiStatesCmp.creatureView.creatureMeleeView.meleeWeaponColliderView.Construct(_world.Value, creatureEntity);
                     /*ref var meleeCmp = ref */
                     _meleeWeaponComponentsPool.Value.Add(creatureEntity);
 
-                    attackCmp.canAttack = true;
-                    attackCmp.damage = creatureAiStatesCmp.creatureView.creatureMeleeView.damage;
-                    attackCmp.attackCouldown = creatureAiStatesCmp.creatureView.creatureMeleeView.attackCouldown;
+                    if (creatureAiStatesCmp.creatureView.creatureGunView == null)
+                    {
+                        attackCmp.canAttack = true;
+                        attackCmp.damage = creatureAiStatesCmp.creatureView.creatureMeleeView.damage;
+                        attackCmp.attackCouldown = creatureAiStatesCmp.creatureView.creatureMeleeView.attackCouldown;
+
+                        creatureAiStatesCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureAiStatesCmp.creatureView.creatureMeleeView.itemVisualInfo.itemSprite;
+
+                        creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localScale = Vector3.one * creatureAiStatesCmp.creatureView.creatureMeleeView.itemVisualInfo.itemScale;
+                        creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureAiStatesCmp.creatureView.creatureMeleeView.itemVisualInfo.itemRotateZ);
+                    }
+                    else if (creatureAiStatesCmp.currentState != CreatureAIComponent.CreatureStates.runAwayFromTarget)
+                        _creatureInventoryComponentsPool.Value.Add(creatureEntity);
+                    else
+                        _creatureInventoryComponentsPool.Value.Add(creatureEntity).isSecondWeaponUsed = true;
+
                 }
 
                 creatureHealthCmp.healthView = creatureAiStatesCmp.creatureView.healthView;

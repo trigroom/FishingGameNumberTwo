@@ -9,5 +9,6 @@ public class CreatureView : MonoBehaviour
     public AiCreatureView aiCreatureView;
     public CreatureGunView creatureGunView;
     public CreatureMeleeWeaponView creatureMeleeView;
+    public HealingItemInfo healingItemInfo;
     public DropFromCreatureView dropFromCreatureView;
 }

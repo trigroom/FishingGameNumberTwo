@@ -12,5 +12,5 @@ public struct MovementComponent
     public Transform entityTransform;
     public Vector2 moveInput;
 
-    public Vector2 pointToRotateInput;
+    public Vector2 pointToRotateInput { get; set; }
 }

@@ -372,6 +372,7 @@ MonoBehaviour:
   aiCreatureView: {fileID: 36946619433447471}
   creatureGunView: {fileID: 0}
   creatureMeleeView: {fileID: 7450008750984502828}
+  healingItemInfo: {fileID: 11400000, guid: 9090315e38632c644a229aab74a5f49e, type: 2}
   dropFromCreatureView: {fileID: 1308195724300216008}
 --- !u!114 &36946619433447471
 MonoBehaviour:
@@ -388,7 +389,7 @@ MonoBehaviour:
   followDistance: 7
   safeDistance: 2
   minSafeDistance: 0
-  isAttackWhenRetreat: 1
+  isAttackWhenRetreat: 0
   isPeaceful: 0
 --- !u!114 &5375867495861106499
 MonoBehaviour:

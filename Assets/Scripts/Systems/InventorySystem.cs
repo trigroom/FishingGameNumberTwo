@@ -26,7 +26,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
     private EcsPoolInject<StorageCellTag> _storageCellTagsPool;
     private EcsPoolInject<AddItemFromCellEvent> _addItemFromCellEventsPool;
     private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
-    private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
+    private EcsPoolInject<HealingItemComponent> _currentHealingItemComponentsPool;
     private EcsPoolInject<NowUsedWeaponTag> _nowUsedWeaponTagsPool;
     private EcsPoolInject<FlashLightInInventoryComponent> _flashLightInInventoryComponentsPool;
     private EcsPoolInject<MeleeWeaponComponent> _meleeWeaponComponentsPool;
@@ -210,15 +210,14 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
         _sceneData.Value.statsInventoryText.text = inventoryCmp.weight + "kg/ " + _sceneData.Value.maxInInventoryWeight + "kg \n max cells " + _sceneData.Value.inventoryCellsCount;
     }
-    private void UseHealItem(ref HealthComponent playerHealthComponent, ref CurrentHealingItemComponent healingItemPlayer, int changedCell)
+    private void UseHealItem(ref HealthComponent playerHealthComponent, ref HealingItemComponent healingItemPlayer, int changedCell)
     {
         if (playerHealthComponent.healthPoint != playerHealthComponent.maxHealthPoint && !healingItemPlayer.isHealing)
         {
             ref var invItmCmp = ref _inventoryItemComponent.Value.Get(changedCell);
 
             healingItemPlayer.isHealing = true;
-            healingItemPlayer.healingHealthPoints = invItmCmp.itemInfo.healInfo.healingHealthPoints;
-            healingItemPlayer.healingTime = invItmCmp.itemInfo.healInfo.healingTime;
+            healingItemPlayer.healingItemInfo = invItmCmp.itemInfo.healInfo;
             _sceneData.Value.ammoInfoText.text = "восстановление здоровья...";
             invItmCmp.currentItemsCount--;
             ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(changedCell);
@@ -400,14 +399,14 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                 _inventoryItemComponent.Value.Copy(movedToFastCellWeapon, meleeCellEntity);//
 
                 ref var fastCellItemCmp = ref _inventoryItemComponent.Value.Get(meleeCellEntity);
-                ref var inventoryItemCmp = ref _inventoryItemComponent.Value.Get(movedToFastCellWeapon) ;
+                ref var inventoryItemCmp = ref _inventoryItemComponent.Value.Get(movedToFastCellWeapon);
                 inventoryItemCmp = changedWeaponInvCellCmp;
 
                 ref var curInvCell = ref _inventoryCellsComponents.Value.Get(movedToFastCellWeapon);
                 var curCellView = _sceneData.Value.meleeWeaponCellView;
 
                 curCellView.ChangeCellItemSprite(fastCellItemCmp.itemInfo.itemSprite);
-              //  curCellView.ChangeCellItemCount(fastCellItemCmp.currentItemsCount);
+                //  curCellView.ChangeCellItemCount(fastCellItemCmp.currentItemsCount);
 
                 curInvCell.cellView.ChangeCellItemSprite(inventoryItemCmp.itemInfo.itemSprite);
                 //curInvCell.cellView.ChangeCellItemCount(fastCellItemCmp.currentItemsCount);
@@ -455,7 +454,12 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                     _inventoryItemComponent.Value.Del(movedToFastCellWeapon);
                     oldInvCellCmp.cellView.ClearInventoryCell();
                     oldInvCellCmp.isEmpty = true;
-                    _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
+                }
+                else if (_storageCellTagsPool.Value.Has(movedToFastCellWeapon))
+                {
+                    ref var flashlightCmp = ref _flashLightInInventoryComponentsPool.Value.Get(movedToFastCellWeapon);
+                    if (flashlightCmp.currentChargeRemainigTime != oldInvItemCmp.itemInfo.maxWorkTime)
+                        flashlightCmp.currentChargeRemainigTime = oldInvItemCmp.itemInfo.maxWorkTime;
                 }
                 else if (movedToFastCellWeapon != flashlightItemCellEntity)
                 {
@@ -478,8 +482,8 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                     _inventoryItemComponent.Value.Del(movedToFastCellWeapon);
                     oldInvCellCmp.cellView.ClearInventoryCell();
                     oldInvCellCmp.isEmpty = true;
-                    _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
                 }
+                    _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
             }
             else if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.heal)
             {

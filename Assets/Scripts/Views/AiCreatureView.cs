@@ -8,5 +8,11 @@ public class AiCreatureView : MonoBehaviour
     public float safeDistance;//дистанция на котрой будет останавливать существо при побеге от игрока 
     public float minSafeDistance;//дистанция при которой начинает убегать от игрока //безопасные дистанции указываются для врагов которые умеют отступать
     public bool isAttackWhenRetreat;
+    public bool isTwoWeapon;
     public bool isPeaceful;
+
+    public ItemInfoForCreatureElement healItemVisualInfo;
+
+    public SpriteRenderer itemSpriteRenderer;
+    public Transform itemTransform;
 }

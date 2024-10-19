@@ -20,7 +20,7 @@ public class AttackSystem : IEcsRunSystem
     private EcsPoolInject<ChangeWeaponFromInventoryEvent> _changeWeaponFromInventoryEventsPool;
     private EcsPoolInject<GunInventoryCellComponent> _gunInventoryCellComponentsPool;
     private EcsPoolInject<CameraComponent> _cameraComponentsPool;
-    private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
+    private EcsPoolInject<HealingItemComponent> _currentHealingItemComponentsPool;
     private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
     private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
     private EcsPoolInject<NowUsedWeaponTag> _nowUsedWeaponTagsPool;
@@ -30,7 +30,9 @@ public class AttackSystem : IEcsRunSystem
     private EcsPoolInject<InventoryItemComponent> _inventoryItemComponentsPool;
     private EcsPoolInject<PlayerMoveComponent> _playerMoveComponentsPool;
     private EcsPoolInject<MeleeWeaponContactEvent> _meleeWeaponContactEventsPool;
+    private EcsPoolInject<CreatureInventoryComponent> _creatureInventoryComponentsPool;
 
+    private EcsFilterInject<Inc<CreatureChangeWeaponEvent>> _creatureChangeWeaponEventsFilter;
     private EcsFilterInject<Inc<OffInScopeStateEvent>> _offInScopeStateEventsFilter;
     private EcsFilterInject<Inc<EndReloadEvent>> _endReloadEventFilter;
     private EcsFilterInject<Inc<PlayerComponent>> _playerComponentFilter;
@@ -52,8 +54,9 @@ public class AttackSystem : IEcsRunSystem
 
             if (moveCmp.isStunned) continue;
 
-            if (creatureAi.creatureView.creatureMeleeView == null)
+            if (creatureAi.creatureView.creatureMeleeView == null || (_creatureInventoryComponentsPool.Value.Has(aiCreature) && !_creatureInventoryComponentsPool.Value.Get(aiCreature).isSecondWeaponUsed))
             {
+                Debug.Log((_creatureInventoryComponentsPool.Value.Get(aiCreature).isSecondWeaponUsed) + "sec used weapon");
                 ref var gunCmp = ref _gunComponentsPool.Value.Get(aiCreature);
 
                 if (creatureAi.currentState == CreatureAIComponent.CreatureStates.shootingToTarget || (creatureAi.isAttackWhenRetreat && creatureAi.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget))
@@ -102,7 +105,8 @@ public class AttackSystem : IEcsRunSystem
             {
                 ref var meleeCmp = ref _meleeWeaponComponentsPool.Value.Get(aiCreature);
 
-                if (creatureAi.currentState == CreatureAIComponent.CreatureStates.shootingToTarget)
+                Debug.Log((creatureAi.currentState == CreatureAIComponent.CreatureStates.shootingToTarget) + "||" + (creatureAi.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget) + "&&" + (_creatureInventoryComponentsPool.Value.Has(aiCreature) + "&&" + (!_creatureInventoryComponentsPool.Value.Get(aiCreature).isSecondWeaponUsed)));
+                if (creatureAi.currentState == CreatureAIComponent.CreatureStates.shootingToTarget || (creatureAi.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget && (_creatureInventoryComponentsPool.Value.Has(aiCreature) && _creatureInventoryComponentsPool.Value.Get(aiCreature).isSecondWeaponUsed)))
                 {
                     if (attackCmp.currentAttackCouldown >= attackCmp.attackCouldown && attackCmp.canAttack && !meleeCmp.isHitting)
                     {
@@ -187,6 +191,10 @@ public class AttackSystem : IEcsRunSystem
             }
         }
 
+        foreach (var creatureChangeWeapon in _creatureChangeWeaponEventsFilter.Value)
+        {
+            ChangeCreatureWeapon(creatureChangeWeapon);
+        }
 
         foreach (var changeWeaponFromInvEvt in _changeWeaponFromInventoryEventsFilter.Value)
         {
@@ -321,7 +329,6 @@ public class AttackSystem : IEcsRunSystem
                         _sceneData.Value.mainCamera.orthographicSize = 5 * playerGunCmp.scopeMultiplicity;
                 }
                 // стрельба
-                Debug.Log(attackCmp.currentAttackCouldown + ">=" + attackCmp.attackCouldown);
                 if (((playerGunCmp.isAuto && Input.GetMouseButton(0)) || (!playerGunCmp.isAuto && Input.GetMouseButtonDown(0))) && !gunCmp.isReloading && gunCmp.currentMagazineCapacity > 0 && attackCmp.currentAttackCouldown >= attackCmp.attackCouldown && !attackCmp.weaponIsChanged && attackCmp.canAttack && !curHealCmp.isHealing && playerGunCmp.durabilityPoints != 0)
                 {
                     int random = Random.Range(0, 101);
@@ -557,13 +564,49 @@ public class AttackSystem : IEcsRunSystem
                 //Debug.Log(moveCmp.stunTime + "st time");
                 moveCmp.moveSpeed = meleeCmp.knockbackSpeed;
                 moveCmp.moveInput = (moveCmp.entityTransform.position - _movementComponentsPool.Value.Get(meleeWeaponContact).entityTransform.position).normalized;
-                Debug.Log("dmg melee" + attackCmp.damage + "mi"+moveCmp.moveInput);
+                Debug.Log("dmg melee" + attackCmp.damage + "mi" + moveCmp.moveInput);
             }
         }
         CheckBulletTracerLife();
         //для других сущностей отдельно
     }
 
+    private void ChangeCreatureWeapon(int creatureEntity)
+    {
+        ref var attackCmp = ref _attackComponentsPool.Value.Get(creatureEntity);
+        ref var creatureAiCmp = ref _creatureAIComponentsPool.Value.Get(creatureEntity);
+        if (_meleeWeaponComponentsPool.Value.Get(creatureEntity).isHitting || _gunComponentsPool.Value.Get(creatureEntity).isReloading) return;
+
+        _creatureInventoryComponentsPool.Value.Get(creatureEntity).isSecondWeaponUsed = !_creatureInventoryComponentsPool.Value.Get(creatureEntity).isSecondWeaponUsed;
+
+
+        if (_creatureInventoryComponentsPool.Value.Get(creatureEntity).isSecondWeaponUsed)//милишка
+        {
+            var meleeWeaponView = creatureAiCmp.creatureView.creatureMeleeView;
+
+            creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = meleeWeaponView.itemVisualInfo.itemSprite;
+
+            creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = Vector3.one * meleeWeaponView.itemVisualInfo.itemScale;
+            creatureAiCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, meleeWeaponView.itemVisualInfo.itemRotateZ);
+            //сделать поворот и скейл
+
+            attackCmp.attackCouldown = meleeWeaponView.attackCouldown;
+            attackCmp.damage = meleeWeaponView.damage;
+        }
+        else
+        {
+            var gunView = creatureAiCmp.creatureView.creatureGunView;
+
+
+            creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = gunView.itemVisualInfo.itemSprite;
+
+            creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = Vector3.one * gunView.itemVisualInfo.itemScale;
+            creatureAiCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, gunView.itemVisualInfo.itemRotateZ);
+
+            attackCmp.attackCouldown = gunView.attackCouldown;
+            attackCmp.damage = gunView.damage;
+        }
+    }
     private void CalculateRecoil(ref GunComponent gunCmp, PlayerGunComponent playerGunComponent, bool isScopeCalculate)
     {
         gunCmp.currentAddedSpread = playerGunComponent.addedSpread + playerGunComponent.addedSpread * playerGunComponent.durabilityGunMultiplayer;

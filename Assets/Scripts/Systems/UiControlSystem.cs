@@ -204,13 +204,19 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 if (descriptionEvt.itemEntity == _sceneData.Value.flashlightItemCellView._entity)
                 {
                     if (menusStatesCmp.inStorageState)
+                    {
                         _sceneData.Value.dropedItemsUIView.storageUIContainer.gameObject.SetActive(false);
+                    }
                     _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(false);
                     _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "take off";
                 }
+                else if (_storageCellTagsPool.Value.Has(descriptionEvt.itemEntity))
+                {
+                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "charge";
+                }
                 else
                 {
-                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "equip ";
+                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "equip";
                 }
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(false);
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(true);

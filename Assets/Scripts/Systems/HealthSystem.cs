@@ -13,13 +13,17 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<MovementComponent> _movementComponentsPool;
     private EcsPoolInject<ArmorComponent> _armorComponentsPool;
     private EcsPoolInject<GunComponent> _gunComponentsPool;
-    private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
+    private EcsPoolInject<HealingItemComponent> _currentHealingItemComponentsPool;
     private EcsPoolInject<CreatureDropComponent> _creatureDropComponentsPool;
     private EcsPoolInject<DroppedItemComponent> _droppedItemComponentsPool;
+    private EcsPoolInject<AttackComponent> _attackComponentsPool;
+    private EcsPoolInject<PlayerWeaponsInInventoryComponent> _playerWeaponsInInventoryComponentsPool;
+    private EcsPoolInject<CreatureInventoryComponent> _creatureInventoryComponentsPool;
 
     private EcsFilterInject<Inc<ChangeHealthEvent>> _changeHealthEventsFilter;
     private EcsFilterInject<Inc<ArmorComponent>> _armorComponentsFilter;
-    private EcsFilterInject<Inc<CurrentHealingItemComponent>> _currentHealingItemComponentsFilter;
+    private EcsFilterInject<Inc<HealingItemComponent>> _currentHealingItemComponentsFilter;
+    private EcsFilterInject<Inc<CreatureAIComponent>> _creatureAIComponentsFilter;
     public void Init(IEcsSystems systems)
     {
         ref var healthCmp = ref _healthComponentsPool.Value.Get(_sceneData.Value.playerEntity);
@@ -37,13 +41,59 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             {
                 curHealthCmp.currentHealingTime += Time.deltaTime;
                 //менять скорость возможно
-                if (curHealthCmp.currentHealingTime >= curHealthCmp.healingTime)
+                if (curHealthCmp.currentHealingTime >= curHealthCmp.healingItemInfo.healingTime)
                 {
                     curHealthCmp.currentHealingTime = 0;
                     curHealthCmp.isHealing = false;
-                    ChangeHealth(curHealingItem, -curHealthCmp.healingHealthPoints);//для хила - надо
-                    var gunCmp = _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-                    _sceneData.Value.ammoInfoText.text = gunCmp.currentMagazineCapacity + "/" + gunCmp.magazineCapacity; ;
+                    _attackComponentsPool.Value.Get(curHealingItem).canAttack = true;
+                    ChangeHealth(curHealingItem, -curHealthCmp.healingItemInfo.healingHealthPoints);//для хила - надо
+                    if (_sceneData.Value.playerEntity == curHealingItem)//если игрок
+                    {
+                        if (_playerWeaponsInInventoryComponentsPool.Value.Get(curHealingItem).curWeapon != 2)
+                        {
+                            var gunCmp = _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+                            _sceneData.Value.ammoInfoText.text = gunCmp.currentMagazineCapacity + "/" + gunCmp.magazineCapacity;
+                        }
+                        else
+                            _sceneData.Value.ammoInfoText.text = "";
+
+                        //сделать чтобы в руках хилка отображалась когда хилится и убиралось на нужное оружие, когда заканчивает
+                    }
+                    else//если враг
+                    {
+                        //чекать местоположение игрока, чтобы выставить корректное текущее состояние
+                        ref var creatureAiCmp = ref _creatureAIComponentsPool.Value.Get(curHealingItem);
+                        ref var moveCmp = ref _movementComponentsPool.Value.Get(curHealingItem);
+                        float distanceBetweenTarget = Vector2.Distance(moveCmp.entityTransform.position, creatureAiCmp.targetTransform.position);
+
+
+
+                        if (distanceBetweenTarget > creatureAiCmp.followDistance)
+                            creatureAiCmp.currentState = CreatureAIComponent.CreatureStates.idle;
+                        else if (distanceBetweenTarget > creatureAiCmp.safeDistance)
+                            creatureAiCmp.currentState = CreatureAIComponent.CreatureStates.follow;
+                        else if (distanceBetweenTarget > creatureAiCmp.minSafeDistance)
+                            creatureAiCmp.currentState = CreatureAIComponent.CreatureStates.shootingToTarget;
+                        else
+                            creatureAiCmp.currentState = CreatureAIComponent.CreatureStates.runAwayFromTarget;
+
+                        if (_creatureInventoryComponentsPool.Value.Has(curHealingItem) && _creatureInventoryComponentsPool.Value.Get(curHealingItem).isSecondWeaponUsed || !_creatureInventoryComponentsPool.Value.Has(curHealingItem) && creatureAiCmp.creatureView.creatureMeleeView != null)//смена на мили
+                        {
+                            creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureAiCmp.creatureView.creatureMeleeView.itemVisualInfo.itemSprite;
+
+                            creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = Vector3.one * creatureAiCmp.creatureView.creatureMeleeView.itemVisualInfo.itemScale;
+                            creatureAiCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureAiCmp.creatureView.creatureMeleeView.itemVisualInfo.itemRotateZ);
+                        }
+                        else
+                        {
+                            creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureAiCmp.creatureView.creatureGunView.itemVisualInfo.itemSprite;
+
+                            creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = Vector3.one * creatureAiCmp.creatureView.creatureGunView.itemVisualInfo.itemScale;
+                            creatureAiCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureAiCmp.creatureView.creatureGunView.itemVisualInfo.itemRotateZ);
+                        }
+
+                        Debug.Log("Heal After Healing" + _healthComponentsPool.Value.Get(curHealingItem).healthPoint);
+                    }
                 }
             }
 
@@ -76,6 +126,32 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
 
             ChangeHealth(hpEvent, changedHealthCount);
         }
+
+        #region -enemy healing item using ai-
+        foreach (var aiCreature in _creatureAIComponentsFilter.Value)
+        {
+            if (_currentHealingItemComponentsPool.Value.Has(aiCreature))
+            {
+                // _creatureAIComponentsPool.Value.Get();
+                ref var healthCmp = ref _healthComponentsPool.Value.Get(aiCreature);
+                ref var healthItemCmp = ref _currentHealingItemComponentsPool.Value.Get(aiCreature);
+
+                if (healthCmp.healthPoint < healthCmp.maxHealthPoint * 0.3f && !healthItemCmp.isHealing)
+                {
+                    healthItemCmp.isHealing = true;
+                    ref var creatureAiCmp = ref _creatureAIComponentsPool.Value.Get(aiCreature);
+                    creatureAiCmp.currentState = CreatureAIComponent.CreatureStates.runAwayFromTarget;
+                    _attackComponentsPool.Value.Get(aiCreature).canAttack = false;
+
+                    creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureAiCmp.creatureView.aiCreatureView.healItemVisualInfo.itemSprite;
+
+                    creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = Vector3.one * creatureAiCmp.creatureView.aiCreatureView.healItemVisualInfo.itemScale;
+                    creatureAiCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureAiCmp.creatureView.aiCreatureView.healItemVisualInfo.itemRotateZ);
+                }
+            }
+        }
+
+        #endregion
     }
 
     private void ChangeHealth(int hpEvent, int changedHealthCount)

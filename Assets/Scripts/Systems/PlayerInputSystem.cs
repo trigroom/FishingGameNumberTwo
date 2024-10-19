@@ -16,7 +16,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     //private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
     private EcsPoolInject<ArmorComponent> _armorComponentsPool;
     private EcsPoolInject<CameraComponent> _cameraComponentsPool;
-    private EcsPoolInject<CurrentHealingItemComponent> _currentHealingItemComponentsPool;
+    private EcsPoolInject<HealingItemComponent> _currentHealingItemComponentsPool;
     private EcsPoolInject<HealFromHealItemCellEvent> _healFromHealItemCellEventsPool;
     private EcsPoolInject<InventoryCellComponent> _inventoryCellComponentsPool;
     private EcsPoolInject<PlayerMoveComponent> _playerMoveComponentsPool;

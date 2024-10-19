@@ -10,6 +10,7 @@ public class CreatureStatesControlSystem : IEcsRunSystem
     private EcsPoolInject<AttackComponent> _currentAttackComponentsPool;
     private EcsPoolInject<MovementComponent> _movementComponentsPool;
     private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
+    private EcsPoolInject<HealingItemComponent> _healingItemComponentsPool;
 
     private EcsFilterInject<Inc<CreatureAIComponent>> _creatureAIComponentsFilter;
     public void Run(IEcsSystems systems)
@@ -29,6 +30,8 @@ public class CreatureStatesControlSystem : IEcsRunSystem
     private void CheckPlayerDistance(int aiEntity, ref CreatureAIComponent aiEntityCmp)
     {
         ref var moveCmp = ref _movementComponentsPool.Value.Get(aiEntity);
+        if (_healingItemComponentsPool.Value.Has(aiEntity) && _healingItemComponentsPool.Value.Get(aiEntity).isHealing) return;
+
         RaycastHit2D ray = Physics2D.CircleCast(moveCmp.entityTransform.position, aiEntityCmp.followDistance, moveCmp.entityTransform.up, aiEntityCmp.followDistance, LayerMask.GetMask("Player"));
         if (ray.collider == null)
         {

@@ -5779,7 +5779,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   daySpawnCreaturesPool:
-  - {fileID: 4291558370827443245, guid: dda07878a3c6ef143bd71a12928bfa8c, type: 3}
+  - {fileID: 4291558370827443245, guid: e177370ed9f36b8449e0cc2b872d4c98, type: 3}
   nightSpawnCreaturesPool:
   - {fileID: 4291558370827443245, guid: e177370ed9f36b8449e0cc2b872d4c98, type: 3}
   - {fileID: 4291558370827443245, guid: dda07878a3c6ef143bd71a12928bfa8c, type: 3}

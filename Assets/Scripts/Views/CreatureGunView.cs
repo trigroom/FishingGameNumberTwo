@@ -17,4 +17,5 @@ public class CreatureGunView : MonoBehaviour
     public float spreadRecoverySpeed;
     //public GameObject gunObject;
     public bool isOneBulletReloaded;
+    public ItemInfoForCreatureElement itemVisualInfo;
 }

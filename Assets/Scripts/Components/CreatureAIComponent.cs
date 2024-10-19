@@ -21,6 +21,7 @@ public struct CreatureAIComponent
     public bool isPeaceful;
     public float timeToUpdate;
 
+    public Transform targetTransform;
     //для рандомного движение в идле
     public Vector2 randomDirection;
     public float randomMoveTime;
