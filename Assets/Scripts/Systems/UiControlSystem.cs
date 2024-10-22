@@ -103,7 +103,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                     else if (desription == _sceneData.Value.secondGunCellView._entity)
                         _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + playerInvWeaponsCmp.curSecondWeaponDurability + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
                     // }
-                    // else
+                     else
                     // {
                     _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + gunInInvCellCmp.gunDurability + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
                     //  }
@@ -126,8 +126,10 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                         _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(false);
                         _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "take off";
                     }
+                    else if(_storageCellTagsPool.Value.Has(desription))
+                        _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(false);
                     else
-                        _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "equip";
+                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "equip";
                 }
 
                 else
@@ -234,10 +236,12 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         }
 
 
-        if (Input.GetKeyDown(KeyCode.I) || (Input.GetKeyDown(KeyCode.Escape) && _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inInventoryState))
+        if ((Input.GetKeyDown(KeyCode.I) || (Input.GetKeyDown(KeyCode.Escape)) && _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inInventoryState))
         {
             Debug.Log("open inv");
             ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+            _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
+
             if (!menusStatesCmp.inInventoryState)
                 _offInScopeStateEventsPool.Value.Add(_sceneData.Value.playerEntity);
 

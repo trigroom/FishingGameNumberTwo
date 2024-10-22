@@ -2665,7 +2665,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &677999025
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2900,7 +2900,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 779, y: 67.758224}
+  m_AnchoredPosition: {x: 749, y: 67.758224}
   m_SizeDelta: {x: 199, y: 205}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &694800456
@@ -3183,6 +3183,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd3be38d4b8da614ea116e9a5cc9e08f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <idItemslist>k__BackingField: {fileID: 11400000, guid: fdb9799f1030eb545b54e7448b2892ef, type: 2}
   <scopeSpriteMasks>k__BackingField:
   - {fileID: -2789452698066873341, guid: 166de7f99acf9a14a94246a23c04ed98, type: 3}
   - {fileID: 3378047763191668821, guid: 166de7f99acf9a14a94246a23c04ed98, type: 3}
@@ -3258,6 +3259,8 @@ MonoBehaviour:
   <shoppers>k__BackingField:
   - {fileID: 802434302}
   - {fileID: 1403089864}
+  storageEntity: 0
+  inventoryEntity: 0
   <meleeWeaponItemInfoStarted>k__BackingField: {fileID: 11400000, guid: 79fa1aba30e4ec446b6dca5763c1e661, type: 2}
   <gunItemInfoStarted>k__BackingField: {fileID: 11400000, guid: 1140a3bd29d94624e8399cbc67dcd118, type: 2}
   <testShopItems>k__BackingField:
@@ -5412,6 +5415,92 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1313859189}
   m_CullTransparentMesh: 1
+--- !u!1 &1325868431
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1325868433}
+  - component: {fileID: 1325868432}
+  m_Layer: 0
+  m_Name: tres
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!212 &1325868432
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1325868431}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 21300000, guid: 3a03bed1162bf79489550cb40fc6cfc0, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 33.36, y: 9.3825}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 0
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!4 &1325868433
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1325868431}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 686.5802, y: 330.17343, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1403089862
 GameObject:
   m_ObjectHideFlags: 0
@@ -7686,3 +7775,4 @@ SceneRoots:
   - {fileID: 200318586}
   - {fileID: 176719613}
   - {fileID: 174208094}
+  - {fileID: 1325868433}

@@ -202,6 +202,7 @@ public class AttackSystem : IEcsRunSystem
             ref var weaponsInInventoryCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             if (changeWeaponFromInvCmp.weaponCellNumberToChange < 2)
             {
+                ref var invItemCmp = ref _inventoryItemComponentsPool.Value.Get(changeWeaponFromInvEvt);
                 ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(changeWeaponFromInvEvt);
                 ref var plyerGunCmp = ref _playerGunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                 ref var gunCmp = ref _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
@@ -248,19 +249,22 @@ public class AttackSystem : IEcsRunSystem
                         ChangeWeapon(0);
                     else if (1 != changeWeaponFromInvCmp.weaponCellNumberToChange && weaponsInInventoryCmp.gunSecondObject != null)
                         ChangeWeapon(1);
+                    else
+                        ChangeWeapon(2);
                 }
                 else
                 {
                     //gunInInvCmp.gunInfo = _inventoryItemComponentsPool.Value.Get(changeWeaponFromInvEvt).itemInfo.gunInfo;//потом добавть в место где оружие будет напрямую добавляться из сохранения в быстрый слот в начале игры
                     if (changeWeaponFromInvCmp.weaponCellNumberToChange == 0)
                     {
-                        weaponsInInventoryCmp.gunFirstObject = gunInInvCmp.gunInfo;
+                        weaponsInInventoryCmp.gunFirstObject = invItemCmp.itemInfo.gunInfo;
                         weaponsInInventoryCmp.curFirstWeaponAmmo = gunInInvCmp.currentAmmo;
                         weaponsInInventoryCmp.curFirstWeaponDurability = gunInInvCmp.gunDurability;
+                       // Debug.Log(gunInInvCmp.gunInfo);
                     }
                     else
                     {
-                        weaponsInInventoryCmp.gunSecondObject = gunInInvCmp.gunInfo;
+                        weaponsInInventoryCmp.gunSecondObject = invItemCmp.itemInfo.gunInfo;
                         weaponsInInventoryCmp.curSecondWeaponAmmo = gunInInvCmp.currentAmmo;
                         weaponsInInventoryCmp.curSecondWeaponDurability = gunInInvCmp.gunDurability;
                     }//фигня, переделать
@@ -307,7 +311,6 @@ public class AttackSystem : IEcsRunSystem
             ref var gunCmp = ref _gunComponentsPool.Value.Get(playerEntity);
             if (inventoryGunsCmp.curWeapon <= 1)//если стрелковое оружие
             {
-
                 foreach (var reloadEvt in _endReloadEventFilter.Value)
                 {
                     gunCmp.isReloading = true;
@@ -521,6 +524,7 @@ public class AttackSystem : IEcsRunSystem
 
             else if (!gunCmp.isReloading && !playerGunCmp.inScope && !curHealCmp.isHealing)
             {
+                Debug.Log("tryed changed to");
                 if (Input.GetKeyDown(KeyCode.Alpha1) && inventoryGunsCmp.curWeapon != 0 && inventoryGunsCmp.gunFirstObject != null)
                     ChangeWeapon(0);
                 else if (Input.GetKeyDown(KeyCode.Alpha2) && inventoryGunsCmp.curWeapon != 1 && inventoryGunsCmp.gunSecondObject != null)
@@ -765,9 +769,11 @@ public class AttackSystem : IEcsRunSystem
     }
     private void ChangeGunStats(GunInfo gunInfo, int currentAmmo, int gunDurability, ref GunComponent gunCmp, ref PlayerGunComponent playerGunCmp, ref AttackComponent curAttackCmp)
     {
-        //добавить замену модельки
         //перемещать точку выстрела
         var playerView = _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view;
+
+        Debug.Log(gunInfo.weaponSprite);
+
         playerView.weaponSpriteRenderer.sprite = gunInfo.weaponSprite;
         playerView.weaponTransform.localScale = Vector3.one * gunInfo.spriteScaleMultiplayer;
         playerView.weaponTransform.localEulerAngles = new Vector3(0, 0, gunInfo.spriteRotation);

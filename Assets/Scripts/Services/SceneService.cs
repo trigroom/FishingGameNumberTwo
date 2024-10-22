@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public class SceneService : MonoBehaviour
 {
+    [field: SerializeField] public ItemsWithIdListInfo idItemslist { get; private set; }
     [field: SerializeField] public Sprite[] scopeSpriteMasks { get; private set; }//x1,x2,x8
     [field: SerializeField] public int timeHourOffset { get; private set; }
     [field: SerializeField] public float dayTime { get; private set; }
@@ -54,6 +55,9 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public ShopCharacterView[] shoppers { get; private set; }
     private ObjectPool<LineRenderer> _bulletTracersPool;
     private ObjectPool<ShopCellView> _shopCellsPool;
+
+    public int storageEntity;
+    public int inventoryEntity;
 
     //всё для тестов\/
     [field: SerializeField] public ItemInfo meleeWeaponItemInfoStarted { get; private set; }

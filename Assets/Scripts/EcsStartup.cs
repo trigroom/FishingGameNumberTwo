@@ -21,10 +21,9 @@ public class EcsStartUp : MonoBehaviour
         _systemsUpdate
 #if UNITY_EDITOR
             .Add(new Leopotam.EcsLite.UnityEditor.EcsWorldDebugSystem())
-#endif
             .Add(new CreatureInputSystem())
             .Add(new PlayerInputSystem())
-           .Add(new DayChangeSystem())
+            .Add(new DayChangeSystem())
             .Add(new CameraMovementSystem())
             .Add(new CreatureStatesControlSystem())
             .Add(new AttackSystem())
@@ -33,6 +32,8 @@ public class EcsStartUp : MonoBehaviour
             .Add(new UiControlSystem())
             .Add(new ShopCellsSystem())
             .Add(new SpawnSystem())
+            .Add(new DataPersistenceManagerSystem())
+#endif
 
         .DelHere<ReloadEvent>()
         .DelHere<AddItemEvent>()
@@ -54,6 +55,7 @@ public class EcsStartUp : MonoBehaviour
         .DelHere<ChangeToNightEvent>()
         .DelHere<ChangeToDayEvent>()
         .DelHere<MeleeWeaponContactEvent>()
+        .DelHere<LoadGameEvent>()
          .DelHere<CreatureChangeWeaponEvent>()
          //  .DelHere<ChangeWeaponFromInventoryEvent>()
 

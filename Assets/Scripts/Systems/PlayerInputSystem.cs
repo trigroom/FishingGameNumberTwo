@@ -13,6 +13,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<PlayerWeaponsInInventoryComponent> _playerWeaponsInInventoryComponentsPool;
     private EcsPoolInject<GunComponent> _gunComponentsPool;
     private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
+   // private EcsPoolInject<DataComponent> _dataComponentsPool;
     //private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
     private EcsPoolInject<ArmorComponent> _armorComponentsPool;
     private EcsPoolInject<CameraComponent> _cameraComponentsPool;
@@ -22,6 +23,9 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<PlayerMoveComponent> _playerMoveComponentsPool;
     private EcsPoolInject<FlashLightInInventoryComponent> _flashLightInInventoryComponentsPool;
     private EcsPoolInject<MeleeWeaponComponent> _meleeWeaponComponentsPool;
+    private EcsPoolInject<SaveGameEvent> _saveGameEventsPool;//для тестов
+
+    private EcsFilterInject<Inc<LoadGameEvent>> loadGameEventsFilter;
 
     private EcsCustomInject<SceneService> _sceneService;
 
@@ -40,7 +44,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         ref var playerCmp = ref _playerComponentsPool.Value.Add(_playerEntity);
         playerCmp.view = _sceneService.Value.SpawnPlayer(_world.Value, _playerEntity);
-        playerCmp.money = _sceneService.Value.startMoneyForTest;
+        //playerCmp.money = _sceneService.Value.startMoneyForTest;
         //playerCmp.visionZoneCollider = playerCmp.view.playerInputView.visionZoneCollider;
 
         ref var weaponsInInventoryCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Add(_playerEntity);
@@ -99,6 +103,35 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
     public void Run(IEcsSystems systems)
     {
+        foreach( var loadGame in loadGameEventsFilter.Value)
+        {
+            ref var playerCmp = ref _playerComponentsPool.Value.Get(_playerEntity);
+           /* playerCmp.money = _dataComponentsPool.Value.Get(loadGame).money;*/
+            _sceneService.Value.moneyText.text = playerCmp.money + "$";
+        }
+
+        if(Input.GetKeyDown(KeyCode.J)) 
+        {
+            _playerComponentsPool.Value.Get(_playerEntity).money++;
+            Debug.Log("now " + _playerComponentsPool.Value.Get(_playerEntity).money + " money");
+        }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+           /* foreach (var save in _dataComponentsFilter.Value)
+            {
+                _dataComponentsPool.Value.Get(save).money = _playerComponentsPool.Value.Get(_playerEntity).money;
+
+                var item = new ItemInfoForSaveData(5,5);
+
+                ItemInfoForSaveData[] items = new ItemInfoForSaveData[] { item , item , item };
+
+                _dataComponentsPool.Value.Get(save).itemsCellinfo = items;
+            }*/
+            _saveGameEventsPool.Value.Add(_playerEntity);
+            Debug.Log("save" + _playerComponentsPool.Value.Get(_playerEntity).money + " money");
+        }
+
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
         Vector2 moveDirection = new Vector3(horizontalInput, verticalInput).normalized;

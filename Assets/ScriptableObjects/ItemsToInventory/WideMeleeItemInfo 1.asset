@@ -16,7 +16,7 @@ MonoBehaviour:
   type: 1
   maxCount: 1
   itemWeight: 1
-  itemId: 100
+  itemId: 41
   itemName: test melee wide
   itemDescription: 
   gunInfo: {fileID: 0}

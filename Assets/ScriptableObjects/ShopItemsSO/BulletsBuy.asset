@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: BulletsBuy
   m_EditorClassIdentifier: 
   isBuyItem: 1
-  itemInfo: {fileID: 11400000, guid: 17bc52fc22abae347abf9446ca864705, type: 2}
+  itemInfo: {fileID: 11400000, guid: 9ac8f08188f655445bf9e163ca4d9655, type: 2}
   count: 3
   price: 6

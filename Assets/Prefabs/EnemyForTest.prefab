@@ -516,7 +516,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <droopedItems>k__BackingField:
-  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 17bc52fc22abae347abf9446ca864705, type: 2}
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 9ac8f08188f655445bf9e163ca4d9655, type: 2}
     <itemsCountMax>k__BackingField: 2
     <itemsCountMin>k__BackingField: 5
     <dropPercent>k__BackingField: 100

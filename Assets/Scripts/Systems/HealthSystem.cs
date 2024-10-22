@@ -243,12 +243,14 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 }
 
                 healthCmp.healthPoint = 0;
-                _healthComponentsPool.Value.Del(hpEvent);
+               /* _healthComponentsPool.Value.Del(hpEvent);
                 _creatureAIComponentsPool.Value.Del(hpEvent);
                 _movementComponentsPool.Value.Del(hpEvent);
+                if (_currentHealingItemComponentsPool.Value.Has(hpEvent))
+                    _currentHealingItemComponentsPool.Value.Del(hpEvent);
                 if (_armorComponentsPool.Value.Has(hpEvent))
-                    _armorComponentsPool.Value.Del(hpEvent);
-
+                    _armorComponentsPool.Value.Del(hpEvent);*/
+                _world.Value.DelEntity(hpEvent);
             }
             //акие то доп действи€ при смерти(ивент смерти можн)
             //анимаци€ смерти и в конце неЄ полностью энтити удал€ть
