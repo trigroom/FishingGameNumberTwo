@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class SceneService : MonoBehaviour
@@ -45,9 +46,11 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public GameObject playerPrefab { get; private set; }
     [field: SerializeField] public GameObject droppedItemPrefab { get; private set; }
     [field: SerializeField] public ShopCellView shopCellPrefab { get; private set; }
+    [field: SerializeField] public float solarEnergyGeneratorSpeed { get; private set; }
+    [field: SerializeField] public float solarEnergyGeneratorMaxCapacity { get; private set; }
 
     [field: SerializeField] public TMP_Text ammoInfoText;
-    [field: SerializeField] public Light gloabalLight { get; set; }
+    [field: SerializeField] public Light2D gloabalLight { get; set; }
     [field: SerializeField] public Camera mainCamera { get; private set; }
     [field: SerializeField] public LineRenderer bulletTracer { get; private set; }
     [field: SerializeField] public int playerEntity { get; private set; }
@@ -70,6 +73,18 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public int startMoneyForTest { get; private set; }
     [field: SerializeField] public int playerStartArmor { get; private set; }
     [field: SerializeField] public float playerStartArmorRecoverySpeed { get; private set; }
+
+    [HideInInspector]public List<Vector2> eightDirections = new List<Vector2>
+    {
+        new Vector2(0,1).normalized,
+        new Vector2(1,1).normalized,
+        new Vector2(1,0).normalized,
+        new Vector2(1,-1).normalized,
+        new Vector2(0,-1).normalized,
+        new Vector2(-1,-1).normalized,
+        new Vector2(-1,0).normalized,
+        new Vector2(-1,1).normalized,
+    };
 
     private void Awake()
     {

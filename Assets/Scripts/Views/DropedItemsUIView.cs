@@ -12,6 +12,10 @@ public class DropedItemsUIView : MonoBehaviour
     [field: SerializeField] public Transform itemInfoContainer { get; set; }
     [field: SerializeField] public Button dropButton { get; private set; }
     [field: SerializeField] public TMP_Text itemDescriptionText { get; private set; }
+    [field: SerializeField] public TMP_Text secondButtonActionText { get; private set; }
+    //добавить картинку пересылки из инвентаря
+    [field: SerializeField] public Sprite transportStorageIcon { get; private set; }
+    [field: SerializeField] public Sprite transportInventoryIcon { get; private set; }
     [Header("Heal UI")]
     [field: SerializeField] public Button healUseButton { get; private set; }
     [Header("Shop UI")]
@@ -23,10 +27,10 @@ public class DropedItemsUIView : MonoBehaviour
     [Header("Storage UI")]
     [field: SerializeField] public Slider storageTransportSlider { get; private set; }
     [field: SerializeField] public Button storageButton { get; private set; }
-    [field: SerializeField] public TMP_Text storageButtonText { get; private set; }
+    [field: SerializeField] public Image storageButtonImage { get; private set; }
     [field: SerializeField] public TMP_Text storageTransportCountText { get; private set; }
     [field: SerializeField] public Transform storageUIContainer { get; set; }
-    private ItemInfo.itemType _currentItemType;
+    [field: SerializeField] public TMP_Text solarBatteryenergyText { get; private set; }
 
     //[field: SerializeField] public bool isEquipWeapon { get; set; }
 

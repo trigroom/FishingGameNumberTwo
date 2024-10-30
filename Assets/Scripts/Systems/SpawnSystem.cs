@@ -28,29 +28,10 @@ public class SpawnSystem : IEcsRunSystem
     private EcsFilterInject<Inc<ExitSpawnZoneEvent>> _exitSpawnZoneEventsFilter;
     private EcsFilterInject<Inc<ChangeToDayEvent>> _changeToDayEventsFilter;
     private EcsFilterInject<Inc<ChangeToNightEvent>> _changeToNightEventsFilter;
+    private EcsFilterInject<Inc<CreatureAIComponent>> _creatureAIComponentsFilter;
 
     public void Run(IEcsSystems systems)
     {
-        foreach (var dayEvent in _changeToDayEventsFilter.Value)
-        {
-            foreach (var spawnCmpEntity in _activeSpawnComponentsFilter.Value)
-            {
-                ref var creatureAiStatesCmp = ref _creatureAIComponentsPool.Value.Get(spawnCmpEntity);
-                creatureAiStatesCmp.safeDistance = creatureAiStatesCmp.creatureView.aiCreatureView.safeDistance / 1.5f;
-                creatureAiStatesCmp.minSafeDistance = creatureAiStatesCmp.creatureView.aiCreatureView.minSafeDistance / 1.5f;
-                creatureAiStatesCmp.followDistance = creatureAiStatesCmp.creatureView.aiCreatureView.followDistance / 1.5f;
-            }
-        }
-        foreach (var nightEvent in _changeToNightEventsFilter.Value)
-        {
-            foreach (var spawnCmpEntity in _activeSpawnComponentsFilter.Value)
-            {
-                ref var creatureAiStatesCmp = ref _creatureAIComponentsPool.Value.Get(spawnCmpEntity);
-                creatureAiStatesCmp.safeDistance = creatureAiStatesCmp.creatureView.aiCreatureView.safeDistance * 1.5f;
-                creatureAiStatesCmp.minSafeDistance = creatureAiStatesCmp.creatureView.aiCreatureView.minSafeDistance * 1.5f;
-                creatureAiStatesCmp.followDistance = creatureAiStatesCmp.creatureView.aiCreatureView.followDistance * 1.5f;
-            }
-        }
         foreach (var spawnCmpEntity in _activeSpawnComponentsFilter.Value)
         {
             ref var curSpawnCmp = ref _activeSpawnComponentsPool.Value.Get(spawnCmpEntity);
@@ -63,12 +44,13 @@ public class SpawnSystem : IEcsRunSystem
                 curSpawnCmp.curSpawnTime = 0;
 
                 int creatureEntity = _world.Value.NewEntity();
+                ref var creatureAiStatesCmp = ref _creatureAIComponentsPool.Value.Add(creatureEntity);
                 ref var creatureHealthCmp = ref _healthComponentsPool.Value.Add(creatureEntity);
                 _creatureTagsPool.Value.Add(creatureEntity);
-                ref var creatureAiStatesCmp = ref _creatureAIComponentsPool.Value.Add(creatureEntity);
                 ref var moveCmp = ref _movementComponentsPool.Value.Add(creatureEntity);
                 ref var creatureDropCmp = ref _creatureDropComponentsPool.Value.Add(creatureEntity);
 
+                creatureAiStatesCmp.reachedLastTarget = true;
                 creatureAiStatesCmp.creatureView = _sceneData.Value.GetCreature(curSpawnCmp.currentSpawnCreaturesPool[Random.Range(0, curSpawnCmp.currentSpawnCreaturesPool.Length)], _sceneData.Value.GetOutOfScreenPosition());
                 if (!gloabalTimeCmp.isNight)//допустим то что все живности ночью будут свой слух прокачивать
                 {
@@ -85,11 +67,11 @@ public class SpawnSystem : IEcsRunSystem
                 creatureAiStatesCmp.isAttackWhenRetreat = creatureAiStatesCmp.creatureView.aiCreatureView.isAttackWhenRetreat;
                 //creatureAiStatesCmp.currentState = CreatureAIComponent.CreatureStates.idle;//
 
-                creatureAiStatesCmp.targetTransform = _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform;
+                creatureAiStatesCmp.currentTarget = _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform;
                 moveCmp.movementView = creatureAiStatesCmp.creatureView.movementView;
                 moveCmp.entityTransform = moveCmp.movementView.objectTransform;
 
-                float distanceBetweenTarget = Vector2.Distance(moveCmp.entityTransform.position, creatureAiStatesCmp.targetTransform.position);
+                float distanceBetweenTarget = Vector2.Distance(moveCmp.entityTransform.position, creatureAiStatesCmp.currentTarget.position);
 
                 if (distanceBetweenTarget > creatureAiStatesCmp.followDistance)
                     creatureAiStatesCmp.currentState = CreatureAIComponent.CreatureStates.idle;
@@ -179,6 +161,26 @@ public class SpawnSystem : IEcsRunSystem
 
             }
         }
+        foreach (var dayEvent in _changeToDayEventsFilter.Value)
+        {
+            foreach (var spawnCmpEntity in _creatureAIComponentsFilter.Value)
+            {
+                ref var creatureAiStatesCmp = ref _creatureAIComponentsPool.Value.Get(spawnCmpEntity);
+                creatureAiStatesCmp.safeDistance = creatureAiStatesCmp.creatureView.aiCreatureView.safeDistance / 1.5f;
+                creatureAiStatesCmp.minSafeDistance = creatureAiStatesCmp.creatureView.aiCreatureView.minSafeDistance / 1.5f;
+                creatureAiStatesCmp.followDistance = creatureAiStatesCmp.creatureView.aiCreatureView.followDistance / 1.5f;
+            }
+        }
+        foreach (var nightEvent in _changeToNightEventsFilter.Value)
+        {
+            foreach (var spawnCmpEntity in _creatureAIComponentsFilter.Value)
+            {
+                ref var creatureAiStatesCmp = ref _creatureAIComponentsPool.Value.Get(spawnCmpEntity);
+                creatureAiStatesCmp.safeDistance = creatureAiStatesCmp.creatureView.aiCreatureView.safeDistance * 1.5f;
+                creatureAiStatesCmp.minSafeDistance = creatureAiStatesCmp.creatureView.aiCreatureView.minSafeDistance * 1.5f;
+                creatureAiStatesCmp.followDistance = creatureAiStatesCmp.creatureView.aiCreatureView.followDistance * 1.5f;
+            }
+        }
 
         foreach (var entryZoneEvent in _entrySpawnZoneEventsFilter.Value)
         {
@@ -195,13 +197,16 @@ public class SpawnSystem : IEcsRunSystem
             else
                 spawnCmpEntity = zone._entity;
 
-            ref var spawnCmp = ref _activeSpawnComponentsPool.Value.Add(spawnCmpEntity);
-            spawnCmp.zoneView = zone;
-            spawnCmp.spawnTime = zone.spawnTime;
-            if (!currentTimeCmp.isNight)
-                spawnCmp.currentSpawnCreaturesPool = zone.daySpawnCreaturesPool;
-            else
-                spawnCmp.currentSpawnCreaturesPool = zone.nightSpawnCreaturesPool;
+            if (!_activeSpawnComponentsPool.Value.Has(spawnCmpEntity))
+            {
+                ref var spawnCmp = ref _activeSpawnComponentsPool.Value.Add(spawnCmpEntity);
+                spawnCmp.zoneView = zone;
+                spawnCmp.spawnTime = zone.spawnTime;
+                if (!currentTimeCmp.isNight)
+                    spawnCmp.currentSpawnCreaturesPool = zone.daySpawnCreaturesPool;
+                else
+                    spawnCmp.currentSpawnCreaturesPool = zone.nightSpawnCreaturesPool;
+            }
         }
 
         foreach (var exitZoneEvent in _exitSpawnZoneEventsFilter.Value)

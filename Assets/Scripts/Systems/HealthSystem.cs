@@ -64,7 +64,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                         //чекать местоположение игрока, чтобы выставить корректное текущее состояние
                         ref var creatureAiCmp = ref _creatureAIComponentsPool.Value.Get(curHealingItem);
                         ref var moveCmp = ref _movementComponentsPool.Value.Get(curHealingItem);
-                        float distanceBetweenTarget = Vector2.Distance(moveCmp.entityTransform.position, creatureAiCmp.targetTransform.position);
+                        float distanceBetweenTarget = Vector2.Distance(moveCmp.entityTransform.position, creatureAiCmp.currentTarget.position);
 
 
 

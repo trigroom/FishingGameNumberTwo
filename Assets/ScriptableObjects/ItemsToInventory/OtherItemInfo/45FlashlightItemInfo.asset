@@ -20,5 +20,6 @@ MonoBehaviour:
   itemName: Small flashlight
   itemDescription: 
   gunInfo: {fileID: 0}
+  meleeWeaponInfo: {fileID: 0}
   healInfo: {fileID: 0}
-  maxWorkTime: 10
+  flashlightInfo: {fileID: 11400000, guid: 39b91d0810aeeda45abd7e28f191f744, type: 2}

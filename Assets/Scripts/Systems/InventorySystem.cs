@@ -29,7 +29,10 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
     private EcsPoolInject<HealingItemComponent> _currentHealingItemComponentsPool;
     private EcsPoolInject<NowUsedWeaponTag> _nowUsedWeaponTagsPool;
     private EcsPoolInject<FlashLightInInventoryComponent> _flashLightInInventoryComponentsPool;
+    private EcsPoolInject<SolarPanelElectricGeneratorComponent> _solarPanelElectricGeneratorComponentsPool;
     private EcsPoolInject<MeleeWeaponComponent> _meleeWeaponComponentsPool;
+    private EcsPoolInject<GlobalTimeComponent> _globalTimeComponentsPool;
+    private EcsPoolInject<MenuStatesComponent> _menuStatesComponentsPool;
     private EcsPoolInject<PlayerMeleeWeaponComponent> _playerMeleeWeaponComponentsPool;
     //private EcsPoolInject<HealingItemCellTag> _healingItemCellTagsPool;
 
@@ -64,25 +67,25 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(_sceneData.Value.meleeWeaponCellView._entity);
         ref var playerMeleeCmp = ref _playerMeleeWeaponComponentsPool.Value.Add(_sceneData.Value.playerEntity);*/
 
-       /* _nowUsedWeaponTagsPool.Value.Add(_sceneData.Value.meleeWeaponCellView._entity);
-        invCellCmp.isEmpty = false;
-        invItemCmp.currentItemsCount++;
-        _sceneData.Value.meleeWeaponCellView.ChangeCellItemCount(invItemCmp.currentItemsCount);
-        invItemCmp.itemInfo = _sceneData.Value.meleeWeaponItemInfoStarted;
-        playerWeaponsInInvCmp.curEquipedWeaponsCount++;
-        playerWeaponsInInvCmp.curWeapon = 2;//номер клетки с милишкой
-        curAttackCmp.changeWeaponTime = invItemCmp.itemInfo.meleeWeaponInfo.weaponChangeSpeed;
-        curAttackCmp.attackCouldown = invItemCmp.itemInfo.meleeWeaponInfo.attackCouldown;
-        curAttackCmp.damage = invItemCmp.itemInfo.meleeWeaponInfo.damage;
-        playerMeleeCmp.weaponInfo = invItemCmp.itemInfo.meleeWeaponInfo;
-        playerWeaponsInInvCmp.meleeWeaponObject = playerMeleeCmp.weaponInfo;
+        /* _nowUsedWeaponTagsPool.Value.Add(_sceneData.Value.meleeWeaponCellView._entity);
+         invCellCmp.isEmpty = false;
+         invItemCmp.currentItemsCount++;
+         _sceneData.Value.meleeWeaponCellView.ChangeCellItemCount(invItemCmp.currentItemsCount);
+         invItemCmp.itemInfo = _sceneData.Value.meleeWeaponItemInfoStarted;
+         playerWeaponsInInvCmp.curEquipedWeaponsCount++;
+         playerWeaponsInInvCmp.curWeapon = 2;//номер клетки с милишкой
+         curAttackCmp.changeWeaponTime = invItemCmp.itemInfo.meleeWeaponInfo.weaponChangeSpeed;
+         curAttackCmp.attackCouldown = invItemCmp.itemInfo.meleeWeaponInfo.attackCouldown;
+         curAttackCmp.damage = invItemCmp.itemInfo.meleeWeaponInfo.damage;
+         playerMeleeCmp.weaponInfo = invItemCmp.itemInfo.meleeWeaponInfo;
+         playerWeaponsInInvCmp.meleeWeaponObject = playerMeleeCmp.weaponInfo;
 
-        var playerView = _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view;
-        playerView.weaponSpriteRenderer.sprite = playerMeleeCmp.weaponInfo.weaponSprite;
-        playerView.weaponTransform.localScale = Vector3.one * playerMeleeCmp.weaponInfo.spriteScaleMultiplayer;
-        playerView.weaponTransform.localEulerAngles = new Vector3(0, 0, playerMeleeCmp.weaponInfo.spriteRotation);
+         var playerView = _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view;
+         playerView.weaponSpriteRenderer.sprite = playerMeleeCmp.weaponInfo.weaponSprite;
+         playerView.weaponTransform.localScale = Vector3.one * playerMeleeCmp.weaponInfo.spriteScaleMultiplayer;
+         playerView.weaponTransform.localEulerAngles = new Vector3(0, 0, playerMeleeCmp.weaponInfo.spriteRotation);
 
-        _sceneData.Value.meleeWeaponCellView.ChangeCellItemSprite(invItemCmp.itemInfo.itemSprite);*/
+         _sceneData.Value.meleeWeaponCellView.ChangeCellItemSprite(invItemCmp.itemInfo.itemSprite);*/
         /*ref var invItemCmp = ref _inventoryItemComponent.Value.Add(_sceneData.Value.firstGunCellView._entity);
         ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(_sceneData.Value.firstGunCellView._entity);
         ref var gunCmp = ref _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
@@ -134,7 +137,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
         //выгрузка айтемов в инвентарь из сохранения
 
-       
+
     }
     private void UseHealItem(ref HealthComponent playerHealthComponent, ref HealingItemComponent healingItemPlayer, int changedCell)
     {
@@ -164,12 +167,40 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
     }
     public void Run(IEcsSystems systems)
     {
-        foreach (var healFromInvItemEntity in _healFromInventoryEventsFilter.Value)
+        ref var electricityGeneratorCmp = ref _solarPanelElectricGeneratorComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+        foreach (var usedItemEntity in _healFromInventoryEventsFilter.Value)
         {
-            var playerHealthComponent = _healthComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-            ref var healingItemPlayer = ref _currentHealingItemComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+            var itemCmp = _inventoryItemComponent.Value.Get(usedItemEntity);
+            if (itemCmp.itemInfo.type == ItemInfo.itemType.heal)
+            {
+                var playerHealthComponent = _healthComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+                ref var healingItemPlayer = ref _currentHealingItemComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+                UseHealItem(ref playerHealthComponent, ref healingItemPlayer, usedItemEntity);
+            }
 
-            UseHealItem(ref playerHealthComponent, ref healingItemPlayer, healFromInvItemEntity);
+            else if (itemCmp.itemInfo.type == ItemInfo.itemType.flashlight)
+            {
+                ref var flashlightCmp = ref _flashLightInInventoryComponentsPool.Value.Get(usedItemEntity);
+                if (flashlightCmp.currentChargeRemainigTime != itemCmp.itemInfo.flashlightInfo.maxChargedTime)
+                {
+                    if (itemCmp.itemInfo.flashlightInfo.isElectric)//проверять колво энергии в хранилище
+                    {
+                        float needEnergy = electricityGeneratorCmp.currentElectricityEnergy - (float)itemCmp.itemInfo.flashlightInfo.chargeItem * (1 - flashlightCmp.currentChargeRemainigTime / itemCmp.itemInfo.flashlightInfo.maxChargedTime);
+                        if (needEnergy > 0)
+                        {
+                            flashlightCmp.currentChargeRemainigTime = itemCmp.itemInfo.flashlightInfo.maxChargedTime;
+                            electricityGeneratorCmp.currentElectricityEnergy = needEnergy;
+                        }
+                        //удалять используемую энергию
+                    }
+                    else if (!itemCmp.itemInfo.flashlightInfo.isElectric && (_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inStorageState && FindItem(1, itemCmp.itemInfo.flashlightInfo.chargeItem, true, true) || FindItem(1, itemCmp.itemInfo.flashlightInfo.chargeItem, true, false)))
+                        flashlightCmp.currentChargeRemainigTime = itemCmp.itemInfo.flashlightInfo.maxChargedTime;
+                }
+            }
+            else if (itemCmp.itemInfo.type == ItemInfo.itemType.gun)
+            {
+                //разряжать оружие и добавлять эти патроны в инвентарь
+            }
         }
         foreach (var healItemEntity in _healFromHealItemCellEventsFilter.Value)//через H и быстрый слот 
         {
@@ -178,6 +209,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
             ref var healingItemPlayer = ref _currentHealingItemComponentsPool.Value.Get(_sceneData.Value.playerEntity);
 
             UseHealItem(ref playerHealthComponent, ref healingItemPlayer, cellEntity);
+
             /*if (playerHealthComponent.healthPoint != playerHealthComponent.maxHealthPoint)//_inventoryItemComponent.Value.Has(cellEntity) && 
             {
                 ref var invItmCmp = ref _inventoryItemComponent.Value.Get(cellEntity);
@@ -355,7 +387,6 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                         playerCmp.useFlashlight = false;
                         playerCmp.view.flashLightObject.gameObject.SetActive(false);
                     }
-                    playerCmp.canUseFlashlight = false;//невозможность включать фонарь
 
                     foreach (var cell in _inventoryCellsFilter.Value)
                     {
@@ -381,16 +412,9 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                     oldInvCellCmp.cellView.ClearInventoryCell();
                     oldInvCellCmp.isEmpty = true;
                 }
-                else if (_storageCellTagsPool.Value.Has(movedToFastCellWeapon))
-                {
-                    ref var flashlightCmp = ref _flashLightInInventoryComponentsPool.Value.Get(movedToFastCellWeapon);
-                    if (flashlightCmp.currentChargeRemainigTime != oldInvItemCmp.itemInfo.maxWorkTime)
-                        flashlightCmp.currentChargeRemainigTime = oldInvItemCmp.itemInfo.maxWorkTime;
-                }
-                else if (movedToFastCellWeapon != flashlightItemCellEntity)
+                else if (movedToFastCellWeapon != flashlightItemCellEntity && _inventoryCellsComponents.Value.Get(flashlightItemCellEntity).isEmpty)//ложим фонарь в клетку
                 {
                     ref var playerCmp = ref _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-                    playerCmp.canUseFlashlight = true;
 
                     ref var curInvCellCmp = ref _inventoryCellsComponents.Value.Get(flashlightItemCellEntity);
 
@@ -398,6 +422,12 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                     _flashLightInInventoryComponentsPool.Value.Copy(movedToFastCellWeapon, flashlightItemCellEntity);
 
                     ref var itemCmp = ref _inventoryItemComponent.Value.Get(flashlightItemCellEntity);
+
+                    playerCmp.view.flashLightObject.intensity = itemCmp.itemInfo.flashlightInfo.lightIntecnsity;
+                    playerCmp.view.flashLightObject.pointLightOuterRadius = itemCmp.itemInfo.flashlightInfo.lightRange;
+                    playerCmp.view.flashLightObject.color = itemCmp.itemInfo.flashlightInfo.lightColor;
+                        playerCmp.view.flashLightObject.pointLightInnerAngle = itemCmp.itemInfo.flashlightInfo.spotAngle;
+                        playerCmp.view.flashLightObject.pointLightOuterAngle = itemCmp.itemInfo.flashlightInfo.spotAngle;
 
                     curInvCellCmp.isEmpty = false;
                     curInvCellCmp.inventoryItemComponent = itemCmp;
@@ -409,7 +439,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                     oldInvCellCmp.cellView.ClearInventoryCell();
                     oldInvCellCmp.isEmpty = true;
                 }
-                    _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
+                _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
             }
             else if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.heal)
             {
@@ -650,7 +680,10 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         {
             ref var playerGunCmp = ref _playerGunComponentsPool.Value.Get(reloadEvent);
             ref var gunCmp = ref _gunComponentsPool.Value.Get(reloadEvent);
-            int possibleBulletsToReload = FindItemCountInInventory(playerGunCmp.bulletTypeId);
+            bool seekBulletsinStorage = false;
+            if (_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inStorageState)
+                seekBulletsinStorage = true;
+            int possibleBulletsToReload = FindItemCountInInventory(playerGunCmp.bulletTypeId, seekBulletsinStorage);
             if (possibleBulletsToReload == 0)
             {
                 gunCmp.currentReloadDuration = 0;
@@ -662,7 +695,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
             else if (gunCmp.isOneBulletReload)
             {
-                FindItem(1, playerGunCmp.bulletTypeId, true);
+                FindItem(1, playerGunCmp.bulletTypeId, true, seekBulletsinStorage);
                 playerGunCmp.bulletCountToReload = 1;
                 _endReloadEventsPool.Value.Add(reloadEvent);
                 return;
@@ -671,7 +704,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
             else if (gunCmp.magazineCapacity - gunCmp.currentMagazineCapacity < possibleBulletsToReload)
                 possibleBulletsToReload = gunCmp.magazineCapacity - gunCmp.currentMagazineCapacity;
 
-            FindItem(possibleBulletsToReload, playerGunCmp.bulletTypeId, true);
+            FindItem(possibleBulletsToReload, playerGunCmp.bulletTypeId, true, seekBulletsinStorage);
             playerGunCmp.bulletCountToReload = possibleBulletsToReload;
             _endReloadEventsPool.Value.Add(reloadEvent);
         }
@@ -689,7 +722,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         {
             ref var shopCellCmp = ref _shopCellComponentsPool.Value.Get(findItem);
 
-            if (FindItem(shopCellCmp.itemCount, shopCellCmp.itemInfo.itemId, true))
+            if (FindItem(shopCellCmp.itemCount, shopCellCmp.itemInfo.itemId, true, false))
             {
                 ref var moneyCmp = ref _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                 moneyCmp.money += shopCellCmp.itemCost;
@@ -721,7 +754,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
             else if (shopCellCmp.itemInfo.type == ItemInfo.itemType.flashlight)
             {
                 ref var flashlightCmp = ref _flashLightInInventoryComponentsPool.Value.Get(weaponCellCount);
-                flashlightCmp.currentChargeRemainigTime = shopCellCmp.itemInfo.maxWorkTime;//в магазине покупается заряженный фонарь
+                flashlightCmp.currentChargeRemainigTime = shopCellCmp.itemInfo.flashlightInfo.maxChargedTime;//в магазине покупается заряженный фонарь
             }
 
             playerCmp.money -= shopCellCmp.itemCost;
@@ -729,6 +762,18 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
             SetMoveSpeedFromWeight();
         }
         #endregion
+
+
+        if (electricityGeneratorCmp.currentElectricityEnergy < _sceneData.Value.solarEnergyGeneratorMaxCapacity && !_globalTimeComponentsPool.Value.Get(_sceneData.Value.playerEntity).isNight/*проверка на погду если всё таки будет*/)
+        {
+            int energyBeforeAdd = (int)electricityGeneratorCmp.currentElectricityEnergy;
+            electricityGeneratorCmp.currentElectricityEnergy += Time.deltaTime * _sceneData.Value.solarEnergyGeneratorSpeed;
+
+            if ((int)electricityGeneratorCmp.currentElectricityEnergy != energyBeforeAdd)
+                _sceneData.Value.dropedItemsUIView.solarBatteryenergyText.text = (int)electricityGeneratorCmp.currentElectricityEnergy + "mAh/ \n" + _sceneData.Value.solarEnergyGeneratorMaxCapacity + "mAh";
+        }
+
+        //Debug.Log(electricityGeneratorCmp.currentElectricityEnergy + "cur energy");
     }
 
 
@@ -769,9 +814,9 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         return true;
     }
 
-    private bool FindItem(int neededItemsCount, int neededItemId, bool isDeleteFindedItems)
+    private bool FindItem(int neededItemsCount, int neededItemId, bool isDeleteFindedItems, bool seekInStorage)
     {
-        int curFindedItems = FindItemCountInInventory(neededItemId);
+        int curFindedItems = FindItemCountInInventory(neededItemId, seekInStorage);
 
 
         if (curFindedItems >= neededItemsCount)
@@ -782,6 +827,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
             float itemWeight = 0;
             int startNeededItemsCount = neededItemsCount;
             _sceneData.Value.statsInventoryText.text = inventoryCmp.weight.ToString("0.0") + "kg/ " + _sceneData.Value.maxInInventoryWeight + "kg \n max cells " + _sceneData.Value.inventoryCellsCount;
+
 
             foreach (var invItem in _inventoryItemsFilter.Value)
             {
@@ -819,6 +865,43 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                     }
                 }
             }
+            if (seekInStorage)
+                foreach (var storageItem in _storageItemsFilter.Value)
+                {
+                    ref var invItemCmp = ref _inventoryItemComponent.Value.Get(storageItem);
+                    if (invItemCmp.itemInfo.itemId == neededItemId)
+                    {
+                        if (itemWeight == 0) itemWeight = invItemCmp.itemInfo.itemWeight;
+
+                        ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(storageItem);
+
+                        if (invItemCmp.itemInfo.type == ItemInfo.itemType.gun)
+                            _gunInventoryCellComponentsPool.Value.Del(storageItem);
+                        else if (invItemCmp.itemInfo.type == ItemInfo.itemType.flashlight)
+                            _flashLightInInventoryComponentsPool.Value.Del(storageItem);
+
+                        if (invItemCmp.currentItemsCount <= neededItemsCount)
+                        {
+                            neededItemsCount -= invItemCmp.currentItemsCount;
+
+                            _inventoryItemComponent.Value.Del(storageItem);
+                            invCellCmp.cellView.ClearInventoryCell();
+                            invCellCmp.isEmpty = true;
+                            _inventoryItemComponent.Value.Del(storageItem);
+                            _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
+                            if (neededItemsCount == 0) break;
+                        }
+
+                        else
+                        {
+                            invItemCmp.currentItemsCount -= neededItemsCount;
+
+                            invCellCmp.cellView.ChangeCellItemCount(invItemCmp.currentItemsCount);
+                            _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
+                            break;
+                        }
+                    }
+                }
 
             inventoryCmp.weight -= startNeededItemsCount * itemWeight;
             _sceneData.Value.statsInventoryText.text = inventoryCmp.weight.ToString("0.0") + "kg/ " + _sceneData.Value.maxInInventoryWeight + "kg \n max cells " + _sceneData.Value.inventoryCellsCount;
@@ -827,7 +910,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
         return false;
     }
 
-    private int FindItemCountInInventory(int itemId)
+    private int FindItemCountInInventory(int itemId, bool seekInStorage)
     {
         int findedItemsCount = 0;
 
@@ -837,6 +920,14 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
             if (invItemCmp.itemInfo.itemId == itemId)
                 findedItemsCount += invItemCmp.currentItemsCount;
         }
+
+        if (seekInStorage)
+            foreach (var invItem in _storageItemsFilter.Value)
+            {
+                var invItemCmp = _inventoryItemComponent.Value.Get(invItem);
+                if (invItemCmp.itemInfo.itemId == itemId)
+                    findedItemsCount += invItemCmp.currentItemsCount;
+            }
 
         return findedItemsCount;
     }
@@ -884,7 +975,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
 
         var playerView = _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view;
 
-        droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(playerView.GetPlayerPosition(), invItemCmp.itemInfo, droppedItem);
+        droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(_movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform.position, invItemCmp.itemInfo, droppedItem);
 
 
         if (dropEvt.itemsCountToDrop == invItemCmp.currentItemsCount)
@@ -1136,7 +1227,7 @@ public class InventorySystem : IEcsInitSystem, IEcsRunSystem
                     ref var itemCmp = ref _inventoryItemComponent.Value.Get(cell);
 
                     if (invCellCmp.inventoryItemComponent.itemInfo.itemId
-                        == itemInfo.itemId && itemCmp.currentItemsCount 
+                        == itemInfo.itemId && itemCmp.currentItemsCount
                         != itemCmp.itemInfo.maxCount)
                     {
                         if (itemsCount > itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount)

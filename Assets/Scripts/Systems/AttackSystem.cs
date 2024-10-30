@@ -45,7 +45,7 @@ public class AttackSystem : IEcsRunSystem
         foreach (var aiCreature in _gunCreatureAiComponentsFilter.Value)
         {
             ref var creatureAi = ref _creatureAIComponentsPool.Value.Get(aiCreature);
-            if (creatureAi.isPeaceful) continue;
+            if (creatureAi.isPeaceful || creatureAi.colliders == null && !creatureAi.isPeaceful) continue;
 
             ref var attackCmp = ref _attackComponentsPool.Value.Get(aiCreature);
             var moveCmp = _movementComponentsPool.Value.Get(aiCreature);
@@ -524,7 +524,6 @@ public class AttackSystem : IEcsRunSystem
 
             else if (!gunCmp.isReloading && !playerGunCmp.inScope && !curHealCmp.isHealing)
             {
-                Debug.Log("tryed changed to");
                 if (Input.GetKeyDown(KeyCode.Alpha1) && inventoryGunsCmp.curWeapon != 0 && inventoryGunsCmp.gunFirstObject != null)
                     ChangeWeapon(0);
                 else if (Input.GetKeyDown(KeyCode.Alpha2) && inventoryGunsCmp.curWeapon != 1 && inventoryGunsCmp.gunSecondObject != null)

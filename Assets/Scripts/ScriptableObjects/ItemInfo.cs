@@ -28,5 +28,5 @@ public class ItemInfo : ScriptableObject
     [Header("Heal items")]
     public HealingItemInfo healInfo;
     [Header("Flashlights")]
-    public float maxWorkTime;
+    public FlashlightInfo flashlightInfo;
 }

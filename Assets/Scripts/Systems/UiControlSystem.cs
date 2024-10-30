@@ -71,11 +71,11 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
                 if (_storageCellTagsPool.Value.Has(descriptionEvt.itemEntity))
                 {
-                    _sceneData.Value.dropedItemsUIView.storageButtonText.text = "Положить в инвентарь";
+                    _sceneData.Value.dropedItemsUIView.storageButtonImage.sprite = _sceneData.Value.dropedItemsUIView.transportInventoryIcon;
                 }
                 else
                 {
-                    _sceneData.Value.dropedItemsUIView.storageButtonText.text = "Положить в хранилище";
+                    _sceneData.Value.dropedItemsUIView.storageButtonImage.sprite = _sceneData.Value.dropedItemsUIView.transportStorageIcon;
                 }
             }
 
@@ -92,8 +92,8 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                     var gunInInvCellCmp = _gunInventoryCellComponentsPool.Value.Get(descriptionEvt.itemEntity);
                     var playerGunCmp = _playerGunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
 
-                    _sceneData.Value.dropedItemsUIView.itemDescriptionText.text +=  "Gun info" + "\n" + "Damage: " + item.itemInfo.gunInfo.damage + "\n" + "Shot couldown: " + item.itemInfo.gunInfo.attackCouldown + "\n" + "Max magazine capacity: " + item.itemInfo.gunInfo.magazineCapacity + "\n" + "Reload time: " + item.itemInfo.gunInfo.reloadDuration
-                        + "\n" + "Spread: " + item.itemInfo.gunInfo.minSpread + "to" + item.itemInfo.gunInfo.maxSpread + "\n" + "Shot distance: " + item.itemInfo.gunInfo.attackLenght + "\n";
+                    _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Gun info" + "\n" + "Damage: " + item.itemInfo.gunInfo.damage + "\n" + "Shot couldown: " + item.itemInfo.gunInfo.attackCouldown + "\n" + "Max magazine capacity: " + item.itemInfo.gunInfo.magazineCapacity + "\n" + "Reload time: " + item.itemInfo.gunInfo.reloadDuration
+                        + "\n" + "Spread: " + item.itemInfo.gunInfo.minSpread + "to" + item.itemInfo.gunInfo.maxSpread + "\n" + "Shot distance: " + item.itemInfo.gunInfo.attackLenght + "\n" + "Bullet: " + _sceneData.Value.idItemslist.items[item.itemInfo.gunInfo.bulletTypeId].itemName + "\n";
                     // if (gunInInvCellCmp.isEquipedWeapon)
                     // {
                     if (_nowUsedWeaponTagsPool.Value.Has(desription))
@@ -103,9 +103,9 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                     else if (desription == _sceneData.Value.secondGunCellView._entity)
                         _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + playerInvWeaponsCmp.curSecondWeaponDurability + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
                     // }
-                     else
-                    // {
-                    _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + gunInInvCellCmp.gunDurability + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
+                    else
+                        // {
+                        _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + gunInInvCellCmp.gunDurability + "/" + item.itemInfo.gunInfo.maxDurabilityPoints + "\n";
                     //  }
                     // баги с отображением дурабилити
 
@@ -126,10 +126,10 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                         _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(false);
                         _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "take off";
                     }
-                    else if(_storageCellTagsPool.Value.Has(desription))
+                    else if (_storageCellTagsPool.Value.Has(desription))
                         _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(false);
                     else
-                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "equip";
+                        _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "equip";
                 }
 
                 else
@@ -202,7 +202,25 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
             else if (item.itemInfo.type == ItemInfo.itemType.flashlight)
             {
-                _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Remaining charge time : " + ((int)_flashlightInInventoryComponentsPool.Value.Get(desription).currentChargeRemainigTime).ToString() + " / " + item.itemInfo.maxWorkTime + "\n";
+                _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(false);
+                _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Remaining charge time : " + ((int)_flashlightInInventoryComponentsPool.Value.Get(desription).currentChargeRemainigTime).ToString() + " / " + item.itemInfo.flashlightInfo.maxChargedTime + "\n" +
+                     "Light range : " + item.itemInfo.flashlightInfo.lightRange + "\n" + "Light intensity : " + item.itemInfo.flashlightInfo.lightIntecnsity + "\n";
+                if (item.itemInfo.flashlightInfo.isElectric)
+                {
+                    _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Energy to charge: " + item.itemInfo.flashlightInfo.chargeItem + "\n";
+                    if (_storageCellTagsPool.Value.Has(desription))
+                    {
+                        _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(true);
+                        _sceneData.Value.dropedItemsUIView.secondButtonActionText.text = "charge";
+                    }
+                }
+
+                else
+                {
+                    _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Item to charge: " + _sceneData.Value.idItemslist.items[item.itemInfo.flashlightInfo.chargeItem].itemName + "\n";
+                    _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(true);
+                    _sceneData.Value.dropedItemsUIView.secondButtonActionText.text = "fill";
+                }
                 if (descriptionEvt.itemEntity == _sceneData.Value.flashlightItemCellView._entity)
                 {
                     if (menusStatesCmp.inStorageState)
@@ -212,16 +230,19 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                     _sceneData.Value.dropedItemsUIView.dropItemsUI.gameObject.SetActive(false);
                     _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "take off";
                 }
-                else if (_storageCellTagsPool.Value.Has(descriptionEvt.itemEntity))
+              /*  else if (_storageCellTagsPool.Value.Has(descriptionEvt.itemEntity))
                 {
                     _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "charge";
-                }
+                }*/
                 else
                 {
                     _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "equip";
                 }
-                _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(false);
-                _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(true);
+
+                if (_storageCellTagsPool.Value.Has(desription))
+                    _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(false);
+                else
+                    _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(true);
             }
 
             else

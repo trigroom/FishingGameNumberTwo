@@ -13,7 +13,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<PlayerWeaponsInInventoryComponent> _playerWeaponsInInventoryComponentsPool;
     private EcsPoolInject<GunComponent> _gunComponentsPool;
     private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
-   // private EcsPoolInject<DataComponent> _dataComponentsPool;
+    // private EcsPoolInject<DataComponent> _dataComponentsPool;
     //private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
     private EcsPoolInject<ArmorComponent> _armorComponentsPool;
     private EcsPoolInject<CameraComponent> _cameraComponentsPool;
@@ -22,6 +22,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<InventoryCellComponent> _inventoryCellComponentsPool;
     private EcsPoolInject<PlayerMoveComponent> _playerMoveComponentsPool;
     private EcsPoolInject<FlashLightInInventoryComponent> _flashLightInInventoryComponentsPool;
+    private EcsPoolInject<SolarPanelElectricGeneratorComponent> _solarPanelElectricGeneratorComponentsPool;
     private EcsPoolInject<MeleeWeaponComponent> _meleeWeaponComponentsPool;
     private EcsPoolInject<SaveGameEvent> _saveGameEventsPool;//для тестов
 
@@ -42,6 +43,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         _playerGunComponentsPool.Value.Add(_playerEntity);
 
 
+        _solarPanelElectricGeneratorComponentsPool.Value.Add(_playerEntity);
         ref var playerCmp = ref _playerComponentsPool.Value.Add(_playerEntity);
         playerCmp.view = _sceneService.Value.SpawnPlayer(_world.Value, _playerEntity);
         //playerCmp.money = _sceneService.Value.startMoneyForTest;
@@ -103,14 +105,14 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
     public void Run(IEcsSystems systems)
     {
-        foreach( var loadGame in loadGameEventsFilter.Value)
+        foreach (var loadGame in loadGameEventsFilter.Value)
         {
             ref var playerCmp = ref _playerComponentsPool.Value.Get(_playerEntity);
-           /* playerCmp.money = _dataComponentsPool.Value.Get(loadGame).money;*/
+            /* playerCmp.money = _dataComponentsPool.Value.Get(loadGame).money;*/
             _sceneService.Value.moneyText.text = playerCmp.money + "$";
         }
 
-        if(Input.GetKeyDown(KeyCode.J)) 
+        if (Input.GetKeyDown(KeyCode.J))
         {
             _playerComponentsPool.Value.Get(_playerEntity).money++;
             Debug.Log("now " + _playerComponentsPool.Value.Get(_playerEntity).money + " money");
@@ -118,16 +120,16 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         if (Input.GetKeyDown(KeyCode.C))
         {
-           /* foreach (var save in _dataComponentsFilter.Value)
-            {
-                _dataComponentsPool.Value.Get(save).money = _playerComponentsPool.Value.Get(_playerEntity).money;
+            /* foreach (var save in _dataComponentsFilter.Value)
+             {
+                 _dataComponentsPool.Value.Get(save).money = _playerComponentsPool.Value.Get(_playerEntity).money;
 
-                var item = new ItemInfoForSaveData(5,5);
+                 var item = new ItemInfoForSaveData(5,5);
 
-                ItemInfoForSaveData[] items = new ItemInfoForSaveData[] { item , item , item };
+                 ItemInfoForSaveData[] items = new ItemInfoForSaveData[] { item , item , item };
 
-                _dataComponentsPool.Value.Get(save).itemsCellinfo = items;
-            }*/
+                 _dataComponentsPool.Value.Get(save).itemsCellinfo = items;
+             }*/
             _saveGameEventsPool.Value.Add(_playerEntity);
             Debug.Log("save" + _playerComponentsPool.Value.Get(_playerEntity).money + " money");
         }
@@ -177,12 +179,12 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             // _sceneService.Value.ammoInfoText.text = "восстановление здоровья...";
         }
         //Ниже использование фонарика
-        else if (Input.GetKeyDown(KeyCode.L) && _playerComponentsPool.Value.Get(_sceneService.Value.playerEntity).canUseFlashlight)
+        /*else if  &&/* _playerComponentsPool.Value.Get(_sceneService.Value.playerEntity).canUseFlashlight !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity).isEmpty)
         {
             ref var playerCmp = ref _playerComponentsPool.Value.Get(_sceneService.Value.playerEntity);
             playerCmp.useFlashlight = !playerCmp.useFlashlight;
             playerCmp.view.flashLightObject.gameObject.SetActive(playerCmp.useFlashlight);
-        }
+        }*/
         else if (Input.GetKeyDown(KeyCode.LeftShift))
         {
 
@@ -193,22 +195,27 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 moveCmp.moveSpeed /= playerMoveCmp.playerView.runSpeedMultiplayer;
         }
 
-        if (!_inventoryCellComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity).isEmpty && _playerComponentsPool.Value.Get(_sceneService.Value.playerEntity).useFlashlight)
+        if (!_inventoryCellComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity).isEmpty)
         {
             ref var flashlightCmp = ref _flashLightInInventoryComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity);
             ref var playerCmp = ref _playerComponentsPool.Value.Get(_sceneService.Value.playerEntity);
 
             if (flashlightCmp.currentChargeRemainigTime > 0)
-                flashlightCmp.currentChargeRemainigTime -= Time.deltaTime;
-
-            else
             {
-                playerCmp.useFlashlight = false;
-                playerCmp.canUseFlashlight = false;
-                flashlightCmp.currentChargeRemainigTime = 0;
-                playerCmp.view.flashLightObject.gameObject.SetActive(false);
+                if (playerCmp.useFlashlight)
+                    flashlightCmp.currentChargeRemainigTime -= Time.deltaTime;
+                if (flashlightCmp.currentChargeRemainigTime <= 0)
+                {
+                    playerCmp.useFlashlight = false;
+                    flashlightCmp.currentChargeRemainigTime = 0;
+                    playerCmp.view.flashLightObject.gameObject.SetActive(false);
+                }
+                else if (Input.GetKeyDown(KeyCode.L))
+                {
+                    playerCmp.useFlashlight = !playerCmp.useFlashlight;
+                    playerCmp.view.flashLightObject.gameObject.SetActive(playerCmp.useFlashlight);
+                }
             }
         }
     }
-
 }

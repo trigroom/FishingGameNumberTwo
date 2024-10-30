@@ -4,6 +4,4 @@ using UnityEngine;
 public class ItemsWithIdListInfo : ScriptableObject
 {
     public ItemInfo[] items;
-
-    public InventoryCellView[] cells;
 }

@@ -27,6 +27,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<AttackComponent> _attackComponentsPool;
     private EcsPoolInject<GunComponent> _gunComponentsPool;
     private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
+    private EcsPoolInject<CellsListComponent> _cellsListComponentsPool;
 
     private EcsFilterInject<Inc<SaveGameEvent>> _saveGameEventsFilter;
     private EcsFilterInject<Inc<InventoryItemComponent>> _inventoryItemComponentsFilter;
@@ -118,7 +119,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         cells.Add(invCellCmpFlashlightItem.cellView);
         #endregion
 
-
+        ref var cellsCmp = ref _cellsListComponentsPool.Value.Add(dataComponentEntity);
         // _nowUsedWeaponTagsPool.Value.Add(_sceneData.Value.meleeWeaponCellView._entity);
 
         //5 спец клеток
@@ -143,11 +144,11 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             cells.Add(storageCellsCmp.cellView);
         }
 
-        _sceneData.Value.idItemslist.cells = new InventoryCellView[cells.Count];
+        cellsCmp.cells = new InventoryCellView[cells.Count];
         int j = 0;
         foreach (var cell in cells)
         {
-            _sceneData.Value.idItemslist.cells[j++] = cell;
+            cellsCmp.cells[j++] = cell;
         }
 
 
@@ -175,7 +176,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         foreach (var item in this.gameData.itemsCellinfo)
         {
             //Debug.Log(item.itemCellId + "cell id");
-            int cellEntity = _sceneData.Value.idItemslist.cells[item.itemCellId]._entity;
+            int cellEntity = cellsCmp.cells[item.itemCellId]._entity;
 
             ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cellEntity);
             ref var invCellCmp = ref _inventoryCellsComponentsPool.Value.Get(cellEntity);
@@ -223,6 +224,16 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             else if (itemCmp.itemInfo.type == ItemInfo.itemType.flashlight)
             {
                 _flashLightInInventoryComponentsPool.Value.Add(cellEntity).currentChargeRemainigTime = durabilityItemsForSaveDataList[item.itemCellId];
+
+                if (cellEntity == _sceneData.Value.flashlightItemCellView._entity)
+                {
+                    ref var playerCmp = ref _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+                    playerCmp.view.flashLightObject.intensity = itemCmp.itemInfo.flashlightInfo.lightIntecnsity;
+                    playerCmp.view.flashLightObject.pointLightOuterRadius = itemCmp.itemInfo.flashlightInfo.lightRange;
+                    playerCmp.view.flashLightObject.color = itemCmp.itemInfo.flashlightInfo.lightColor;
+                    playerCmp.view.flashLightObject.pointLightInnerAngle = itemCmp.itemInfo.flashlightInfo.spotAngle;
+                    playerCmp.view.flashLightObject.pointLightOuterAngle = itemCmp.itemInfo.flashlightInfo.spotAngle;
+                }
             }
             //если будут добавляться клетки нвентаря, то в списке их добавлять до клеток склада
         }
@@ -283,7 +294,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
         this.gameData.itemsCellinfo = new ItemInfoForSaveData[_inventoryItemComponentsFilter.Value.GetEntitiesCount()];
 
-        ref var cellsInventory = ref _sceneData.Value.idItemslist.cells;
+        ref var cellsInventory = ref _cellsListComponentsPool.Value.Get(dataComponentEntity).cells;
 
         List<NumAndIdForSafeData> bulletsWeaponForSaveData = new List<NumAndIdForSafeData>();
         List<NumAndIdForSafeData> durabilityItemsForSaveData = new List<NumAndIdForSafeData>();
@@ -305,7 +316,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                             bulletsWeaponForSaveData.Add(new NumAndIdForSafeData(i, _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity).currentMagazineCapacity));
                             durabilityItemsForSaveData.Add(new NumAndIdForSafeData(i, _playerGunComponentsPool.Value.Get(_sceneData.Value.playerEntity).durabilityPoints));
                         }
-                        else if(cellsInventory[i]._entity == _sceneData.Value.firstGunCellView._entity)
+                        else if (cellsInventory[i]._entity == _sceneData.Value.firstGunCellView._entity)
                         {
                             var playerWeaponsInInvCmp = _playerWeaponsInInventoryComponentsPool.Value.Get(playerEntity);
                             durabilityItemsForSaveData.Add(new NumAndIdForSafeData(i, playerWeaponsInInvCmp.curFirstWeaponDurability));

@@ -14,17 +14,31 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
     // private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
 
     private EcsFilterInject<Inc<GlobalTimeComponent>> _globalTimeComponentsFilter;
+    private EcsFilterInject<Inc<LoadGameEvent>> _loadGameEventsFilter;
 
     private EcsCustomInject<SceneService> _sceneService;
     private EcsWorldInject _world;
 
     public void Init(IEcsSystems systems)
     {
-        _globalTimeComponentsPool.Value.Add(_sceneService.Value.playerEntity).changeGloabalLightTime = 45;
+        _globalTimeComponentsPool.Value.Add(_sceneService.Value.playerEntity);
     }
 
     public void Run(IEcsSystems systems)
     {
+        foreach (var load in _loadGameEventsFilter.Value)
+        {
+            ref var globalTimeCmp = ref _globalTimeComponentsPool.Value.Get(_sceneService.Value.playerEntity);
+
+            if (globalTimeCmp.currentDayTime > _sceneService.Value.dayTime * 0.7f)
+            {
+                globalTimeCmp.isNight = true;
+                globalTimeCmp.changeGloabalLightTime = 46;
+                _changeToNightEventsPool.Value.Add(_sceneService.Value.playerEntity);
+                _sceneService.Value.gloabalLight.intensity = 0.2f;
+                _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.colorKeys[2].color;
+            }
+        }
         foreach (var entity in _globalTimeComponentsFilter.Value)
         {
             ref var globalTimeCmp = ref _globalTimeComponentsPool.Value.Get(entity);
@@ -40,11 +54,12 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
             }*/
 
             globalTimeCmp.currentDayTime += Time.deltaTime;
-            if(globalTimeCmp.currentDayTime > _sceneService.Value.dayTime*0.7f && !globalTimeCmp.isNight)
+            if (globalTimeCmp.currentDayTime > _sceneService.Value.dayTime * 0.7f && !globalTimeCmp.isNight)
             {
                 globalTimeCmp.changeGloabalLightTime = 0;
                 globalTimeCmp.isNight = true;
-                _changeToNightEventsPool.Value.Add(entity);
+                _changeToNightEventsPool.Value.Add(_sceneService.Value.playerEntity);
+                Debug.Log("night");
             }
             else if (globalTimeCmp.currentDayTime > _sceneService.Value.dayTime)
             {
@@ -53,19 +68,20 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 _changeToDayEventsPool.Value.Add(entity);
                 globalTimeCmp.currentDay++;
                 globalTimeCmp.currentDayTime = 0;
+                Debug.Log("day");
             }
-            if(globalTimeCmp.changeGloabalLightTime <= 45)
+            if (globalTimeCmp.changeGloabalLightTime <= 45)
             {
                 globalTimeCmp.changeGloabalLightTime += Time.deltaTime;
                 if (globalTimeCmp.isNight)
                 {
-                    Debug.Log("night");
+
                     _sceneService.Value.gloabalLight.intensity = Mathf.MoveTowards(_sceneService.Value.gloabalLight.intensity, 0.2f, _sceneService.Value.gloabalLight.intensity / 30 * Time.deltaTime);
                     _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(Mathf.Lerp(0, 1, globalTimeCmp.changeGloabalLightTime / 40));
                 }
                 else
                 {
-                    Debug.Log("day");
+
                     _sceneService.Value.gloabalLight.intensity = Mathf.MoveTowards(_sceneService.Value.gloabalLight.intensity, 0.75f, _sceneService.Value.gloabalLight.intensity / 30 * Time.deltaTime);
                     _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(Mathf.Lerp(1, 0, globalTimeCmp.changeGloabalLightTime / 40));
                 }

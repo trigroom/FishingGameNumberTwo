@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228e5d8fb1f5a6c4caa0e8f30c661326, type: 3}
+  m_Name: KeroseneFlashlightInfo
+  m_EditorClassIdentifier: 
+  maxChargedTime: 10
+  isSpottedLight: 0
+  lightRange: 3
+  lightIntecnsity: 1
+  spotAngle: 360
+  lightColor: {r: 1, g: 0.7910348, b: 0.2588235, a: 1}
+  isElectric: 0
+  chargeItem: 47

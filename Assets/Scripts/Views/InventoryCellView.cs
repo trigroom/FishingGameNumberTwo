@@ -24,6 +24,7 @@ public class InventoryCellView : MonoBehaviour
     public void ChangeCellItemSprite(Sprite itemSprite)
     {
         inventoryCellItemImage.sprite = itemSprite;
+        inventoryCellItemImage.color = new Color(1, 1, 1, 1);
     }
 
     public void ChangeCellItemCount(int count)
@@ -35,7 +36,7 @@ public class InventoryCellView : MonoBehaviour
     }
     public void ClearInventoryCell()
     {
-        inventoryCellItemImage.sprite = null;//надо ставить невидимый спрайт
+        inventoryCellItemImage.color = new Color(1,1,1,0);//надо ставить невидимый спрайт
         inventoryCellItemCountText.text = "";
     }
 
