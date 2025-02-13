@@ -12,12 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac357f814689b0342b6a7c6efddf2e3d, type: 3}
   m_Name: Colt Python InvItem
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: 6760098444959750547, guid: 6035e8170705f6f4c94c953c4a181f8e, type: 3}
+  itemSprite: {fileID: 21300000, guid: ad6e68e9c8492c94eb3779ef20bf6380, type: 3}
   type: 0
   maxCount: 1
   itemWeight: 1
   itemId: 11
   itemName: Colt Python
   itemDescription: 
-  gunInfo: {fileID: 0}
+  itemCost: 15
+  gunInfo: {fileID: 11400000, guid: c080ffd64eec54447ac3d7fffb5537a3, type: 2}
+  meleeWeaponInfo: {fileID: 0}
+  grenadeInfo: {fileID: 0}
   healInfo: {fileID: 0}
+  flashlightInfo: {fileID: 0}
+  backpackInfo: {fileID: 0}
+  gunPartInfo: {fileID: 0}
+  expAddedInfo: {fileID: 0}
+  sheildInfo: {fileID: 0}

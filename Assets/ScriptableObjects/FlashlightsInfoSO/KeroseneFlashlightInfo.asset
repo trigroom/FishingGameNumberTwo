@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 228e5d8fb1f5a6c4caa0e8f30c661326, type: 3}
   m_Name: KeroseneFlashlightInfo
   m_EditorClassIdentifier: 
-  maxChargedTime: 10
+  maxChargedTime: 300
   isSpottedLight: 0
   lightRange: 3
   lightIntecnsity: 1

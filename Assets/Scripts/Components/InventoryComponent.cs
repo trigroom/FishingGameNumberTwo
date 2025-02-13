@@ -5,4 +5,7 @@ using UnityEngine;
 public struct InventoryComponent 
 {
     public float weight;
+    public float currentMaxWeight;
+    public int currentCellCount;
+    public int moneyCount;
 }

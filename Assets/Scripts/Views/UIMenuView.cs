@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UIMenuView : MonoBehaviour
 {
-    private Animator menuAnimator;
+    [SerializeField]private Animator menuAnimator;
 
     private void Awake()
     {

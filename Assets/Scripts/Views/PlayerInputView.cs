@@ -1,6 +1,4 @@
 using Leopotam.EcsLite;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using static InteractCharacterView;
@@ -8,107 +6,82 @@ using static InteractCharacterView;
 public class PlayerInputView : MonoBehaviour
 {
     [field: SerializeField] public float checkRadius { get; private set; }
-    [field: SerializeField] public LayerMask droppedItemsMask { get; private set; }
-    [field: SerializeField] public LayerMask interactCharacterMask { get; private set; }
+    [field: SerializeField] public LayerMask interactedMask { get; private set; }
+    //[field: SerializeField] public LayerMask interactCharacterMask { get; private set; }
     [field: SerializeField] public LayerMask spawnZoneMask { get; private set; }
     [field: SerializeField] public TMP_Text itemInfoText;
     [field: SerializeField] public TMP_Text charactersInteractText;
-   // [field: SerializeField] public PolygonCollider2D visionZoneCollider;
+    // [field: SerializeField] public PolygonCollider2D visionZoneCollider;
 
     private EcsWorld _world;
     private int _entity;
 
-    private int currentDroppedItem = -1;
-    private int currentActiveShopper = -1;
-    public bool canShoping = true;
-    public bool canUseStorage = true;
-    public bool usedInventory = false;
+    public bool eventIsSended = false;
     public bool isColliderInteract = false;
+
+    public Vector2 lastInteractedObjectPosition = Vector2.zero;
+
+   // [HideInInspector] public QuestCharacterView currentQuestCharacter;
+    //[HideInInspector] public TrapView currentTrap;
+
+   // private int currentDroppedItem = -1;
+   // public int currentActiveShopper { get; private set; }
+
+   // public InteractNPCType currentInteractNPCType;
+
+    public enum InteractionType
+    {
+        none,
+        droppedItem,
+        interactedCharacter,
+        trap
+    }
 
     private void Start()
     {
-        InvokeRepeating("CheckNearestDroppedItems", 0.3f, 0.3f);
+        InvokeRepeating("CheckNearestDroppedItems", 3f, 0.15f);
     }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.F) && isColliderInteract)
-        {
-            if (currentDroppedItem != -1)
-            {
-                _world.GetPool<AddItemEvent>().Add(currentDroppedItem);
-            }
-            else if (canShoping && !usedInventory && currentActiveShopper != -1)
-            {
-                canShoping = false;
-                _world.GetPool<OffInScopeStateEvent>().Add(currentActiveShopper);
-                _world.GetPool<ShopOpenEvent>().Add(currentActiveShopper);
-            }
-            else if (canUseStorage && !usedInventory)
-            {
-                canUseStorage = false;
-                _world.GetPool<OffInScopeStateEvent>().Add(_world.NewEntity());
-                _world.GetPool<StorageOpenEvent>().Add(_entity);
-            }
-        }
-    }
-
     public void Construct(EcsWorld world, int entity)
     {
         _world = world;
         _entity = entity;
     }
-
     private void CheckNearestDroppedItems()
     {
-        RaycastHit2D collidedItem = Physics2D.CircleCast(gameObject.transform.position, checkRadius, Vector2.up, checkRadius, droppedItemsMask);
 
-        if (collidedItem.collider != null)
+        Collider2D collidedObject = Physics2D.OverlapCircle(gameObject.transform.position, checkRadius, interactedMask);
+
+        Debug.Log(collidedObject);
+        if (collidedObject != null)
         {
+            if (!isColliderInteract || lastInteractedObjectPosition != (Vector2)collidedObject.gameObject.transform.position)
+            {
+                lastInteractedObjectPosition = (Vector2)collidedObject.gameObject.transform.position;
+                ref var interactEventCmp = ref _world.GetPool<CheckInteractedObjectsEvent>().Add(_entity);
+                if (collidedObject.gameObject.layer == 3) //drop item layer
+                {
+                    interactEventCmp.currentDropItem = collidedObject.gameObject.GetComponent<DroppedItemView>();
+                    interactEventCmp.interactionType = InteractionType.droppedItem;
+
+                }
+                else if (collidedObject.gameObject.layer == 8)//interactCharacter layer
+                {
+                    interactEventCmp.currentInteractCharacter = collidedObject.gameObject.GetComponent<InteractCharacterView>();
+                    interactEventCmp.interactionType = InteractionType.interactedCharacter;
+                }
+                else if (collidedObject.gameObject.layer == 15)//trap layer
+                {
+                    interactEventCmp.currentTrap = collidedObject.gameObject.GetComponent<TrapView>();
+                    interactEventCmp.interactionType = InteractionType.trap;
+                }
+            }
             isColliderInteract = true;
-
-            var droppedItem = collidedItem.collider.gameObject.GetComponent<DroppedItemView>().itemEntity;
-            currentDroppedItem = droppedItem;
-
-            ref var itemCmp = ref _world.GetPool<DroppedItemComponent>().Get(droppedItem);
-
-            SetInfoDroppedItemsText(itemCmp.itemInfo.itemName + " " + itemCmp.currentItemsCount + " (нажми F чтобы поднять)");
         }
         else
         {
-            currentDroppedItem = -1;
-            RaycastHit2D collidedCharacter = Physics2D.CircleCast(gameObject.transform.position, checkRadius, Vector2.up, checkRadius, interactCharacterMask);
-            if (collidedCharacter.collider != null)
-            {
-                var interactCharacter = collidedCharacter.collider.gameObject.GetComponent<InteractCharacterView>();
-
-                if (interactCharacter._characterType == InteractNPCType.shop)
-                {
-                    isColliderInteract = true; 
-                    currentActiveShopper = interactCharacter._entity;
-
-                    SetInfoDroppedItemsText(" (нажми F чтобы зайти в магазин)");
-                }
-                else if (interactCharacter._characterType == InteractNPCType.dialogeNpc)
-                {
-                    isColliderInteract = true;
-                    currentActiveShopper = -1;
-                    SetInfoDroppedItemsText(" (нажми F чтобы поговорить)");
-                }
-                else if (interactCharacter._characterType == InteractNPCType.storage)
-                {
-                    isColliderInteract = true;
-                    currentActiveShopper = -1;
-                    SetInfoDroppedItemsText(" (нажми F чтобы зайти в хранилище)");
-                }
-
-            }
-            else
-            {
-                
-                isColliderInteract = false;
-                SetInfoDroppedItemsText("");
-            }
+            if (isColliderInteract)
+                _world.GetPool<CheckInteractedObjectsEvent>().Add(_entity).interactionType = InteractionType.none;
+            isColliderInteract = false;
         }
 
     }
@@ -121,6 +94,44 @@ public class PlayerInputView : MonoBehaviour
             Debug.Log("in zone");
             _world.GetPool<EntrySpawnZoneEvent>().Add(_entity).zoneView = collision.gameObject.GetComponent<SpawnZoneView>();
         }
+        else if (collision.gameObject.layer == 12)
+        {
+            _world.GetPool<ChangeInBuildingStateEvent>().Add(_world.NewEntity()) = new ChangeInBuildingStateEvent(true, collision.gameObject.GetComponent<SpriteGroupView>());//поменять чтоб не только один объеккт перекрашивало в полупрозрачный
+        }
+        else if (collision.gameObject.layer == 14)
+        {
+            _world.GetPool<EntryInNewLocationEvent>().Add(_world.NewEntity()).location = collision.gameObject.GetComponent<LocationEntryView>().locationSettings;//поменять чтоб не только один объеккт перекрашивало в полупрозрачный
+            Debug.Log("collider loacation is entry");
+        }
+        else if (collision.gameObject.layer == 15)
+        {
+            var trapView = collision.gameObject.GetComponent<TrapView>();
+            trapView.trapCollider.enabled = false;
+            //наложение всех эффектов
+            foreach (var effect in trapView.effects)
+            {
+                ref var effCmp = ref _world.GetPool<EffectComponent>().Add(_world.NewEntity());
+                effCmp.effectEntity = _entity;
+
+                effCmp.effectLevel = effect.effectLevel;
+                effCmp.isFirstEffectCheck = true;
+                effCmp.effectIconSprite = effect.effectIconSprite;
+                effCmp.effectType = effect.effectType;
+                effCmp.effectDuration = effect.effectTime;
+            }//подумать что можно с эффектом капкана сделать
+            trapView.spriteRenderer.sprite = trapView.safetyTrapSprite;
+            if (trapView.type == TrapView.TrapType.mantrap)
+            {
+                Debug.Log("mantrap is activated");
+                //добавить звук капкана
+            }
+            else //если мина
+            {
+                _world.GetPool<MineExplodeEvent>().Add(_world.NewEntity()) = new MineExplodeEvent(trapView.mineInfo, trapView.gameObject.transform.position);
+                Destroy(trapView.gameObject, 1f);
+                Debug.Log("mine is activated");
+            }
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -130,15 +141,20 @@ public class PlayerInputView : MonoBehaviour
             Debug.Log("no zone");
             _world.GetPool<ExitSpawnZoneEvent>().Add(_entity).zoneView = collision.gameObject.GetComponent<SpawnZoneView>();
         }
+        else if (collision.gameObject.layer == 12)
+        {
+            _world.GetPool<ChangeInBuildingStateEvent>().Add(_world.NewEntity()) = new ChangeInBuildingStateEvent(false, collision.gameObject.GetComponent<SpriteGroupView>());
+            //менять освещение
+        }
+
     }
 
-    private void SetInfoDroppedItemsText(string neededText)
+  /*  private void SetInfoDroppedItemsText(string neededText)
     {
-        itemInfoText.text = neededText;
-    }
+        if (!isNPCNowIsUsed && itemInfoText.text != neededText)
+            itemInfoText.text = neededText;
+        else if (isNPCNowIsUsed && itemInfoText.text != "")
+            itemInfoText.text = "";
+    }*/
 
-    public Vector2 GetPlayerPosition()
-    {
-        return gameObject.transform.position;
-    }
 }

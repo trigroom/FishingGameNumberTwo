@@ -4,7 +4,12 @@ using UnityEngine;
 
 public struct GunInventoryCellComponent 
 {
-    public bool isEquipedWeapon;
+    public int[] gunPartsId;
+    public bool isEquipedWeapon { get; set; }
     public int currentAmmo;
-    public int gunDurability { get; set; }
+    public int gunDurability;
+
+    public int bulletShellsToReload;
+
+    public float currentGunWeight;
 }

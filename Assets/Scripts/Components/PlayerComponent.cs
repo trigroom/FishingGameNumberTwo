@@ -5,8 +5,12 @@ using UnityEngine;
 public struct PlayerComponent 
 {
     public PlayerView view;
-    public int money;
     public bool useFlashlight;
-   // public SpriteRenderer visionZoneMask;
+    public bool canDeffuseMines;
+    public bool hasForestGuide;
+    public bool nvgIsUsed;
+    public int levelOfPainkillers;
+    public float currentAudibility;
+    // public SpriteRenderer visionZoneMask;
     //public PolygonCollider2D visionZoneCollider;
 }

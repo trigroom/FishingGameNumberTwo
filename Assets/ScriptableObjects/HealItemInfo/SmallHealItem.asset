@@ -14,3 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healingHealthPoints: 3
   healingTime: 5
+  maxBleedingRemoveLevel: 1
+  inGameHealingItemSprite: {fileID: 3673977541324745974, guid: 84820276c33f64e4da24de4a5ad61098, type: 3}
+  scaleMultplayer: 1
+  rotationZ: 90

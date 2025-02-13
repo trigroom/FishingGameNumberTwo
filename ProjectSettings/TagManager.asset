@@ -2,10 +2,11 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags:
   - hidedOutsideVision
   - Enemy
+  - Head
   layers:
   - Default
   - TransparentFX
@@ -18,13 +19,13 @@ TagManager:
   - InteractedCharacter
   - SpawnZone
   - Obstacle
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Mask
+  - RoofCollider
+  - Shield
+  - LocationEntry
+  - Trap
+  - EnemyHead
+  - BrokedObject
   - 
   - 
   - 
@@ -43,3 +44,8 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: UIBlur
+    uniqueID: 2570107159
+    locked: 0
+  m_RenderingLayers:
+  - Default

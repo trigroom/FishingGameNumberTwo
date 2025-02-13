@@ -13,6 +13,10 @@ public class DroppedItemView : MonoBehaviour
         spriteRenderer.sprite = sprite;
         itemEntity = entity;
     }
+    public void SetParametersToItem( int entity)
+    {
+        itemEntity = entity;
+    }
     public void DestroyItemFromGround()
     {
         Destroy(gameObject);

@@ -6,5 +6,5 @@ public struct HealingItemComponent
 {
     public HealingItemInfo healingItemInfo;
     public float currentHealingTime;
-    public bool isHealing;
+    public bool isHealing { get;set; }
 }

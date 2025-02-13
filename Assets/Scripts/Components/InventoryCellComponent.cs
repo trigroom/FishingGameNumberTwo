@@ -6,7 +6,6 @@ using UnityEngine;
 public struct InventoryCellComponent 
 {
     public InventoryCellView cellView;
-    public InventoryItemComponent inventoryItemComponent { get;set; }
-    public bool isEmpty;
+    public bool isEmpty {  get; set; }
     public TMP_Text inventoryCellItemCountText;
 }

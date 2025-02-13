@@ -1,0 +1,988 @@
+fileFormatVersion: 2
+guid: 7d8113d76a37b3a459565d04b69720e9
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8420099168277604345
+    second: cracksOnHelmetHard_0
+  - first:
+      213: 6553319651601490807
+    second: cracksOnHelmetHard_1
+  - first:
+      213: 931093039530071257
+    second: cracksOnHelmetHard_2
+  - first:
+      213: 2238712659996422090
+    second: cracksOnHelmetHard_3
+  - first:
+      213: -2027726726775506779
+    second: cracksOnHelmetHard_4
+  - first:
+      213: 3978934635541842776
+    second: cracksOnHelmetHard_5
+  - first:
+      213: 6400300785228699901
+    second: cracksOnHelmetHard_6
+  - first:
+      213: -6043245303662421665
+    second: cracksOnHelmetHard_7
+  - first:
+      213: -217953098863105817
+    second: cracksOnHelmetHard_8
+  - first:
+      213: -5286966073652046935
+    second: cracksOnHelmetHard_9
+  - first:
+      213: -3520954966772145349
+    second: cracksOnHelmetHard_10
+  - first:
+      213: -8824878991867716017
+    second: cracksOnHelmetHard_11
+  - first:
+      213: -9118574589070776107
+    second: cracksOnHelmetHard_12
+  - first:
+      213: -4956142884726896511
+    second: cracksOnHelmetHard_13
+  - first:
+      213: 4243199947329181103
+    second: cracksOnHelmetHard_14
+  - first:
+      213: 1375630345240869583
+    second: cracksOnHelmetHard_15
+  - first:
+      213: 8819881195879169124
+    second: cracksOnHelmetHard_16
+  - first:
+      213: 4158244575702625454
+    second: cracksOnHelmetHard_17
+  - first:
+      213: 2933317071791863722
+    second: cracksOnHelmetHard_18
+  - first:
+      213: 2334674604898744971
+    second: cracksOnHelmetHard_19
+  - first:
+      213: 6222235988786268345
+    second: cracksOnHelmetHard_20
+  - first:
+      213: 2939218879174853708
+    second: cracksOnHelmetHard_21
+  - first:
+      213: 595667240093912764
+    second: cracksOnHelmetHard_22
+  - first:
+      213: -7038725451638432271
+    second: cracksOnHelmetHard_23
+  - first:
+      213: 2711301579772774132
+    second: cracksOnHelmetHard_24
+  - first:
+      213: -1148828018884023596
+    second: cracksOnHelmetHard_25
+  - first:
+      213: -7811351587112853925
+    second: cracksOnHelmetHard_26
+  - first:
+      213: 8622078608081446887
+    second: cracksOnHelmetHard_27
+  - first:
+      213: 8135705184826028429
+    second: cracksOnHelmetHard_28
+  - first:
+      213: 2305972510851675160
+    second: cracksOnHelmetHard_29
+  - first:
+      213: -3673912371934784587
+    second: cracksOnHelmetHard_30
+  - first:
+      213: 4146690930989751309
+    second: cracksOnHelmetHard_31
+  - first:
+      213: -5507211314975634879
+    second: cracksOnHelmetHard_32
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_0
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 162
+        width: 63
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70850450b6cc52b80800000000000000
+      internalID: -8420099168277604345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_1
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 186
+        width: 78
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7732b4d808112fa50800000000000000
+      internalID: 6553319651601490807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_2
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 208
+        width: 13
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d45702bf28ebec00800000000000000
+      internalID: 931093039530071257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_3
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 199
+        width: 18
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acfa1459d41811f10800000000000000
+      internalID: 2238712659996422090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_4
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 207
+        width: 16
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a8fafc09411cd3e0800000000000000
+      internalID: -2027726726775506779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_5
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 192
+        width: 22
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85b48ff38f3083730800000000000000
+      internalID: 3978934635541842776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_6
+      rect:
+        serializedVersion: 2
+        x: 363
+        y: 185
+        width: 11
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df8d53767af62d850800000000000000
+      internalID: 6400300785228699901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_7
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 196
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5957a03a64122ca0800000000000000
+      internalID: -6043245303662421665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_8
+      rect:
+        serializedVersion: 2
+        x: 374
+        y: 190
+        width: 16
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e8a194bfcca9fcf0800000000000000
+      internalID: -217953098863105817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_9
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 187
+        width: 37
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a39d681e5ce0a6b0800000000000000
+      internalID: -5286966073652046935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_10
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 189
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b33266fcc1e032fc0800000000000000
+      internalID: -3520954966772145349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_11
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 198
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4edae7205bb78580800000000000000
+      internalID: -8824878991867716017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_12
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 188
+        width: 22
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d8688839b0547180800000000000000
+      internalID: -9118574589070776107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_13
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 192
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18806cb1e4e383bb0800000000000000
+      internalID: -4956142884726896511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_14
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 166
+        width: 10
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa51383eedfd2ea30800000000000000
+      internalID: 4243199947329181103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_15
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 47
+        width: 167
+        height: 145
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fca7456b288371310800000000000000
+      internalID: 1375630345240869583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_16
+      rect:
+        serializedVersion: 2
+        x: 314
+        y: 172
+        width: 18
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46c7689c733866a70800000000000000
+      internalID: 8819881195879169124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_17
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 111
+        width: 55
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eac23f7096d05b930800000000000000
+      internalID: 4158244575702625454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_18
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 120
+        width: 18
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa73ebdd55c35b820800000000000000
+      internalID: 2933317071791863722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_19
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 111
+        width: 25
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8a7d1bfe2e666020800000000000000
+      internalID: 2334674604898744971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_20
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 74
+        width: 78
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b8c14c3aa2d95650800000000000000
+      internalID: 6222235988786268345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_21
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 118
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c44c65a7ff33ac820800000000000000
+      internalID: 2939218879174853708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_22
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 109
+        width: 14
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbe822ae23c344800800000000000000
+      internalID: 595667240093912764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_23
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 114
+        width: 17
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fd17979e7c615e90800000000000000
+      internalID: -7038725451638432271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_24
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 114
+        width: 41
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f6cf45fb6a70a520800000000000000
+      internalID: 2711301579772774132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_25
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 107
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dae66ae00b8e00f0800000000000000
+      internalID: -1148828018884023596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_26
+      rect:
+        serializedVersion: 2
+        x: 397
+        y: 120
+        width: 11
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5e547a2e11889390800000000000000
+      internalID: -7811351587112853925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_27
+      rect:
+        serializedVersion: 2
+        x: 413
+        y: 111
+        width: 16
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e76034ffc6c7a770800000000000000
+      internalID: 8622078608081446887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_28
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 80
+        width: 13
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d81fbd2c2c4d7e070800000000000000
+      internalID: 8135705184826028429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_29
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 66
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8143123f7c5700020800000000000000
+      internalID: 2305972510851675160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_30
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 0
+        width: 48
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b31ae6b924a30dc0800000000000000
+      internalID: -3673912371934784587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_31
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0c5afe7e610c8930800000000000000
+      internalID: 4146690930989751309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracksOnHelmetHard_32
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 0
+        width: 28
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14a8ddbcc747293b0800000000000000
+      internalID: -5507211314975634879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      cracksOnHelmetHard_0: -8420099168277604345
+      cracksOnHelmetHard_1: 6553319651601490807
+      cracksOnHelmetHard_10: -3520954966772145349
+      cracksOnHelmetHard_11: -8824878991867716017
+      cracksOnHelmetHard_12: -9118574589070776107
+      cracksOnHelmetHard_13: -4956142884726896511
+      cracksOnHelmetHard_14: 4243199947329181103
+      cracksOnHelmetHard_15: 1375630345240869583
+      cracksOnHelmetHard_16: 8819881195879169124
+      cracksOnHelmetHard_17: 4158244575702625454
+      cracksOnHelmetHard_18: 2933317071791863722
+      cracksOnHelmetHard_19: 2334674604898744971
+      cracksOnHelmetHard_2: 931093039530071257
+      cracksOnHelmetHard_20: 6222235988786268345
+      cracksOnHelmetHard_21: 2939218879174853708
+      cracksOnHelmetHard_22: 595667240093912764
+      cracksOnHelmetHard_23: -7038725451638432271
+      cracksOnHelmetHard_24: 2711301579772774132
+      cracksOnHelmetHard_25: -1148828018884023596
+      cracksOnHelmetHard_26: -7811351587112853925
+      cracksOnHelmetHard_27: 8622078608081446887
+      cracksOnHelmetHard_28: 8135705184826028429
+      cracksOnHelmetHard_29: 2305972510851675160
+      cracksOnHelmetHard_3: 2238712659996422090
+      cracksOnHelmetHard_30: -3673912371934784587
+      cracksOnHelmetHard_31: 4146690930989751309
+      cracksOnHelmetHard_32: -5507211314975634879
+      cracksOnHelmetHard_4: -2027726726775506779
+      cracksOnHelmetHard_5: 3978934635541842776
+      cracksOnHelmetHard_6: 6400300785228699901
+      cracksOnHelmetHard_7: -6043245303662421665
+      cracksOnHelmetHard_8: -217953098863105817
+      cracksOnHelmetHard_9: -5286966073652046935
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

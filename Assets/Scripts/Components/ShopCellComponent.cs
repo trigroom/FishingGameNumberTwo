@@ -8,4 +8,5 @@ public struct ShopCellComponent
     public ItemInfo itemInfo;
     public int itemCount;
     public int itemCost;
+    public int shopperItemId;
 }

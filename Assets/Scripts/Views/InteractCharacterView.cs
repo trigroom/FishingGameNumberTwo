@@ -7,12 +7,16 @@ public class InteractCharacterView : MonoBehaviour
 {
     public enum InteractNPCType
     {
+        none,
         shop,
-        dialogeNpc,
-        storage
+        shopAndDialogeNpc,
+        storage,
+        gunsmith,
+        craftingTable,
+        openedDoor
     }
 
-    public int _entity { get; private set; }
+    public int _entity;
     public EcsWorld _world { get; private set; }
 
     [field: SerializeField] public InteractNPCType _characterType { get; protected set; }

@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-public struct CellsListComponent 
+public struct CellsListComponent
 {
-    public InventoryCellView[] cells;
+    public List<InventoryCellView> cells;
 }

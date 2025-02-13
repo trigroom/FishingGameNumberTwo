@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3f904420d4bfda4c961ea13277a1f21, type: 3}
+  m_Name: GuidePageForLights
+  m_EditorClassIdentifier: 
+  guideText: ' In order to see at least something in houses at night and on dark
+    nights, it is better to always have a flashlight with you and, at best, a night
+    vision device'
+  quidePicture: {fileID: 6810365305752676318, guid: 4963d2440ceaa034a981b30afc8fbe1d, type: 3}

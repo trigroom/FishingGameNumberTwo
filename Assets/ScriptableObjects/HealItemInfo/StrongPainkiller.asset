@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98626e9cfbea3d146bf240d61884b51e, type: 3}
+  m_Name: StrongPainkiller
+  m_EditorClassIdentifier: 
+  healingHealthPoints: 0
+  recoveringHungerPoints: 0
+  healingTime: 4
+  maxBleedingRemoveLevel: 0
+  addedBlur: 150
+  effectInfo: {fileID: 11400000, guid: 836582519730a3a42a7d8b70e231af2a, type: 2}
+  inGameHealingItemSprite: {fileID: 21300000, guid: 01c2ae3e955a378489e6cb251e435384, type: 3}
+  scaleMultplayer: 1
+  rotationZ: 90

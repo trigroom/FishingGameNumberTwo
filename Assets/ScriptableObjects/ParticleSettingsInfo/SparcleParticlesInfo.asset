@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38e91558499ea6648ba1cdf79336c523, type: 3}
+  m_Name: SparcleParticlesInfo
+  m_EditorClassIdentifier: 
+  startSpeedMin: 1.5
+  startSpeedMax: 4
+  startLifetimeMin: 0.1
+  startLifetimeMax: 0.4
+  startSizeMin: 0.03
+  startSizeMax: 0.05
+  startColor: {r: 0.9528302, g: 0.84338725, b: 0.28315237, a: 1}
+  particleSprite: {fileID: 21300000, guid: f8c12775d357d1a4094cc79388339445, type: 3}

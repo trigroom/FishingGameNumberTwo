@@ -9,10 +9,16 @@ public class ItemInfo : ScriptableObject
         gun,
         meleeWeapon,
         heal,
-        bullet,//можно потом убрать
+        grenade,
         flashlight,
-        watch,
-        drop
+        randomHeal,
+        drop,
+        backpack,
+        gunPart,
+        addedExpItem,
+        sheild,
+        helmet,
+        bodyArmor,
     }
     [Header("Item stats")]
     public Sprite itemSprite;
@@ -22,11 +28,26 @@ public class ItemInfo : ScriptableObject
     public int itemId;
     public string itemName;
     public string itemDescription;
+    public int itemCost;
     [Header("Weapons")]
     public GunInfo gunInfo;
     public MeleeWeaponInfo meleeWeaponInfo;
+    public GrenadeInfo grenadeInfo;
     [Header("Heal items")]
     public HealingItemInfo healInfo;
     [Header("Flashlights")]
     public FlashlightInfo flashlightInfo;
+    [Header("BackPacks")]
+    public BackpackInfo backpackInfo;
+    [Header("GunParts")]
+    public GunPartInfo gunPartInfo;
+    [Header("AddedExpItem")]
+    public ExpAddedItemInfo expAddedInfo;
+    [Header("SheildItem")]
+    public SheildInfo sheildInfo;
+    [Header("Armor")]
+    public HelmetInfo helmetInfo;
+    public BodyArmorInfo bodyArmorInfo;
+    [Header("Random Heal items")]
+    public RandomHealItemInfo randomHealInfo;
 }

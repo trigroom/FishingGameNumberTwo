@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98626e9cfbea3d146bf240d61884b51e, type: 3}
+  m_Name: PoisonRedberryHealItem
+  m_EditorClassIdentifier: 
+  healingHealthPoints: -5
+  recoveringHungerPoints: 20
+  healingTime: 1
+  maxBleedingRemoveLevel: 0
+  inGameHealingItemSprite: {fileID: 21300000, guid: d795af7cc7ff6ff4d9d99a433d8871a1, type: 3}
+  scaleMultplayer: 1
+  rotationZ: 90

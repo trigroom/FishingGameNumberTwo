@@ -18,4 +18,7 @@ public class CreatureMeleeWeaponView : MonoBehaviour
     public MeleeWeaponColliderView meleeWeaponColliderView;
 
     public ItemInfoForCreatureElement itemVisualInfo;
+
+    [Header("Audio settings")]
+    public AudioClip hitSound;
 }

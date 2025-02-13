@@ -13,16 +13,17 @@ MonoBehaviour:
   m_Name: SecondMeleeWeaponInfo 1
   m_EditorClassIdentifier: 
   attackLenght: 0.7
-  damage: 5
+  damage: 30
   attackCouldown: 1.5
   weaponChangeSpeed: 3
-  gunObject: {fileID: 0}
   isWideHit: 1
   isAuto: 1
   attackSpeed: 2
-  knockbackSpeed: 5
+  knockbackSpeed: 3.5
   stunTime: 0.4
   staminaUsage: 2
+  isOneHandedWeapon: 1
   spriteScaleMultiplayer: 1
   spriteRotation: 90
   weaponSprite: {fileID: 21300000, guid: 74f515cd0d8efca4cb0397e33e3a05f6, type: 3}
+  hitSound: {fileID: 8300000, guid: 71db7fa240b432f41b1aa7e6fd9a9cd9, type: 3}

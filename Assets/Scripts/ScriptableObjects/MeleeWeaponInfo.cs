@@ -17,8 +17,13 @@ public class MeleeWeaponInfo : ScriptableObject
     public float stunTime;
     public float staminaUsage;
 
+    public bool isOneHandedWeapon;
+
     [Header("Visual settings")]
     public float spriteScaleMultiplayer;
     public float spriteRotation;
     public Sprite weaponSprite;
+
+    [Header("Audio settings")]
+    public AudioClip hitSound;
 }

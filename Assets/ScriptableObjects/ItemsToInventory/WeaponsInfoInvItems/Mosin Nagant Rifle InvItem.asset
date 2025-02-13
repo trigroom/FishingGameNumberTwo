@@ -12,12 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac357f814689b0342b6a7c6efddf2e3d, type: 3}
   m_Name: Mosin Nagant Rifle InvItem
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: 733190676690857246, guid: 84820276c33f64e4da24de4a5ad61098, type: 3}
+  itemSprite: {fileID: 21300000, guid: 09cd4ff764a8f3e458ca5682ce9607eb, type: 3}
   type: 0
   maxCount: 1
-  itemWeight: 1
+  itemWeight: 4.5
   itemId: 17
   itemName: Mosin Nagant Rifle
   itemDescription: 
-  gunInfo: {fileID: 0}
+  itemCost: 50
+  gunInfo: {fileID: 11400000, guid: 31c9fd8f2dd24f2488e73d4db83d7f1e, type: 2}
+  meleeWeaponInfo: {fileID: 0}
+  grenadeInfo: {fileID: 0}
   healInfo: {fileID: 0}
+  flashlightInfo: {fileID: 0}
+  backpackInfo: {fileID: 0}
+  gunPartInfo: {fileID: 0}
+  expAddedInfo: {fileID: 0}
+  sheildInfo: {fileID: 0}
+  helmetInfo: {fileID: 0}
+  bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

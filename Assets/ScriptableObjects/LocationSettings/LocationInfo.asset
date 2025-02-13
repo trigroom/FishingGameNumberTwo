@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f676ca6178d26441a77fefead282fc2, type: 3}
+  m_Name: LocationInfo
+  m_EditorClassIdentifier: 
+  levels:
+  - {fileID: 11400000, guid: 02bfe4fd3f9b09348b8d2458cf6d6f58, type: 2}
+  locationName: Village
+  shoppers: 04000000
+  nightShoppers: 02000000

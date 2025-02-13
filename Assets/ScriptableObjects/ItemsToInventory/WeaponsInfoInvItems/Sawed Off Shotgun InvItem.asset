@@ -12,12 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac357f814689b0342b6a7c6efddf2e3d, type: 3}
   m_Name: Sawed Off Shotgun InvItem
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: -4658219692293596558, guid: 47faf095da186874e84547854aa01778, type: 3}
+  itemSprite: {fileID: 21300000, guid: f82af9f7d708d584e8140f3573f12806, type: 3}
   type: 0
   maxCount: 1
-  itemWeight: 1
+  itemWeight: 0.8
   itemId: 16
   itemName: Sawed Off Shotgun
   itemDescription: 
-  gunInfo: {fileID: 0}
+  itemCost: 0
+  gunInfo: {fileID: 11400000, guid: 7e7d05839fe75a64db284fb06342c1de, type: 2}
+  meleeWeaponInfo: {fileID: 0}
+  grenadeInfo: {fileID: 0}
   healInfo: {fileID: 0}
+  flashlightInfo: {fileID: 0}
+  backpackInfo: {fileID: 0}
+  gunPartInfo: {fileID: 0}
+  expAddedInfo: {fileID: 0}
+  sheildInfo: {fileID: 0}
+  helmetInfo: {fileID: 0}
+  bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

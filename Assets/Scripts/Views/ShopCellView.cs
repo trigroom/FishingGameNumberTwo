@@ -1,6 +1,4 @@
 using Leopotam.EcsLite;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,19 +6,17 @@ using UnityEngine.UI;
 public class ShopCellView : MonoBehaviour
 {
     [field: SerializeField] public Image shopItemIcon { get; private set; }
-    [field: SerializeField] public TMP_Text shopItemButtonText{ get; private set; }
+    //[field: SerializeField] public TMP_Text shopItemButtonText { get; private set; }
     [field: SerializeField] public TMP_Text shopItemNameAndCount { get; private set; }
+    [field: SerializeField] public TMP_Text shopRemainedItemCount { get; private set; }
     public ItemInfo item { get; private set; }
     [field: SerializeField] public Button shopButton { get; private set; }
-    public int itemCost { get; private set; }
-    public int itemCount {  get; private set; }
-    private bool isBuyItem;
-    private int _entity;
+    public int _entity { get; private set; }
     private EcsWorld _world;
 
     private void Awake()
     {
-        shopButton.onClick.AddListener(isShopButtonAction);
+        shopButton.onClick.AddListener(BuyItem);
     }
     public void Construct(int entity, EcsWorld world)
     {
@@ -28,34 +24,37 @@ public class ShopCellView : MonoBehaviour
         _world = world;
     }
 
-    public void SetShopCellInfo(ShopItemInfo shopItemInfo)
+    public void SetShopCellInfo(ShopItemInfo shopItemInfo, bool isUnlockedItem)
     {
-        item = shopItemInfo.itemInfo;
-        itemCost = shopItemInfo.price;
-        itemCount = shopItemInfo.count;
-
-        isBuyItem = shopItemInfo.isBuyItem;
-
-        if(isBuyItem )
+        if (isUnlockedItem)
         {
-            shopItemButtonText.text = "Купить";
+            string itemCount = shopItemInfo.count != 1 ? shopItemInfo.count+" " : "";
+
+         //   shopItemButtonText.text = "Купить";
+            shopItemNameAndCount.text = itemCount + shopItemInfo.itemInfo.itemName + " за " + shopItemInfo.price + " $";
+            shopButton.enabled = true;
+            if (shopItemIcon.color != Color.white)
+                shopItemIcon.color = Color.white;
         }
         else
         {
-            shopItemButtonText.text = "Продать";
+        //    shopItemButtonText.text = "";
+            if (shopItemInfo.needSkillToUnlock != 999)
+                shopItemNameAndCount.text = "Need " + shopItemInfo.needSkillLevelToUnlock + " level of " + (PlayerUpgradedStats.StatType)shopItemInfo.needSkillToUnlock + " to unlock";//мделать чтобы скиллы где 2 и более слов в названии раздельно прописывались 
+            else
+                shopItemNameAndCount.text = "Need " + shopItemInfo.needSkillLevelToUnlock + " level of reputation to unlock";
+            shopButton.enabled = false;
+            if (shopItemIcon.color != Color.black)
+                shopItemIcon.color = Color.black;
         }
-            shopItemNameAndCount.text = itemCount + " " + shopItemInfo.itemInfo.itemName + " за " + itemCost +" $";
+        item = shopItemInfo.itemInfo;
 
         shopItemIcon.sprite = item.itemSprite;
-    }
-    private void isShopButtonAction()
-    {
-        if(isBuyItem) BuyItem();
-        else FindAndCellItem();
     }
 
     private void BuyItem()
     {
+        Debug.Log("Buy item");
         _world.GetPool<BuyItemFromShopEvent>().Add(_entity);
     }
 

@@ -29,17 +29,29 @@ public struct CreatureAIComponent
     public float[] dangersResultTemp;
     public float[] interstsTemp;
     public bool isLeftMoveCircle;
-    public int randomMoveDirectionIndex;
+    public int randomMoveDirectionIndex {  get; set; }
     public float timeFromLastChangeLeftMoveCircle;
     public bool isStoppedMoveInIdleState;
     public Vector2 targetPositionCached;
     public Vector2 resultDirection;
+    public float sightOnTargetTime;
+    public float needSightOnTargetTime;
+    public int bulletShellsToReload;
 
     public bool reachedLastTarget;
+    public bool sightOnTarget;
+    public bool isTwoWeapon;
 
+    public int teammatesCount;
     //для рандомного движение в идле
     public Vector2 randomDirection;
     public float randomMoveTime;
+
+    public BodyArmorInfo armorInfo;
+    public HelmetInfo helmetInfo;
+
+    //public float panStereoForPlayer;
+    //public float volumeForPlayer;
 
 
 }

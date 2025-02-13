@@ -12,12 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac357f814689b0342b6a7c6efddf2e3d, type: 3}
   m_Name: 44HandWatchItemInfo
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: 5007495571950290266, guid: b7e0579ddbb880840a038d9e231d9551, type: 3}
-  type: 5
+  itemSprite: {fileID: -176922929701779666, guid: 76045097e4657ee4fae6f01291e11cdd, type: 3}
+  type: 6
   maxCount: 1
   itemWeight: 1
   itemId: 44
   itemName: Hand watch
   itemDescription: 
+  itemCost: 0
   gunInfo: {fileID: 0}
+  meleeWeaponInfo: {fileID: 0}
+  grenadeInfo: {fileID: 0}
   healInfo: {fileID: 0}
+  flashlightInfo: {fileID: 0}
+  backpackInfo: {fileID: 0}
+  gunPartInfo: {fileID: 0}
+  expAddedInfo: {fileID: 0}
+  sheildInfo: {fileID: 0}
+  helmetInfo: {fileID: 0}
+  bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

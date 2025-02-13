@@ -12,14 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac357f814689b0342b6a7c6efddf2e3d, type: 3}
   m_Name: 45FlashlightItemInfo
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: -3258924692974983711, guid: b7e0579ddbb880840a038d9e231d9551, type: 3}
+  itemSprite: {fileID: -4309000247654833013, guid: 76045097e4657ee4fae6f01291e11cdd, type: 3}
   type: 4
   maxCount: 1
-  itemWeight: 1
+  itemWeight: 0.3
   itemId: 45
   itemName: Small flashlight
   itemDescription: 
+  itemCost: 0
   gunInfo: {fileID: 0}
   meleeWeaponInfo: {fileID: 0}
+  grenadeInfo: {fileID: 0}
   healInfo: {fileID: 0}
   flashlightInfo: {fileID: 11400000, guid: 39b91d0810aeeda45abd7e28f191f744, type: 2}
+  cellsCount: 0
+  gunPartInfo: {fileID: 0}
+  expAddedInfo: {fileID: 0}
+  sheildInfo: {fileID: 0}

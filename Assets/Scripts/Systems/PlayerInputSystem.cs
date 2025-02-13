@@ -1,6 +1,10 @@
 using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using static InteractCharacterView;
+using static PlayerInputView;
 
 public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 {
@@ -13,20 +17,61 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<PlayerWeaponsInInventoryComponent> _playerWeaponsInInventoryComponentsPool;
     private EcsPoolInject<GunComponent> _gunComponentsPool;
     private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
+    private EcsPoolInject<InventoryComponent> _inventoryComponentsPool;
     // private EcsPoolInject<DataComponent> _dataComponentsPool;
     //private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
-    private EcsPoolInject<ArmorComponent> _armorComponentsPool;
+    private EcsPoolInject<FieldOfViewComponent> _fieldOfViewComponentsPool;
+    private EcsPoolInject<TrapIsNeutralizedEvent> _trapIsNeutralizedEventsPool;
     private EcsPoolInject<CameraComponent> _cameraComponentsPool;
+    private EcsPoolInject<HidedObjectOutsideFOVComponent> _hidedObjectOutsideFOVComponentsPool;
     private EcsPoolInject<HealingItemComponent> _currentHealingItemComponentsPool;
     private EcsPoolInject<HealFromHealItemCellEvent> _healFromHealItemCellEventsPool;
     private EcsPoolInject<InventoryCellComponent> _inventoryCellComponentsPool;
+    private EcsPoolInject<CurrentDialogeComponent> _currentDialogeComponentsPool;
     private EcsPoolInject<PlayerMoveComponent> _playerMoveComponentsPool;
-    private EcsPoolInject<FlashLightInInventoryComponent> _flashLightInInventoryComponentsPool;
+    private EcsPoolInject<DurabilityInInventoryComponent> _flashLightInInventoryComponentsPool;
     private EcsPoolInject<SolarPanelElectricGeneratorComponent> _solarPanelElectricGeneratorComponentsPool;
     private EcsPoolInject<MeleeWeaponComponent> _meleeWeaponComponentsPool;
-    private EcsPoolInject<SaveGameEvent> _saveGameEventsPool;//для тестов
+    private EcsPoolInject<ChangeInBuildingStateEvent> _changeInBuildingStateEventsPool;
+    private EcsPoolInject<BuildingCheckerComponent> _buildingCheckerComponentsPool;
+    private EcsPoolInject<GlobalTimeComponent> _globalTimeComponentsPool;
+    private EcsPoolInject<ThrowGrenadeEvent> _throwGrenadeEventsPool;
+    private EcsPoolInject<DropItemsIvent> _dropItemsIventsPool;
+    private EcsPoolInject<AddItemFromCellEvent> _addItemFromCellEventsPool;
+    private EcsPoolInject<DivideItemEvent> _divideItemEventsPool;
+    private EcsPoolInject<PlayerUpgradedStats> _playerUpgradedStatsPool;
+    private EcsPoolInject<InventoryItemComponent> _inventoryItemComponentsPool;
+    private EcsPoolInject<CalculateRecoilEvent> _calculateRecoilEventsPool;
+    private EcsPoolInject<SecondDurabilityComponent> _shieldComponentsPool;
+    private EcsPoolInject<NeutralizeTrapEvent> _neutralizeTrapEventsPool;
+    private EcsPoolInject<CurrentLocationComponent> _currentLocationComponentsPool;
+    private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
+    private EcsPoolInject<OffInScopeStateEvent> _offInScopeStateEventsPool;
+    private EcsPoolInject<FadedParticleOnScreenComponent> _fadedParticleOnScreenComponentsPool;
+    private EcsPoolInject<UpgradePlayerStatEvent> _upgradePlayerStatEventsPool;
+    private EcsPoolInject<CurrentInteractedCharactersComponent> _currentInteractedCharactersComponentsPool;
+    private EcsPoolInject<CheckInteractedObjectsEvent> _checkInteractedObjectsEventsPool;
+    private EcsPoolInject<QuestNPCComponent> _questNPCComponentsPool;
+    private EcsPoolInject<DroppedItemComponent> _droppedItemComponentsPool;
+    private EcsPoolInject<CheckComplitedQuestEvent> _checkComplitedQuestEventsPool;
+    private EcsPoolInject<NPCStartDialogeEvent> _npcStartDialogeEventsPool;
+    private EcsPoolInject<GunWorkshopOpenEvent> _gunWorkshopOpenEventsPool;
+    private EcsPoolInject<ShopOpenEvent> _shopOpenEventsPool;
+    private EcsPoolInject<StorageOpenEvent> _storageOpenEventsPool;
+    private EcsPoolInject<OpenCraftingTableEvent> _openCraftingTableEventsPool;
+    private EcsPoolInject<BreakNeutralizeTrapEvent> _breakNeutralizeTrapEventsPool;
+    private EcsPoolInject<AddItemEvent> _addItemEventsPool;
+
+
 
     private EcsFilterInject<Inc<LoadGameEvent>> loadGameEventsFilter;
+    private EcsFilterInject<Inc<CheckInteractedObjectsEvent>> _checkInteractedObjectsEventsFilter;
+    private EcsFilterInject<Inc<NeutralizeTrapEvent>> _neutralizeTrapEventsFilter;
+    private EcsFilterInject<Inc<BreakNeutralizeTrapEvent>> _breakNeutralizeTrapEventsFilter;
+    private EcsFilterInject<Inc<ChangeInBuildingStateEvent>> _changeInBuildingStateEventsFilter;
+    private EcsFilterInject<Inc<HidedObjectOutsideFOVComponent>> _hidedObjectOutsideFOVComponentsFilter;
+    private EcsFilterInject<Inc<UpgradePlayerStatEvent>> _upgradePlayerStatEventsFilter;
+    private EcsFilterInject<Inc<InventoryItemComponent>, Exc<StorageCellTag, SpecialInventoryCellTag>> _inventoryItemsFilter;
 
     private EcsCustomInject<SceneService> _sceneService;
 
@@ -38,9 +83,9 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     {
         _playerEntity = _world.Value.NewEntity();
 
-        _menuStatesComponentsPool.Value.Add(_playerEntity);
+        _menuStatesComponentsPool.Value.Add(_playerEntity).currentItemShowedInfo = MenuStatesComponent.CurrentItemShowedInfoState.itemInfo;
 
-        _playerGunComponentsPool.Value.Add(_playerEntity);
+        _playerGunComponentsPool.Value.Add(_playerEntity).bulletUIObjects = new List<Image>();
 
 
         _solarPanelElectricGeneratorComponentsPool.Value.Add(_playerEntity);
@@ -48,7 +93,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         playerCmp.view = _sceneService.Value.SpawnPlayer(_world.Value, _playerEntity);
         //playerCmp.money = _sceneService.Value.startMoneyForTest;
         //playerCmp.visionZoneCollider = playerCmp.view.playerInputView.visionZoneCollider;
-
+        _currentInteractedCharactersComponentsPool.Value.Add(_playerEntity);
         ref var weaponsInInventoryCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Add(_playerEntity);
         //Брать оружия из сэйва
         //weaponsInInventoryCmp.gunFirstObject = _sceneService.Value.firstWeaponTest;
@@ -57,15 +102,21 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         ref var cameraCmp = ref _cameraComponentsPool.Value.Add(_playerEntity);
         cameraCmp.cursorPositonPart = 1;
         cameraCmp.playerPositonPart = 6;
-
+        cameraCmp.currentMaxCameraSpread = playerCmp.view.maxCameraSpread;
+        cameraCmp.currentRecoveryCameraSpread = playerCmp.view.recoveryCameraSpread;
+        _healthComponentsPool.Value.Add(_playerEntity);
+        //вернуть сюда настройку хп игрока
         ref var attackCmp = ref _currentAttackComponentsPool.Value.Add(_playerEntity);
-
         _currentHealingItemComponentsPool.Value.Add(_playerEntity);
-
+        _currentLocationComponentsPool.Value.Add(_playerEntity);
         attackCmp.weaponIsChanged = false;
         attackCmp.canAttack = true;
 
         playerCmp.view.meleeColliderView.Construct(_world.Value, _playerEntity);
+        playerCmp.view.shieldView._entity = _playerEntity;
+        ref var fieldOfViewCmp = ref _fieldOfViewComponentsPool.Value.Add(_playerEntity);
+        fieldOfViewCmp.fieldOfView = playerCmp.view.defaultFOV;
+        fieldOfViewCmp.viewDistance = playerCmp.view.viewDistance;
 
         ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Add(_playerEntity);
         playerMoveCmp.playerView = playerCmp.view;
@@ -74,148 +125,929 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         _sceneService.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.playerView.runTime;
 
         ref var gunCmp = ref _gunComponentsPool.Value.Add(_playerEntity);
-
-        ref var healthCmp = ref _healthComponentsPool.Value.Add(_playerEntity);
-        healthCmp.healthView = playerCmp.view.healthView;
-        playerCmp.view.healthView.Construct(_playerEntity);
+        gunCmp.gunSpritePositionRecoil = 0.7f;
+        gunCmp.lightFromGunShot = playerCmp.view.lightFromGunShot;
         //healthCmp.healthPoint = healthCmp.healthView.maxHealth;//для тестов
-        healthCmp.healthPoint = 2;
-        healthCmp.maxHealthPoint = healthCmp.healthView.maxHealth;
 
-        ref var armorCmp = ref _armorComponentsPool.Value.Add(_playerEntity);
-        armorCmp.maxArmorPoint = _sceneService.Value.playerStartArmor;
-        armorCmp.armorPoint = armorCmp.maxArmorPoint;
-        armorCmp.armorPoint = 0;
-        armorCmp.armorRecoverySpeed = _sceneService.Value.playerStartArmorRecoverySpeed;
 
         ref var movementComponent = ref _movementComponentPool.Value.Add(_playerEntity);
         movementComponent.movementView = playerCmp.view.movementView;
-        movementComponent.moveSpeed = movementComponent.movementView.moveSpeed;
         movementComponent.entityTransform = movementComponent.movementView.objectTransform;
         movementComponent.canMove = true;
 
+        _currentDialogeComponentsPool.Value.Add(_playerEntity);
         gunCmp.firePoint = movementComponent.movementView.firePoint;//временно, потом разделить точку спавна и точку стрельбы
         gunCmp.weaponContainer = movementComponent.movementView.weaponContainer;
 
         _meleeWeaponComponentsPool.Value.Add(_playerEntity).startHitPoint = playerCmp.view.movementView.weaponContainer.localPosition;
 
         _playerInputsComponentsPool.Value.Add(_playerEntity);
-
+        _buildingCheckerComponentsPool.Value.Add(_playerEntity);
     }
 
     public void Run(IEcsSystems systems)
     {
-        foreach (var loadGame in loadGameEventsFilter.Value)
+        ref var curInteactedObjectsCmp = ref _currentInteractedCharactersComponentsPool.Value.Get(_playerEntity);
+        if (curInteactedObjectsCmp.interactionType != InteractionType.none)
         {
-            ref var playerCmp = ref _playerComponentsPool.Value.Get(_playerEntity);
-            /* playerCmp.money = _dataComponentsPool.Value.Get(loadGame).money;*/
-            _sceneService.Value.moneyText.text = playerCmp.money + "$";
-        }
-
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            _playerComponentsPool.Value.Get(_playerEntity).money++;
-            Debug.Log("now " + _playerComponentsPool.Value.Get(_playerEntity).money + " money");
-        }
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            /* foreach (var save in _dataComponentsFilter.Value)
-             {
-                 _dataComponentsPool.Value.Get(save).money = _playerComponentsPool.Value.Get(_playerEntity).money;
-
-                 var item = new ItemInfoForSaveData(5,5);
-
-                 ItemInfoForSaveData[] items = new ItemInfoForSaveData[] { item , item , item };
-
-                 _dataComponentsPool.Value.Get(save).itemsCellinfo = items;
-             }*/
-            _saveGameEventsPool.Value.Add(_playerEntity);
-            Debug.Log("save" + _playerComponentsPool.Value.Get(_playerEntity).money + " money");
-        }
-
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
-        Vector2 moveDirection = new Vector3(horizontalInput, verticalInput).normalized;
-
-        ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Get(_sceneService.Value.playerEntity);
-        ref var moveCmp = ref _movementComponentPool.Value.Get(_playerEntity);
-        if (!moveCmp.isStunned)
-        {
-            moveCmp.moveInput = moveDirection;
-
-
-            if (playerMoveCmp.isRun)
+            if (Input.GetKeyDown(KeyCode.F) && !_healthComponentsPool.Value.Get(_playerEntity).isDeath)
             {
-                playerMoveCmp.currentRunTime -= Time.deltaTime;
-                if (playerMoveCmp.currentRunTime <= 0 || moveDirection == Vector2.zero)
+                Debug.Log("Press F");
+                if (curInteactedObjectsCmp.isNPCNowIsUsed) return;
+
+                else if (curInteactedObjectsCmp.interactionType == InteractionType.droppedItem && _droppedItemComponentsPool.Value.Has(curInteactedObjectsCmp.dropItemView.itemEntity))
                 {
-                    //playerMoveCmp.currentRunTime = 0;
-                    playerMoveCmp.isRun = false;
-                    moveCmp.moveSpeed /= playerMoveCmp.playerView.runSpeedMultiplayer;
+                    _addItemEventsPool.Value.Add(curInteactedObjectsCmp.dropItemView.itemEntity);
                 }
-                _sceneService.Value.playerStaminaBarFilled.fillAmount = playerMoveCmp.currentRunTime / playerMoveCmp.playerView.runTime;
-                _sceneService.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.playerView.runTime;
+
+                else if (curInteactedObjectsCmp.interactionType == InteractionType.interactedCharacter)
+                {
+                    _offInScopeStateEventsPool.Value.Add(curInteactedObjectsCmp.interactCharacterView._entity);
+                    if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.shopAndDialogeNpc || curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.shop)
+                    {
+                        curInteactedObjectsCmp.isNPCNowIsUsed = true;
+                        _shopOpenEventsPool.Value.Add(curInteactedObjectsCmp.interactCharacterView._entity);
+                    }
+                    else if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.gunsmith)
+                    {
+                        curInteactedObjectsCmp.isNPCNowIsUsed = true;
+                        _gunWorkshopOpenEventsPool.Value.Add(curInteactedObjectsCmp.interactCharacterView._entity);
+                    }
+                    else if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.storage)
+                    {
+                        curInteactedObjectsCmp.isNPCNowIsUsed = true;
+                        _storageOpenEventsPool.Value.Add(curInteactedObjectsCmp.interactCharacterView._entity);
+                    }
+                    else if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.craftingTable)
+                    {
+                        _openCraftingTableEventsPool.Value.Add(curInteactedObjectsCmp.interactCharacterView._entity);
+                        curInteactedObjectsCmp.isNPCNowIsUsed = true;
+                    }
+                    else if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.openedDoor)
+                    {
+                        var openedDoorView = curInteactedObjectsCmp.interactCharacterView.gameObject.GetComponent<OpenedDoorView>();
+                        // int needItemIdToOpen = openedDoorView.needItemIdToOpen;
+                        if (_sceneService.Value.dropedItemsUIView.charactersInteractText.text == "(press F to open door)")
+                        {
+                            openedDoorView.doorCollider.enabled = false;
+                            openedDoorView.gameObject.GetComponent<SpriteRenderer>().sprite = openedDoorView.openDoorSprite;
+                            return;
+                        }
+                        //     foreach (var invItemEntity in _inventoryItemsFilter.Value)
+                        //   if (_inventoryItemComponentsPool.Value.Get(invItemEntity).itemInfo.itemId == needItemIdToOpen)
+                    }
+                }
+                else if (curInteactedObjectsCmp.interactionType == InteractionType.trap)
+                {
+                    if (curInteactedObjectsCmp.trapView.type != TrapView.TrapType.mine || curInteactedObjectsCmp.trapView.type == TrapView.TrapType.mine && _playerComponentsPool.Value.Get(_playerEntity).canDeffuseMines)
+                    {
+                        if (_neutralizeTrapEventsPool.Value.Has(_playerEntity))
+                            _breakNeutralizeTrapEventsPool.Value.Add(_playerEntity);
+                        else
+                            _neutralizeTrapEventsPool.Value.Add(_playerEntity).currentNeutralizeTime = curInteactedObjectsCmp.trapView.neutralizeTime;
+                    }
+
+                }
             }
-            else if (playerMoveCmp.currentRunTime < playerMoveCmp.playerView.runTime)
+            else if (Input.GetKeyDown(KeyCode.T) && (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.shopAndDialogeNpc || curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.gunsmith) && !curInteactedObjectsCmp.isNPCNowIsUsed)
             {
-                playerMoveCmp.currentRunTime += Time.deltaTime * playerMoveCmp.playerView.runTimeRecoverySpeed;
-                _sceneService.Value.playerStaminaBarFilled.fillAmount = playerMoveCmp.currentRunTime / playerMoveCmp.playerView.runTime;
-                _sceneService.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.playerView.runTime;
+                var currentQuestCharacter = curInteactedObjectsCmp.interactCharacterView.gameObject.GetComponent<QuestCharacterView>();
+                var questNPCCmp = _questNPCComponentsPool.Value.Get(curInteactedObjectsCmp.interactCharacterView._entity);
+                if (questNPCCmp.questIsGiven)
+                {
+                    _checkComplitedQuestEventsPool.Value.Add(currentQuestCharacter.GetComponent<InteractCharacterView>()._entity).characterId = currentQuestCharacter.characterId;
+                    Debug.Log("Check quest b");
+                }
+                else
+                {
+                    _npcStartDialogeEventsPool.Value.Add(currentQuestCharacter.GetComponent<InteractCharacterView>()._entity).questNPCId = currentQuestCharacter.characterId;
+                    curInteactedObjectsCmp.isNPCNowIsUsed = true;
+                }
             }
-            else if (playerMoveCmp.currentRunTime > playerMoveCmp.playerView.runTime)
-                playerMoveCmp.currentRunTime = playerMoveCmp.playerView.runTime;
-            // Debug.Log(playerMoveCmp.currentRunTime);
-            //обновление шкалы стамины
+            //Debug.Log("gusmithCheck " + (Input.GetKeyDown(KeyCode.T)) + "" + (isColliderInteract) + "" + (currentInteractNPCType == InteractNPCType.shopAndDialogeNpc) + "" + (!isNPCNowIsUsed));
 
+        }
+        ref var moveCmp = ref _movementComponentPool.Value.Get(_playerEntity);
+        foreach (var interactCheck in _checkInteractedObjectsEventsFilter.Value)
+        {
+            var checkInteractCmp = _checkInteractedObjectsEventsPool.Value.Get(interactCheck);
 
-            moveCmp.pointToRotateInput = _sceneService.Value.mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            ref var interactText = ref _sceneService.Value.dropedItemsUIView.charactersInteractText;
+
+            curInteactedObjectsCmp.interactionType = checkInteractCmp.interactionType;
+
+            if (checkInteractCmp.interactionType == InteractionType.none)
+            {
+                interactText.text = "";
+            }
+            else
+            {
+                if (checkInteractCmp.interactionType == InteractionType.droppedItem /*&& _droppedItemComponentsPool.Value.Has(curInteactedObjectsCmp.dropItemView.itemEntity)*/)
+                {
+                    curInteactedObjectsCmp.dropItemView = checkInteractCmp.currentDropItem;
+                    var itemInfo = _droppedItemComponentsPool.Value.Get(curInteactedObjectsCmp.dropItemView.itemEntity);
+                    // ref var itemCmp = ref _world.GetPool<DroppedItemComponent>().Get(droppedItem);
+                    interactText.text = "Press F to take " + itemInfo.currentItemsCount + " " + itemInfo.itemInfo.itemName;
+                }
+                else if (checkInteractCmp.interactionType == InteractionType.interactedCharacter)
+                {
+                    curInteactedObjectsCmp.interactCharacterView = checkInteractCmp.currentInteractCharacter;
+                    if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.shop || curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.shopAndDialogeNpc || curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.gunsmith)
+                    {
+                        if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.shop)
+                            interactText.text = " (нажми F чтобы зайти в магазин)";
+                        else
+                        {
+                            var currentQuestCharacter = curInteactedObjectsCmp.interactCharacterView.gameObject.GetComponent<QuestCharacterView>();
+                            var questNPCCmp = _questNPCComponentsPool.Value.Get(curInteactedObjectsCmp.interactCharacterView._entity);
+                            if (questNPCCmp.currentQuest >= currentQuestCharacter.questNode.Length)
+                            {
+                                if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.shopAndDialogeNpc)
+                                    interactText.text = " (нажми F чтобы зайти в магазин\nAll " + currentQuestCharacter.characterName + " quests is complete)";
+                                else
+                                    interactText.text = " (нажми F чтобы зайти в  gun workshop\nAll " + currentQuestCharacter.characterName + " quests is complete)";
+
+                            }
+                            else if (!questNPCCmp.questIsGiven)
+                            {
+                                if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.shopAndDialogeNpc)
+                                    interactText.text = " (нажми F чтобы зайти в магазин\nPress T to speak with " + currentQuestCharacter.characterName + ")";
+                                else
+                                    interactText.text = " (нажми F чтобы зайти в gun workshop\nPress T to speak with " + currentQuestCharacter.characterName + ")";
+
+                            }
+                            else
+                            {
+                                if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.shopAndDialogeNpc)
+                                    interactText.text = " (нажми F чтобы зайти в магазин\nPress T to give quest " + currentQuestCharacter.characterName + ")";
+                                else
+                                    interactText.text = " (нажми F чтобы зайти в gun workshop\nPress T to give quest " + currentQuestCharacter.characterName + ")";
+                            }
+                        }
+                    }
+                    else if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.storage)
+                    {
+                        interactText.text = " (press F to entry in storage)";
+                    }
+                    else if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.craftingTable)
+                    {
+                        interactText.text = " (press F to entry in crafting table)";
+                    }
+                    else if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.openedDoor)
+                    {
+                        var openedDoorView = curInteactedObjectsCmp.interactCharacterView.gameObject.GetComponent<OpenedDoorView>();
+                        int needItemIdToOpen = openedDoorView.needItemIdToOpen;
+                        foreach (var invItemEntity in _inventoryItemsFilter.Value)
+                            if (_inventoryItemComponentsPool.Value.Get(invItemEntity).itemInfo.itemId == needItemIdToOpen)
+                            {
+                                interactText.text = "(press F to open door)";
+                                _checkInteractedObjectsEventsPool.Value.Del(interactCheck);
+                                return;
+                            }
+                        interactText.text = " (need " + _sceneService.Value.idItemslist.items[needItemIdToOpen].itemName + " to open door)";
+                    }
+                }
+                else if (checkInteractCmp.interactionType == InteractionType.trap)
+                {
+
+                    curInteactedObjectsCmp.trapView = checkInteractCmp.currentTrap;
+                    if (curInteactedObjectsCmp.trapView.type != TrapView.TrapType.mine)
+                        interactText.text = "(press F to neutralize trap)";
+                    else if (_playerComponentsPool.Value.Get(_playerEntity).canDeffuseMines)
+                        interactText.text = "(press F to neutralize mine)";
+                }
+            }
+
+            _checkInteractedObjectsEventsPool.Value.Del(interactCheck);
+        }
+        foreach (var upgradeStat in _upgradePlayerStatEventsFilter.Value)
+        {
+            int upgradedStatIndex = _upgradePlayerStatEventsPool.Value.Get(upgradeStat).statIndex;
+            ref var playerStatsCmp = ref _playerUpgradedStatsPool.Value.Get(_playerEntity);
+            switch (upgradedStatIndex)
+            {
+                case 0://str
+                    playerStatsCmp.statLevels[0]++;
+                    break;
+                case 1://acc
+                    playerStatsCmp.statLevels[1]++;
+                    break;
+                case 2://stamina
+                    playerStatsCmp.statLevels[2]++;
+                    ref var inventoryCmp = ref _inventoryComponentsPool.Value.Get(_sceneService.Value.inventoryEntity);
+                    moveCmp.moveSpeed = moveCmp.movementView.moveSpeed + moveCmp.movementView.moveSpeed / 50 * playerStatsCmp.statLevels[0];
+                    if (inventoryCmp.weight / inventoryCmp.currentMaxWeight > 0.7f)
+                        moveCmp.moveSpeed -= (moveCmp.movementView.moveSpeed * ((inventoryCmp.weight / inventoryCmp.currentMaxWeight) - 0.7f) * 2);
+                    Debug.Log(moveCmp.moveSpeed);
+                    var playerGunCmp = _playerGunComponentsPool.Value.Get(_playerEntity);
+                    if (playerGunCmp.inScope)
+                        moveCmp.moveSpeed /= playerGunCmp.currentScopeMultiplicity;
+
+                    _playerMoveComponentsPool.Value.Get(_playerEntity).maxRunTime = _playerComponentsPool.Value.Get(_playerEntity).view.runTime * (1 + playerStatsCmp.statLevels[2] * 0.02f);
+
+                    break;
+            }
+            _upgradePlayerStatEventsPool.Value.Del(upgradeStat);
+        }
+        foreach (var neutralizeTrap in _neutralizeTrapEventsFilter.Value)
+        {
+            foreach (var breakNeutralizeTrap in _breakNeutralizeTrapEventsFilter.Value)
+            {
+                _movementComponentPool.Value.Get(neutralizeTrap).canMove = true;
+                _neutralizeTrapEventsPool.Value.Del(neutralizeTrap);
+                _sceneService.Value.ammoInfoText.text = "";
+                return;
+            }
+            ref var trapEvent = ref _neutralizeTrapEventsPool.Value.Get(neutralizeTrap);
+            if (!trapEvent.isFirstCheck)
+            {
+                _movementComponentPool.Value.Get(neutralizeTrap).canMove = false;
+                _sceneService.Value.ammoInfoText.text = "Neutralize Trap";
+            }
+            trapEvent.currentNeutralizeTime -= Time.deltaTime;
+            Debug.Log(trapEvent.currentNeutralizeTime);
+            if (trapEvent.currentNeutralizeTime <= 0)
+            {
+                _trapIsNeutralizedEventsPool.Value.Add(neutralizeTrap).trapType = curInteactedObjectsCmp.trapView.type;
+                _sceneService.Value.ammoInfoText.text = "";
+                var playerView = _playerComponentsPool.Value.Get(neutralizeTrap).view.playerInputView;
+                curInteactedObjectsCmp.trapView.spriteRenderer.sprite = curInteactedObjectsCmp.trapView.safetyTrapSprite;
+                curInteactedObjectsCmp.trapView.trapCollider.enabled = false;
+                curInteactedObjectsCmp.trapView = null;
+                _movementComponentPool.Value.Get(neutralizeTrap).canMove = true;
+
+                _neutralizeTrapEventsPool.Value.Del(neutralizeTrap);
+            }
+        }
+        ref var buildChecker = ref _buildingCheckerComponentsPool.Value.Get(_playerEntity);
+        ref var gloabalTimeCmp = ref _globalTimeComponentsPool.Value.Get(_playerEntity);
+        if (!buildChecker.isHideRoof && !gloabalTimeCmp.changedToRain)
+        {
+            gloabalTimeCmp.lastRainDropTime -= Time.deltaTime;
+            if (gloabalTimeCmp.lastRainDropTime <= 0)
+            {
+                gloabalTimeCmp.lastRainDropTime = Random.Range(0.3f, 0.8f);
+                if(_inventoryItemComponentsPool.Value.Has(_sceneService.Value.helmetCellView._entity))
+                _fadedParticleOnScreenComponentsPool.Value.Add(_world.Value.NewEntity()).particleImage = _sceneService.Value.GetParticleOnScreen(_sceneService.Value.rainDropOnScreenColor, 1f - _inventoryItemComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).itemInfo.helmetInfo.dropTransparentMultiplayer, true);
+                else
+                    _fadedParticleOnScreenComponentsPool.Value.Add(_world.Value.NewEntity()).particleImage = _sceneService.Value.GetParticleOnScreen(_sceneService.Value.rainDropOnScreenColor, 1f, true);
+            }
         }
         var healthCmp = _healthComponentsPool.Value.Get(_playerEntity);
-
-        if (Input.GetKeyDown(KeyCode.H) && !_currentHealingItemComponentsPool.Value.Get(_playerEntity).isHealing && !_currentAttackComponentsPool.Value.Get(_playerEntity).weaponIsChanged && !_playerGunComponentsPool.Value.Get(_playerEntity).inScope && !_gunComponentsPool.Value.Get(_playerEntity).isReloading && healthCmp.maxHealthPoint != healthCmp.healthPoint && !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.healingItemCellView._entity).isEmpty) //возможно что то ещё
+        foreach (var changeRoofState in _changeInBuildingStateEventsFilter.Value)
         {
-            _healFromHealItemCellEventsPool.Value.Add(_playerEntity);
-            // _sceneService.Value.ammoInfoText.text = "восстановление здоровья...";
-        }
-        //Ниже использование фонарика
-        /*else if  &&/* _playerComponentsPool.Value.Get(_sceneService.Value.playerEntity).canUseFlashlight !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity).isEmpty)
-        {
-            ref var playerCmp = ref _playerComponentsPool.Value.Get(_sceneService.Value.playerEntity);
-            playerCmp.useFlashlight = !playerCmp.useFlashlight;
-            playerCmp.view.flashLightObject.gameObject.SetActive(playerCmp.useFlashlight);
-        }*/
-        else if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-
-            playerMoveCmp.isRun = !playerMoveCmp.isRun;
-            if (playerMoveCmp.isRun)
-                moveCmp.moveSpeed *= playerMoveCmp.playerView.runSpeedMultiplayer;
+            ref var changeStateCmp = ref _changeInBuildingStateEventsPool.Value.Get(changeRoofState);
+            buildChecker.isHideRoof = changeStateCmp.isHideRoof;
+            buildChecker.roofSpriteRenderer = changeStateCmp.roofSpriteRenderer;
+            if (buildChecker.timeBeforeHideRoof > 0)
+                buildChecker.timeBeforeHideRoof = 1f - buildChecker.timeBeforeHideRoof;
             else
-                moveCmp.moveSpeed /= playerMoveCmp.playerView.runSpeedMultiplayer;
+                buildChecker.timeBeforeHideRoof = 1f;
+            Debug.Log("change roof state");
+            _changeInBuildingStateEventsPool.Value.Del(changeRoofState);
+        }
+        ref var playerCmp = ref _playerComponentsPool.Value.Get(_playerEntity);
+        if (playerCmp.nvgIsUsed)
+        {
+            ref var nvgChargeCmp = ref _shieldComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity);
+            nvgChargeCmp.currentDurability -= Time.deltaTime;
+            if (nvgChargeCmp.currentDurability < 0)
+            {
+                nvgChargeCmp.currentDurability = 0;
+                playerCmp.nvgIsUsed = false;
+                ref var globalTimeCmp = ref _globalTimeComponentsPool.Value.Get(_playerEntity);
+                if (buildChecker.isHideRoof)
+                    _sceneService.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity - 0.35f;
+                else
+                    _sceneService.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity;
+                if (globalTimeCmp.currentDayTime >= 15)
+                    _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(1f);
+                else if (globalTimeCmp.currentDayTime == 12 || globalTimeCmp.currentDayTime == 0)
+                    _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(0.5f);
+                else
+                    _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(0);
+                _sceneService.Value.bloomMainBg.intensity.value = 0;
+
+                if (_sceneService.Value.gloabalLight.intensity < 0)
+                    _sceneService.Value.gloabalLight.intensity = 0f;
+            }
+        }
+        if (buildChecker.timeBeforeHideRoof > 0f)
+        {
+            if (buildChecker.roofSpriteRenderer == null)
+            {
+                buildChecker.timeBeforeHideRoof = 0;
+                buildChecker.isHideRoof = false;
+            }
+            else
+            {
+
+                buildChecker.timeBeforeHideRoof -= Time.deltaTime;
+                if (buildChecker.isHideRoof)
+                {
+                    if (playerCmp.nvgIsUsed)
+                    {
+                        var helmetInfo = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).itemInfo.helmetInfo;
+                        var addHelmetIntansity = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).itemInfo.helmetInfo.addedLightIntancity;
+                        if (_sceneService.Value.gloabalLight.intensity > addHelmetIntansity)
+                        {
+                            if (gloabalTimeCmp.isNight)
+                                _sceneService.Value.gloabalLight.intensity = gloabalTimeCmp.currentGlobalLightIntensity - (1 - buildChecker.timeBeforeHideRoof) * 0.35f + addHelmetIntansity;
+                            else
+                            {
+                                _sceneService.Value.gloabalLight.intensity = gloabalTimeCmp.currentGlobalLightIntensity - (1 - buildChecker.timeBeforeHideRoof) * 0.35f + (addHelmetIntansity * 5 - (4 * addHelmetIntansity * (1 - buildChecker.timeBeforeHideRoof)));
+                                _sceneService.Value.bloomMainBg.intensity.value = helmetInfo.addedBloom + helmetInfo.addedBloom * 4 * buildChecker.timeBeforeHideRoof;
+                            }
+                        }
+                        else if (_sceneService.Value.gloabalLight.intensity < addHelmetIntansity)
+                        {
+                            _sceneService.Value.gloabalLight.intensity = addHelmetIntansity;
+                            _sceneService.Value.bloomMainBg.intensity.value = helmetInfo.addedBloom;
+                        }
+
+                    }
+                    else
+                    {
+                        if (_sceneService.Value.gloabalLight.intensity > 0f)
+                            _sceneService.Value.gloabalLight.intensity = gloabalTimeCmp.currentGlobalLightIntensity - (1 - buildChecker.timeBeforeHideRoof) * 0.35f;
+                        else if (_sceneService.Value.gloabalLight.intensity < 0)
+                            _sceneService.Value.gloabalLight.intensity = 0;
+                    }
+                    ChangeAlfaAllSpriteInGroup( buildChecker.timeBeforeHideRoof,buildChecker.roofSpriteRenderer.renderers);
+                }
+                else
+                {
+                    float sumIntansity = 0;
+                    ChangeAlfaAllSpriteInGroup(1-buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.renderers);
+                    if (gloabalTimeCmp.currentGlobalLightIntensity > 0f)
+                        sumIntansity = gloabalTimeCmp.currentGlobalLightIntensity - buildChecker.timeBeforeHideRoof * 0.35f;
+                    if (playerCmp.nvgIsUsed)
+                    {
+                        var helmetInfo = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).itemInfo.helmetInfo;
+                        var addedHelmetInt = helmetInfo.addedLightIntancity;
+                        if (gloabalTimeCmp.isNight)
+                            sumIntansity += addedHelmetInt;
+                        else
+                        {
+                            sumIntansity += addedHelmetInt + (addedHelmetInt * 4 * (1 - buildChecker.timeBeforeHideRoof));
+                            _sceneService.Value.bloomMainBg.intensity.value = helmetInfo.addedBloom + helmetInfo.addedBloom * 4 * (1 - buildChecker.timeBeforeHideRoof);
+                        }
+                    }
+                    _sceneService.Value.gloabalLight.intensity = sumIntansity;
+                }
+
+                if (buildChecker.timeBeforeHideRoof < 0f)
+                {
+                    buildChecker.timeBeforeHideRoof = 0f;
+                    float sumIntansity = 0;
+                    if (buildChecker.isHideRoof)
+                    {
+                        ChangeAlfaAllSpriteInGroup(buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.renderers);
+                        if (gloabalTimeCmp.currentGlobalLightIntensity - 0.35f > 0f)
+                            sumIntansity = gloabalTimeCmp.currentGlobalLightIntensity - 0.35f;
+                        else
+                            sumIntansity = 0;
+                    }
+                    else
+                    {
+                        ChangeAlfaAllSpriteInGroup(1-buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.renderers);
+                        if (gloabalTimeCmp.currentGlobalLightIntensity > 0f)
+                            sumIntansity = gloabalTimeCmp.currentGlobalLightIntensity;
+                        else
+                            sumIntansity = 0;
+                    }
+                    if (playerCmp.nvgIsUsed)
+                    {
+                        var helmetInfo = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).itemInfo.helmetInfo;
+                        if (gloabalTimeCmp.isNight || buildChecker.isHideRoof)
+                        {
+                            sumIntansity += helmetInfo.addedLightIntancity;
+                            _sceneService.Value.bloomMainBg.intensity.value = helmetInfo.addedBloom;
+                        }
+                        else
+                        {
+                            sumIntansity += helmetInfo.addedLightIntancity * 5;
+                            _sceneService.Value.bloomMainBg.intensity.value = helmetInfo.addedBloom * 5;
+                        }
+                    }
+                    _sceneService.Value.gloabalLight.intensity = sumIntansity;
+                }
+            }
+        }
+        ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Get(_playerEntity);
+       
+        foreach (var loadGame in loadGameEventsFilter.Value)
+        {
+            Debug.Log(_sceneService.Value.playerEntity + " pl ent");
+
+            ref var inventoryCmp = ref _inventoryComponentsPool.Value.Get(_sceneService.Value.inventoryEntity);
+            _sceneService.Value.moneyText.text = inventoryCmp.moneyCount + "$";
+            var upgradedStatsCmp = _playerUpgradedStatsPool.Value.Get(_playerEntity);
+            playerMoveCmp.maxRunTime = playerCmp.view.runTime * (1 + upgradedStatsCmp.statLevels[2] * 0.02f);
+            playerMoveCmp.currentRunTimeRecoverySpeed = playerCmp.view.runTimeRecoverySpeed;
+            inventoryCmp.currentMaxWeight = _sceneService.Value.maxInInventoryWeight + upgradedStatsCmp.statLevels[0] * _sceneService.Value.maxInInventoryWeight / 50f;
+            _gunComponentsPool.Value.Get(_playerEntity).spreadRecoverySpeed = playerCmp.view.gunRecoverySpreadSpeed * 1 + (upgradedStatsCmp.statLevels[0] * 0.02f);
+            moveCmp.moveSpeed = moveCmp.movementView.moveSpeed + moveCmp.movementView.moveSpeed / 50 * upgradedStatsCmp.statLevels[0];
+            if (inventoryCmp.weight / inventoryCmp.currentMaxWeight > 0.6f)
+                moveCmp.moveSpeed -= (moveCmp.movementView.moveSpeed * ((inventoryCmp.weight / inventoryCmp.currentMaxWeight) - 0.6f) * 2);
+            Debug.Log("Start move speed " + moveCmp.moveSpeed);
         }
 
+        bool inInventory = _menuStatesComponentsPool.Value.Get(_playerEntity).inInventoryState;
+
+        /* if (Input.GetKeyDown(KeyCode.M))
+         {
+             _playerComponentsPool.Value.Get(_playerEntity).money += 10;
+             Debug.Log("now " + _playerComponentsPool.Value.Get(_playerEntity).money + " money");
+         }*/
+        /*   if (Input.GetKeyDown(KeyCode.P))
+           {
+               _saveGameEventsPool.Value.Add(_playerEntity);
+           }*/
+        
+        if (inInventory && _sceneService.Value.dropedItemsUIView.divideItemsUI.gameObject.activeInHierarchy)
+        {
+            if (Input.GetKeyDown(KeyCode.D) && _sceneService.Value.dropedItemsUIView.dropButton.gameObject.activeInHierarchy)
+            {
+                _dropItemsIventsPool.Value.Add(_sceneService.Value.dropedItemsUIView.curCell);
+            }
+            else if (Input.GetKeyDown(KeyCode.A) && _inventoryItemComponentsPool.Value.Get(_sceneService.Value.dropedItemsUIView.curCell).currentItemsCount > 1)
+            {
+                _sceneService.Value.dropedItemsUIView.generalSlider.value = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.dropedItemsUIView.curCell).currentItemsCount;
+            }
+            else if (Input.GetKeyDown(KeyCode.S)/* && _menuStatesComponentsPool.Value.Get(_playerEntity).inStorageState */&& _sceneService.Value.dropedItemsUIView.storageButton.gameObject.activeInHierarchy)
+            {
+                _addItemFromCellEventsPool.Value.Add(_sceneService.Value.dropedItemsUIView.curCell);
+            }
+            else if (Input.GetKeyDown(KeyCode.W) && _sceneService.Value.dropedItemsUIView.divideButton.gameObject.activeInHierarchy)
+            {
+                _divideItemEventsPool.Value.Add(_sceneService.Value.dropedItemsUIView.curCell);
+            }
+            else if (Input.GetKeyDown(KeyCode.E))
+            {
+                //экипировать чтолибо
+            }
+        }
+
+      //  Debug.Log("check na pleshivost 7");
+        if (healthCmp.isDeath) return;
+
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
+        float verticalInput = Input.GetAxisRaw("Vertical");
+        Vector2 moveDirection = new Vector2(horizontalInput, verticalInput);
+
+        //условие какое то
+        // if (verticalInput > 1 || verticalInput < -1 || horizontalInput > 1 || horizontalInput < -1)
+        //Debug.Log(verticalInput + "y " + horizontalInput + "x ");
+        // if (verticalInput != 0 && horizontalInput != 0)
+        moveDirection = moveDirection.normalized;
+
+        if (playerMoveCmp.nowIsMoving && moveDirection == Vector2.zero)
+        {
+            playerMoveCmp.nowIsMoving = false;
+            moveCmp.movementView.characterAnimator.SetBool("isWalking", playerMoveCmp.nowIsMoving);
+            _calculateRecoilEventsPool.Value.Add(_world.Value.NewEntity());
+        }
+        else if (!playerMoveCmp.nowIsMoving && moveDirection != Vector2.zero)
+        {
+            playerMoveCmp.nowIsMoving = true;
+            moveCmp.movementView.characterAnimator.SetBool("isWalking", playerMoveCmp.nowIsMoving);
+            _calculateRecoilEventsPool.Value.Add(_world.Value.NewEntity());
+        }
+        if (playerMoveCmp.nowIsMoving && playerMoveCmp.currentHungerPoints != 0)
+        {
+            if (playerMoveCmp.isRun)
+                playerMoveCmp.currentHungerPoints -= Time.deltaTime * 2;
+            else
+                playerMoveCmp.currentHungerPoints -= Time.deltaTime;
+
+            if (playerMoveCmp.currentHungerPoints < 0)
+                playerMoveCmp.currentHungerPoints = 0;
+            _sceneService.Value.playerArmorBarFilled.fillAmount = playerMoveCmp.currentHungerPoints / playerMoveCmp.maxHungerPoints;
+            _sceneService.Value.playerArmorText.text = (int)playerMoveCmp.currentHungerPoints + " / " + (int)playerMoveCmp.maxHungerPoints;
+        }
+        if (!moveCmp.isStunned)
+        {
+            if (!_currentDialogeComponentsPool.Value.Get(_playerEntity).dialogeIsStarted)
+            {
+                moveCmp.moveInput = moveDirection;
+
+                float hungerMultiplayer = playerMoveCmp.currentHungerPoints / playerMoveCmp.maxHungerPoints;
+                if (playerMoveCmp.isRun)
+                {
+                    ref var playerStats = ref _playerUpgradedStatsPool.Value.Get(_playerEntity);
+
+
+                    playerStats.currentStatsExp[2] += Time.fixedDeltaTime * 0.5f;
+                    if (playerStats.currentStatsExp[2] >= _sceneService.Value.levelExpCounts[playerStats.statLevels[2]] && !_upgradePlayerStatEventsPool.Value.Has(_sceneService.Value.playerEntity))
+                        _upgradePlayerStatEventsPool.Value.Add(_sceneService.Value.playerEntity).statIndex = 2;
+
+                    /*  playerStats.currentStatsExp[2] += Time.fixedDeltaTime * 0.5f;
+                    if (playerStats.currentStatsExp[2] >= _sceneService.Value.levelExpCounts[playerStats.statLevels[2]])//2 потому что стат скорости
+                     {
+                         playerStats.statLevels[2]++;
+                         ref var inventoryCmp = ref _inventoryComponentsPool.Value.Get(_sceneService.Value.inventoryEntity);
+                         moveCmp.moveSpeed = moveCmp.movementView.moveSpeed + moveCmp.movementView.moveSpeed / 50 * _playerUpgradedStatsPool.Value.Get(_playerEntity).statLevels[0];
+                         if (inventoryCmp.weight / inventoryCmp.currentMaxWeight > 0.7f)
+                             moveCmp.moveSpeed -= (moveCmp.movementView.moveSpeed * ((inventoryCmp.weight / inventoryCmp.currentMaxWeight) - 0.7f) * 2);
+                         Debug.Log(moveCmp.moveSpeed);
+                     }*/
+                    Debug.Log("running");
+                    playerMoveCmp.currentRunTime -= Time.deltaTime;
+                    if (playerMoveCmp.currentRunTime <= 0 || moveDirection == Vector2.zero || !moveCmp.canMove || inInventory || healthCmp.isDeath || moveCmp.isTrapped)
+                    {
+                        if (playerMoveCmp.currentRunTime <= 0)
+                            playerMoveCmp.currentRunTime --;
+                        // moveCmp.moveSpeed /= playerMoveCmp.playerView.runSpeedMultiplayer;
+                        playerMoveCmp.isRun = false;
+                        Debug.Log("move aspeed after run " + moveCmp.moveSpeed);
+                        _calculateRecoilEventsPool.Value.Add(_world.Value.NewEntity());
+                    }
+                    _sceneService.Value.playerStaminaBarFilled.fillAmount = playerMoveCmp.currentRunTime / playerMoveCmp.maxRunTime;
+                    _sceneService.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.maxRunTime;
+                }
+                else if ((playerMoveCmp.currentRunTime < playerMoveCmp.maxRunTime && hungerMultiplayer > 0.5f || hungerMultiplayer <= 0.5f && playerMoveCmp.currentRunTime < playerMoveCmp.maxRunTime * (hungerMultiplayer + 0.5f)) && !_playerGunComponentsPool.Value.Get(_sceneService.Value.playerEntity).inScope)
+                {
+                    playerMoveCmp.currentRunTime += Time.deltaTime * playerMoveCmp.currentRunTimeRecoverySpeed;
+                    _sceneService.Value.playerStaminaBarFilled.fillAmount = playerMoveCmp.currentRunTime / playerMoveCmp.maxRunTime;
+                    _sceneService.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.maxRunTime;
+                }
+                else if (playerMoveCmp.currentRunTime > playerMoveCmp.maxRunTime)
+                    playerMoveCmp.currentRunTime = playerMoveCmp.maxRunTime;
+            }
+            else
+                moveCmp.moveInput = Vector2.zero;
+            moveCmp.pointToRotateInput = _sceneService.Value.mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        }
+
+        if (!_currentHealingItemComponentsPool.Value.Get(_playerEntity).isHealing)
+        {
+            if (Input.GetKeyDown(KeyCode.N) && _inventoryItemComponentsPool.Value.Has(_sceneService.Value.helmetCellView._entity) && _inventoryItemComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).itemInfo.helmetInfo.addedLightIntancity != 0 && _shieldComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).currentDurability > 0) //and check nvg charge
+            {
+                ref var globalTimeCmp = ref _globalTimeComponentsPool.Value.Get(_playerEntity);
+                var helmetInfo = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).itemInfo.helmetInfo;
+
+                playerCmp.nvgIsUsed = !playerCmp.nvgIsUsed;
+                var playerGunCmp = _playerGunComponentsPool.Value.Get(_playerEntity);
+                bool isHideRoof = _buildingCheckerComponentsPool.Value.Get(_playerEntity).isHideRoof;
+                if (playerCmp.nvgIsUsed)
+                {
+
+                    if (playerGunCmp.inScope && playerGunCmp.currentScopeMultiplicity > 2.1f)
+                        _offInScopeStateEventsPool.Value.Add(_playerEntity);
+                    if (isHideRoof)
+                    {
+                        if (globalTimeCmp.currentGlobalLightIntensity - 0.35f <= 0f)
+                            _sceneService.Value.gloabalLight.intensity = helmetInfo.addedLightIntancity;
+                        else
+                            _sceneService.Value.gloabalLight.intensity = helmetInfo.addedLightIntancity + globalTimeCmp.currentGlobalLightIntensity - 0.35f;
+                        _sceneService.Value.bloomMainBg.intensity.value = helmetInfo.addedBloom;
+                    }
+                    else if (!globalTimeCmp.isNight)
+                    {
+                        _sceneService.Value.gloabalLight.intensity = helmetInfo.addedLightIntancity * 5 + globalTimeCmp.currentGlobalLightIntensity;
+                        _sceneService.Value.bloomMainBg.intensity.value = helmetInfo.addedBloom * 5;
+                    }
+                    else
+                    {
+                        _sceneService.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity + helmetInfo.addedLightIntancity;
+                        _sceneService.Value.bloomMainBg.intensity.value = helmetInfo.addedBloom;
+                    }
+                    _sceneService.Value.gloabalLight.color = helmetInfo.visionColor;
+                }
+                else
+                {
+                    if (isHideRoof)
+                        _sceneService.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity - 0.35f;
+                    else
+                        _sceneService.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity;
+                    if (globalTimeCmp.currentDayTime >= 15)
+                        _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(1f);
+                    else if (globalTimeCmp.currentDayTime == 12 || globalTimeCmp.currentDayTime == 0)
+                        _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(0.5f);
+                    else
+                        _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(0);
+                    _sceneService.Value.bloomMainBg.intensity.value = 0;
+
+                }
+                if (_sceneService.Value.gloabalLight.intensity < 0)
+                    _sceneService.Value.gloabalLight.intensity = 0f;
+            }
+
+            else if (!_currentAttackComponentsPool.Value.Get(_playerEntity).weaponIsChanged && !_playerGunComponentsPool.Value.Get(_playerEntity).inScope)
+            {
+                if (Input.GetKeyDown(KeyCode.H) && healthCmp.maxHealthPoint != healthCmp.healthPoint && !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.healingItemCellView._entity).isEmpty && !_gunComponentsPool.Value.Get(_playerEntity).isReloading) //возможно что то ещё
+                {
+                    _healFromHealItemCellEventsPool.Value.Add(_playerEntity);
+                    // _sceneService.Value.ammoInfoText.text = "восстановление здоровья...";
+                }
+
+                else if (Input.GetKeyDown(KeyCode.G) && !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.grenadeCellView._entity).isEmpty) //возможно что то ещё
+                {
+                    ref var playerAttackCmp = ref _currentAttackComponentsPool.Value.Get(_playerEntity);
+                    if (playerAttackCmp.grenadeThrowCouldown <= 0)
+                    {
+                        _throwGrenadeEventsPool.Value.Add(_playerEntity);
+                        playerAttackCmp.grenadeThrowCouldown = 0.5f;
+                    }
+                }
+
+                else if (Input.GetKeyDown(KeyCode.C) && !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.shieldCellView._entity).isEmpty && !_gunComponentsPool.Value.Get(_playerEntity).isReloading) //возможно что то ещё
+                {
+                    var playerWeaponsInInvCmp = _playerWeaponsInInventoryComponentsPool.Value.Get(_playerEntity);
+                    var itemCmp = _inventoryItemComponentsPool.Value.Get(playerWeaponsInInvCmp.curEquipedWeaponCellEntity);
+                    if (playerWeaponsInInvCmp.curWeapon == 2 && itemCmp.itemInfo.meleeWeaponInfo.isOneHandedWeapon || playerWeaponsInInvCmp.curWeapon < 2 && (itemCmp.itemInfo.gunInfo.isOneHandedGun || (!itemCmp.itemInfo.gunInfo.isOneHandedGun && _playerUpgradedStatsPool.Value.Get(_playerEntity).weaponsExp[itemCmp.itemInfo.itemId].weaponExpLevel >= 8)))//поменять уровень на 6
+                    {
+                        ref var shieldCmp = ref _shieldComponentsPool.Value.Get(_sceneService.Value.shieldCellView._entity);
+
+                        if (playerCmp.view.shieldView.shieldObject.localPosition != Vector3.zero)
+                        {
+                            playerCmp.view.shieldView.shieldObject.SetParent(playerCmp.view.shieldView.shieldContainer);
+                            playerCmp.view.shieldView.shieldObject.localPosition = Vector3.zero;
+                            playerCmp.view.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, 0);
+                            playerCmp.view.shieldView.shieldObject.localScale = new Vector3(playerCmp.view.shieldView.shieldObject.localScale.x * -1, playerCmp.view.shieldView.shieldObject.localScale.y, playerCmp.view.shieldView.shieldObject.localScale.z);
+                            playerCmp.view.shieldView.shieldSpriteRenderer.sortingOrder = 2;
+                            if (_playerWeaponsInInventoryComponentsPool.Value.Get(_sceneService.Value.playerEntity).curWeapon == 2)
+                            {
+                                int meleeWeaponEntity = _sceneService.Value.meleeWeaponCellView._entity;
+                                _meleeWeaponComponentsPool.Value.Get(_sceneService.Value.playerEntity).curAttackLenght = _inventoryItemComponentsPool.Value.Get(meleeWeaponEntity).itemInfo.meleeWeaponInfo.attackLenght;
+                            }
+                        }
+                        else
+                        {
+                            playerCmp.view.shieldView.shieldObject.localScale = new Vector3(playerCmp.view.shieldView.shieldObject.localScale.x * -1, playerCmp.view.shieldView.shieldObject.localScale.y, playerCmp.view.shieldView.shieldObject.localScale.z);
+                            playerCmp.view.shieldView.shieldObject.SetParent(playerCmp.view.movementView.nonWeaponContainer);
+                            playerCmp.view.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, -90);
+                            playerCmp.view.shieldView.shieldObject.localPosition = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.shieldCellView._entity).itemInfo.sheildInfo.sheildInHandsPosition;
+                            playerCmp.view.shieldView.shieldSpriteRenderer.sortingOrder = 6;
+                            if (_playerWeaponsInInventoryComponentsPool.Value.Get(_sceneService.Value.playerEntity).curWeapon == 2)
+                            {
+                                int meleeWeaponEntity = _sceneService.Value.meleeWeaponCellView._entity;
+                                _meleeWeaponComponentsPool.Value.Get(_sceneService.Value.playerEntity).curAttackLenght = _inventoryItemComponentsPool.Value.Get(meleeWeaponEntity).itemInfo.meleeWeaponInfo.attackLenght * _inventoryItemComponentsPool.Value.Get(_sceneService.Value.shieldCellView._entity).itemInfo.sheildInfo.recoilPercent;
+                            }
+                        }
+                    }
+                    _calculateRecoilEventsPool.Value.Add(_world.Value.NewEntity());
+
+                }
+
+                else if (Input.GetKeyDown(KeyCode.LeftShift) && moveDirection != Vector2.zero && moveCmp.canMove && !inInventory && !healthCmp.isDeath && !moveCmp.isStunned && playerMoveCmp.currentRunTime > 0)
+                {
+                    playerMoveCmp.isRun = !playerMoveCmp.isRun;
+
+                    _calculateRecoilEventsPool.Value.Add(_world.Value.NewEntity());
+                }
+            }
+        }
         if (!_inventoryCellComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity).isEmpty)
         {
             ref var flashlightCmp = ref _flashLightInInventoryComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity);
-            ref var playerCmp = ref _playerComponentsPool.Value.Get(_sceneService.Value.playerEntity);
 
-            if (flashlightCmp.currentChargeRemainigTime > 0)
+            if (flashlightCmp.currentDurability > 0)
             {
                 if (playerCmp.useFlashlight)
-                    flashlightCmp.currentChargeRemainigTime -= Time.deltaTime;
-                if (flashlightCmp.currentChargeRemainigTime <= 0)
                 {
-                    playerCmp.useFlashlight = false;
-                    flashlightCmp.currentChargeRemainigTime = 0;
-                    playerCmp.view.flashLightObject.gameObject.SetActive(false);
+                    flashlightCmp.currentDurability -= Time.deltaTime;
+
+
+                    if (flashlightCmp.currentDurability <= 0)
+                    {
+                        playerCmp.useFlashlight = false;
+                        flashlightCmp.currentDurability = 0;
+                        playerCmp.view.flashLightObject.gameObject.SetActive(false);
+                    }
                 }
-                else if (Input.GetKeyDown(KeyCode.L))
+                if (Input.GetKeyDown(KeyCode.L))
                 {
                     playerCmp.useFlashlight = !playerCmp.useFlashlight;
                     playerCmp.view.flashLightObject.gameObject.SetActive(playerCmp.useFlashlight);
                 }
             }
         }
+        FieldOfViewCheck();
     }
+
+    private void ChangeAlfaAllSpriteInGroup(float needAlpfa, SpriteRenderer[] spriteRenderers)
+    {
+        foreach(SpriteRenderer spriteRenderer in spriteRenderers)
+        {
+            Color color = spriteRenderer.color;
+            color.a = needAlpfa;
+            spriteRenderer.color = color;
+        }
+    }
+    private void FieldOfViewCheck()
+    {
+        ref var moveCmp = ref _movementComponentPool.Value.Get(_playerEntity);
+
+        ref var playerCmp = ref _playerComponentsPool.Value.Get(_playerEntity);
+        ref var fOVCmp = ref _fieldOfViewComponentsPool.Value.Get(_playerEntity);
+        float fov = fOVCmp.fieldOfView;
+        float viewDistance = fOVCmp.viewDistance;
+        //float viewDistance = 5;
+        // Vector3 origin = playerCmp.view.healthView.characterHeadCollaider.transform.position;
+        Vector3 origin = new Vector2(playerCmp.view.movementView.transform.position.x, playerCmp.view.movementView.transform.position.y - 0.2f);
+        int rayCount = Mathf.CeilToInt(fov / 3);
+        float angle = GetAngleFromVectorFloat(moveCmp.pointToRotateInput - (Vector2)origin) - fov / 2;
+        float angleIncrease = fov / rayCount;
+
+        List<Collider2D> checkedColliders = new List<Collider2D>();
+
+        fOVCmp.timeBeforeDetect += Time.deltaTime;
+        if (fOVCmp.timeBeforeDetect >= 0.12f)
+        {
+            fOVCmp.timeBeforeDetect = 0;
+            for (int i = 0; i < rayCount; i++)
+            {
+                RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), viewDistance, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy") | LayerMask.GetMask("InteractedCharacter"));
+
+                Debug.DrawRay(origin, GetVectorFromAngle(angle) * viewDistance, Color.yellow);
+                if (raycastHit2D.collider != null)
+                {
+
+                    //  Debug.Log("checkCollider");
+                    bool isHasThisCollider = false;
+                    foreach (var col in checkedColliders)
+                        if (col == raycastHit2D.collider)
+                        {
+                            isHasThisCollider = true;
+                            // Debug.Log("ignoreCollider");
+                        }
+                    if (!isHasThisCollider)
+                    {
+                        checkedColliders.Add(raycastHit2D.collider);
+                        //  Debug.Log("addCheckCollider" + raycastHit2D.collider.gameObject.layer);
+                        if (raycastHit2D.collider.gameObject.layer == 7)
+                        {
+                            ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<CreatureView>().entity);//может быть как то оптимизировать
+
+                            hidedObjCmp.timeBeforeHide = 0.5f;
+                            foreach (var spriteRenderer in hidedObjCmp.hidedObjects)
+                                spriteRenderer.gameObject.SetActive(true);
+                        }
+                        else if (raycastHit2D.collider.gameObject.layer == 8)
+                        {
+                            //   Debug.Log("addCheckColliderInteractedCharacter");
+                            if (_hidedObjectOutsideFOVComponentsPool.Value.Has(raycastHit2D.collider.gameObject.GetComponent<InteractCharacterView>()._entity))
+                            {
+                                ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<InteractCharacterView>()._entity);
+
+                                hidedObjCmp.timeBeforeHide = 0.5f;
+                                foreach (var spriteRenderer in hidedObjCmp.hidedObjects)
+                                {
+                                    //  if (hidedObjCmp.isSetActivebject)
+                                    spriteRenderer.gameObject.SetActive(true);
+                                    //  else
+                                    //      spriteRenderer.enabled = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                angle += angleIncrease;
+            }
+
+            angleIncrease = (360 - fov) / rayCount;
+            // origin = playerCmp.view.healthView.characterMainCollaider.transform.position;
+            origin = new Vector2(playerCmp.view.movementView.transform.position.x, playerCmp.view.movementView.transform.position.y - 0.9f);
+            for (int i = 0; i < rayCount; i++)//check around
+            {
+                RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), 2f, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy") | LayerMask.GetMask("InteractedCharacter"));
+                Debug.DrawRay(origin, GetVectorFromAngle(angle) * 2, Color.yellow);
+                if (raycastHit2D.collider != null)
+                {
+                    //Debug.Log("checkCollider");
+                    bool isHasThisCollider = false;
+                    foreach (var col in checkedColliders)
+                        if (col == raycastHit2D.collider)
+                        {
+                            isHasThisCollider = true;
+                            //Debug.Log("ignoreCollider");
+                        }
+                    if (!isHasThisCollider)
+                    {
+                        checkedColliders.Add(raycastHit2D.collider);
+                        //  Debug.Log("addCheckCollider" + raycastHit2D.collider.gameObject.layer);
+                        if (raycastHit2D.collider.gameObject.layer == 7)
+                        {
+                            ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<CreatureView>().entity);//может быть как то оптимизировать
+
+                            hidedObjCmp.timeBeforeHide = 0.5f;
+                            foreach (var spriteRenderer in hidedObjCmp.hidedObjects)
+                                spriteRenderer.gameObject.SetActive(true);
+                        }
+                        else if (raycastHit2D.collider.gameObject.layer == 8)
+                        {
+                            // Debug.Log("addCheckColliderInteractedCharacter");
+                            if (_hidedObjectOutsideFOVComponentsPool.Value.Has(raycastHit2D.collider.gameObject.GetComponent<InteractCharacterView>()._entity))
+                            {
+                                ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<InteractCharacterView>()._entity);
+
+                                hidedObjCmp.timeBeforeHide = 0.5f;
+                                foreach (var spriteRenderer in hidedObjCmp.hidedObjects)
+                                    spriteRenderer.gameObject.SetActive(true);
+                            }
+                        }
+                    }
+                }
+                angle += angleIncrease;
+            }
+
+            if (playerCmp.useFlashlight && _globalTimeComponentsPool.Value.Get(_playerEntity).isNight)
+            {
+                var flashlightInfo = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity).itemInfo.flashlightInfo;
+                origin = playerCmp.view.movementView.nonWeaponContainer.transform.position;
+                var ray = Physics2D.Raycast(origin, playerCmp.view.movementView.nonWeaponContainer.up, flashlightInfo.lightRange * 2, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy"));
+                if (ray.collider != null && ray.collider.gameObject.layer == 7)
+                {
+                    int enemyEntity = ray.transform.gameObject.GetComponent<HealthView>()._entity;
+                    ref var aiCmpEnemy = ref _creatureAIComponentsPool.Value.Get(enemyEntity);
+                    var enemySpriteTransform = aiCmpEnemy.creatureView.movementView.characterSpriteTransform;
+                    Debug.Log("enemy on flashlight");
+                    //((aiCmpEnemy.creatureView.movementView.characterSpriteTransform.localScale.x > 0 && playerView.movementView.transform.position.x > aiCmpEnemy.creatureView.movementView.characterSpriteTransform.position.x) || (aiCmpEnemy.creatureView.movementView.characterSpriteTransform.localScale.x < 0 && playerView.movementView.transform.position.x < aiCmpEnemy.creatureView.movementView.characterSpriteTransform.position.x))
+                    if ((enemySpriteTransform.localScale.x > 0 && playerCmp.view.movementView.transform.position.x > enemySpriteTransform.position.x) || (enemySpriteTransform.localScale.x < 0 && playerCmp.view.movementView.transform.position.x < enemySpriteTransform.position.x))//see the player
+                    {
+                        aiCmpEnemy.targetPositionCached = playerCmp.view.transform.position;
+                        aiCmpEnemy.reachedLastTarget = false;
+                        if (aiCmpEnemy.currentState == CreatureAIComponent.CreatureStates.idle)
+                        {
+                            aiCmpEnemy.timeFromLastTargetSeen = 0f;
+                            aiCmpEnemy.currentState = CreatureAIComponent.CreatureStates.follow;
+                        }
+                    }
+                }
+                rayCount = (int)(flashlightInfo.spotAngle / 7);
+                angleIncrease = flashlightInfo.spotAngle / (flashlightInfo.spotAngle / 7);
+                for (int i = 0; i < rayCount; i++)
+                {
+                    RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), flashlightInfo.lightRange, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy"));
+                    Debug.DrawRay(origin, GetVectorFromAngle(angle) * flashlightInfo.lightRange, Color.green);
+                    if (raycastHit2D.collider != null)
+                    {
+                        //  Debug.Log("checkCollider");
+                        bool isHasThisCollider = false;
+                        foreach (var col in checkedColliders)
+                            if (col == raycastHit2D.collider)
+                            {
+                                isHasThisCollider = true;
+                                // Debug.Log("ignoreCollider");
+                            }
+                        if (!isHasThisCollider)
+                        {
+                            checkedColliders.Add(raycastHit2D.collider);
+                            //  Debug.Log("addCheckCollider" + raycastHit2D.collider.gameObject.layer);
+                            if (raycastHit2D.collider.gameObject.layer == 7)
+                            {
+                                int enemyEntity = raycastHit2D.transform.gameObject.GetComponent<HealthView>()._entity;
+                                ref var aiCmpEnemy = ref _creatureAIComponentsPool.Value.Get(enemyEntity);
+                                aiCmpEnemy.targetPositionCached = playerCmp.view.transform.position;
+                                aiCmpEnemy.reachedLastTarget = false;
+                                if (aiCmpEnemy.currentState == CreatureAIComponent.CreatureStates.idle)
+                                {
+                                    aiCmpEnemy.timeFromLastTargetSeen = 0f;
+                                    aiCmpEnemy.currentState = CreatureAIComponent.CreatureStates.follow;
+                                }
+
+                            }
+                        }
+                    }
+                    angle += angleIncrease;
+                }
+
+
+            }
+        }
+
+        foreach (var objEntity in _hidedObjectOutsideFOVComponentsFilter.Value)
+        {
+            ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(objEntity);
+
+            if (hidedObjCmp.timeBeforeHide < 0)
+            {
+                hidedObjCmp.timeBeforeHide = 0;
+                foreach (var spriteRenderer in hidedObjCmp.hidedObjects)
+                    spriteRenderer.gameObject.SetActive(false);
+                //spriteRenderer.enabled = false;
+            }
+            else if (hidedObjCmp.timeBeforeHide > 0)
+                hidedObjCmp.timeBeforeHide -= Time.deltaTime;
+        }
+    }
+
+    private Vector3 GetVectorFromAngle(float angle)
+    {
+        float angleRad = angle * (Mathf.PI / 180f);
+        return new Vector3(Mathf.Cos(angleRad), Mathf.Sin(angleRad));
+    }
+
+
+    private float GetAngleFromVectorFloat(Vector3 dir)
+    {
+        dir = dir.normalized;
+        float n = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        if (n < 0)
+            n += 360;
+        return n;
+    }
+
 }
