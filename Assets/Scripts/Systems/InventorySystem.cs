@@ -47,6 +47,7 @@ public class InventorySystem : IEcsRunSystem
     private EcsPoolInject<FieldOfViewComponent> _fieldOfViewComponentsPool;
     private EcsPoolInject<CurrentInteractedCharactersComponent> _currentInteractedCharactersComponentsPool;
     private EcsPoolInject<QuestNPCComponent> _questNPCComponentsPool;
+    private EcsPoolInject<HidedObjectOutsideFOVComponent> _hidedObjectOutsideFOVComponentsPool;
 
     private EcsFilterInject<Inc<ReloadEvent>> _reloadEventsFilter { get; set; }
     private EcsFilterInject<Inc<InventoryItemComponent>, Exc<StorageCellTag, SpecialInventoryCellTag>> _inventoryItemsFilter;
@@ -832,6 +833,8 @@ public class InventorySystem : IEcsRunSystem
             Debug.Log(movedToFastCellWeapon + " movedToFastCellWeapon");
             ref var oldInvCellCmp = ref _inventoryCellsComponents.Value.Get(movedToFastCellWeapon);
             ref var oldInvItemCmp = ref _inventoryItemComponentsPool.Value.Get(movedToFastCellWeapon);
+            oldInvCellCmp.cellView.inventoryCellAnimator.SetBool("buttonIsActive", false);
+            _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell = 0;
             var playerAttackCmp = _attackComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             if (_currentHealingItemComponentsPool.Value.Get(_sceneData.Value.playerEntity).isHealing || playerAttackCmp.weaponIsChanged)
                 return;
@@ -1903,19 +1906,8 @@ public class InventorySystem : IEcsRunSystem
         {
             Debug.Log("del item +" + deletedItemsCount);
             DelSpecialComponents(cellEntity, itemCmpToDel.itemInfo);
-            /*  if (itemCmpToDel.itemInfo.type == ItemInfo.itemType.gun)
-              {
-                  _weaponLevelComponentsPool.Value.Del(cellEntity);
-                  _gunInventoryCellComponentsPool.Value.Del(cellEntity);
-                  if (_laserPointerForGunComponentsPool.Value.Has(cellEntity))
-                      _laserPointerForGunComponentsPool.Value.Del(cellEntity);
-              }
-              else if (itemCmpToDel.itemInfo.type == ItemInfo.itemType.meleeWeapon)
-                  _weaponLevelComponentsPool.Value.Del(cellEntity);
-              else if (itemCmpToDel.itemInfo.type == ItemInfo.itemType.flashlight || itemCmpToDel.itemInfo.type == ItemInfo.itemType.bodyArmor || itemCmpToDel.itemInfo.type == ItemInfo.itemType.helmet)
-                  _durabilityInInventoryComponentsPool.Value.Del(cellEntity);
-              else if (itemCmpToDel.itemInfo.type == ItemInfo.itemType.sheild)
-                  _shieldComponentsPool.Value.Del(cellEntity);*/
+            invCellCmpToDel.cellView.inventoryCellAnimator.SetBool("buttonIsActive", false);
+            _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell = 0;
             invCellCmpToDel.cellView.ClearInventoryCell();
             _inventoryItemComponentsPool.Value.Del(cellEntity);
             invCellCmpToDel.isEmpty = true;
@@ -2065,7 +2057,7 @@ public class InventorySystem : IEcsRunSystem
         droppedItemComponent.itemInfo = invItemCmp.itemInfo;
 
         droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(_movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform.position, invItemCmp.itemInfo, droppedItem);
-
+        _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItem).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.gameObject.transform.GetChild(0) };
         CopySpecialComponents(itemInventoryCell, droppedItem, droppedItemComponent.itemInfo);
         DeleteItem(ref invItemCmp, ref invCellCmp, droppedItemsCount, itemInventoryCell);
 

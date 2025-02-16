@@ -29,7 +29,7 @@ MonoBehaviour:
   isOneBulletReloaded: 1
   maxDurabilityPoints: 500
   bulletShellIndex: 0
-  firepointPosition: {x: -0.0391, y: 1.083}
+  firepointPosition: {x: -0.04, y: 1.08}
   bulletShellPointPosition: {x: 0, y: 0}
   bulletShellSpawnOnShot: 0
   durabilityRecoveryCost: 10
@@ -75,13 +75,7 @@ MonoBehaviour:
   shotFlashDistance: 3
   shotFlashIntance: 10
   shotFlashAngle: 50
-  bulletsUIPositions:
-  - {x: 0, y: 20.7}
-  - {x: 17.7, y: 9.95}
-  - {x: 17.7, y: -9.95}
-  - {x: 0, y: -20.7}
-  - {x: -17.7, y: -9.95}
-  - {x: -17.7, y: 9.95}
+  bulletsUIPositions: []
   bulletUISprite: {fileID: 21300000, guid: 76dded18b3f1faf449cbb67a700fa60f, type: 3}
   magUISprite: {fileID: 21300000, guid: 4f628d27227a1e24788f374c4ecf5f3e, type: 3}
   magUISize: {x: 70, y: 70}

@@ -5,12 +5,13 @@ using UnityEngine;
 public class MovementView : MonoBehaviour
 {
     [field: SerializeField] public float moveSpeed { get; private set; }
-    [field: SerializeField] public float weaponCentre { get; private set; }
+    [field: SerializeField] public float runSpeedMultiplayer { get; private set; }
     [field: SerializeField] public Transform objectTransform { get; private set; }
     [field: SerializeField] public Transform firePoint { get; private set; }
     [field: SerializeField] public Transform characterSpriteTransform { get; private set; }
     [field: SerializeField] public Transform weaponContainer { get; private set; }
     [field: SerializeField] public Transform nonWeaponContainer { get; private set; }
+    [field: SerializeField] public Transform bulletShellSpawnPoint { get; private set; }
     [field: SerializeField] public Transform weaponSprite { get; private set; }
     [field: SerializeField] public float offsetToWeapon { get; private set; }
     [field: SerializeField] public SpriteRenderer weaponSpriteRenderer { get; private set; }

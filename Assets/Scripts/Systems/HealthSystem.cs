@@ -170,9 +170,9 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                         //  _playerMoveComponentsPool.Value.Get(effectCmp.effectEntity).maxRunTime = _playerComponentsPool.Value.Get(effectCmp.effectEntity).view.runTime * (1 + _playerUpgradedStatsPool.Value.Get(effectCmp.effectEntity).statLevels[2] + (effectCmp.effectLevel * 0.3f));
 
                         var playerCmp = _playerComponentsPool.Value.Get(effectCmp.effectEntity);
-                        ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Get(effectCmp.effectEntity);
-                        playerMoveCmp.maxRunTime = playerCmp.view.runTime * (1 + _playerUpgradedStatsPool.Value.Get(effectCmp.effectEntity).statLevels[2] + (effectCmp.effectLevel * 0.3f));
-                        playerMoveCmp.currentRunTimeRecoverySpeed = playerCmp.view.runTimeRecoverySpeed * (1 + (effectCmp.effectLevel * 0.3f));
+                        ref var moveCmp = ref _movementComponentsPool.Value.Get(effectCmp.effectEntity);
+                        moveCmp.maxRunTime = playerCmp.view.runTime * (1 + _playerUpgradedStatsPool.Value.Get(effectCmp.effectEntity).statLevels[2] + (effectCmp.effectLevel * 0.3f));
+                        moveCmp.currentRunTimeRecoverySpeed = playerCmp.view.runTimeRecoverySpeed * (1 + (effectCmp.effectLevel * 0.3f));
                     }
                     if (isPlayer)
                         effectCmp.effectIconView.effectTimerText.text = ((int)effectCmp.effectDuration).ToString();
@@ -200,11 +200,11 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 else if (effectCmp.effectType == EffectInfo.EffectType.cheerfulness)
                 {
                     var playerCmp = _playerComponentsPool.Value.Get(effectCmp.effectEntity);
-                    ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Get(effectCmp.effectEntity);
-                    playerMoveCmp.maxRunTime = playerCmp.view.runTime * (1 + _playerUpgradedStatsPool.Value.Get(effectCmp.effectEntity).statLevels[2]);
-                    playerMoveCmp.currentRunTimeRecoverySpeed = playerCmp.view.runTimeRecoverySpeed;
-                    if (playerMoveCmp.currentRunTime > playerMoveCmp.maxRunTime)
-                        playerMoveCmp.currentRunTime = playerMoveCmp.maxRunTime;
+                    ref var moveCmp = ref _movementComponentsPool.Value.Get(effectCmp.effectEntity);
+                    moveCmp.maxRunTime = playerCmp.view.runTime * (1 + _playerUpgradedStatsPool.Value.Get(effectCmp.effectEntity).statLevels[2]);
+                    moveCmp.currentRunTimeRecoverySpeed = playerCmp.view.runTimeRecoverySpeed;
+                    if (moveCmp.currentRunTime > moveCmp.maxRunTime)
+                        moveCmp.currentRunTime = moveCmp.maxRunTime;
                 }
 
                 if (isPlayer)
@@ -292,11 +292,11 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 else if (effectCmp.effectType == EffectInfo.EffectType.cheerfulness)
                 {
                     var playerCmp = _playerComponentsPool.Value.Get(revivePlayer);
-                    ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Get(effectCmp.effectEntity);
-                    playerMoveCmp.maxRunTime = playerCmp.view.runTime * (1 + _playerUpgradedStatsPool.Value.Get(effectCmp.effectEntity).statLevels[2]);
-                    if (playerMoveCmp.currentRunTime > playerMoveCmp.maxRunTime)
-                        playerMoveCmp.currentRunTime = playerMoveCmp.maxRunTime;
-                    playerMoveCmp.currentRunTimeRecoverySpeed = playerCmp.view.runTimeRecoverySpeed;
+                   // ref var moveCmp = ref _movementComponentsPool.Value.Get(effectCmp.effectEntity);
+                    moveCmp.maxRunTime = playerCmp.view.runTime * (1 + _playerUpgradedStatsPool.Value.Get(effectCmp.effectEntity).statLevels[2]);
+                    if (moveCmp.currentRunTime > moveCmp.maxRunTime)
+                        moveCmp.currentRunTime = moveCmp.maxRunTime;
+                    moveCmp.currentRunTimeRecoverySpeed = playerCmp.view.runTimeRecoverySpeed;
                 }
 
                 if (effectCmp.effectEntity == _sceneData.Value.playerEntity)
@@ -409,7 +409,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                             var gunInfo = _inventoryItemComponentsPool.Value.Get(_playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity).curEquipedWeaponCellEntity).itemInfo.gunInfo;
                             ref var movementCmp = ref _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                             movementCmp.movementView.weaponSpriteRenderer.sprite = gunInfo.weaponSprite;
-                            movementCmp.movementView.weaponSprite.localScale = Vector3.one * gunInfo.spriteScaleMultiplayer;
+                            movementCmp.movementView.weaponSprite.localScale = new Vector3(1, -1, 1) * gunInfo.spriteScaleMultiplayer;
                             movementCmp.movementView.weaponSprite.localEulerAngles = new Vector3(0, 0, gunInfo.spriteRotation);
 
                             //_sceneData.Value.ammoInfoText.text = gunInInvCmp.currentAmmo + "/" + gunCmp.magazineCapacity;
@@ -419,7 +419,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                             var meleeInfo = _inventoryItemComponentsPool.Value.Get(_playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity).curEquipedWeaponCellEntity).itemInfo.meleeWeaponInfo;
                             ref var movementCmp = ref _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                             movementCmp.movementView.weaponSpriteRenderer.sprite = meleeInfo.weaponSprite;
-                            movementCmp.movementView.weaponSprite.localScale = Vector3.one * meleeInfo.spriteScaleMultiplayer;
+                            movementCmp.movementView.weaponSprite.localScale = new Vector3(1, -1, 1) * meleeInfo.spriteScaleMultiplayer;
                             movementCmp.movementView.weaponSprite.localEulerAngles = new Vector3(0, 0, meleeInfo.spriteRotation);
                         }
                         _sceneData.Value.ammoInfoText.text = "";
@@ -452,14 +452,14 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                         {
                             creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureAiInvCmp.meleeWeaponItem.weaponSprite;
 
-                            creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = Vector3.one * creatureAiInvCmp.meleeWeaponItem.spriteScaleMultiplayer;
+                            creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = new Vector3(1, -1, 1) * creatureAiInvCmp.meleeWeaponItem.spriteScaleMultiplayer;
                             creatureAiCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureAiInvCmp.meleeWeaponItem.spriteRotation);
                         }
                         else
                         {
                             creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureAiInvCmp.gunItem.weaponSprite;
 
-                            creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = Vector3.one * creatureAiInvCmp.gunItem.spriteScaleMultiplayer;
+                            creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = new Vector3(1, -1, 1) * creatureAiInvCmp.gunItem.spriteScaleMultiplayer;
                             creatureAiCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureAiInvCmp.gunItem.spriteRotation);
                         }
 
@@ -774,7 +774,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 _deathEventsPool.Value.Add(hpEvent);
                 Time.timeScale = 0;
                 ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Get(hpEvent);
-                playerMoveCmp.currentRunTime = playerMoveCmp.playerView.runTime;
+                _movementComponentsPool.Value.Get(hpEvent).currentRunTime = playerMoveCmp.playerView.runTime;
                 playerMoveCmp.currentHungerPoints = playerMoveCmp.maxHungerPoints / 2;
                 healthCmp.healthPoint = healthCmp.maxHealthPoint / 2;
                 //сделать этот метод при спавне если будут баги

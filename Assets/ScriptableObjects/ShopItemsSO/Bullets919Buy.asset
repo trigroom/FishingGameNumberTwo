@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d066b48019e341418c014e91807bc1b, type: 3}
   m_Name: Bullets919Buy
   m_EditorClassIdentifier: 
-  isBuyItem: 1
-  itemInfo: {fileID: 11400000, guid: 9ac8f08188f655445bf9e163ca4d9655, type: 2}
-  count: 3
-  price: 6
-  needSkillLevelToUnlock: 1
-  needSkillToUnlock: 999
+  itemInfo: {fileID: 11400000, guid: 10425413546f68949af655c03ea9e4ef, type: 2}
+  count: 5
+  price: 1
+  needSkillLevelToUnlock: 0
+  needSkillToUnlock: 0
   itemsCountToBuy: 5

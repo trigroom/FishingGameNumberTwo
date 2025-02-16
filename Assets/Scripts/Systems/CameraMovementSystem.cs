@@ -22,7 +22,7 @@ public class CameraMovementSystem : IEcsRunSystem
             Vector3 neededCameraPosition;
             Vector3 targetPosition = new Vector3((moveCmp.entityTransform.position.x * cameraCmp.playerPositonPart + moveCmp.pointToRotateInput.x * cameraCmp.cursorPositonPart) / (cameraCmp.playerPositonPart + cameraCmp.cursorPositonPart), (moveCmp.entityTransform.position.y * cameraCmp.playerPositonPart + moveCmp.pointToRotateInput.y * cameraCmp.cursorPositonPart) / (cameraCmp.playerPositonPart + cameraCmp.cursorPositonPart), -10);
 
-            if (playerMoveCmp.isRun)
+            if (moveCmp.isRun)
             {
                 cameraCmp.needRunCameraOffset = moveCmp.moveInput * cameraCmp.runCameraOffsetLenght * 4f;
                 cameraCmp.currentRunCameraOffset = Vector3.MoveTowards(cameraCmp.currentRunCameraOffset, cameraCmp.needRunCameraOffset, 0.005f);

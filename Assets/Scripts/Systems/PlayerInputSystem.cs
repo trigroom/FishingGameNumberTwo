@@ -120,9 +120,8 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Add(_playerEntity);
         playerMoveCmp.playerView = playerCmp.view;
-        playerMoveCmp.currentRunTime = playerMoveCmp.playerView.runTime;
 
-        _sceneService.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.playerView.runTime;
+
 
         ref var gunCmp = ref _gunComponentsPool.Value.Add(_playerEntity);
         gunCmp.gunSpritePositionRecoil = 0.7f;
@@ -131,10 +130,11 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
 
         ref var movementComponent = ref _movementComponentPool.Value.Add(_playerEntity);
+        _sceneService.Value.playerStaminaText.text = movementComponent.currentRunTime.ToString("0.0") + "/" + playerCmp.view.runTime;
         movementComponent.movementView = playerCmp.view.movementView;
         movementComponent.entityTransform = movementComponent.movementView.objectTransform;
         movementComponent.canMove = true;
-
+        movementComponent.currentRunTime = playerMoveCmp.playerView.runTime;
         _currentDialogeComponentsPool.Value.Add(_playerEntity);
         gunCmp.firePoint = movementComponent.movementView.firePoint;//временно, потом разделить точку спавна и точку стрельбы
         gunCmp.weaponContainer = movementComponent.movementView.weaponContainer;
@@ -343,7 +343,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     if (playerGunCmp.inScope)
                         moveCmp.moveSpeed /= playerGunCmp.currentScopeMultiplicity;
 
-                    _playerMoveComponentsPool.Value.Get(_playerEntity).maxRunTime = _playerComponentsPool.Value.Get(_playerEntity).view.runTime * (1 + playerStatsCmp.statLevels[2] * 0.02f);
+                    moveCmp.maxRunTime = _playerComponentsPool.Value.Get(_playerEntity).view.runTime * (1 + playerStatsCmp.statLevels[2] * 0.02f);
 
                     break;
             }
@@ -387,8 +387,8 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             if (gloabalTimeCmp.lastRainDropTime <= 0)
             {
                 gloabalTimeCmp.lastRainDropTime = Random.Range(0.3f, 0.8f);
-                if(_inventoryItemComponentsPool.Value.Has(_sceneService.Value.helmetCellView._entity))
-                _fadedParticleOnScreenComponentsPool.Value.Add(_world.Value.NewEntity()).particleImage = _sceneService.Value.GetParticleOnScreen(_sceneService.Value.rainDropOnScreenColor, 1f - _inventoryItemComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).itemInfo.helmetInfo.dropTransparentMultiplayer, true);
+                if (_inventoryItemComponentsPool.Value.Has(_sceneService.Value.helmetCellView._entity))
+                    _fadedParticleOnScreenComponentsPool.Value.Add(_world.Value.NewEntity()).particleImage = _sceneService.Value.GetParticleOnScreen(_sceneService.Value.rainDropOnScreenColor, 1f - _inventoryItemComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).itemInfo.helmetInfo.dropTransparentMultiplayer, true);
                 else
                     _fadedParticleOnScreenComponentsPool.Value.Add(_world.Value.NewEntity()).particleImage = _sceneService.Value.GetParticleOnScreen(_sceneService.Value.rainDropOnScreenColor, 1f, true);
             }
@@ -473,12 +473,12 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                         else if (_sceneService.Value.gloabalLight.intensity < 0)
                             _sceneService.Value.gloabalLight.intensity = 0;
                     }
-                    ChangeAlfaAllSpriteInGroup( buildChecker.timeBeforeHideRoof,buildChecker.roofSpriteRenderer.renderers);
+                    ChangeAlfaAllSpriteInGroup(buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.renderers);
                 }
                 else
                 {
                     float sumIntansity = 0;
-                    ChangeAlfaAllSpriteInGroup(1-buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.renderers);
+                    ChangeAlfaAllSpriteInGroup(1 - buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.renderers);
                     if (gloabalTimeCmp.currentGlobalLightIntensity > 0f)
                         sumIntansity = gloabalTimeCmp.currentGlobalLightIntensity - buildChecker.timeBeforeHideRoof * 0.35f;
                     if (playerCmp.nvgIsUsed)
@@ -510,7 +510,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     }
                     else
                     {
-                        ChangeAlfaAllSpriteInGroup(1-buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.renderers);
+                        ChangeAlfaAllSpriteInGroup(1 - buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.renderers);
                         if (gloabalTimeCmp.currentGlobalLightIntensity > 0f)
                             sumIntansity = gloabalTimeCmp.currentGlobalLightIntensity;
                         else
@@ -535,7 +535,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             }
         }
         ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Get(_playerEntity);
-       
+
         foreach (var loadGame in loadGameEventsFilter.Value)
         {
             Debug.Log(_sceneService.Value.playerEntity + " pl ent");
@@ -543,8 +543,8 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             ref var inventoryCmp = ref _inventoryComponentsPool.Value.Get(_sceneService.Value.inventoryEntity);
             _sceneService.Value.moneyText.text = inventoryCmp.moneyCount + "$";
             var upgradedStatsCmp = _playerUpgradedStatsPool.Value.Get(_playerEntity);
-            playerMoveCmp.maxRunTime = playerCmp.view.runTime * (1 + upgradedStatsCmp.statLevels[2] * 0.02f);
-            playerMoveCmp.currentRunTimeRecoverySpeed = playerCmp.view.runTimeRecoverySpeed;
+            moveCmp.maxRunTime = playerCmp.view.runTime * (1 + upgradedStatsCmp.statLevels[2] * 0.02f);
+            moveCmp.currentRunTimeRecoverySpeed = playerCmp.view.runTimeRecoverySpeed;
             inventoryCmp.currentMaxWeight = _sceneService.Value.maxInInventoryWeight + upgradedStatsCmp.statLevels[0] * _sceneService.Value.maxInInventoryWeight / 50f;
             _gunComponentsPool.Value.Get(_playerEntity).spreadRecoverySpeed = playerCmp.view.gunRecoverySpreadSpeed * 1 + (upgradedStatsCmp.statLevels[0] * 0.02f);
             moveCmp.moveSpeed = moveCmp.movementView.moveSpeed + moveCmp.movementView.moveSpeed / 50 * upgradedStatsCmp.statLevels[0];
@@ -564,7 +564,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
            {
                _saveGameEventsPool.Value.Add(_playerEntity);
            }*/
-        
+
         if (inInventory && _sceneService.Value.dropedItemsUIView.divideItemsUI.gameObject.activeInHierarchy)
         {
             if (Input.GetKeyDown(KeyCode.D) && _sceneService.Value.dropedItemsUIView.dropButton.gameObject.activeInHierarchy)
@@ -589,7 +589,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             }
         }
 
-      //  Debug.Log("check na pleshivost 7");
+        //  Debug.Log("check na pleshivost 7");
         if (healthCmp.isDeath) return;
 
         float horizontalInput = Input.GetAxisRaw("Horizontal");
@@ -616,7 +616,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         }
         if (playerMoveCmp.nowIsMoving && playerMoveCmp.currentHungerPoints != 0)
         {
-            if (playerMoveCmp.isRun)
+            if (moveCmp.isRun)
                 playerMoveCmp.currentHungerPoints -= Time.deltaTime * 2;
             else
                 playerMoveCmp.currentHungerPoints -= Time.deltaTime;
@@ -633,7 +633,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 moveCmp.moveInput = moveDirection;
 
                 float hungerMultiplayer = playerMoveCmp.currentHungerPoints / playerMoveCmp.maxHungerPoints;
-                if (playerMoveCmp.isRun)
+                if (moveCmp.isRun)
                 {
                     ref var playerStats = ref _playerUpgradedStatsPool.Value.Get(_playerEntity);
 
@@ -653,27 +653,27 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                          Debug.Log(moveCmp.moveSpeed);
                      }*/
                     Debug.Log("running");
-                    playerMoveCmp.currentRunTime -= Time.deltaTime;
-                    if (playerMoveCmp.currentRunTime <= 0 || moveDirection == Vector2.zero || !moveCmp.canMove || inInventory || healthCmp.isDeath || moveCmp.isTrapped)
+                    moveCmp.currentRunTime -= Time.deltaTime;
+                    if (moveCmp.currentRunTime <= 0 || moveDirection == Vector2.zero || !moveCmp.canMove || inInventory || healthCmp.isDeath || moveCmp.isTrapped)
                     {
-                        if (playerMoveCmp.currentRunTime <= 0)
-                            playerMoveCmp.currentRunTime --;
+                        if (moveCmp.currentRunTime <= 0)
+                            moveCmp.currentRunTime--;
                         // moveCmp.moveSpeed /= playerMoveCmp.playerView.runSpeedMultiplayer;
-                        playerMoveCmp.isRun = false;
+                        moveCmp.isRun = false;
                         Debug.Log("move aspeed after run " + moveCmp.moveSpeed);
                         _calculateRecoilEventsPool.Value.Add(_world.Value.NewEntity());
                     }
-                    _sceneService.Value.playerStaminaBarFilled.fillAmount = playerMoveCmp.currentRunTime / playerMoveCmp.maxRunTime;
-                    _sceneService.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.maxRunTime;
+                    _sceneService.Value.playerStaminaBarFilled.fillAmount = moveCmp.currentRunTime / moveCmp.maxRunTime;
+                    _sceneService.Value.playerStaminaText.text = moveCmp.currentRunTime.ToString("0.0") + "/" + moveCmp.maxRunTime;
                 }
-                else if ((playerMoveCmp.currentRunTime < playerMoveCmp.maxRunTime && hungerMultiplayer > 0.5f || hungerMultiplayer <= 0.5f && playerMoveCmp.currentRunTime < playerMoveCmp.maxRunTime * (hungerMultiplayer + 0.5f)) && !_playerGunComponentsPool.Value.Get(_sceneService.Value.playerEntity).inScope)
+                else if ((moveCmp.currentRunTime < moveCmp.maxRunTime && hungerMultiplayer > 0.5f || hungerMultiplayer <= 0.5f && moveCmp.currentRunTime < moveCmp.maxRunTime * (hungerMultiplayer + 0.5f)) && !_playerGunComponentsPool.Value.Get(_sceneService.Value.playerEntity).inScope)
                 {
-                    playerMoveCmp.currentRunTime += Time.deltaTime * playerMoveCmp.currentRunTimeRecoverySpeed;
-                    _sceneService.Value.playerStaminaBarFilled.fillAmount = playerMoveCmp.currentRunTime / playerMoveCmp.maxRunTime;
-                    _sceneService.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.maxRunTime;
+                    moveCmp.currentRunTime += Time.deltaTime * moveCmp.currentRunTimeRecoverySpeed;
+                    _sceneService.Value.playerStaminaBarFilled.fillAmount = moveCmp.currentRunTime / moveCmp.maxRunTime;
+                    _sceneService.Value.playerStaminaText.text = moveCmp.currentRunTime.ToString("0.0") + "/" + moveCmp.maxRunTime;
                 }
-                else if (playerMoveCmp.currentRunTime > playerMoveCmp.maxRunTime)
-                    playerMoveCmp.currentRunTime = playerMoveCmp.maxRunTime;
+                else if (moveCmp.currentRunTime > moveCmp.maxRunTime)
+                    moveCmp.currentRunTime = moveCmp.maxRunTime;
             }
             else
                 moveCmp.moveInput = Vector2.zero;
@@ -791,9 +791,9 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
                 }
 
-                else if (Input.GetKeyDown(KeyCode.LeftShift) && moveDirection != Vector2.zero && moveCmp.canMove && !inInventory && !healthCmp.isDeath && !moveCmp.isStunned && playerMoveCmp.currentRunTime > 0)
+                else if (Input.GetKeyDown(KeyCode.LeftShift) && moveDirection != Vector2.zero && moveCmp.canMove && !inInventory && !healthCmp.isDeath && !moveCmp.isStunned && moveCmp.currentRunTime > 0)
                 {
-                    playerMoveCmp.isRun = !playerMoveCmp.isRun;
+                    moveCmp.isRun = !moveCmp.isRun;
 
                     _calculateRecoilEventsPool.Value.Add(_world.Value.NewEntity());
                 }
@@ -829,7 +829,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
     private void ChangeAlfaAllSpriteInGroup(float needAlpfa, SpriteRenderer[] spriteRenderers)
     {
-        foreach(SpriteRenderer spriteRenderer in spriteRenderers)
+        foreach (SpriteRenderer spriteRenderer in spriteRenderers)
         {
             Color color = spriteRenderer.color;
             color.a = needAlpfa;
@@ -857,9 +857,10 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         if (fOVCmp.timeBeforeDetect >= 0.12f)
         {
             fOVCmp.timeBeforeDetect = 0;
+            LayerMask needLayers = LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy") | LayerMask.GetMask("InteractedCharacter") | LayerMask.GetMask("DroopedItem") | LayerMask.GetMask("BrokedObject");
             for (int i = 0; i < rayCount; i++)
             {
-                RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), viewDistance, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy") | LayerMask.GetMask("InteractedCharacter"));
+                RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), viewDistance, needLayers);
 
                 Debug.DrawRay(origin, GetVectorFromAngle(angle) * viewDistance, Color.yellow);
                 if (raycastHit2D.collider != null)
@@ -877,30 +878,43 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     {
                         checkedColliders.Add(raycastHit2D.collider);
                         //  Debug.Log("addCheckCollider" + raycastHit2D.collider.gameObject.layer);
-                        if (raycastHit2D.collider.gameObject.layer == 7)
+                        int objectLayer = raycastHit2D.collider.gameObject.layer;
+                        switch (objectLayer)
                         {
-                            ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<CreatureView>().entity);//может быть как то оптимизировать
-
-                            hidedObjCmp.timeBeforeHide = 0.5f;
-                            foreach (var spriteRenderer in hidedObjCmp.hidedObjects)
-                                spriteRenderer.gameObject.SetActive(true);
-                        }
-                        else if (raycastHit2D.collider.gameObject.layer == 8)
-                        {
-                            //   Debug.Log("addCheckColliderInteractedCharacter");
-                            if (_hidedObjectOutsideFOVComponentsPool.Value.Has(raycastHit2D.collider.gameObject.GetComponent<InteractCharacterView>()._entity))
-                            {
-                                ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<InteractCharacterView>()._entity);
+                            case 7:
+                                ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<CreatureView>().entity);//может быть как то оптимизировать
 
                                 hidedObjCmp.timeBeforeHide = 0.5f;
                                 foreach (var spriteRenderer in hidedObjCmp.hidedObjects)
-                                {
-                                    //  if (hidedObjCmp.isSetActivebject)
                                     spriteRenderer.gameObject.SetActive(true);
-                                    //  else
-                                    //      spriteRenderer.enabled = true;
+                                break;
+
+                            case 8:
+                                if (_hidedObjectOutsideFOVComponentsPool.Value.Has(raycastHit2D.collider.gameObject.GetComponent<InteractCharacterView>()._entity))
+                                {
+                                    ref var hidedObjCmp1 = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<InteractCharacterView>()._entity);
+
+                                    hidedObjCmp1.timeBeforeHide = 0.5f;
+                                    foreach (var spriteRenderer in hidedObjCmp1.hidedObjects)
+                                        spriteRenderer.gameObject.SetActive(true);
                                 }
-                            }
+                                break;
+
+                            case 3:
+                                ref var hidedObjCmp2 = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<DroppedItemView>().itemEntity);
+                                hidedObjCmp2.timeBeforeHide = 0.5f;
+                                Debug.Log(hidedObjCmp2.hidedObjects.Length + "Hide dropped item");
+                                foreach (var spriteRenderer in hidedObjCmp2.hidedObjects)
+                                    spriteRenderer.gameObject.SetActive(true);
+                                break;
+
+                            case 17:
+                                ref var hidedObjCmp3 = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<HealthView>()._entity);
+                                hidedObjCmp3.timeBeforeHide = 0.5f;
+                                Debug.Log(hidedObjCmp3.hidedObjects.Length + "Hide dropped item");
+                                foreach (var spriteRenderer in hidedObjCmp3.hidedObjects)
+                                    spriteRenderer.gameObject.SetActive(true);
+                                break;
                         }
                     }
                 }
@@ -910,9 +924,10 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             angleIncrease = (360 - fov) / rayCount;
             // origin = playerCmp.view.healthView.characterMainCollaider.transform.position;
             origin = new Vector2(playerCmp.view.movementView.transform.position.x, playerCmp.view.movementView.transform.position.y - 0.9f);
+
             for (int i = 0; i < rayCount; i++)//check around
             {
-                RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), 2f, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy") | LayerMask.GetMask("InteractedCharacter"));
+                RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), 2f, needLayers);
                 Debug.DrawRay(origin, GetVectorFromAngle(angle) * 2, Color.yellow);
                 if (raycastHit2D.collider != null)
                 {
@@ -928,25 +943,43 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     {
                         checkedColliders.Add(raycastHit2D.collider);
                         //  Debug.Log("addCheckCollider" + raycastHit2D.collider.gameObject.layer);
-                        if (raycastHit2D.collider.gameObject.layer == 7)
+                        int objectLayer = raycastHit2D.collider.gameObject.layer;
+                        switch (objectLayer)
                         {
-                            ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<CreatureView>().entity);//может быть как то оптимизировать
-
-                            hidedObjCmp.timeBeforeHide = 0.5f;
-                            foreach (var spriteRenderer in hidedObjCmp.hidedObjects)
-                                spriteRenderer.gameObject.SetActive(true);
-                        }
-                        else if (raycastHit2D.collider.gameObject.layer == 8)
-                        {
-                            // Debug.Log("addCheckColliderInteractedCharacter");
-                            if (_hidedObjectOutsideFOVComponentsPool.Value.Has(raycastHit2D.collider.gameObject.GetComponent<InteractCharacterView>()._entity))
-                            {
-                                ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<InteractCharacterView>()._entity);
+                            case 7:
+                                ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<CreatureView>().entity);//может быть как то оптимизировать
 
                                 hidedObjCmp.timeBeforeHide = 0.5f;
                                 foreach (var spriteRenderer in hidedObjCmp.hidedObjects)
                                     spriteRenderer.gameObject.SetActive(true);
-                            }
+                                break;
+
+                            case 8:
+                                if (_hidedObjectOutsideFOVComponentsPool.Value.Has(raycastHit2D.collider.gameObject.GetComponent<InteractCharacterView>()._entity))
+                                {
+                                    ref var hidedObjCmp1 = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<InteractCharacterView>()._entity);
+
+                                    hidedObjCmp1.timeBeforeHide = 0.5f;
+                                    foreach (var spriteRenderer in hidedObjCmp1.hidedObjects)
+                                        spriteRenderer.gameObject.SetActive(true);
+                                }
+                                break;
+
+                            case 3:
+                                ref var hidedObjCmp2 = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<DroppedItemView>().itemEntity);
+                                hidedObjCmp2.timeBeforeHide = 0.5f;
+                                Debug.Log(hidedObjCmp2.hidedObjects.Length + "Hide dropped item");
+                                foreach (var spriteRenderer in hidedObjCmp2.hidedObjects)
+                                    spriteRenderer.gameObject.SetActive(true);
+                                break;
+
+                            case 17:
+                                ref var hidedObjCmp3 = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<HealthView>()._entity);
+                                hidedObjCmp3.timeBeforeHide = 0.5f;
+                                Debug.Log(hidedObjCmp3.hidedObjects.Length + "Hide dropped item");
+                                foreach (var spriteRenderer in hidedObjCmp3.hidedObjects)
+                                    spriteRenderer.gameObject.SetActive(true);
+                                break;
                         }
                     }
                 }

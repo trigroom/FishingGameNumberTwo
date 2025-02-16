@@ -20,6 +20,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<SetupShoppersOnNewLocationEvent> _setupShoppersOnNewLocationEventsPool;
     private EcsPoolInject<PlayerComponent> _playerComponentsPool;
     private EcsPoolInject<SaveGameEvent> _saveGameEventsPool;
+    private EcsPoolInject<HidedObjectOutsideFOVComponent> _hidedObjectOutsideFOVComponentsPool;
     private EcsPoolInject<SolarPanelElectricGeneratorComponent> _solarPanelElectricGeneratorComponentsPool;
 
     private EcsFilterInject<Inc<DroppedItemComponent>> _droppedItemComponentsFilter;
@@ -223,32 +224,37 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 if (interestObjectView.spawnChance < Random.value)
                     interestObjectView.gameObject.SetActive(false);
                 else
-                {
+                {   
+                    int itemEntity = _world.Value.NewEntity();
                     if (interestObjectView.objectType == InterestObjectOnLocationView.InterestObjectType.collecting)
                     {
-                        int droppedItemEntity = _world.Value.NewEntity();
+                   
 
-                        ref var droppedItemComponent = ref _droppedItemComponentsPool.Value.Add(droppedItemEntity);
+                        ref var droppedItemComponent = ref _droppedItemComponentsPool.Value.Add(itemEntity);
 
                         droppedItemComponent.currentItemsCount = interestObjectView.dropElements[0].itemsCountMin;
 
                         droppedItemComponent.itemInfo = interestObjectView.dropElements[0].droopedItem;
 
                         droppedItemComponent.droppedItemView = interestObjectView.dropItemView;
-                        interestObjectView.dropItemView.SetParametersToItem(droppedItemEntity);
+                        interestObjectView.dropItemView.SetParametersToItem(itemEntity);
                     }
 
                     else if (interestObjectView.objectType == InterestObjectOnLocationView.InterestObjectType.brocked)
                     {
-                        int healthEntity = _world.Value.NewEntity();
 
-                        ref var healthCmp = ref _healthComponentsPool.Value.Add(healthEntity);
+                        ref var healthCmp = ref _healthComponentsPool.Value.Add(itemEntity);
 
                         healthCmp.healthView = interestObjectView.gameObject.GetComponent<HealthView>();
-                        healthCmp.healthView.Construct(healthEntity);
+                        healthCmp.healthView.Construct(itemEntity);
                         healthCmp.maxHealthPoint = healthCmp.healthView.maxHealth;
                         healthCmp.healthPoint = healthCmp.maxHealthPoint;
                     }
+                    //var hidedObjectView = ;
+                    Debug.Log("hided obj view name " + interestObjectView.gameObject.name);
+                    _hidedObjectOutsideFOVComponentsPool.Value.Add(itemEntity).hidedObjects = new Transform[] { interestObjectView.GetComponent<HidedOutsidePlayerFovView>().objectsToHide[0] };
+                    Debug.Log("hided obj view count " + interestObjectView.GetComponent<HidedOutsidePlayerFovView>().objectsToHide.Length);
+                    Debug.Log("hided obj count " + _hidedObjectOutsideFOVComponentsPool.Value.Get(itemEntity).hidedObjects.Length);
                 }
             }
 

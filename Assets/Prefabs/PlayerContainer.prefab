@@ -61,11 +61,12 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.784, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: -1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6222771711596066013}
   - {fileID: 7113621464560535326}
+  - {fileID: 2682693458055414716}
   m_Father: {fileID: 1497888423391747601}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4172906461408903167
@@ -653,12 +654,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <moveSpeed>k__BackingField: 1.5
-  <weaponCentre>k__BackingField: 0
+  <runSpeedMultiplayer>k__BackingField: 1.8
   <objectTransform>k__BackingField: {fileID: 1031783153554762319}
   <firePoint>k__BackingField: {fileID: 1795531081399575644}
   <characterSpriteTransform>k__BackingField: {fileID: 8721959812310658316}
   <weaponContainer>k__BackingField: {fileID: 1497888423391747601}
   <nonWeaponContainer>k__BackingField: {fileID: 2548643687666901803}
+  <bulletShellSpawnPoint>k__BackingField: {fileID: 2682693458055414716}
   <weaponSprite>k__BackingField: {fileID: 2813093175458169263}
   <offsetToWeapon>k__BackingField: -90
   <weaponSpriteRenderer>k__BackingField: {fileID: 4172906461408903167}
@@ -691,7 +693,6 @@ MonoBehaviour:
   <flashLightObject>k__BackingField: {fileID: 3156577299865192594}
   <runTime>k__BackingField: 6
   <runTimeRecoverySpeed>k__BackingField: 1
-  <runSpeedMultiplayer>k__BackingField: 1.5
   <playerTransform>k__BackingField: {fileID: 3735621214211762540}
   <firepointTransform>k__BackingField: {fileID: 7113621464560535326}
   <laserPointerTransform>k__BackingField: {fileID: 6222771711596066013}
@@ -1730,6 +1731,37 @@ Transform:
   - {fileID: 4085791770363876982}
   m_Father: {fileID: 7113621464560535326}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5802898884917589220
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2682693458055414716}
+  m_Layer: 0
+  m_Name: BulletShellSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2682693458055414716
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5802898884917589220}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2813093175458169263}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6790199219000998145
 GameObject:
   m_ObjectHideFlags: 0
@@ -1931,7 +1963,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7346561333454154051}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1940,7 +1972,7 @@ Transform:
   - {fileID: 560980337008314749}
   - {fileID: 1795531081399575644}
   m_Father: {fileID: 2813093175458169263}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!114 &710808776145670425
 MonoBehaviour:
   m_ObjectHideFlags: 0

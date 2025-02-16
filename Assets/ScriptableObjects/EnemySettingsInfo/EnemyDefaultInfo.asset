@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EnemyDefaultInfo
   m_EditorClassIdentifier: 
   healthPoint: 90
-  staminaMultiplayer: 1.2
+  staminaCount: 6
   visionLenghtMultiplayer: 1.1
   movementSpeed: 0.8
   dropPercentMultiplayer: 1.1

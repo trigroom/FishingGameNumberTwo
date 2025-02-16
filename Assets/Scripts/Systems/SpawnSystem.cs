@@ -50,40 +50,7 @@ public class SpawnSystem : IEcsRunSystem
         foreach (var spawnCmpEntity in _activeSpawnComponentsFilter.Value)
         {
 
-            /* ref var curSpawnCmp = ref _activeSpawnComponentsPool.Value.Get(spawnCmpEntity);
-
-             curSpawnCmp.curSpawnTime += Time.deltaTime;
-             if (curSpawnCmp.curSpawnTime >= curSpawnCmp.spawnTime)
-             {
-                 Debug.Log("spawn");
-                 curSpawnCmp.curSpawnTime = 0;
-
-                 int creatureEntity = _world.Value.NewEntity();
-                 ref var creatureAiStatesCmp = ref _creatureAIComponentsPool.Value.Add(creatureEntity);
-                 creatureAiStatesCmp.creatureView = _sceneData.Value.GetCreature(curSpawnCmp.currentSpawnCreaturesPool[Random.Range(0, curSpawnCmp.currentSpawnCreaturesPool.Length)], _sceneData.Value.GetOutOfScreenPosition());
-                 CreatureSpawn(creatureEntity, ref creatureAiStatesCmp);
-             }*/
         }
-        /* foreach (var dayEvent in _changeToDayEventsFilter.Value)
-         {
-             foreach (var spawnCmpEntity in _creatureAIComponentsFilter.Value)
-             {
-                 ref var creatureAiStatesCmp = ref _creatureAIComponentsPool.Value.Get(spawnCmpEntity);
-                 creatureAiStatesCmp.safeDistance = creatureAiStatesCmp.creatureView.aiCreatureView.safeDistance / 1.5f;
-                 creatureAiStatesCmp.minSafeDistance = creatureAiStatesCmp.creatureView.aiCreatureView.minSafeDistance / 1.5f;
-                 creatureAiStatesCmp.followDistance = creatureAiStatesCmp.creatureView.aiCreatureView.followDistance / 1.5f;
-             }
-         }
-         foreach (var nightEvent in _changeToNightEventsFilter.Value)
-         {
-             foreach (var spawnCmpEntity in _creatureAIComponentsFilter.Value)
-             {
-                 ref var creatureAiStatesCmp = ref _creatureAIComponentsPool.Value.Get(spawnCmpEntity);
-                 creatureAiStatesCmp.safeDistance = creatureAiStatesCmp.creatureView.aiCreatureView.safeDistance * 1.5f;
-                 creatureAiStatesCmp.minSafeDistance = creatureAiStatesCmp.creatureView.aiCreatureView.minSafeDistance * 1.5f;
-                 creatureAiStatesCmp.followDistance = creatureAiStatesCmp.creatureView.aiCreatureView.followDistance * 1.5f;
-             }
-         }*/
 
         foreach (var entryZoneEvent in _entrySpawnZoneEventsFilter.Value)
         {
@@ -186,17 +153,17 @@ public class SpawnSystem : IEcsRunSystem
 
         if (creatureInventoryCmp.gunItem != null)
         {
-            creatureAiStatesCmp.safeDistance = creatureInventoryCmp.gunItem.attackLenght / 2 * visionZoneMultiplayer;
+            creatureAiStatesCmp.safeDistance = (4+creatureInventoryCmp.gunItem.attackLenght / 8) * visionZoneMultiplayer;
             if (creatureInventoryCmp.meleeWeaponItem != null)
-                creatureAiStatesCmp.minSafeDistance = creatureAiStatesCmp.safeDistance * 0.3f;
+                creatureAiStatesCmp.minSafeDistance = 1.8f;
             else
                 creatureAiStatesCmp.minSafeDistance = creatureAiStatesCmp.safeDistance * 0.5f;
-            creatureAiStatesCmp.followDistance = creatureAiStatesCmp.safeDistance * 1.3f;
+            creatureAiStatesCmp.followDistance = creatureAiStatesCmp.safeDistance * 1.5f;
         }
         else
         {
             creatureAiStatesCmp.safeDistance = 5 * visionZoneMultiplayer;
-            creatureAiStatesCmp.minSafeDistance = 2;
+            creatureAiStatesCmp.minSafeDistance = 1.8f;
             creatureAiStatesCmp.followDistance = 12 * visionZoneMultiplayer;
         }
 
@@ -224,6 +191,9 @@ public class SpawnSystem : IEcsRunSystem
         creatureAiStatesCmp.isPeaceful = creatureAiStatesCmp.creatureView.aiCreatureView.isPeaceful;
 
         moveCmp.moveSpeed = creatureInventoryCmp.enemyClassSettingInfo.movementSpeed;
+        moveCmp.maxRunTime = creatureInventoryCmp.enemyClassSettingInfo.staminaCount;
+        moveCmp.currentRunTime = moveCmp.maxRunTime;
+        moveCmp.currentRunTimeRecoverySpeed = 1;
         //добавить уравнение всяких оффсетов
         moveCmp.canMove = true;
 
@@ -262,11 +232,12 @@ public class SpawnSystem : IEcsRunSystem
             attackCmp.damage = creatureGunInfo.damage;
 
             creatureAiStatesCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureGunInfo.weaponSprite;
-            creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localScale = Vector3.one * creatureGunInfo.spriteScaleMultiplayer;
+            creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localScale = new Vector3(1, -1, 1) * creatureGunInfo.spriteScaleMultiplayer;
             creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureGunInfo.spriteRotation);
 
             attackCmp.weaponRotateSpeed = (30f / (attackCmp.damage * creatureInventoryCmp.gunItem.bulletCount) + 1.5f) * creatureInventoryCmp.enemyClassSettingInfo.weaponRotationSpeedMultiplayer;
 
+           moveCmp.movementView.bulletShellSpawnPoint.localPosition = creatureGunInfo.bulletShellPointPosition;
         }
 
         if (creatureInventoryCmp.meleeWeaponItem != null)
@@ -283,7 +254,7 @@ public class SpawnSystem : IEcsRunSystem
 
                 creatureAiStatesCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureInventoryCmp.meleeWeaponItem.weaponSprite;
 
-                creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localScale = Vector3.one * creatureInventoryCmp.meleeWeaponItem.spriteScaleMultiplayer;
+                creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localScale = new Vector3(1, -1, 1) * creatureInventoryCmp.meleeWeaponItem.spriteScaleMultiplayer;
                 creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureInventoryCmp.meleeWeaponItem.spriteRotation);
 
                 attackCmp.weaponRotateSpeed = (50f / attackCmp.damage+1) * creatureInventoryCmp.enemyClassSettingInfo.weaponRotationSpeedMultiplayer;

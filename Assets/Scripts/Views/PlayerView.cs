@@ -19,7 +19,7 @@ public class PlayerView : MonoBehaviour
     [field: SerializeField] public Light2D flashLightObject { get; private set; }
     [field: SerializeField] public float runTime { get; private set; }
     [field: SerializeField] public float runTimeRecoverySpeed { get; private set; }
-    [field: SerializeField] public float runSpeedMultiplayer { get; private set; }
+    //[field: SerializeField] public float runSpeedMultiplayer { get; private set; }
     [field: SerializeField] public Transform playerTransform { get; private set; }
     [field: SerializeField] public Transform firepointTransform { get; private set; }
     //[field: SerializeField] public Transform playerRotionWithoutWeaponTransform { get; private set; }

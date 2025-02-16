@@ -347,7 +347,7 @@ public class AttackSystem : IEcsRunSystem
                         gunCmp.currentMagazineCapacity--;
 
                         if (creatureAiInventory.gunItem.bulletShellSpawnOnShot && _hidedObjectOutsideFOVComponentsPool.Value.Get(aiCreature).timeBeforeHide > 0)
-                            BulletShellSpawn(creatureAiInventory.gunItem.bulletShellIndex, new Vector2(moveCmp.movementView.weaponSprite.position.x + creatureAiInventory.gunItem.bulletShellPointPosition.x, moveCmp.movementView.weaponSprite.position.y + creatureAiInventory.gunItem.bulletShellPointPosition.y), moveCmp.movementView.weaponSprite.rotation.z, moveCmp.movementView.characterSpriteTransform.localRotation.y == 0);
+                            BulletShellSpawn(creatureAiInventory.gunItem.bulletShellIndex, moveCmp.movementView.bulletShellSpawnPoint.position, moveCmp.movementView.weaponContainer.localEulerAngles.z, moveCmp.movementView.characterSpriteTransform.localRotation.y == 0);
                         else if (!creatureAiInventory.gunItem.bulletShellSpawnOnShot)
                             creatureAi.bulletShellsToReload++;
 
@@ -376,10 +376,10 @@ public class AttackSystem : IEcsRunSystem
                     {
                         if (!creatureAiInventory.gunItem.bulletShellSpawnOnShot && _hidedObjectOutsideFOVComponentsPool.Value.Get(aiCreature).timeBeforeHide > 0)
                         {
-                            Vector2 spawnPosition = new Vector2(moveCmp.movementView.weaponSprite.position.x + creatureAiInventory.gunItem.bulletShellPointPosition.x, moveCmp.movementView.weaponSprite.position.y + creatureAiInventory.gunItem.bulletShellPointPosition.y);
+                            Vector2 spawnPosition = moveCmp.movementView.bulletShellSpawnPoint.position;
                             for (int i = 0; i < creatureAi.bulletShellsToReload; i++)
                             {
-                                BulletShellSpawn(creatureAiInventory.gunItem.bulletShellIndex, spawnPosition, moveCmp.movementView.weaponSprite.rotation.z, moveCmp.movementView.characterSpriteTransform.localRotation.y == 0);
+                                BulletShellSpawn(creatureAiInventory.gunItem.bulletShellIndex, spawnPosition, moveCmp.movementView.weaponContainer.localEulerAngles.z, moveCmp.movementView.characterSpriteTransform.localRotation.y == 0);
                                 if (i % 2 == 0)
                                     spawnPosition = new Vector2(spawnPosition.x, spawnPosition.y + 0.1f);
                             }
@@ -631,6 +631,7 @@ public class AttackSystem : IEcsRunSystem
                 _offInScopeStateEventsPool.Value.Del(offInScopeEvent);
             }
             ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Get(playerEntity);
+            ref var moveCmp = ref _movementComponentsPool.Value.Get(playerEntity);
             attackCmp.currentAttackCouldown += Time.deltaTime;//
             ref var gunCmp = ref _gunComponentsPool.Value.Get(playerEntity);
 
@@ -743,13 +744,13 @@ public class AttackSystem : IEcsRunSystem
                     if (!playerGunCmp.changedInScopeState)
                     {
                         float staminaChanged = Time.deltaTime * ((2f + gunInInvCmp.currentGunWeight) * 0.1f);
-                        playerMoveCmp.currentRunTime -= staminaChanged;
-                        _sceneData.Value.playerStaminaBarFilled.fillAmount = playerMoveCmp.currentRunTime / playerMoveCmp.playerView.runTime;
-                        _sceneData.Value.playerStaminaText.text = playerMoveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.playerView.runTime;
-                        if (playerMoveCmp.currentRunTime <= 0)
+                        moveCmp.currentRunTime -= staminaChanged;
+                        _sceneData.Value.playerStaminaBarFilled.fillAmount = moveCmp.currentRunTime / playerMoveCmp.playerView.runTime;
+                        _sceneData.Value.playerStaminaText.text = moveCmp.currentRunTime.ToString("0.0") + "/" + playerMoveCmp.playerView.runTime;
+                        if (moveCmp.currentRunTime <= 0)
                         {
                             ChangeScopeMultiplicity();
-                            playerMoveCmp.currentRunTime -= 1;
+                            moveCmp.currentRunTime -= 1;
                         }
 
                         ref var upgradeStatsCmp = ref _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity);
@@ -763,23 +764,20 @@ public class AttackSystem : IEcsRunSystem
                 if (((playerGunCmp.isAuto && Input.GetMouseButton(0)) || (!playerGunCmp.isAuto && Input.GetMouseButtonDown(0))) && !gunCmp.isReloading && gunInInvCmp.currentAmmo > 0 && attackCmp.currentAttackCouldown >= attackCmp.attackCouldown && !attackCmp.weaponIsChanged
                     && attackCmp.canAttack && !curHealCmp.isHealing && gunInInvCmp.gunDurability != 0 && (playerGunCmp.gunInfo.isOneHandedGun || (!playerGunCmp.gunInfo.isOneHandedGun && (playerView.shieldView.shieldObject.localPosition == Vector3.zero
                     || playerView.shieldView.shieldObject.localPosition != Vector3.zero && _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[itemInfo.itemInfo.itemId].weaponExpLevel <= 8//change to 8
-                     && playerMoveCmp.currentRunTime >= playerGunCmp.gunInfo.attackCouldown * gunInInvCmp.currentGunWeight * 2f))))
+                     && moveCmp.currentRunTime >= playerGunCmp.gunInfo.attackCouldown * gunInInvCmp.currentGunWeight * 2f))))
                 {
                     if (!playerGunCmp.gunInfo.isOneHandedGun && playerView.shieldView.shieldObject.localPosition != Vector3.zero)
                     {
-                        playerMoveCmp.currentRunTime -= playerGunCmp.gunInfo.attackCouldown * gunInInvCmp.currentGunWeight * 2f;
+                        moveCmp.currentRunTime -= playerGunCmp.gunInfo.attackCouldown * gunInInvCmp.currentGunWeight * 2f;
                     }
 
-                    ref var moveCmp = ref _movementComponentsPool.Value.Get(playerEntity);
                     Vector2 direction = (moveCmp.pointToRotateInput - (Vector2)moveCmp.entityTransform.position).normalized;
                     //  var _menuStatesCmp = _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                     if (Physics2D.Raycast(playerCmp.view.playerTransform.position, direction, 1f, LayerMask.GetMask("Obstacle")) /*|| _menuStatesCmp.inMainMenuState || _menuStatesCmp.inInventoryState*/) continue;
 
                     if (playerGunCmp.gunInfo.bulletShellSpawnOnShot)
-                    {
-                        BulletShellSpawn(playerGunCmp.gunInfo.bulletShellIndex, new Vector2(moveCmp.movementView.weaponSprite.position.x + playerGunCmp.gunInfo.bulletShellPointPosition.x, moveCmp.movementView.weaponSprite.position.y + playerGunCmp.gunInfo.bulletShellPointPosition.y), moveCmp.movementView.weaponSprite.rotation.z, moveCmp.movementView.characterSpriteTransform.localRotation.y == 0);
-                    }
-
+                        BulletShellSpawn(playerGunCmp.gunInfo.bulletShellIndex, moveCmp.movementView.bulletShellSpawnPoint.position, moveCmp.movementView.weaponContainer.localEulerAngles.z, moveCmp.movementView.characterSpriteTransform.localRotation.y == 0);
+                    Debug.Log("spawn bs with rot " + moveCmp.movementView.weaponContainer.localRotation.z);
                     if (gunInInvCmp.gunDurability < playerGunCmp.gunInfo.maxDurabilityPoints * 0.6f)
                     {
                         playerGunCmp.durabilityGunMultiplayer = (float)System.Math.Round(1 - ((float)gunInInvCmp.gunDurability / ((float)playerGunCmp.gunInfo.maxDurabilityPoints * 1.6f) + 0.4f), 2);
@@ -876,18 +874,16 @@ public class AttackSystem : IEcsRunSystem
                     if (_sceneData.Value.dropedItemsUIView.gunMagazineUI.gameObject.activeInHierarchy)
                         playerGunCmp.bulletUIObjects[gunInInvCmp.currentAmmo].gameObject.SetActive(false);
 
-                    // _sceneData.Value.ammoInfoText.text = gunInInvCmp.currentAmmo + "/" + gunCmp.magazineCapacity;
-                    //_sceneData.Value.ammoInfoText.text = "";
-                    if (gunInInvCmp.currentAmmo == 0 && !playerGunCmp.inScope && !gunCmp.isReloading)
+                    if (gunInInvCmp.currentAmmo == 0 && !playerGunCmp.inScope && !gunCmp.isReloading && playerStats.weaponsExp[itemInfo.itemInfo.itemId].weaponExpLevel >= 7)
                     {
                         playerGunCmp.isContinueReload = true;
                         _reloadEventsPool.Value.Add(playerEntity);
                         if (!playerGunCmp.gunInfo.bulletShellSpawnOnShot && gunInInvCmp.bulletShellsToReload != 0)
                         {
-                            Vector2 spawnPosition = new Vector2(playerView.movementView.weaponSprite.position.x + playerGunCmp.gunInfo.bulletShellPointPosition.x, playerView.movementView.weaponSprite.position.y + playerGunCmp.gunInfo.bulletShellPointPosition.y);
+                            Vector2 spawnPosition = moveCmp.movementView.bulletShellSpawnPoint.position;
                             for (int i = 0; i < gunInInvCmp.bulletShellsToReload; i++)
                             {
-                                BulletShellSpawn(playerGunCmp.gunInfo.bulletShellIndex, spawnPosition, playerView.movementView.weaponSprite.rotation.z, playerView.movementView.characterSpriteTransform.localRotation.y == 0);
+                                BulletShellSpawn(playerGunCmp.gunInfo.bulletShellIndex, spawnPosition, playerView.movementView.weaponContainer.localEulerAngles.z, playerView.movementView.characterSpriteTransform.localRotation.y == 0);
                                 if (i % 2 == 0)
                                     spawnPosition = new Vector2(spawnPosition.x, spawnPosition.y + 0.1f);
                             }
@@ -925,7 +921,7 @@ public class AttackSystem : IEcsRunSystem
                         if (upgradeStatsCmp.currentStatsExp[1] >= _sceneData.Value.levelExpCounts[upgradeStatsCmp.statLevels[1]] && !_upgradePlayerStatEventsPool.Value.Has(_sceneData.Value.playerEntity))
                             _upgradePlayerStatEventsPool.Value.Add(_sceneData.Value.playerEntity).statIndex = 1;
 
-                        if (gunCmp.isOneBulletReload && gunInInvCmp.currentAmmo != gunCmp.magazineCapacity && playerGunCmp.isContinueReload)
+                        if (gunCmp.isOneBulletReload && gunInInvCmp.currentAmmo != gunCmp.magazineCapacity && playerGunCmp.isContinueReload && upgradeStatsCmp.weaponsExp[itemInfo.itemInfo.itemId].weaponExpLevel >=7)
                         {
                             _reloadEventsPool.Value.Add(playerEntity);
                             return;
@@ -946,10 +942,10 @@ public class AttackSystem : IEcsRunSystem
                         _reloadEventsPool.Value.Add(playerEntity);
                         if (!playerGunCmp.gunInfo.bulletShellSpawnOnShot && gunInInvCmp.bulletShellsToReload != 0)
                         {
-                            Vector2 spawnPosition = new Vector2(playerView.movementView.weaponSprite.position.x + playerGunCmp.gunInfo.bulletShellPointPosition.x, playerView.movementView.weaponSprite.position.y + playerGunCmp.gunInfo.bulletShellPointPosition.y);
+                            Vector2 spawnPosition = moveCmp.movementView.bulletShellSpawnPoint.position;
                             for (int i = 0; i < gunInInvCmp.bulletShellsToReload; i++)
                             {
-                                BulletShellSpawn(playerGunCmp.gunInfo.bulletShellIndex, spawnPosition, playerView.movementView.weaponSprite.rotation.z, playerView.movementView.characterSpriteTransform.localRotation.y == 0);
+                                BulletShellSpawn(playerGunCmp.gunInfo.bulletShellIndex, spawnPosition, playerView.movementView.weaponContainer.localEulerAngles.z, playerView.movementView.characterSpriteTransform.localRotation.y == 0);
                                 if (i % 2 == 0)
                                     spawnPosition = new Vector2(spawnPosition.x, spawnPosition.y + 0.1f);
                             }
@@ -976,10 +972,11 @@ public class AttackSystem : IEcsRunSystem
                 ref var meleeAttackCmp = ref _meleeWeaponComponentsPool.Value.Get(playerEntity);
                 ref var playerMeleeAttackCmp = ref _playerMeleeWeaponComponentsPool.Value.Get(playerEntity);
 
-                if (((playerMeleeAttackCmp.weaponInfo.isAuto && Input.GetMouseButton(0)) || (!playerMeleeAttackCmp.weaponInfo.isAuto && Input.GetMouseButtonDown(0))) && attackCmp.currentAttackCouldown >= attackCmp.attackCouldown && !attackCmp.weaponIsChanged && attackCmp.canAttack && !curHealCmp.isHealing && !meleeAttackCmp.isHitting && playerMeleeAttackCmp.weaponInfo.staminaUsage <= playerMoveCmp.currentRunTime)
+                if (((playerMeleeAttackCmp.weaponInfo.isAuto && Input.GetMouseButton(0)) || (!playerMeleeAttackCmp.weaponInfo.isAuto && Input.GetMouseButtonDown(0))) && attackCmp.currentAttackCouldown >= attackCmp.attackCouldown && !attackCmp.weaponIsChanged && attackCmp.canAttack
+                    && !curHealCmp.isHealing && !meleeAttackCmp.isHitting && playerMeleeAttackCmp.weaponInfo.staminaUsage <= moveCmp.currentRunTime)
                 {
                     Debug.Log("melee attack lenght" + meleeAttackCmp.curAttackLenght);
-                    ref var moveCmp = ref _movementComponentsPool.Value.Get(playerEntity);
+                    //ref var moveCmp = ref _movementComponentsPool.Value.Get(playerEntity);
                     Vector2 direction = (moveCmp.pointToRotateInput - (Vector2)moveCmp.entityTransform.position).normalized;
                     if (Physics2D.Raycast(playerCmp.view.playerTransform.position, direction, 1f, LayerMask.GetMask("Obstacle"))) continue;
 
@@ -991,7 +988,7 @@ public class AttackSystem : IEcsRunSystem
                     playerCmp.view.movementView.weaponAudioSource.clip = playerMeleeAttackCmp.weaponInfo.hitSound;
                     playerCmp.view.movementView.weaponAudioSource.Play();
                     _playerComponentsPool.Value.Get(playerEntity).view.movementView.weaponCollider.enabled = true;
-                    playerMoveCmp.currentRunTime -= playerMeleeAttackCmp.weaponInfo.staminaUsage - (playerStats.statLevels[2] * playerMeleeAttackCmp.weaponInfo.staminaUsage * 0.02f);//1 lvl - 2% stamia use
+                    moveCmp.currentRunTime -= playerMeleeAttackCmp.weaponInfo.staminaUsage - (playerStats.statLevels[2] * playerMeleeAttackCmp.weaponInfo.staminaUsage * 0.02f);//1 lvl - 2% stamia use
 
                     if (playerMoveCmp.currentHungerPoints > 0)
                     {
@@ -1079,7 +1076,7 @@ public class AttackSystem : IEcsRunSystem
             }
             if (attackCmp.weaponIsChanged)
             {
-                ref var moveCmp = ref _movementComponentsPool.Value.Get(playerEntity);
+                //  ref var moveCmp = ref _movementComponentsPool.Value.Get(playerEntity);
                 attackCmp.currentChangeWeaponTime += Time.deltaTime;
                 if (attackCmp.currentChangeWeaponTime <= attackCmp.changeWeaponTime / 2)
                 {
@@ -1096,13 +1093,13 @@ public class AttackSystem : IEcsRunSystem
                         if (weaponInfo.type == ItemInfo.itemType.gun)
                         {
                             moveCmp.movementView.weaponSpriteRenderer.sprite = weaponInfo.gunInfo.weaponSprite;
-                            moveCmp.movementView.weaponSprite.localScale = Vector3.one * weaponInfo.gunInfo.spriteScaleMultiplayer;
+                            moveCmp.movementView.weaponSprite.localScale = new Vector3(1, -1, 1) * weaponInfo.gunInfo.spriteScaleMultiplayer;
                             moveCmp.movementView.weaponSprite.localEulerAngles = new Vector3(0, 0, weaponInfo.gunInfo.spriteRotation);
                         }
                         else
                         {
                             moveCmp.movementView.weaponSpriteRenderer.sprite = weaponInfo.meleeWeaponInfo.weaponSprite;
-                            moveCmp.movementView.weaponSprite.localScale = Vector3.one * weaponInfo.meleeWeaponInfo.spriteScaleMultiplayer;
+                            moveCmp.movementView.weaponSprite.localScale = new Vector3(1, -1, 1) * weaponInfo.meleeWeaponInfo.spriteScaleMultiplayer;
                             moveCmp.movementView.weaponSprite.localEulerAngles = new Vector3(0, 0, weaponInfo.meleeWeaponInfo.spriteRotation);
                         }
                     }
@@ -1297,7 +1294,7 @@ public class AttackSystem : IEcsRunSystem
             {
                 creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureAiInvCmp.gunItem.weaponSprite;
 
-                creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = Vector3.one * creatureAiInvCmp.gunItem.spriteScaleMultiplayer;
+                creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = new Vector3(1, -1, 1) * creatureAiInvCmp.gunItem.spriteScaleMultiplayer;
                 creatureAiCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureAiInvCmp.gunItem.spriteRotation);
             }
             attackCmp.attackCouldown = creatureAiInvCmp.gunItem.attackCouldown;
@@ -1331,7 +1328,7 @@ public class AttackSystem : IEcsRunSystem
         gunCmp.currentMaxSpread -= playerGunComponent.maxSpread * statRecoil;
         gunCmp.currentMinSpread -= playerGunComponent.minSpread * statRecoil;
 
-        if (_playerMoveComponentsPool.Value.Get(_sceneData.Value.playerEntity).isRun)
+        if (_movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).isRun)
         {
             gunCmp.currentAddedSpread /= 0.6f;
             gunCmp.currentMaxSpread /= 0.6f;
@@ -1543,8 +1540,6 @@ public class AttackSystem : IEcsRunSystem
         var gunInfo = itemInfo.gunInfo;
         int durabilityPoints = gunInInvCmp.gunDurability;
         int weaponLevel = playerStatsCmp.weaponsExp[itemInfo.itemId].weaponExpLevel;
-        //playerView.leftRecoilTracker.localPosition = new Vector2(playerView.movementView.weaponSprite.localPosition.y + gunInfo.firepointPosition.x, playerView.movementView.weaponSprite.localPosition.x + gunInfo.firepointPosition.y);
-        //playerView.rightRecoilTracker.localPosition = new Vector2(playerView.movementView.weaponSprite.localPosition.y + gunInfo.firepointPosition.x, playerView.movementView.weaponSprite.localPosition.x + gunInfo.firepointPosition.y);
 
         if (gunInfo.scopeMultiplicity != 1)
         {
@@ -1652,8 +1647,7 @@ public class AttackSystem : IEcsRunSystem
             CalculateRecoil(ref gunCmp, playerGunCmp, false);
         }
 
-
-
+        _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).movementView.bulletShellSpawnPoint.localPosition = gunInfo.bulletShellPointPosition;
 
         if (weaponLevel >= 4)
         {
@@ -1666,7 +1660,7 @@ public class AttackSystem : IEcsRunSystem
             playerView.rightRecoilTracker.gameObject.SetActive(false);
         }
 
-        if (weaponLevel >= 0)// need 2, 0 for test
+        if (weaponLevel >= 2)// need 2, 0 for test
         {
             var magUI = _sceneData.Value.dropedItemsUIView.gunMagazineUI;
             Debug.Log("setactive mag");
@@ -1753,7 +1747,7 @@ public class AttackSystem : IEcsRunSystem
     {
         ref var bulletShellCmp = ref _bulletShellComponentsPool.Value.Add(_world.Value.NewEntity());
         bulletShellCmp.bulletShellPrefab = _sceneData.Value.GetBulletShell();
-        bulletShellCmp.bulletShellPrefab.transform.localRotation = Quaternion.Euler(0, 0, zRotation + 90);
+        bulletShellCmp.bulletShellPrefab.transform.localRotation = Quaternion.Euler(0, 0, zRotation);
         bulletShellCmp.bulletShellPrefab.transform.position = spawnBulletShellPosition;
         bulletShellCmp.bulletShellPrefab.sprite = _sceneData.Value.bulletShellSprites[needBulletShellIndex];
         bulletShellCmp.isLeft = isLeft;

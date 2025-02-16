@@ -9,12 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d066b48019e341418c014e91807bc1b, type: 3}
-  m_Name: RandomRedberryBuy
+  m_Script: {fileID: 11500000, guid: 7b18e5041c0566641bf5c5e28b3d2ef7, type: 3}
+  m_Name: HandadeShotgunCraftingRecipeInfo
   m_EditorClassIdentifier: 
-  itemInfo: {fileID: 11400000, guid: d23d29680578569469b2cb75149cdc0f, type: 2}
-  count: 1
-  price: 2
-  needSkillLevelToUnlock: 0
-  needSkillToUnlock: 0
-  itemsCountToBuy: 5
+  neededCount: 01000000
+  neededId: 50000000
+  craftedItemId: 68
+  craftedItemsCount: 1
+  needCraftingTableLevel: 0

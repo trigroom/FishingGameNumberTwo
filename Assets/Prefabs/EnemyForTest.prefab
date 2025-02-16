@@ -87,6 +87,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1302243013404277140
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6747509097168087409}
+  m_Layer: 0
+  m_Name: BulletShellSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6747509097168087409
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1302243013404277140}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4035046203315262599}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1302270106565780412
 GameObject:
   m_ObjectHideFlags: 0
@@ -317,7 +348,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -2954142528881428679, guid: 5777c611dfb678740a63ee4a10e73325, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -325,7 +356,7 @@ SpriteRenderer:
   m_Size: {x: 0.13, y: 0.14}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &4360715172947109146
@@ -353,14 +384,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4360715172947109146}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0.1447, y: 0.0127, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7322949419245453381}
   m_Father: {fileID: 4035046203315262599}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!114 &3818258645305130728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -797,6 +828,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6102849925911498356}
+  - {fileID: 6747509097168087409}
   m_Father: {fileID: 8306913821782544876}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3552515359470693180
@@ -1002,6 +1034,7 @@ MonoBehaviour:
   <characterMainCollaider>k__BackingField: {fileID: 1940804099926846862}
   <characterHeadCollaider>k__BackingField: {fileID: 2484764596064306563}
   <headColliderView>k__BackingField: {fileID: 7552811881782205356}
+  <interestObjectView>k__BackingField: {fileID: 0}
 --- !u!114 &7671032249824552012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1055,12 +1088,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <moveSpeed>k__BackingField: 0.7
-  <weaponCentre>k__BackingField: 0
+  <runSpeedMultiplayer>k__BackingField: 1.8
   <objectTransform>k__BackingField: {fileID: 5820210545519620084}
   <firePoint>k__BackingField: {fileID: 7322949419245453381}
   <characterSpriteTransform>k__BackingField: {fileID: 749606310624965755}
   <weaponContainer>k__BackingField: {fileID: 8306913821782544876}
   <nonWeaponContainer>k__BackingField: {fileID: 0}
+  <bulletShellSpawnPoint>k__BackingField: {fileID: 6747509097168087409}
   <weaponSprite>k__BackingField: {fileID: 4035046203315262599}
   <offsetToWeapon>k__BackingField: -90
   <weaponSpriteRenderer>k__BackingField: {fileID: 3552515359470693180}
@@ -1110,6 +1144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81e66a1159e8d804ebe8654ea613e508, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxDroppedItemsCount: 0
   <droopedItems>k__BackingField:
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: 9ac8f08188f655445bf9e163ca4d9655, type: 2}
     <itemsCountMax>k__BackingField: 2

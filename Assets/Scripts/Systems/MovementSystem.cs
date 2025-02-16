@@ -64,10 +64,8 @@ public class MovementSystem : IEcsRunSystem
                         moveCmp.moveSpeed = moveCmp.movementView.moveSpeed + moveCmp.movementView.moveSpeed / 50 * _playerUpgradedStatsPool.Value.Get(_sceneService.Value.playerEntity).statLevels[0];
                         if (inventoryCmp.weight / inventoryCmp.currentMaxWeight > 0.6f)
                             moveCmp.moveSpeed -= (moveCmp.movementView.moveSpeed * ((inventoryCmp.weight / inventoryCmp.currentMaxWeight) - 0.6f) * 2);
-                        if (_playerMoveComponentsPool.Value.Get(movableObject).isRun)
-                        {
-                            _playerMoveComponentsPool.Value.Get(movableObject).isRun = false;
-                        }
+                        if (moveCmp.isRun)
+                            moveCmp.isRun = false;
                     }
                     moveCmp.moveInput = Vector2.zero;
                 }
@@ -90,19 +88,23 @@ public class MovementSystem : IEcsRunSystem
                                 invCmp.currentMaxWeight = _sceneService.Value.maxInInventoryWeight + playerStats.statLevels[0] * _sceneService.Value.maxInInventoryWeight / 50f;
                                 Debug.Log(invCmp.currentMaxWeight + " up max weight");
                             }
-
                         }
-                        //moveCmp.movementView.characterSpriteTransform.position = moveCmp.movementView.transform.position;
-                        // moveCmp.movementView.characterSpriteTransform2.position = moveCmp.movementView.transform.position;
                     }
-                    if (isPlayer && _playerMoveComponentsPool.Value.Get(movableObject).isRun)
-                        moveCmp.movementView.MoveUnit(moveCmp.moveSpeed * moveCmp.moveInput * Time.deltaTime * _playerComponentsPool.Value.Get(movableObject).view.runSpeedMultiplayer * (1 - moveCmp.speedMultiplayer));
+                    if (moveCmp.isRun)
+                    {
+                        moveCmp.movementView.MoveUnit(moveCmp.moveSpeed * moveCmp.moveInput * Time.deltaTime * moveCmp.movementView.runSpeedMultiplayer * (1 - moveCmp.speedMultiplayer));
+                        if (!isPlayer)
+                        {
+                            moveCmp.currentRunTime -= Time.deltaTime;
+                            Debug.Log("Enemy is running");
+                        }
+                    }
                     else
                         moveCmp.movementView.MoveUnit(moveCmp.moveSpeed * moveCmp.moveInput * Time.deltaTime * (1 - moveCmp.speedMultiplayer));
                     moveCmp.timeFromLastStep -= Time.deltaTime;
                     if (moveCmp.timeFromLastStep <= 0)
                     {
-                        if (isPlayer && _playerMoveComponentsPool.Value.Get(_sceneService.Value.playerEntity).isRun && !_buildingCheckerComponentsPool.Value.Get(_sceneService.Value.playerEntity).isHideRoof)
+                        if (isPlayer && moveCmp.isRun && !_buildingCheckerComponentsPool.Value.Get(_sceneService.Value.playerEntity).isHideRoof)
                         {
                             moveCmp.timeFromLastStep = 0.4f;
 
@@ -113,6 +115,8 @@ public class MovementSystem : IEcsRunSystem
 
                             _fadedParticleOnScreenComponentsPool.Value.Add(_world.Value.NewEntity()).particleImage = _sceneService.Value.GetParticleOnScreen(_sceneService.Value.grassParticleOnScreenColor, alpfaMultiplayer, false);
                         }
+                        else if(!isPlayer && moveCmp.isRun)
+                            moveCmp.timeFromLastStep = 0.4f;
                         else
                             moveCmp.timeFromLastStep = 0.8f;
                         if (isPlayer)
@@ -138,6 +142,8 @@ public class MovementSystem : IEcsRunSystem
 
                     }
                 }
+                if (!isPlayer && !moveCmp.isRun && moveCmp.currentRunTime < moveCmp.maxRunTime)
+                  moveCmp.currentRunTime += Time.deltaTime * moveCmp.currentRunTimeRecoverySpeed;
             }
 
             if (_meleeWeaponComponentsPool.Value.Has(movableObject) && _meleeWeaponComponentsPool.Value.Get(movableObject).isHitting) continue; //возможно что то поправить
@@ -146,25 +152,23 @@ public class MovementSystem : IEcsRunSystem
             Vector2 direction = (moveCmp.pointToRotateInput - (Vector2)moveCmp.entityTransform.position).normalized;
             float rotateZ = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-            /*   if (_attackComponentsPool.Value.Get(movableObject).weaponIsChanged)
-               {
-                   ref var attackCmp = ref _attackComponentsPool.Value.Get(movableObject);
-                   if(attackCmp.currentChangeWeaponTime > attackCmp.changeWeaponTime / 2)
-                   rotateZ += Time.deltaTime * (attackCmp.changeWeaponTime / 80);
-                   else
-                       rotateZ -= Time.deltaTime * (attackCmp.changeWeaponTime / 80);
-
-               }*/
-
             Quaternion lookRotation = Quaternion.Euler(0f, 0f, rotateZ + moveCmp.movementView.offsetToWeapon);
             Quaternion needRotation = Quaternion.Slerp(moveCmp.movementView.weaponContainer.rotation, lookRotation, Time.deltaTime * _attackComponentsPool.Value.Get(movableObject).weaponRotateSpeed * (1 - moveCmp.speedMultiplayer)/*moveCmp.movementView.weaponRotateSpeed*/);
 
             moveCmp.movementView.RotateWeaponCentre(needRotation);
 
-            if (moveCmp.movementView.weaponSpriteRenderer.flipY && rotateZ > -85 && rotateZ < 85)
-                moveCmp.movementView.weaponSpriteRenderer.flipY = false;
-            else if (!moveCmp.movementView.weaponSpriteRenderer.flipY && (rotateZ < -95 || rotateZ > 95))
-                moveCmp.movementView.weaponSpriteRenderer.flipY = true;
+            float rotY = moveCmp.movementView.characterSpriteTransform.rotation.y;
+
+            /* if (moveCmp.movementView.weaponSpriteRenderer.flipY && rotateZ > -85 && rotateZ < 85)
+                 moveCmp.movementView.weaponSpriteRenderer.flipY = false;
+             else if (!moveCmp.movementView.weaponSpriteRenderer.flipY && (rotateZ < -95 || rotateZ > 95))
+                 moveCmp.movementView.weaponSpriteRenderer.flipY = true;*/
+
+            if (moveCmp.movementView.weaponSpriteRenderer.transform.localRotation.y == 0 && rotateZ > -85 && rotateZ < 85)
+                moveCmp.movementView.weaponSpriteRenderer.transform.localRotation = Quaternion.Euler(0, -180, moveCmp.movementView.weaponSpriteRenderer.transform.localEulerAngles.z);
+            else if (moveCmp.movementView.weaponSpriteRenderer.transform.localRotation.y != 0 && (rotateZ < -95 || rotateZ > 95))
+                moveCmp.movementView.weaponSpriteRenderer.transform.localRotation = Quaternion.Euler(0, 0, moveCmp.movementView.weaponSpriteRenderer.transform.localEulerAngles.z);
+
             if (_meleeWeaponComponentsPool.Value.Has(movableObject) && !_meleeWeaponComponentsPool.Value.Get(movableObject).isHitting && moveCmp.movementView.nonWeaponContainer != null)
             {
                 if (moveCmp.movementView.nonWeaponContainer.localScale.x > 0 && rotateZ > -85 && rotateZ < 85)
@@ -174,24 +178,11 @@ public class MovementSystem : IEcsRunSystem
 
                 moveCmp.movementView.RotateNonWeaponCentre(needRotation);
             }
-            float rotY = moveCmp.movementView.characterSpriteTransform.rotation.y;
             if (direction.x < 0 && rotY == 0)
                 moveCmp.movementView.characterSpriteTransform.localRotation = Quaternion.Euler(0, -180, 0);
             else if (direction.x > 0 && rotY != 0)
                 moveCmp.movementView.characterSpriteTransform.localRotation = Quaternion.Euler(0, 0, 0);
-
-            // if (!isPlayer)
-            //    Debug.Log(rotY.x + " cur enemy x scale");
-
-            /*if(moveCmp.movementView.characterSpriteTransform.localScale.X)
-            moveCmp.movementView.characterSpriteTransform.localScale = rotY;
-
-            if (moveCmp.movementView.nonWeaponContainer.localRotation.y != 0 && rotateZ > -85 && rotateZ < 85)
-                moveCmp.movementView.nonWeaponContainer.localRotation = Quaternion.Euler(0, 180, 0);
-            else if (moveCmp.movementView.nonWeaponContainer.localScale.y == 0 && (rotateZ < -95 || rotateZ > 95))
-                moveCmp.movementView.nonWeaponContainer.localRotation = Quaternion.Euler(0, 0, 0);*/
         }
-        //передвижение объекта
     }
 
 }

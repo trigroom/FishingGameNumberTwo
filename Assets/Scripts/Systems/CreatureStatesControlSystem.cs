@@ -173,6 +173,7 @@ public class CreatureStatesControlSystem : IEcsRunSystem
         var creatureInv = _creatureInventoryComponentsPool.Value.Get(aiEntity);
         float result = 0;
         bool isHealing = creatureInv.healingItem != null && _healingItemComponentsPool.Value.Get(aiEntity).isHealing;
+        moveCmp.isRun = false;
         if ((aiCmp.isTwoWeapon && _creatureInventoryComponentsPool.Value.Get(aiEntity).isSecondWeaponUsed) && !isHealing || aiCmp.currentState == CreatureAIComponent.CreatureStates.follow || (aiCmp.currentState != CreatureAIComponent.CreatureStates.idle && creatureInv.gunItem == null && !isHealing) || (aiCmp.isTwoWeapon && aiCmp.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget && aiCmp.teammatesCount > 1 && !isHealing))
         {
             for (int i = 0; i < interest.Length; i++)
@@ -186,6 +187,8 @@ public class CreatureStatesControlSystem : IEcsRunSystem
                         interest[i] = valueToPutIn;
                 }
             }
+            if(!moveCmp.isRun && moveCmp.currentRunTime > 1)
+            moveCmp.isRun = true;
         }
         else if ((aiCmp.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget && (!aiCmp.isTwoWeapon || (aiCmp.isTwoWeapon && aiCmp.teammatesCount <= 1)) || (creatureInv.healingItem != null && isHealing)) && danger.Max() < 0.8f)
         {
@@ -363,7 +366,9 @@ public class CreatureStatesControlSystem : IEcsRunSystem
 
         if (playerCollider != null)
         {
-            Vector2 direction = (playerCollider.transform.position - moveCmp.entityTransform.position).normalized;
+            var playerTransform = _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).movementView.transform;
+            var needPlayerPosition = new Vector3(playerTransform.position.x, playerTransform.position.y - 0.2f);
+            Vector2 direction = (needPlayerPosition - moveCmp.entityTransform.position).normalized;
             RaycastHit2D hit = Physics2D.Raycast(moveCmp.entityTransform.position, direction, aiCmp.followDistance, LayerMask.GetMask("Obstacle", "Player", "InteractedCharacter"/*, "Enemy"*/));
 
 
@@ -372,7 +377,7 @@ public class CreatureStatesControlSystem : IEcsRunSystem
             aiCmp.sightOnTarget = hitSightOnTarget.collider != null && hitSightOnTarget.collider.gameObject.layer == 6;
             Debug.Log(aiCmp.sightOnTarget + "aiCmp.sightOnTarget");
             Debug.Log(hit);
-            float distanceToTarget = Vector2.Distance(playerCollider.transform.position, moveCmp.entityTransform.position);
+            float distanceToTarget = Vector2.Distance(needPlayerPosition, moveCmp.entityTransform.position);
             if (hit.collider != null && (LayerMask.GetMask("Player") & (1 << hit.collider.gameObject.layer)) != 0)
             {
                 if (aiCmp.colliders == null)

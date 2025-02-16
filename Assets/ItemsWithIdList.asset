@@ -80,9 +80,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: de3ca3cd39f7e024e94998cd43ec321d, type: 2}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: f18c5d37fa947a74fb10f528e896795c, type: 2}
+  - {fileID: 11400000, guid: 4f3a5f55296bb5c41a82a83bf62619e3, type: 2}
+  - {fileID: 11400000, guid: 051f405c4794a2c46ad7258f6aa71bd2, type: 2}
   - {fileID: 11400000, guid: a64d05e115647644889db3a67cb52506, type: 2}
   - {fileID: 11400000, guid: 0c6c8dff45f63174d95f2cc2b944ccb8, type: 2}
   - {fileID: 11400000, guid: 197556eaa36246342b46d0576d59b7a3, type: 2}
@@ -104,3 +104,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d23d29680578569469b2cb75149cdc0f, type: 2}
   - {fileID: 11400000, guid: 94325c9a2c879b6458395bd6a778c06d, type: 2}
   - {fileID: 11400000, guid: 521709b68f5fd664f81f260d79c43a9d, type: 2}
+  - {fileID: 11400000, guid: 6623f6527aa8c98498f393a4323941bf, type: 2}
+  - {fileID: 11400000, guid: d98f7be2b025dd54495f8b8035cc63f2, type: 2}

@@ -5,7 +5,7 @@ using UnityEngine;
 public struct MovementComponent 
 {
     public bool canMove;
-    public float moveSpeed{ get; set; }
+    public float moveSpeed;
     public bool isStunned;
     public float stunTime;
     public MovementView movementView;
@@ -15,4 +15,9 @@ public struct MovementComponent
     public bool isTrapped;
     public float speedMultiplayer { get; set; }
     public Vector2 pointToRotateInput { get; set; }
+
+    public bool isRun;
+    public float currentRunTime;
+    public float currentRunTimeRecoverySpeed{ get; set; }
+    public float maxRunTime;
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 public class EnemyClassSettingsInfo : ScriptableObject
 {
     public int healthPoint;
-    public float staminaMultiplayer;
+    public float staminaCount;
     public float visionLenghtMultiplayer;
     public float movementSpeed;
     public float dropPercentMultiplayer;
