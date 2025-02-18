@@ -11,6 +11,7 @@ public class TrapView : MonoBehaviour
     public float neutralizeTime;
     public EffectInfo[] effects;
     public Collider2D trapCollider;
+    public int entity;
 
     public GrenadeInfo mineInfo;
    public enum TrapType

@@ -264,6 +264,8 @@ public class SpawnSystem : IEcsRunSystem
 
         }
 
+        var randomHair = _sceneData.Value.johnHairsSprites[Random.Range(0, _sceneData.Value.johnHairsSprites.Length)];
+
         if (creatureInventoryCmp.bodyArmorItem != null)
         {
             moveCmp.movementView.bodyArmorSpriteRenderer.transform.localPosition = creatureInventoryCmp.bodyArmorItem.inGamePositionOnPlayer;
@@ -273,7 +275,11 @@ public class SpawnSystem : IEcsRunSystem
         {
             moveCmp.movementView.helmetSpriteRenderer.transform.localPosition = creatureInventoryCmp.helmetItem.inGamePositionOnPlayer;
             moveCmp.movementView.helmetSpriteRenderer.sprite = creatureInventoryCmp.helmetItem.helmetSprite;
+            moveCmp.movementView.hairSpriteRenderer.sprite = randomHair.sprites[creatureInventoryCmp.helmetItem.hairSpriteIndex];
         }
+        else
+            moveCmp.movementView.hairSpriteRenderer.sprite = randomHair.sprites[1];
+        moveCmp.movementView.hairSpriteRenderer.color = _sceneData.Value.hairsColors[Random.Range(0, _sceneData.Value.hairsColors.Length)];
 
         creatureHealthCmp.healthView = creatureAiStatesCmp.creatureView.healthView;
         creatureHealthCmp.healthView.Construct(creatureEntity);

@@ -108,10 +108,15 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
             {
                 globalTimeCmp.changedToRain = !globalTimeCmp.changedToRain;
                 if (globalTimeCmp.changedToRain)
+                {
                     globalTimeCmp.levelsToRain = Random.Range(10, 20);
+                    globalTimeCmp.currentGlobalLightIntensity -= 0.1f;
+                }
                 else
+                {
                     globalTimeCmp.levelsToRain = Random.Range(5, 10);
-
+                    globalTimeCmp.currentGlobalLightIntensity += 0.1f;
+                }
                 _sceneService.Value.rainEffectContainer.gameObject.SetActive(!globalTimeCmp.changedToRain);
             }
 
@@ -138,22 +143,27 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     globalTimeCmp.currentDay++;
                     globalTimeCmp.isNight = false;
-                }
+                }  
+                if (!globalTimeCmp.changedToRain)
+                globalTimeCmp.currentGlobalLightIntensity -= 0.1f;
             }
             else if (globalTimeCmp.currentDayTime == 3)
             {
                 //day
                 _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(0);
                 globalTimeCmp.currentGlobalLightIntensity = 0.75f;
+                if (!globalTimeCmp.changedToRain)
+                    globalTimeCmp.currentGlobalLightIntensity -= 0.1f;
             }
             else if (globalTimeCmp.currentDayTime == 15)
             {
                 //night
                 _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(1f);
                 globalTimeCmp.currentGlobalLightIntensity = globalTimeCmp.nightLightIntensity;
+                if (!globalTimeCmp.changedToRain)
+                    globalTimeCmp.currentGlobalLightIntensity -= 0.1f;
             }
-            if (!globalTimeCmp.changedToRain)
-                globalTimeCmp.currentGlobalLightIntensity -= 0.1f;
+          
             Debug.Log(globalTimeCmp.currentGlobalLightIntensity + "globalLightint");
             if (globalTimeCmp.currentGlobalLightIntensity < 0.001f)
                 globalTimeCmp.currentGlobalLightIntensity = 0;
@@ -306,9 +316,10 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
             for (int i = 0; i < curLocationCmp.currentLocation.levels[curLocationCmp.levelNum].trapsCount; i++)
             {
                 int needPositionIndex = Random.Range(0, curLocationCmp.currentEnemySpawns.Count);
-
+                int trapEntity = _world.Value.NewEntity();
                 curLocationCmp.trapsPrefabs[i] = _sceneService.Value.InstantiateObject(curLocationCmp.currentLocation.levels[curLocationCmp.levelNum].traps[Random.Range(0, curLocationCmp.currentLocation.levels[curLocationCmp.levelNum].traps.Length)], curLocationCmp.currentEnemySpawns[needPositionIndex]);
-
+                curLocationCmp.trapsPrefabs[i].GetComponent<TrapView>().entity = trapEntity;
+                _hidedObjectOutsideFOVComponentsPool.Value.Add(trapEntity).hidedObjects = new Transform[] { curLocationCmp.trapsPrefabs[i].GetChild(0) };
                 curLocationCmp.currentEnemySpawns.RemoveAt(needPositionIndex);
             }
 
@@ -405,7 +416,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
             else
             {
                 //night
-               
+                globalTimeCmp.isNight = true;
                 _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(1f);
                 globalTimeCmp.currentGlobalLightIntensity = globalTimeCmp.nightLightIntensity;
             }

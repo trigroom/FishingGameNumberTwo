@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SecondMeleeWeaponInfo 1
   m_EditorClassIdentifier: 
   attackLenght: 0.7
-  damage: 30
+  damage: 15
   attackCouldown: 1.5
   weaponChangeSpeed: 3
   isWideHit: 1

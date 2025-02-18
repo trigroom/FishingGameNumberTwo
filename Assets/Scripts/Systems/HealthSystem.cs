@@ -39,6 +39,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<PlayerComponent> _playerComponentsPool;
     private EcsPoolInject<MenuStatesComponent> _menuStatesComponentsPool;
     private EcsPoolInject<DestroyComponentInNextFrameTag> _destroyComponentInNextFrameTagsPool;
+    private EcsPoolInject<HidedObjectOutsideFOVComponent> _hidedObjectOutsideFOVComponentsPool;
 
     private EcsFilterInject<Inc<DestroyComponentInNextFrameTag>> _destroyComponentInNextFrameTagsFilter;
     private EcsFilterInject<Inc<ChangeHealthEvent>> _changeHealthEventsFilter;
@@ -265,6 +266,8 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             _cameraComponentsPool.Value.Get(revivePlayer).blurValue = 1;
             _sceneData.Value.depthOfFieldMainBg.focalLength.value = 1;
 
+            moveCmp.speedMultiplayer = 1;
+            moveCmp.currentRunTime = 0;
             moveCmp.movementView.objectTransform.gameObject.SetActive(true);
             moveCmp.movementView.characterAnimator.SetBool("isDeath", false);
             _currentHealingItemComponentsPool.Value.Get(revivePlayer).isHealing = false;
@@ -319,8 +322,6 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             }
             else
                 moveCmp.movementView.gameObject.transform.position = Vector2.zero;
-
-
 
             foreach (var screenParticle in _bloodParticleOnScreenComponentsFilter.Value)
             {
@@ -643,9 +644,8 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
 
     private void ChangeHealth(int hpEvent, int changedHealthCount, bool isHeadshot)
     {
-        Debug.Log("change health or armor");
         ref var healthCmp = ref _healthComponentsPool.Value.Get(hpEvent);
-
+        Debug.Log(hpEvent + " change health to " + changedHealthCount);
         if (healthCmp.isDeath) return;
 
         if (changedHealthCount < 0)
@@ -749,7 +749,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                     {
                         int droopedCount = Random.Range(curLevelDroppedItems[i].itemsCountMin, curLevelDroppedItems[i].itemsCountMax + 1);
                         percentDrop = Random.Range(0, 101);
-                        var droppedItem = _world.Value.NewEntity();
+                        int droppedItem = _world.Value.NewEntity();
                         curItems++;
                         ref var droppedItemComponent = ref _droppedItemComponentsPool.Value.Add(droppedItem);
 
@@ -759,6 +759,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                         //если будет ган то ещё и ган инв комп добавлять с почти убитым оружием и парочкой патронов
                         droppedItemComponent.itemInfo = curLevelDroppedItems[i].droopedItem;
                         droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(new Vector2(Random.Range(deathPos.x - 1, deathPos.x + 1), Random.Range(deathPos.y - 1, deathPos.y + 1)), curLevelDroppedItems[i].droopedItem, droppedItem);
+                        _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItem).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.transform.GetChild(0) };
                         if (curItems >= 3)
                             break;
                     }
@@ -792,16 +793,16 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                         {
                             int droopedCount = Random.Range(dropItemsView.dropElements[i].itemsCountMin, dropItemsView.dropElements[i].itemsCountMax + 1);
                             percentDrop = Random.Range(0, 101);
-                            var droppedItem = _world.Value.NewEntity();
+                            int droppedItemEntity = _world.Value.NewEntity();
                             curItems++;
-                            ref var droppedItemComponent = ref _droppedItemComponentsPool.Value.Add(droppedItem);
-
+                            ref var droppedItemComponent = ref _droppedItemComponentsPool.Value.Add(droppedItemEntity);
                             droppedItemComponent.currentItemsCount = droopedCount;
 
                             Vector2 deathPos = healthCmp.healthView.gameObject.transform.position;
                             //если будет ган то ещё и ган инв комп добавлять с почти убитым оружием и парочкой патронов
                             droppedItemComponent.itemInfo = dropItemsView.dropElements[i].droopedItem;
-                            droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(new Vector2(Random.Range(deathPos.x - 1, deathPos.x + 1), Random.Range(deathPos.y - 1, deathPos.y + 1)), dropItemsView.dropElements[i].droopedItem, droppedItem);
+                            droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(deathPos, dropItemsView.dropElements[i].droopedItem, droppedItemEntity);
+                            _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItemEntity).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.transform.GetChild(0) };
                             if (curItems >= dropItemsView.maxDroppedItemsCount)
                                 break;
                         }
@@ -816,6 +817,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 ref var moveCmp = ref _movementComponentsPool.Value.Get(hpEvent);
                 moveCmp.movementView.objectTransform.gameObject.SetActive(false);
                 moveCmp.movementView.characterAnimator.SetBool("isDeath", true);
+                moveCmp.movementView.characterAnimator.gameObject.SetActive(true);
             }
         }
 

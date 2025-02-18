@@ -40,7 +40,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<ChangeWeaponFromInventoryEvent> _changeWeaponFromInventoryEventsPool;
     // private EcsPoolInject<WeaponLevelComponent> _weaponLevelComponentsPool;
     private EcsPoolInject<SecondDurabilityComponent> _shieldComponentsPool;
-    private EcsPoolInject<TryCraftItemEvent> _tryCraftItemEventsPool;
+    private EcsPoolInject<TryCraftItemEvent> _tryCraftItemEventsPool { get; set; }
     private EcsPoolInject<TransportMoneyEvent> _transportMoneyEventsPool;
     private EcsPoolInject<CraftingTableComponent> _craftingTableComponentsPool;
     private EcsPoolInject<LoadGameEvent> _loadGameEventsPool;

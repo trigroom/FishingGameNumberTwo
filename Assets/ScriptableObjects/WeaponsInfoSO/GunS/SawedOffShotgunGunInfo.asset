@@ -18,7 +18,7 @@ MonoBehaviour:
   reloadDuration: 1.3
   magazineCapacity: 2
   damage: 7
-  attackCouldown: 0.2
+  attackCouldown: 0.8
   maxSpread: 50
   minSpread: 5
   addedSpread: 10

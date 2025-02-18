@@ -1,0 +1,514 @@
+fileFormatVersion: 2
+guid: 4aea631c465afc4448ff3e973bef6bc7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3557392124641761858
+    second: charactersHairsInGame_0
+  - first:
+      213: -1170080022098314389
+    second: charactersHairsInGame_1
+  - first:
+      213: -2772243698839953846
+    second: charactersHairsInGame_2
+  - first:
+      213: -7593688574446242754
+    second: charactersHairsInGame_3
+  - first:
+      213: 3245397028666142238
+    second: charactersHairsInGame_4
+  - first:
+      213: 7225603379299103117
+    second: charactersHairsInGame_5
+  - first:
+      213: -4678368627080610313
+    second: charactersHairsInGame_6
+  - first:
+      213: 5298065906102033566
+    second: charactersHairsInGame_7
+  - first:
+      213: -2887454236464431121
+    second: charactersHairsInGame_8
+  - first:
+      213: -4058746328943840501
+    second: charactersHairsInGame_9
+  - first:
+      213: -9102192958805359730
+    second: charactersHairsInGame_10
+  - first:
+      213: -6749995419703522095
+    second: charactersHairsInGame_11
+  - first:
+      213: -1177984185744168872
+    second: charactersHairsInGame_12
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: charactersHairsInGame_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 10
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24a5b0c1a456e5130800000000000000
+      internalID: 3557392124641761858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: charactersHairsInGame_1
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 10
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6b7c045b6a03cfe0800000000000000
+      internalID: -1170080022098314389
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: charactersHairsInGame_2
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 10
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4e54db3b030789d0800000000000000
+      internalID: -2772243698839953846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: charactersHairsInGame_3
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 10
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e347031897ccd9690800000000000000
+      internalID: -7593688574446242754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: charactersHairsInGame_4
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 10
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1ee0c81767f90d20800000000000000
+      internalID: 3245397028666142238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: charactersHairsInGame_5
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 10
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d813cf69dff764460800000000000000
+      internalID: 7225603379299103117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: charactersHairsInGame_6
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 10
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7fd378e4588131fb0800000000000000
+      internalID: -4678368627080610313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: charactersHairsInGame_7
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 10
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9cd1d90fd2868940800000000000000
+      internalID: 5298065906102033566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: charactersHairsInGame_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fef375a9ba3bde7d0800000000000000
+      internalID: -2887454236464431121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: charactersHairsInGame_9
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 0
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b03b1edc7bf6ca7c0800000000000000
+      internalID: -4058746328943840501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: charactersHairsInGame_10
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 0
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e83485dbab38ea180800000000000000
+      internalID: -9102192958805359730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: charactersHairsInGame_11
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 0
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1dcce05cde23352a0800000000000000
+      internalID: -6749995419703522095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: charactersHairsInGame_12
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 0
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 858e0b1df95f6afe0800000000000000
+      internalID: -1177984185744168872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: charactersHairsInGame_13
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 0
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5651ecb955facc74fa1f05c9eae7a3d1
+      internalID: 1256990049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: charactersHairsInGame_14
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 9
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24200e5e3e6eb6c4cbeb50047f90697b
+      internalID: 705158642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 4602cd4e8e38c7b438b7a57dd00b835c
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      charactersHairsInGame_0: 3557392124641761858
+      charactersHairsInGame_1: -1170080022098314389
+      charactersHairsInGame_10: -9102192958805359730
+      charactersHairsInGame_11: -6749995419703522095
+      charactersHairsInGame_12: -1177984185744168872
+      charactersHairsInGame_13: 1256990049
+      charactersHairsInGame_14: 705158642
+      charactersHairsInGame_2: -2772243698839953846
+      charactersHairsInGame_3: -7593688574446242754
+      charactersHairsInGame_4: 3245397028666142238
+      charactersHairsInGame_5: 7225603379299103117
+      charactersHairsInGame_6: -4678368627080610313
+      charactersHairsInGame_7: 5298065906102033566
+      charactersHairsInGame_8: -2887454236464431121
+      charactersHairsInGame_9: -4058746328943840501
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

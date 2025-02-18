@@ -158,6 +158,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 else if (curInteactedObjectsCmp.interactionType == InteractionType.droppedItem && _droppedItemComponentsPool.Value.Has(curInteactedObjectsCmp.dropItemView.itemEntity))
                 {
                     _addItemEventsPool.Value.Add(curInteactedObjectsCmp.dropItemView.itemEntity);
+                    Debug.Log(" F is Pressed");
                 }
 
                 else if (curInteactedObjectsCmp.interactionType == InteractionType.interactedCharacter)
@@ -642,17 +643,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     if (playerStats.currentStatsExp[2] >= _sceneService.Value.levelExpCounts[playerStats.statLevels[2]] && !_upgradePlayerStatEventsPool.Value.Has(_sceneService.Value.playerEntity))
                         _upgradePlayerStatEventsPool.Value.Add(_sceneService.Value.playerEntity).statIndex = 2;
 
-                    /*  playerStats.currentStatsExp[2] += Time.fixedDeltaTime * 0.5f;
-                    if (playerStats.currentStatsExp[2] >= _sceneService.Value.levelExpCounts[playerStats.statLevels[2]])//2 потому что стат скорости
-                     {
-                         playerStats.statLevels[2]++;
-                         ref var inventoryCmp = ref _inventoryComponentsPool.Value.Get(_sceneService.Value.inventoryEntity);
-                         moveCmp.moveSpeed = moveCmp.movementView.moveSpeed + moveCmp.movementView.moveSpeed / 50 * _playerUpgradedStatsPool.Value.Get(_playerEntity).statLevels[0];
-                         if (inventoryCmp.weight / inventoryCmp.currentMaxWeight > 0.7f)
-                             moveCmp.moveSpeed -= (moveCmp.movementView.moveSpeed * ((inventoryCmp.weight / inventoryCmp.currentMaxWeight) - 0.7f) * 2);
-                         Debug.Log(moveCmp.moveSpeed);
-                     }*/
-                    Debug.Log("running");
+                    //Debug.Log("running");
                     moveCmp.currentRunTime -= Time.deltaTime;
                     if (moveCmp.currentRunTime <= 0 || moveDirection == Vector2.zero || !moveCmp.canMove || inInventory || healthCmp.isDeath || moveCmp.isTrapped)
                     {
@@ -660,7 +651,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                             moveCmp.currentRunTime--;
                         // moveCmp.moveSpeed /= playerMoveCmp.playerView.runSpeedMultiplayer;
                         moveCmp.isRun = false;
-                        Debug.Log("move aspeed after run " + moveCmp.moveSpeed);
+                     //   Debug.Log("move aspeed after run " + moveCmp.moveSpeed);
                         _calculateRecoilEventsPool.Value.Add(_world.Value.NewEntity());
                     }
                     _sceneService.Value.playerStaminaBarFilled.fillAmount = moveCmp.currentRunTime / moveCmp.maxRunTime;
@@ -823,6 +814,20 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     playerCmp.view.flashLightObject.gameObject.SetActive(playerCmp.useFlashlight);
                 }
             }
+        } 
+        foreach (var objEntity in _hidedObjectOutsideFOVComponentsFilter.Value)
+        {
+            ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(objEntity);
+
+            if (hidedObjCmp.timeBeforeHide < 0)
+            {
+                hidedObjCmp.timeBeforeHide = 0;
+                foreach (var spriteRenderer in hidedObjCmp.hidedObjects)
+                    spriteRenderer.gameObject.SetActive(false);
+                //spriteRenderer.enabled = false;
+            }
+            else if (hidedObjCmp.timeBeforeHide > 0)
+                hidedObjCmp.timeBeforeHide -= Time.deltaTime;
         }
         FieldOfViewCheck();
     }
@@ -857,7 +862,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         if (fOVCmp.timeBeforeDetect >= 0.12f)
         {
             fOVCmp.timeBeforeDetect = 0;
-            LayerMask needLayers = LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy") | LayerMask.GetMask("InteractedCharacter") | LayerMask.GetMask("DroopedItem") | LayerMask.GetMask("BrokedObject");
+            LayerMask needLayers = LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy") | LayerMask.GetMask("InteractedCharacter") | LayerMask.GetMask("DroopedItem") | LayerMask.GetMask("BrokedObject") | LayerMask.GetMask("Trap");
             for (int i = 0; i < rayCount; i++)
             {
                 RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), viewDistance, needLayers);
@@ -883,7 +888,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                         {
                             case 7:
                                 ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<CreatureView>().entity);//может быть как то оптимизировать
-
+                                Debug.Log("fov contact with enemy");
                                 hidedObjCmp.timeBeforeHide = 0.5f;
                                 foreach (var spriteRenderer in hidedObjCmp.hidedObjects)
                                     spriteRenderer.gameObject.SetActive(true);
@@ -913,6 +918,12 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                                 hidedObjCmp3.timeBeforeHide = 0.5f;
                                 Debug.Log(hidedObjCmp3.hidedObjects.Length + "Hide dropped item");
                                 foreach (var spriteRenderer in hidedObjCmp3.hidedObjects)
+                                    spriteRenderer.gameObject.SetActive(true);
+                                break;
+                            case 15:
+                                ref var hidedObjCmp4 = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<TrapView>().entity);
+                                hidedObjCmp4.timeBeforeHide = 0.5f;
+                                foreach (var spriteRenderer in hidedObjCmp4.hidedObjects)
                                     spriteRenderer.gameObject.SetActive(true);
                                 break;
                         }
@@ -978,6 +989,12 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                                 hidedObjCmp3.timeBeforeHide = 0.5f;
                                 Debug.Log(hidedObjCmp3.hidedObjects.Length + "Hide dropped item");
                                 foreach (var spriteRenderer in hidedObjCmp3.hidedObjects)
+                                    spriteRenderer.gameObject.SetActive(true);
+                                break;
+                            case 15:
+                                ref var hidedObjCmp4 = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<TrapView>().entity);
+                                hidedObjCmp4.timeBeforeHide = 0.5f;
+                                foreach (var spriteRenderer in hidedObjCmp4.hidedObjects)
                                     spriteRenderer.gameObject.SetActive(true);
                                 break;
                         }
@@ -1051,20 +1068,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             }
         }
 
-        foreach (var objEntity in _hidedObjectOutsideFOVComponentsFilter.Value)
-        {
-            ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(objEntity);
-
-            if (hidedObjCmp.timeBeforeHide < 0)
-            {
-                hidedObjCmp.timeBeforeHide = 0;
-                foreach (var spriteRenderer in hidedObjCmp.hidedObjects)
-                    spriteRenderer.gameObject.SetActive(false);
-                //spriteRenderer.enabled = false;
-            }
-            else if (hidedObjCmp.timeBeforeHide > 0)
-                hidedObjCmp.timeBeforeHide -= Time.deltaTime;
-        }
+       
     }
 
     private Vector3 GetVectorFromAngle(float angle)

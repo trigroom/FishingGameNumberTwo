@@ -359,7 +359,7 @@ public class CreatureStatesControlSystem : IEcsRunSystem
 
         Collider2D[] obstaclesColliders = Physics2D.OverlapCircleAll(moveCmp.entityTransform.position, /*расстояние нахождения препятствий*/1.2f, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy"));
         aiCmp.teammatesCount = Physics2D.OverlapCircleAll(moveCmp.entityTransform.position, /*расстояние нахождения препятствий*/8f, LayerMask.GetMask("Enemy")).Length;
-        Debug.Log("TeammatesCount" + aiCmp.teammatesCount);
+    //    Debug.Log("TeammatesCount" + aiCmp.teammatesCount);
         aiCmp.obstacles = obstaclesColliders;
 
         Collider2D playerCollider = Physics2D.OverlapCircle(moveCmp.entityTransform.position, aiCmp.followDistance, LayerMask.GetMask("Player")/*каких нибудь животных добавить*/);
@@ -375,14 +375,14 @@ public class CreatureStatesControlSystem : IEcsRunSystem
 
             RaycastHit2D hitSightOnTarget = Physics2D.Raycast(moveCmp.entityTransform.position, aiCmp.creatureView.movementView.weaponContainer.up, aiCmp.followDistance, LayerMask.GetMask("Obstacle", "Player", "InteractedCharacter"/*, "Enemy"*/));//если что перенести в ран
             aiCmp.sightOnTarget = hitSightOnTarget.collider != null && hitSightOnTarget.collider.gameObject.layer == 6;
-            Debug.Log(aiCmp.sightOnTarget + "aiCmp.sightOnTarget");
-            Debug.Log(hit);
+       //     Debug.Log(aiCmp.sightOnTarget + "aiCmp.sightOnTarget");
+     //       Debug.Log(hit);
             float distanceToTarget = Vector2.Distance(needPlayerPosition, moveCmp.entityTransform.position);
             if (hit.collider != null && (LayerMask.GetMask("Player") & (1 << hit.collider.gameObject.layer)) != 0)
             {
                 if (aiCmp.colliders == null)
                 {
-                    Debug.Log("Сообщить о игроке");
+             //       Debug.Log("Сообщить о игроке");
                     Collider2D[] closestEnemies = Physics2D.OverlapCircleAll(moveCmp.entityTransform.position, 6f, LayerMask.GetMask("Enemy"));
                     foreach (var enemy in closestEnemies)
                     {
@@ -422,10 +422,10 @@ public class CreatureStatesControlSystem : IEcsRunSystem
                 }
                 aiCmp.colliders = new List<Transform>() { playerCollider.transform };
                 //Debug.DrawRay(moveCmp.entityTransform.position, direction * creatureAiCmp.followDistance, Color.green);
-                Debug.Log("Player");
+            //    Debug.Log("Player");
                 if (distanceToTarget <= aiCmp.minSafeDistance)
                 {
-                    Debug.Log("runaway");
+                //    Debug.Log("runaway");
                     aiCmp.currentState = CreatureAIComponent.CreatureStates.runAwayFromTarget;
                 }
                 else if (distanceToTarget <= aiCmp.safeDistance && !aiCmp.isPeaceful)
@@ -466,7 +466,7 @@ public class CreatureStatesControlSystem : IEcsRunSystem
                     {
                         aiCmp.currentState = CreatureAIComponent.CreatureStates.idle;
                         aiCmp.timeFromLastTargetSeen = 0;
-                        Debug.Log("not detected targets and set idle state");
+                    //    Debug.Log("not detected targets and set idle state");
 
                     }
                     else if (aiCmp.timeFromLastTargetSeen >= 1.5f)
@@ -477,12 +477,8 @@ public class CreatureStatesControlSystem : IEcsRunSystem
                         aiCmp.timeFromLastTargetSeen += Time.deltaTime;
 
                 }
-
-
-
-
                 Debug.DrawRay(moveCmp.entityTransform.position, direction * aiCmp.followDistance, Color.red);
-                Debug.Log("Player now not detect");
+           //     Debug.Log("Player now not detect");
             }
         }
         else
@@ -494,7 +490,7 @@ public class CreatureStatesControlSystem : IEcsRunSystem
                 {
                     aiCmp.currentState = CreatureAIComponent.CreatureStates.idle;
                     aiCmp.timeFromLastTargetSeen = 0;
-                    Debug.Log("not detected targets and set idle state");
+                //    Debug.Log("not detected targets and set idle state");
 
                 }
                 else if (aiCmp.timeFromLastTargetSeen >= 1.5f)
@@ -509,7 +505,7 @@ public class CreatureStatesControlSystem : IEcsRunSystem
             aiCmp.colliders = null;
         }
         aiCmp.targets = aiCmp.colliders;
-        Debug.Log("state " + aiCmp.currentState + " rached las tarrget" + aiCmp.reachedLastTarget);
+       // Debug.Log("state " + aiCmp.currentState + " rached las tarrget" + aiCmp.reachedLastTarget);
     }
 
 

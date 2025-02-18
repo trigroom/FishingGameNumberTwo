@@ -319,7 +319,7 @@ public class AttackSystem : IEcsRunSystem
 
             if (creatureAiInventory.meleeWeaponItem == null || creatureAiInventory.gunItem != null && !_creatureInventoryComponentsPool.Value.Get(aiCreature).isSecondWeaponUsed)
             {
-                Debug.Log((_creatureInventoryComponentsPool.Value.Get(aiCreature).isSecondWeaponUsed) + "sec used weapon");
+               // Debug.Log((_creatureInventoryComponentsPool.Value.Get(aiCreature).isSecondWeaponUsed) + "sec used weapon");
                 ref var gunCmp = ref _gunComponentsPool.Value.Get(aiCreature);
 
                 if (creatureAi.currentState == CreatureAIComponent.CreatureStates.shootingToTarget || (creatureAi.isAttackWhenRetreat && creatureAi.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget))
@@ -1274,7 +1274,7 @@ public class AttackSystem : IEcsRunSystem
         if (_creatureInventoryComponentsPool.Value.Get(creatureEntity).isSecondWeaponUsed)//милишка
         {
             var meleeWeaponView = creatureAiInvCmp.meleeWeaponItem;
-            if (creatureAiInvCmp.helmetItem == null || creatureAiInvCmp.helmetItem != null && !_currentHealingItemComponentsPool.Value.Get(creatureEntity).isHealing)
+            if (creatureAiInvCmp.helmetItem == null || (creatureAiInvCmp.helmetItem != null && !_currentHealingItemComponentsPool.Value.Get(creatureEntity).isHealing))
             {
                 creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = meleeWeaponView.weaponSprite;
 
@@ -1290,7 +1290,7 @@ public class AttackSystem : IEcsRunSystem
         }
         else
         {
-            if (creatureAiInvCmp.helmetItem == null || creatureAiInvCmp.helmetItem != null && !_currentHealingItemComponentsPool.Value.Get(creatureEntity).isHealing)
+            if (creatureAiInvCmp.helmetItem == null || (creatureAiInvCmp.helmetItem != null && !_currentHealingItemComponentsPool.Value.Get(creatureEntity).isHealing))
             {
                 creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureAiInvCmp.gunItem.weaponSprite;
 

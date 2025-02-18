@@ -60,7 +60,7 @@ public class InventoryCellView : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("mouseEnterOnBut;");
+       // Debug.Log("mouseEnterOnBut;");
         if(inventoryCellButton.interactable)
         inventoryCellAnimator.SetBool("mouseOnUI", true);
     }

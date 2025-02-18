@@ -51,7 +51,7 @@ public class PlayerInputView : MonoBehaviour
 
         Collider2D collidedObject = Physics2D.OverlapCircle(gameObject.transform.position, checkRadius, interactedMask);
 
-        Debug.Log(collidedObject);
+      //  Debug.Log(collidedObject);
         if (collidedObject != null)
         {
             if (!isColliderInteract || lastInteractedObjectPosition != (Vector2)collidedObject.gameObject.transform.position)
@@ -131,6 +131,7 @@ public class PlayerInputView : MonoBehaviour
                 Destroy(trapView.gameObject, 1f);
                 Debug.Log("mine is activated");
             }
+            _world.DelEntity( trapView.entity);
         }
     }
 

@@ -7,7 +7,9 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class SceneService : MonoBehaviour
-{
+{   
+    [field: SerializeField] public SpritesArrayElement[] johnHairsSprites { get; private set; }
+    [field: SerializeField] public Color[] hairsColors { get; private set; }
     [field: SerializeField] public GuidePageInfo[] guidePagesInfo { get; private set; }
     [field: SerializeField] public TMP_Text gameVersionText { get; private set; }
     [field: SerializeField] public ItemsWithIdListInfo idItemslist { get; private set; }
@@ -19,7 +21,7 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public Sprite[] craftingTablesSprites { get; private set; }
     [field: SerializeField] public InteractCharacterView craftingTableInteractView { get; private set; }
     [field: SerializeField] public Transform defaultEnemy { get; private set; }
-    [field: SerializeField] public Sprite[] johnHairsSprites { get; private set; }
+
     [field: SerializeField] public Animator fadeScreenAnimator { get; private set; }
     [field: SerializeField] public Transform locationsContainer { get; private set; }
     [field: SerializeField] public SpriteRenderer bulletShellPrefab { get; private set; }
@@ -364,6 +366,7 @@ public class SceneService : MonoBehaviour
     }
     public DroppedItemView SpawnDroppedItem(Vector2 spawnPoint, ItemInfo itemInfo, int entity)
     {
+        spawnPoint = new Vector2(Random.Range(spawnPoint.x - 0.7f, spawnPoint.x + 0.7f), Random.Range(spawnPoint.y - 0.7f, spawnPoint.y + 0.7f));
         var droppedItemObj = Instantiate(droppedItemPrefab, spawnPoint, Quaternion.identity).GetComponent<DroppedItemView>();
         droppedItemObj.SetParametersToItem(itemInfo.itemSprite, entity);
 

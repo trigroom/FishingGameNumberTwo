@@ -88,7 +88,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         {
             ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             menuStatesCmp.timeScincePressRestartGameButton += Time.deltaTime;
-            _sceneData.Value.dropedItemsUIView.restartGameButtonText.text = "Press the button after " + (5f - menuStatesCmp.timeScincePressRestartGameButton) + " seconds to delete progress";
+            _sceneData.Value.dropedItemsUIView.restartGameButtonText.text = "Press the button after " + (int)(5f - menuStatesCmp.timeScincePressRestartGameButton) + " seconds to delete progress";
             if (menuStatesCmp.timeScincePressRestartGameButton >= 5)
             {
                 menuStatesCmp.restartGameButtonIsPressed = false;
@@ -648,7 +648,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             var helmetItemInfo = _inventoryItemComponentsPool.Value.Get(_sceneData.Value.helmetCellView._entity).itemInfo.helmetInfo;
             playerView.movementView.helmetSpriteRenderer.sprite = helmetItemInfo.helmetSprite;
             playerView.movementView.helmetSpriteRenderer.transform.localPosition = helmetItemInfo.inGamePositionOnPlayer;
-            playerView.movementView.hairSpriteRenderer.sprite = _sceneData.Value.johnHairsSprites[helmetItemInfo.hairSpriteIndex];
+            playerView.movementView.hairSpriteRenderer.sprite = _sceneData.Value.johnHairsSprites[0].sprites[helmetItemInfo.hairSpriteIndex];
             playerCmp.currentAudibility = helmetItemInfo.audibilityMultiplayer;
             if (helmetItemInfo.dropTransparentMultiplayer != 0)
             {
@@ -791,7 +791,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
                 gameData.shoppersInfoForSafeData[i].collectedItems = new int[needShopper.remainedShopItems.Length];
                 for (int j = 0; j < needShopper.remainedShopItems.Length; j++)
-                    gameData.shoppersInfoForSafeData[i].collectedItems[j] = needShopper.characterView.shopItems[j].count;
+                    gameData.shoppersInfoForSafeData[i].collectedItems[j] = needShopper.characterView.shopItems[j].itemsCountToBuy;
             }
         }
         else
@@ -826,11 +826,6 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     if (cellsInventory[i]._entity == _sceneData.Value.meleeWeaponCellView._entity)
                         items.Add(new ItemInfoForSaveData(25, 1, i));
-                    else if (cellsInventory[i]._entity == _sceneData.Value.bodyArmorCellView._entity)
-                    {
-                        items.Add(new ItemInfoForSaveData(90, 1, i));
-                        durabilityItemsForSaveData.Add(new NumAndIdForSafeData(i, _sceneData.Value.idItemslist.items[90].bodyArmorInfo.armorDurability));
-                    }
                     continue;
                 }
                 var invItemCmp = _inventoryItemComponentsPool.Value.Get(cellsInventory[i]._entity);
@@ -868,6 +863,11 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                     _playerComponentsPool.Value.Get(playerEntity).canDeffuseMines = true;
                 else if (invItemCmp.itemInfo.itemId == 62)//айди дэф китов
                     _playerComponentsPool.Value.Get(playerEntity).hasForestGuide = true;
+            }
+            else if (savePriority == SavePriority.startLocationSave && cellsInventory[i]._entity == _sceneData.Value.bodyArmorCellView._entity)
+            {
+                items.Add(new ItemInfoForSaveData(90, 1, i));
+                durabilityItemsForSaveData.Add(new NumAndIdForSafeData(i, _sceneData.Value.idItemslist.items[90].bodyArmorInfo.armorDurability));
             }
         }
         this.gameData.itemsCellinfo = new ItemInfoForSaveData[items.Count];
