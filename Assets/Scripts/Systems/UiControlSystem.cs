@@ -1045,6 +1045,8 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             var inventoryCmp = _inventoryComponentsPool.Value.Get(_sceneData.Value.inventoryEntity);
             _sceneData.Value.statsInventoryText.text = inventoryCmp.weight.ToString("0.0") + "kg/ " + inventoryCmp.currentMaxWeight + "kg \n max cells " + inventoryCmp.currentCellCount;
             _sceneData.Value.depthOfFieldMainBg.focalLength.value = 300f;
+            _sceneData.Value.uiAudioSourse.clip = _sceneData.Value.openInventorySound;
+            _sceneData.Value.uiAudioSourse.Play();
         }
         else
         {
@@ -1054,6 +1056,8 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 _inventoryCellComponentPool.Value.Get(menusStatesCmp.lastMarkedCell).cellView.inventoryCellAnimator.SetBool("buttonIsActive", false);
                 menusStatesCmp.lastMarkedCell = 0;
             }
+            _sceneData.Value.uiAudioSourse.clip = _sceneData.Value.closeInventorySound;
+            _sceneData.Value.uiAudioSourse.Play();
         }
         menusStatesCmp.inInventoryState = !menusStatesCmp.inInventoryState;
         _sceneData.Value.inventoryMenuView.ChangeMenuState(menusStatesCmp.inInventoryState);

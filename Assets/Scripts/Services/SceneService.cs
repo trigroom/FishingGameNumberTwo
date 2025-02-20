@@ -7,7 +7,11 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class SceneService : MonoBehaviour
-{   
+{
+    [field: SerializeField] public AudioSource uiAudioSourse { get; private set; }
+    [field: SerializeField] public AudioClip equipItemSound { get; private set; }
+    [field: SerializeField] public AudioClip closeInventorySound { get; private set; }
+    [field: SerializeField] public AudioClip openInventorySound { get; private set; }
     [field: SerializeField] public SpritesArrayElement[] johnHairsSprites { get; private set; }
     [field: SerializeField] public Color[] hairsColors { get; private set; }
     [field: SerializeField] public GuidePageInfo[] guidePagesInfo { get; private set; }

@@ -12,12 +12,17 @@ public class MeleeWeaponInfo : ScriptableObject
     public bool isWideHit;
     public bool isAuto;
     public float attackSpeed;
+    public float secondAttackSpeed;
+    public float secondAttackLenght;
+    public Vector2 colliderSize;
 
     public float knockbackSpeed;
     public float stunTime;
     public float staminaUsage;
 
     public bool isOneHandedWeapon;
+    public float wideAttackDamageMultiplayer = 1;
+
 
     [Header("Visual settings")]
     public float spriteScaleMultiplayer;

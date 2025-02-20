@@ -431,6 +431,7 @@ public class AttackSystem : IEcsRunSystem
                         meleeCmp.startHitPoint = weaponContainerTransform.localPosition;
                         meleeCmp.isHitting = true;
                         meleeCmp.moveInAttackSide = true;
+                        meleeCmp.isWideAttack = meleeItem.isWideHit;
 
                     }
                 }
@@ -795,12 +796,15 @@ public class AttackSystem : IEcsRunSystem
 
                     if ((playerGunCmp.misfirePercent > 0 && Random.Range(0, 101) > playerGunCmp.misfirePercent) || playerGunCmp.misfirePercent == 0)
                     {
+                        float needVolume = 0.7f;
                         if (_buildingCheckerComponentsPool.Value.Get(_sceneData.Value.playerEntity).isHideRoof)
-                            playerCmp.view.movementView.weaponAudioSource.volume = 1;
-                        else
-                            playerCmp.view.movementView.weaponAudioSource.volume = 0.7f;
-                        playerCmp.view.movementView.weaponAudioSource.clip = playerGunCmp.gunInfo.shotSound;
-                        playerCmp.view.movementView.weaponAudioSource.Play();
+                            needVolume = 1f;
+                        //   playerCmp.view.movementView.weaponAudioSource.volume = 1;
+                        //  else
+                        //    playerCmp.view.movementView.weaponAudioSource.volume = 0.7f;
+                        _sceneData.Value.PlaySoundFXClip(playerGunCmp.gunInfo.shotSound, moveCmp.entityTransform.position, needVolume);
+                    //    playerCmp.view.movementView.weaponAudioSource.clip = playerGunCmp.gunInfo.shotSound;
+                     //   playerCmp.view.movementView.weaponAudioSource.Play();
 
 
                         for (int i = 0; i < gunCmp.bulletInShotCount; i++)
@@ -836,19 +840,19 @@ public class AttackSystem : IEcsRunSystem
                         {
                             float addCamSpread = playerGunCmp.gunInfo.damage * playerGunCmp.gunInfo.bulletCount * gunInInvCmp.currentGunWeight * 0.005f;
                             _sceneData.Value.mainCamera.orthographicSize -= (addCamSpread + addCamSpread * playerGunCmp.sumAddedCameraSpreadMultiplayer) * (1 - ((_sceneData.Value.mainCamera.orthographicSize - 5f) / (cameraCmp.currentMaxCameraSpread - 5f)));
-                            Debug.Log("added camera spread without scope " + (addCamSpread + addCamSpread * playerGunCmp.sumAddedCameraSpreadMultiplayer) * (1 - ((_sceneData.Value.mainCamera.orthographicSize - 5f) / (cameraCmp.currentMaxCameraSpread - 5f))));
+                           // Debug.Log("added camera spread without scope " + (addCamSpread + addCamSpread * playerGunCmp.sumAddedCameraSpreadMultiplayer) * (1 - ((_sceneData.Value.mainCamera.orthographicSize - 5f) / (cameraCmp.currentMaxCameraSpread - 5f))));
                         }
                         else if (playerGunCmp.inScope && _sceneData.Value.mainCamera.orthographicSize > cameraCmp.currentMaxCameraSpread * playerGunCmp.currentScopeMultiplicity)
                         {
                             float addCamSpread = playerGunCmp.gunInfo.damage * playerGunCmp.gunInfo.bulletCount * gunInInvCmp.currentGunWeight * 0.005f;
                             _sceneData.Value.mainCamera.orthographicSize -= (addCamSpread + addCamSpread * playerGunCmp.sumAddedCameraSpreadMultiplayer) * playerGunCmp.currentScopeMultiplicity * (1 - ((_sceneData.Value.mainCamera.orthographicSize / playerGunCmp.currentScopeMultiplicity - 5f)) / (cameraCmp.currentMaxCameraSpread - 5f)) /* Mathf.Pow(0.9f,)*/;
                             //  _sceneData.Value.mainCamera.orthographicSize += (playerGunCmp.gunInfo.addedCameraSpread + playerGunCmp.gunInfo.addedCameraSpread * playerGunCmp.sumAddedCameraSpreadMultiplayer) * playerGunCmp.currentScopeMultiplicity * (1 - ((_sceneData.Value.mainCamera.orthographicSize - 5f) / (playerGunCmp.gunInfo.maxCameraSpread * playerGunCmp.currentScopeMultiplicity)));
-                            Debug.Log("added camera spread in scope " + (addCamSpread + addCamSpread * playerGunCmp.sumAddedCameraSpreadMultiplayer) * playerGunCmp.currentScopeMultiplicity * (1 - ((_sceneData.Value.mainCamera.orthographicSize / playerGunCmp.currentScopeMultiplicity - 5f)) / (cameraCmp.currentMaxCameraSpread - 5f)));
+                          //  Debug.Log("added camera spread in scope " + (addCamSpread + addCamSpread * playerGunCmp.sumAddedCameraSpreadMultiplayer) * playerGunCmp.currentScopeMultiplicity * (1 - ((_sceneData.Value.mainCamera.orthographicSize / playerGunCmp.currentScopeMultiplicity - 5f)) / (cameraCmp.currentMaxCameraSpread - 5f)));
                         }
 
 
                     }
-                    Debug.Log("misshot prc" + playerGunCmp.misfirePercent);
+                   // Debug.Log("misshot prc" + playerGunCmp.misfirePercent);
                     attackCmp.currentAttackCouldown = 0;
 
                     ref var playerStats = ref _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity);
@@ -985,8 +989,11 @@ public class AttackSystem : IEcsRunSystem
                     if (playerStats.currentStatsExp[0] >= _sceneData.Value.levelExpCounts[playerStats.statLevels[0]])
                         playerStats.statLevels[0]++;
 
+                    //
                     playerCmp.view.movementView.weaponAudioSource.clip = playerMeleeAttackCmp.weaponInfo.hitSound;
                     playerCmp.view.movementView.weaponAudioSource.Play();
+                    
+
                     _playerComponentsPool.Value.Get(playerEntity).view.movementView.weaponCollider.enabled = true;
                     moveCmp.currentRunTime -= playerMeleeAttackCmp.weaponInfo.staminaUsage - (playerStats.statLevels[2] * playerMeleeAttackCmp.weaponInfo.staminaUsage * 0.02f);//1 lvl - 2% stamia use
 
@@ -1015,6 +1022,7 @@ public class AttackSystem : IEcsRunSystem
                     //возможно менять поворот оружия чтобы оно цепляло больше врагов
                     meleeAttackCmp.isHitting = true;
                     meleeAttackCmp.moveInAttackSide = true;
+                    meleeAttackCmp.isWideAttack = playerMeleeAttackCmp.weaponInfo.isWideHit;
                 }
 
                 if (meleeAttackCmp.isHitting)
@@ -1150,7 +1158,9 @@ public class AttackSystem : IEcsRunSystem
             if (attackedEntity == _sceneData.Value.shieldCellView._entity)
                 entityOfCreature = _sceneData.Value.playerEntity;
 
+            var meleeWeaponCmp = _meleeWeaponComponentsPool.Value.Get(meleeWeaponContact);
             int needDamage = attackCmp.damage;
+        
             if (isHeadshot)
                 needDamage *= 2;
 
@@ -1165,12 +1175,14 @@ public class AttackSystem : IEcsRunSystem
             {
                 var meleeCmp = _playerMeleeWeaponComponentsPool.Value.Get(meleeWeaponContact);
                 Debug.Log("dmg melee" + attackCmp.damage);
+                if (meleeWeaponCmp.isWideAttack)
+                    needDamage = Mathf.CeilToInt(needDamage * meleeCmp.weaponInfo.wideAttackDamageMultiplayer);
                 if (!isShield)
                     _changeHealthEventsPool.Value.Add(_world.Value.NewEntity()).SetParametrs(needDamage, attackedEntity, isHeadshot);
                 else
                 {
                     ref var shieldCmp = ref _shieldComponentsPool.Value.Get(attackedEntity);
-                    shieldCmp.currentDurability -= Mathf.CeilToInt(attackCmp.damage);//пока неизвестно где у врага будут лежать параметры щита
+                    shieldCmp.currentDurability -= needDamage;//пока неизвестно где у врага будут лежать параметры щита
                     _playerComponentsPool.Value.Get(meleeWeaponContact).view.movementView.weaponCollider.enabled = false;
                 }
                 if (_movementComponentsPool.Value.Has(attackedEntity))
@@ -1184,7 +1196,7 @@ public class AttackSystem : IEcsRunSystem
                     attackedCreatureMoveCmp.moveSpeed = meleeCmp.weaponInfo.knockbackSpeed;
                     attackedCreatureMoveCmp.moveInput = (attackedCreatureMoveCmp.entityTransform.position - _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform.position).normalized;
                 }
-                if (_creatureAIComponentsPool.Value.Has(attackedEntity) && ((meleeCmp.weaponInfo.isWideHit && (float)needDamage / 3 > Random.Range(0, 100)) || (!meleeCmp.weaponInfo.isWideHit && (float)needDamage / 2 > Random.Range(0, 100))))
+                if (_creatureAIComponentsPool.Value.Has(attackedEntity) && ((meleeWeaponCmp.isWideAttack && (float)needDamage / 3 > Random.Range(0, 100)) || (!meleeWeaponCmp.isWideAttack && (float)needDamage / 2 > Random.Range(0, 100))))
                 {
                     float effectTime = needDamage / 3;
                     // effectTime *= 1 - _inventoryItemComponentsPool.Value.Get(_sceneData.Value.bodyArmorCellView._entity).itemInfo.bodyArmorInfo.bleedingResistance;
@@ -1194,7 +1206,7 @@ public class AttackSystem : IEcsRunSystem
                     effCmp.effectEntity = attackedEntity;
 
                     int bleedingLevel = 1;
-                    if (!meleeCmp.weaponInfo.isWideHit && needDamage > 40)
+                    if (!meleeWeaponCmp.isWideAttack && needDamage > 40)
                         bleedingLevel = 2;
 
                     effCmp.effectLevel = bleedingLevel;
@@ -1209,13 +1221,15 @@ public class AttackSystem : IEcsRunSystem
             {
                 ref var creatureAiCmp = ref _creatureAIComponentsPool.Value.Get(meleeWeaponContact);
                 var meleeCmp = _creatureInventoryComponentsPool.Value.Get(meleeWeaponContact).meleeWeaponItem;
+                if (meleeWeaponCmp.isWideAttack)
+                    needDamage = Mathf.CeilToInt(needDamage * meleeCmp.wideAttackDamageMultiplayer);
                 if (!isShield)
                     _changeHealthEventsPool.Value.Add(_world.Value.NewEntity()).SetParametrs(needDamage, attackedEntity, isHeadshot);
                 else
                 {
                     Debug.Log(attackedEntity + "shield entity");
                     ref var shieldCmp = ref _shieldComponentsPool.Value.Get(attackedEntity);
-                    shieldCmp.currentDurability -= Mathf.CeilToInt(attackCmp.damage * _inventoryItemComponentsPool.Value.Get(attackedEntity).itemInfo.sheildInfo.damagePercent);
+                    shieldCmp.currentDurability -= Mathf.CeilToInt(needDamage * _inventoryItemComponentsPool.Value.Get(attackedEntity).itemInfo.sheildInfo.damagePercent);
                     creatureAiCmp.creatureView.movementView.weaponCollider.enabled = false;
                     //после удара об щит коллайдер пропадает
                 }
@@ -1231,7 +1245,7 @@ public class AttackSystem : IEcsRunSystem
                     Debug.Log("dmg melee" + attackCmp.damage + "mi" + attackedCreatureMoveCmp.moveInput);
                 }
 
-                if (_playerComponentsPool.Value.Has(attackedEntity) && ((meleeCmp.isWideHit && (float)needDamage / 3 > Random.Range(0, 100)) || (!meleeCmp.isWideHit && (float)needDamage / 2 > Random.Range(0, 100))))
+                if (_playerComponentsPool.Value.Has(attackedEntity) && ((meleeWeaponCmp.isWideAttack && (float)needDamage / 3 > Random.Range(0, 100)) || (!meleeWeaponCmp.isWideAttack && (float)needDamage / 2 > Random.Range(0, 100))))
                 {
                     float effectTime = needDamage / 3;
                     // effectTime *= 1 - _inventoryItemComponentsPool.Value.Get(_sceneData.Value.bodyArmorCellView._entity).itemInfo.bodyArmorInfo.bleedingResistance;
@@ -1241,7 +1255,7 @@ public class AttackSystem : IEcsRunSystem
                     effCmp.effectEntity = attackedEntity;
 
                     int bleedingLevel = 1;
-                    if (!meleeCmp.isWideHit && needDamage > 40)
+                    if (!meleeWeaponCmp.isWideAttack && needDamage > 40)
                         bleedingLevel = 2;
                     effCmp.effectLevel = bleedingLevel;
                     effCmp.effectType = EffectInfo.EffectType.bleeding;
@@ -1278,7 +1292,7 @@ public class AttackSystem : IEcsRunSystem
             {
                 creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = meleeWeaponView.weaponSprite;
 
-                creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = Vector3.one * meleeWeaponView.spriteScaleMultiplayer;
+                creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = new Vector3(1, -1, 1) * meleeWeaponView.spriteScaleMultiplayer;
                 creatureAiCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, meleeWeaponView.spriteRotation);
 
             }
@@ -1516,6 +1530,8 @@ public class AttackSystem : IEcsRunSystem
             playerView.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, 0);
             playerView.shieldView.shieldSpriteRenderer.sortingOrder = 2;
         }
+
+        playerView.movementView.weaponCollider.size = meleeWeaponInfo.colliderSize;
 
         curAttackCmp.weaponRotateSpeed = 10f / itemInfo.itemWeight;
     }
@@ -1775,10 +1791,6 @@ public class AttackSystem : IEcsRunSystem
         LayerMask needMask = targetLayer | LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Shield") | LayerMask.GetMask("BrokedObject");
         if (targetLayer == LayerMask.GetMask("Enemy"))
             needMask = needMask | LayerMask.GetMask("EnemyHead");
-        //needMask = targetLayer | LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Shield") | LayerMask.GetMask("EnemyHead") | LayerMask.GetMask("BrokedObject");
-        // Debug.Log("player shot");
-        //  else
-        //  needMask = targetLayer | LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Shield") | LayerMask.GetMask("BrokedObject");
         var targets = Physics2D.RaycastAll(gunCmp.firePoint.position, gunCmp.firePoint.up, gunCmp.attackLeght, needMask);
 
 
@@ -1933,29 +1945,20 @@ public class AttackSystem : IEcsRunSystem
 
                     }
 
-                    //health.healthPoint -= damageReminder;//сделать ивент и запихнуть в систему здоровья
                     if (!health.healthView.isDeath)
                         _changeHealthEventsPool.Value.Add(_world.Value.NewEntity()).SetParametrs(damageReminder, hpEntity, isHeadshot);
                     Debug.Log(damageReminder + "dmg");
                     if (health.healthPoint <= 0)
                     {
-                        Debug.Log(health.healthPoint + "hp and death");
-                        //_world.Value.DelEntity(target.collider.gameObject.GetComponent<HealthView>()._entity);
                         damageReminder -= startedHealth;
                         return;
-                        //continue;
                     }
 
                     else
                     {
-                        Debug.Log(health.healthPoint + "hp");
-                        //  if (spawnVisualEffects)
-                        //  {
                         var tracer = CreateTracer();
                         tracer.SetPosition(0, gunCmp.firePoint.position);
                         tracer.SetPosition(1, target.point);
-                        //возможно задать спрайт партикла(от дерева и врага разные ошмётки)
-                        //   }
 
                         var particles = CreateParticles(0);
                         particles.gameObject.transform.position = target.point;
@@ -1964,23 +1967,11 @@ public class AttackSystem : IEcsRunSystem
                 }
                 else
                 {
-                    Debug.Log("tracer collide with obstacle");
                     if (spawnVisualEffects)
                     {
                         var tracer = CreateTracer();
                         tracer.SetPosition(0, gunCmp.firePoint.position);
                         tracer.SetPosition(1, target.point);
-
-                        //создавать металлические партиклы
-                        /*   SpriteRenderer renderer = target.collider.gameObject.GetComponent<SpriteRenderer>();
-                           Texture2D texture2D = renderer.sprite.texture as Texture2D;
-                           Vector2 pCoord = target.point;
-                           pCoord.x *= texture2D.width;
-                           pCoord.y *= texture2D.height;
-
-                           Vector2 tiling = renderer.material.mainTextureScale;
-                           Color color = texture2D.GetPixel(Mathf.FloorToInt(pCoord.x * tiling.x), Mathf.FloorToInt(pCoord.y * tiling.y));
-                           Debug.Log(color);*/
                     }
                     return;
                 }

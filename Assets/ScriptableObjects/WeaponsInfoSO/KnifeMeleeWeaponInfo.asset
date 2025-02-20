@@ -10,20 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1165650e88487624db5f6a5e4760df72, type: 3}
-  m_Name: FirstMeleeWeaponInfo
+  m_Name: KnifeMeleeWeaponInfo
   m_EditorClassIdentifier: 
   attackLenght: 40
   damage: 15
   attackCouldown: 2
-  weaponChangeSpeed: 2
+  weaponChangeSpeed: 0.7
   isWideHit: 0
   isAuto: 1
   attackSpeed: 10
+  secondAttackSpeed: 0
+  secondAttackLenght: 0
+  colliderSize: {x: 0.1, y: 0.25}
   knockbackSpeed: 3
   stunTime: 0.5
   staminaUsage: 1.5
   isOneHandedWeapon: 1
-  spriteScaleMultiplayer: 1
-  spriteRotation: 0
-  weaponSprite: {fileID: 21300000, guid: 74f515cd0d8efca4cb0397e33e3a05f6, type: 3}
+  wideAttackDamageMultiplayer: 1
+  spriteScaleMultiplayer: 2.5
+  spriteRotation: 180
+  weaponSprite: {fileID: 21300000, guid: e2ef4e19d19e2fb49a49c7340aadcabe, type: 3}
   hitSound: {fileID: 8300000, guid: ea5f7b4d5d08c584a898be20e0c5536d, type: 3}

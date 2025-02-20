@@ -1326,6 +1326,8 @@ public class InventorySystem : IEcsRunSystem
                 }
                 _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
             }
+            _sceneData.Value.uiAudioSourse.clip = _sceneData.Value.equipItemSound;
+            _sceneData.Value.uiAudioSourse.Play();
         }
 
         #region -take dropped item-

@@ -592,7 +592,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         curAttackCmp.weaponRotateSpeed = 10f / invItemCmp.itemInfo.itemWeight;
 
         playerView.movementView.weaponSpriteRenderer.sprite = playerMeleeCmp.weaponInfo.weaponSprite;
-        playerView.movementView.weaponSprite.localScale = Vector3.one * playerMeleeCmp.weaponInfo.spriteScaleMultiplayer;
+        playerView.movementView.weaponSprite.localScale = new Vector3(1, -1, 1) * playerMeleeCmp.weaponInfo.spriteScaleMultiplayer;
         playerView.movementView.weaponSprite.localEulerAngles = new Vector3(0, 0, playerMeleeCmp.weaponInfo.spriteRotation);
 
         playerView.shieldView._entity = shieldItemCell;

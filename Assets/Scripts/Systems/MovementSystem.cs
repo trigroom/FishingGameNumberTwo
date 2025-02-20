@@ -159,10 +159,6 @@ public class MovementSystem : IEcsRunSystem
 
             float rotY = moveCmp.movementView.characterSpriteTransform.rotation.y;
 
-            /* if (moveCmp.movementView.weaponSpriteRenderer.flipY && rotateZ > -85 && rotateZ < 85)
-                 moveCmp.movementView.weaponSpriteRenderer.flipY = false;
-             else if (!moveCmp.movementView.weaponSpriteRenderer.flipY && (rotateZ < -95 || rotateZ > 95))
-                 moveCmp.movementView.weaponSpriteRenderer.flipY = true;*/
 
             if (moveCmp.movementView.weaponSpriteRenderer.transform.localRotation.y == 0 && rotateZ > -85 && rotateZ < 85)
                 moveCmp.movementView.weaponSpriteRenderer.transform.localRotation = Quaternion.Euler(0, -180, moveCmp.movementView.weaponSpriteRenderer.transform.localEulerAngles.z);

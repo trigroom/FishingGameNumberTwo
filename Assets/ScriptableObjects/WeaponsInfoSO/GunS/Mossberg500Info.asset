@@ -18,18 +18,18 @@ MonoBehaviour:
   reloadDuration: 1
   magazineCapacity: 10
   damage: 12
-  attackCouldown: 0.5
+  attackCouldown: 0.8
   maxSpread: 15
   minSpread: 5
   addedSpread: 2
-  weaponChangeSpeed: 0.5
+  weaponChangeSpeed: 1
   isAuto: 0
   bulletTypeId: 3
   bulletCount: 5
   isOneBulletReloaded: 1
   maxDurabilityPoints: 650
   bulletShellIndex: 0
-  firepointPosition: {x: 0.22, y: 0.06}
+  firepointPosition: {x: 0.23, y: 0.05}
   bulletShellPointPosition: {x: 0, y: 0}
   bulletShellSpawnOnShot: 1
   durabilityRecoveryCost: 10
@@ -69,7 +69,7 @@ MonoBehaviour:
       m_ColorSpace: -1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-  spriteScaleMultiplayer: 2
+  spriteScaleMultiplayer: 2.5
   spriteRotation: 90
   weaponSprite: {fileID: 21300000, guid: 1bdf5565f7109124fa431ffc4845eb28, type: 3}
   shotFlashDistance: 3
