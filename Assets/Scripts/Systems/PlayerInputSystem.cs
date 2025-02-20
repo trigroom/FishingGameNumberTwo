@@ -1038,10 +1038,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                         bool isHasThisCollider = false;
                         foreach (var col in checkedColliders)
                             if (col == raycastHit2D.collider)
-                            {
                                 isHasThisCollider = true;
-                                // Debug.Log("ignoreCollider");
-                            }
                         if (!isHasThisCollider)
                         {
                             checkedColliders.Add(raycastHit2D.collider);
@@ -1063,12 +1060,8 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     }
                     angle += angleIncrease;
                 }
-
-
             }
         }
-
-       
     }
 
     private Vector3 GetVectorFromAngle(float angle)

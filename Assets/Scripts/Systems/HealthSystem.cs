@@ -258,14 +258,16 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             ref var healthCmp = ref _healthComponentsPool.Value.Get(revivePlayer);
             ref var moveCmp = ref _movementComponentsPool.Value.Get(revivePlayer);
 
-            Debug.Log(_inventoryItemComponentsPool.Value.Get(_sceneData.Value.bodyArmorCellView._entity).itemInfo);
+         //   Debug.Log(_inventoryItemComponentsPool.Value.Get(_sceneData.Value.bodyArmorCellView._entity).itemInfo);
             var bodyArmorItemInfo = _inventoryItemComponentsPool.Value.Get(_sceneData.Value.bodyArmorCellView._entity).itemInfo.bodyArmorInfo;
             moveCmp.movementView.bodyArmorSpriteRenderer.sprite = bodyArmorItemInfo.bodyArmorSprite;
             moveCmp.movementView.bodyArmorSpriteRenderer.transform.localPosition = bodyArmorItemInfo.inGamePositionOnPlayer;
 
             _cameraComponentsPool.Value.Get(revivePlayer).blurValue = 1;
             _sceneData.Value.depthOfFieldMainBg.focalLength.value = 1;
+            _sceneData.Value.dropedItemsUIView.scopeCrossCentreImage.gameObject.SetActive(false);
 
+            // _offInScopeStateEventsPool.Value.Add(revivePlayer);
             moveCmp.speedMultiplayer = 1;
             moveCmp.currentRunTime = 0;
             moveCmp.movementView.objectTransform.gameObject.SetActive(true);
@@ -275,7 +277,6 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             _attackComponentsPool.Value.Get(revivePlayer).weaponIsChanged = false;
             Time.timeScale = 1;
 
-            // moveCmp.entityTransform.parent.position = Vector2.zero;
             foreach (var effectEntity in _effectComponentsFilter.Value)
             {
                 ref var effectCmp = ref _effectComponentsPool.Value.Get(effectEntity);
@@ -332,10 +333,6 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
 
             healthCmp.isDeath = false;
             ChangeHealthBarInfo(healthCmp);
-        }
-        foreach (var enemyDeath in _enemiesDeathEventsFilter.Value)
-        {
-            Debug.Log("враг помер");
         }
         foreach (var curHealingItem in _currentHealingItemComponentsFilter.Value)
         {
@@ -403,17 +400,11 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                         }
                         if (_playerWeaponsInInventoryComponentsPool.Value.Get(curHealingItem).curWeapon != 2)
                         {
-                            // var gunCmp = _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-
-                            // var gunInInvCmp = _gunInventoryCellComponentsPool.Value.Get(_playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity).curEquipedWeaponCellEntity);
-
                             var gunInfo = _inventoryItemComponentsPool.Value.Get(_playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity).curEquipedWeaponCellEntity).itemInfo.gunInfo;
                             ref var movementCmp = ref _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                             movementCmp.movementView.weaponSpriteRenderer.sprite = gunInfo.weaponSprite;
                             movementCmp.movementView.weaponSprite.localScale = new Vector3(1, -1, 1) * gunInfo.spriteScaleMultiplayer;
                             movementCmp.movementView.weaponSprite.localEulerAngles = new Vector3(0, 0, gunInfo.spriteRotation);
-
-                            //_sceneData.Value.ammoInfoText.text = gunInInvCmp.currentAmmo + "/" + gunCmp.magazineCapacity;
                         }
                         else
                         {

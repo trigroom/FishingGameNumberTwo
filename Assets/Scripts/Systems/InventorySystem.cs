@@ -80,12 +80,9 @@ public class InventorySystem : IEcsRunSystem
         if (itemInfo.type == ItemInfo.itemType.gun)
         {
             _gunInventoryCellComponentsPool.Value.Copy(srcEntity, needEntity);
-            // _weaponLevelComponentsPool.Value.Copy(srcEntity, needEntity);
             if (_laserPointerForGunComponentsPool.Value.Has(srcEntity))
                 _laserPointerForGunComponentsPool.Value.Copy(srcEntity, needEntity);
         }
-        //   else if (itemInfo.type == ItemInfo.itemType.meleeWeapon)
-        //  _weaponLevelComponentsPool.Value.Copy(srcEntity, needEntity);
         else if (itemInfo.type == ItemInfo.itemType.flashlight || itemInfo.type == ItemInfo.itemType.helmet || itemInfo.type == ItemInfo.itemType.bodyArmor)
         {
             _durabilityInInventoryComponentsPool.Value.Copy(srcEntity, needEntity);
@@ -100,12 +97,9 @@ public class InventorySystem : IEcsRunSystem
         if (itemInfo.type == ItemInfo.itemType.gun)
         {
             _gunInventoryCellComponentsPool.Value.Del(delEntity);
-            // _weaponLevelComponentsPool.Value.Del(delEntity);
             if (_laserPointerForGunComponentsPool.Value.Has(delEntity))
                 _laserPointerForGunComponentsPool.Value.Del(delEntity);
         }
-        //       else if (itemInfo.type == ItemInfo.itemType.meleeWeapon)
-        // _weaponLevelComponentsPool.Value.Del(delEntity);
         else if (itemInfo.type == ItemInfo.itemType.flashlight || itemInfo.type == ItemInfo.itemType.helmet || itemInfo.type == ItemInfo.itemType.bodyArmor)
         {
             _durabilityInInventoryComponentsPool.Value.Del(delEntity);
@@ -294,27 +288,8 @@ public class InventorySystem : IEcsRunSystem
                         itemCmp.itemInfo = oldItemCmp.itemInfo;
                         ref var oldCellCmp = ref _inventoryCellsComponents.Value.Get(cellEntity);
                         int neededItemCount = (int)_sceneData.Value.dropedItemsUIView.generalSlider.value;
-                        Debug.Log(neededItemCount + "needed items count");
+                        //Debug.Log(neededItemCount + "needed items count");
 
-
-                        /* if (oldItemCmp.itemInfo.type == ItemInfo.itemType.gun)
-                         {
-                             _gunInventoryCellComponentsPool.Value.Copy(divideEventCell, cellEntity);
-                             _weaponLevelComponentsPool.Value.Copy(divideEventCell, cellEntity);
-                             if (_laserPointerForGunComponentsPool.Value.Has(divideEventCell))
-                                 _laserPointerForGunComponentsPool.Value.Copy(divideEventCell, cellEntity);
-                         }
-                         else if (oldItemCmp.itemInfo.type == ItemInfo.itemType.meleeWeapon)
-                             _weaponLevelComponentsPool.Value.Copy(divideEventCell, cellEntity);
-                         else if (oldItemCmp.itemInfo.type == ItemInfo.itemType.flashlight || oldItemCmp.itemInfo.type == ItemInfo.itemType.helmet || oldItemCmp.itemInfo.type == ItemInfo.itemType.bodyArmor)
-                         {
-                             _durabilityInInventoryComponentsPool.Value.Copy(divideEventCell, cellEntity);
-                             if (oldItemCmp.itemInfo.type == ItemInfo.itemType.helmet && oldItemCmp.itemInfo.helmetInfo.addedLightIntancity != 0)
-                                 _shieldComponentsPool.Value.Copy(divideEventCell, cellEntity);
-                         }
-                         else if (oldItemCmp.itemInfo.type == ItemInfo.itemType.sheild)
-                             _shieldComponentsPool.Value.Copy(divideEventCell, cellEntity);
-                         */
                         CopySpecialComponents(divideEventCell, cellEntity, oldItemCmp.itemInfo);
 
                         AddItem(ref cellCmp, ref itemCmp, neededItemCount, cellEntity);
@@ -333,21 +308,7 @@ public class InventorySystem : IEcsRunSystem
                         itemCmp.itemInfo = oldItemCmp.itemInfo;
                         ref var oldCellCmp = ref _inventoryCellsComponents.Value.Get(cellEntity);
                         int neededItemCount = (int)_sceneData.Value.dropedItemsUIView.generalSlider.value;
-                        Debug.Log(neededItemCount + "needed items count");
-
-                        /* if (oldItemCmp.itemInfo.type == ItemInfo.itemType.gun)
-                         {
-                             _gunInventoryCellComponentsPool.Value.Copy(divideEventCell, cellEntity);
-                             _weaponLevelComponentsPool.Value.Copy(divideEventCell, cellEntity);
-                             if (_laserPointerForGunComponentsPool.Value.Has(divideEventCell))
-                                 _laserPointerForGunComponentsPool.Value.Copy(divideEventCell, cellEntity);
-                         }
-                         else if (oldItemCmp.itemInfo.type == ItemInfo.itemType.meleeWeapon)
-                             _weaponLevelComponentsPool.Value.Copy(divideEventCell, cellEntity);
-                         else if (oldItemCmp.itemInfo.type == ItemInfo.itemType.flashlight)
-                             _durabilityInInventoryComponentsPool.Value.Copy(divideEventCell, cellEntity);
-                         else if (oldItemCmp.itemInfo.type == ItemInfo.itemType.sheild)
-                             _shieldComponentsPool.Value.Copy(divideEventCell, cellEntity);*/
+                        //  Debug.Log(neededItemCount + "needed items count");
 
                         CopySpecialComponents(divideEventCell, cellEntity, oldItemCmp.itemInfo);
 
@@ -404,7 +365,7 @@ public class InventorySystem : IEcsRunSystem
         }
         foreach (var grenadeCmpEntity in _grenadeComponentsFilter.Value)
         {
-            Debug.Log("explode grenade");
+            //Debug.Log("explode grenade");
             ref var grenadeCmp = ref _grenadeComponentsPool.Value.Get(grenadeCmpEntity);
 
             if (grenadeCmp.grenadeView.rigidbodyGrenade.linearVelocity.magnitude > 0.01)
@@ -422,7 +383,7 @@ public class InventorySystem : IEcsRunSystem
         }
         foreach (var checkQuest in _checkComplitedQuestEventsFilter.Value)
         {
-            Debug.Log("CheckQuestInInvSys");
+            // Debug.Log("CheckQuestInInvSys");
             ref var questCmp = ref _questComponentsPool.Value.Get(checkQuest);
             var questNPC = _sceneData.Value.interactCharacters[questCmp.questCharacterId].GetComponent<QuestCharacterView>();
             ref var questNPCCmp = ref _questNPCComponentsPool.Value.Get(_sceneData.Value.interactCharacters[questCmp.questCharacterId]._entity);
@@ -441,10 +402,7 @@ public class InventorySystem : IEcsRunSystem
             {
                 var task = questNPC.questNode[questNPCCmp.currentQuest].tasks[i];
                 if (task.questType == QuestNodeElement.QuestType.bringSomething)
-                {
                     FindItem(task.neededCount, task.neededId, true, false);
-                    Debug.Log("Find and destroy quest item");
-                }
             }
 
             for (int i = 0; i < questNPC.questNode[questNPCCmp.currentQuest].rewards.Length; i++)
@@ -456,9 +414,7 @@ public class InventorySystem : IEcsRunSystem
                 {
                     var itemInfo = _sceneData.Value.idItemslist.items[reward.rewardItemId];
                     if (CanAddItems(itemInfo, reward.rewardItemsCount, false))
-                    {
                         AddItemToInventory(itemInfo, reward.rewardItemsCount, false);
-                    }
                     else
                     {
                         var droppedItem = _world.Value.NewEntity();
@@ -470,8 +426,8 @@ public class InventorySystem : IEcsRunSystem
                         droppedItemComponent.itemInfo = itemInfo;
 
                         droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(_movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform.position, itemInfo, droppedItem);
-                        _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItem).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.gameObject.transform.GetChild(0)};
-                       
+                        _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItem).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.gameObject.transform.GetChild(0) };
+
 
                         TryAddSpecialItemComponent(itemInfo, droppedItem);
                     }
@@ -479,13 +435,10 @@ public class InventorySystem : IEcsRunSystem
             }
 
             if (questNPCCmp.currentQuest < questNPC.questNode.Length - 1)
-            {
-                Debug.Log("QuestComplited new quest");
                 questNPCCmp.questIsGiven = false;
-            }
             _questComponentsPool.Value.Del(checkQuest);
             questNPCCmp.currentQuest++;
-            Debug.Log("QuestComplited");
+            //Debug.Log("QuestComplited");
         }
 
         foreach (var playerDeath in _playerDeathEventsFilter.Value)
@@ -518,7 +471,7 @@ public class InventorySystem : IEcsRunSystem
                 droppedItemComponent.itemInfo = invItemCmp.itemInfo;
 
                 droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(randomItemPosition, invItemCmp.itemInfo, droppedItem);
-                _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItem).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView .transform.GetChild(0)};
+                _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItem).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.transform.GetChild(0) };
                 CopySpecialComponents(itemInventoryCell, droppedItem, invItemCmp.itemInfo);
 
                 DeleteItem(ref invItemCmp, ref invCellCmp, invItemCmp.currentItemsCount, itemInventoryCell);
@@ -573,14 +526,14 @@ public class InventorySystem : IEcsRunSystem
                     invItemCmp.itemInfo = _sceneData.Value.idItemslist.items[25];
                     _inventoryCellsComponents.Value.Get(specialItemInventoryCell).cellView.ChangeCellItemSprite(invItemCmp.itemInfo.itemSprite);
                 }
-                else if(specialItemInventoryCell == _sceneData.Value.bodyArmorCellView._entity)
+                else if (specialItemInventoryCell == _sceneData.Value.bodyArmorCellView._entity)
                 {
                     ref var bodyArmorCell = ref _inventoryCellsComponents.Value.Get(_sceneData.Value.bodyArmorCellView._entity);
                     bodyArmorCell.isEmpty = false;
                     ref var bodyArmorItem = ref _inventoryItemComponentsPool.Value.Get(_sceneData.Value.bodyArmorCellView._entity);
                     bodyArmorItem.itemInfo = _sceneData.Value.idItemslist.items[90];
                     bodyArmorItem.currentItemsCount = 1;
-                 //   playerCmp.view.movementView.bodyArmorSpriteRenderer.transform.localPosition = bodyArmorItem.itemInfo.bodyArmorInfo.inGamePositionOnPlayer;
+                    //   playerCmp.view.movementView.bodyArmorSpriteRenderer.transform.localPosition = bodyArmorItem.itemInfo.bodyArmorInfo.inGamePositionOnPlayer;
                 }
                 else
                 {
@@ -654,17 +607,14 @@ public class InventorySystem : IEcsRunSystem
             {
                 var playerHealthComponent = _healthComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                 ref var healingItemPlayer = ref _currentHealingItemComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-                Debug.Log("heal");
                 UseHealItem(ref playerHealthComponent, ref healingItemPlayer, usedItemEntity);
             }
             else if (itemCmp.itemInfo.type == ItemInfo.itemType.addedExpItem)
             {
                 ref var playerStatsCmp = ref _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity);
                 int statId = itemCmp.itemInfo.expAddedInfo.statId;
-                //int startLevel = playerStatsCmp.statLevels[statId];
                 playerStatsCmp.currentStatsExp[statId] += itemCmp.itemInfo.expAddedInfo.addedExpCount;
                 ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(usedItemEntity);
-                // DeleteItem(ref itemCmp, ref invCellCmp, 1, usedItemEntity);
                 if (itemCmp.currentItemsCount == 1)
                     _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
                 else
@@ -679,7 +629,7 @@ public class InventorySystem : IEcsRunSystem
                     _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity).currentMaxWeight = _sceneData.Value.maxInInventoryWeight + playerStatsCmp.statLevels[0] * _sceneData.Value.maxInInventoryWeight / 50f;
 
 
-                Debug.Log(itemCmp.currentItemsCount);
+                //  Debug.Log(itemCmp.currentItemsCount);
                 return;
             }
             else if (itemCmp.itemInfo.type == ItemInfo.itemType.flashlight)
@@ -772,14 +722,13 @@ public class InventorySystem : IEcsRunSystem
 
                     float needEnergy = electricityGeneratorCmp.currentElectricityEnergy - laserGunPartInfo.energyToCharge * (1 - laserPointerCmp.remainingLaserPointerTime / laserGunPartInfo.laserLightTime);
 
-                    Debug.Log(needEnergy + " needenergy");
-                    if (needEnergy > 0)//
+                    // Debug.Log(needEnergy + " needenergy");
+                    if (needEnergy > 0)
                     {
                         laserPointerCmp.remainingLaserPointerTime = laserGunPartInfo.laserLightTime;
                         electricityGeneratorCmp.currentElectricityEnergy = needEnergy;
                         _sceneData.Value.dropedItemsUIView.solarBatteryenergyText.text = (int)electricityGeneratorCmp.currentElectricityEnergy + "mAh/ \n" + _sceneData.Value.solarEnergyGeneratorMaxCapacity + "mAh";
                     }
-                    //
                 }
                 else if (menuStatesCmp.inGunWorkshopState)
                 {
@@ -826,7 +775,7 @@ public class InventorySystem : IEcsRunSystem
         }
         foreach (var movedToFastCellWeapon in _moveWeaponToInventoryEventsFilter.Value)
         {
-            Debug.Log(movedToFastCellWeapon + " movedToFastCellWeapon");
+            // Debug.Log(movedToFastCellWeapon + " movedToFastCellWeapon");
             ref var oldInvCellCmp = ref _inventoryCellsComponents.Value.Get(movedToFastCellWeapon);
             ref var oldInvItemCmp = ref _inventoryItemComponentsPool.Value.Get(movedToFastCellWeapon);
             oldInvCellCmp.cellView.inventoryCellAnimator.SetBool("buttonIsActive", false);
@@ -852,7 +801,7 @@ public class InventorySystem : IEcsRunSystem
                 else if (gunInvCmp.isEquipedWeapon && _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity).currentCellCount > _inventoryItemsFilter.Value.GetEntitiesCount() && playerWeaponsInInvCmp.curEquipedWeaponsCount != 1)
                 {
                     playerWeaponsInInvCmp.curEquipedWeaponsCount--;
-                    Debug.Log(playerWeaponsInInvCmp.curEquipedWeaponsCount + "cur weapons");
+                    // Debug.Log(playerWeaponsInInvCmp.curEquipedWeaponsCount + "cur weapons");
                     foreach (var cell in _inventoryCellsFilter.Value)
                     {
                         if (_inventoryCellsComponents.Value.Get(cell).isEmpty)
@@ -882,7 +831,7 @@ public class InventorySystem : IEcsRunSystem
                             // curInvCellCmp.inventoryItemComponent = itemCmp;
                             curInvCellCmp.cellView.ChangeCellItemSprite(itemCmp.itemInfo.itemSprite);
                             curInvCellCmp.cellView.ChangeCellItemCount(itemCmp.currentItemsCount);
-                            Debug.Log("del weapon from fast cells");
+                            // Debug.Log("del weapon from fast cells");
                             _gunInventoryCellComponentsPool.Value.Del(movedToFastCellWeapon);//
                             break;
                         }
@@ -897,10 +846,10 @@ public class InventorySystem : IEcsRunSystem
                 else if (!gunInvCmp.isEquipedWeapon && playerWeaponsInInvCmp.curEquipedWeaponsCount < 3)
                 {
                     playerWeaponsInInvCmp.curEquipedWeaponsCount++;
-                    Debug.Log(playerWeaponsInInvCmp.curEquipedWeaponsCount + "cur weapons");
+                    // Debug.Log(playerWeaponsInInvCmp.curEquipedWeaponsCount + "cur weapons");
                     if (_inventoryCellsComponents.Value.Get(_sceneData.Value.firstGunCellView._entity).isEmpty)
                     {
-                        Debug.Log("add 1st weapon to fast cell");
+                        //Debug.Log("add 1st weapon to fast cell");
                         int firstGunCellEntity = _sceneData.Value.firstGunCellView._entity;
 
                         _inventoryItemComponentsPool.Value.Copy(movedToFastCellWeapon, firstGunCellEntity);
@@ -909,11 +858,8 @@ public class InventorySystem : IEcsRunSystem
                         if (_laserPointerForGunComponentsPool.Value.Has(movedToFastCellWeapon))
                             _laserPointerForGunComponentsPool.Value.Copy(movedToFastCellWeapon, firstGunCellEntity);
 
-                        //   oldInvCellCmp.isEmpty = true;
-                        // oldInvCellCmp.cellView.inventoryCellButton.enabled = false;
                         ref var gunCellCmp = ref _inventoryCellsComponents.Value.Get(firstGunCellEntity);
                         gunCellCmp.isEmpty = false;
-                        //    gunCellCmp.cellView.inventoryCellButton.enabled = true;
 
                         ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(firstGunCellEntity);
 
@@ -928,21 +874,16 @@ public class InventorySystem : IEcsRunSystem
                     }
                     else if (_inventoryCellsComponents.Value.Get(_sceneData.Value.secondGunCellView._entity).isEmpty)
                     {
-                        Debug.Log("add 2nd weapon to fast cell");
+                        //  Debug.Log("add 2nd weapon to fast cell");
                         int secondGunCellEntity = _sceneData.Value.secondGunCellView._entity;
 
                         _inventoryItemComponentsPool.Value.Copy(movedToFastCellWeapon, secondGunCellEntity);
                         _gunInventoryCellComponentsPool.Value.Copy(movedToFastCellWeapon, secondGunCellEntity);
-                        //_weaponLevelComponentsPool.Value.Copy(movedToFastCellWeapon, secondGunCellEntity);
                         if (_laserPointerForGunComponentsPool.Value.Has(movedToFastCellWeapon))
                             _laserPointerForGunComponentsPool.Value.Copy(movedToFastCellWeapon, secondGunCellEntity);
 
-                        // oldInvCellCmp.isEmpty = true;
-                        //oldInvCellCmp.cellView.inventoryCellButton.enabled = false;
-
                         ref var gunCellCmp = ref _inventoryCellsComponents.Value.Get(secondGunCellEntity);
                         gunCellCmp.isEmpty = false;
-                        //gunCellCmp.cellView.inventoryCellButton.enabled = true;
 
                         ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(secondGunCellEntity);
 
@@ -955,20 +896,15 @@ public class InventorySystem : IEcsRunSystem
                         curCellView.ChangeCellItemCount(curInvCell.currentItemsCount);
                         _changeWeaponFromInventoryEventsPool.Value.Add(secondGunCellEntity).SetValues(false, 1);
                     }
-                    // _weaponLevelComponentsPool.Value.Del(movedToFastCellWeapon);
                     _gunInventoryCellComponentsPool.Value.Del(movedToFastCellWeapon);
                     _laserPointerForGunComponentsPool.Value.Del(movedToFastCellWeapon);
                     _inventoryItemComponentsPool.Value.Del(movedToFastCellWeapon);
                     oldInvCellCmp.cellView.ClearInventoryCell();
                     oldInvCellCmp.isEmpty = true;
-                    //   oldInvCellCmp.cellView.inventoryCellButton.enabled = false;
                     _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
                 }
                 else
-                {
-                    Debug.Log("return null weapon");
                     return;
-                }
 
             }
             else if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.meleeWeapon)
@@ -1108,10 +1044,8 @@ public class InventorySystem : IEcsRunSystem
                 if (movedToFastCellWeapon == specialItemCellEntity && _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity).currentCellCount > _inventoryItemsFilter.Value.GetEntitiesCount())
                 {
                     foreach (var cell in _inventoryCellsFilter.Value)
-                    {
                         if (_inventoryCellsComponents.Value.Get(cell).isEmpty)
                         {
-                            // Debug.Log(_inventoryCellsFilter.Value.GetEntitiesCount() + "take flashlight to inv");
                             ref var curInvCellCmp = ref _inventoryCellsComponents.Value.Get(cell);
 
                             _inventoryItemComponentsPool.Value.Copy(movedToFastCellWeapon, cell);
@@ -1129,12 +1063,10 @@ public class InventorySystem : IEcsRunSystem
                             _inventoryItemComponentsPool.Value.Del(movedToFastCellWeapon);
                             oldInvCellCmp.cellView.ClearInventoryCell();
                             oldInvCellCmp.isEmpty = true;
-                            //    oldInvCellCmp.cellView.inventoryCellButton.enabled = false;
 
                             if (itemCmp.itemInfo.type == ItemInfo.itemType.backpack)
                                 _setInventoryCellsToNewValueEventsPool.Value.Add(_sceneData.Value.playerEntity).changedCount = _sceneData.Value.dropedItemsUIView.startBackpackInfo.cellsCount - invCmp.currentCellCount;
-                            // ChangeInventoryCellCount();
-                            //Debug.Log((_sceneData.Value.dropedItemsUIView.startBackpackInfo.cellsCount - invCmp.currentCellCount) + "del cells fro inv");
+
                             else if (itemCmp.itemInfo.type == ItemInfo.itemType.helmet)
                             {
                                 ref var fOVCmp = ref _fieldOfViewComponentsPool.Value.Get(_sceneData.Value.playerEntity);
@@ -1143,7 +1075,6 @@ public class InventorySystem : IEcsRunSystem
                             }
                             break;
                         }
-                    }
 
                 }
                 else if (movedToFastCellWeapon != specialItemCellEntity)
@@ -1155,18 +1086,11 @@ public class InventorySystem : IEcsRunSystem
                     {
                         _inventoryItemComponentsPool.Value.Copy(movedToFastCellWeapon, specialItemCellEntity);
                         CopySpecialComponents(movedToFastCellWeapon, specialItemCellEntity, oldInvItemCmp.itemInfo);
-                        /*  if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.sheild)
-                             _shieldComponentsPool.Value.Copy(movedToFastCellWeapon, specialItemCellEntity);
-                         else if (oldInvItemCmp.itemInfo.type != ItemInfo.itemType.backpack)
-                             _durabilityInInventoryComponentsPool.Value.Copy(movedToFastCellWeapon, specialItemCellEntity);*/
-
 
                         var flashlightItemCmp = _inventoryItemComponentsPool.Value.Get(specialItemCellEntity);
 
 
                         curInvCellCmp.isEmpty = false;
-                        //  curInvCellCmp.cellView.inventoryCellButton.enabled = true;
-                        // curInvCellCmp.inventoryItemComponent = itemCmp;
                         curInvCellCmp.cellView.ChangeCellItemSprite(flashlightItemCmp.itemInfo.itemSprite);
                         curInvCellCmp.cellView.ChangeCellItemCount(flashlightItemCmp.currentItemsCount);
                         if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.sheild)
@@ -1177,7 +1101,6 @@ public class InventorySystem : IEcsRunSystem
                         _inventoryItemComponentsPool.Value.Del(movedToFastCellWeapon);
                         oldInvCellCmp.cellView.ClearInventoryCell();
                         oldInvCellCmp.isEmpty = true;
-                        //  oldInvCellCmp.cellView.inventoryCellButton.enabled = false;
 
                     }
                     else
@@ -1199,7 +1122,7 @@ public class InventorySystem : IEcsRunSystem
                         playerCmp.view.shieldView.shieldSpriteRenderer.sprite = itemCmp.itemInfo.sheildInfo.sheildSprite;
                         playerCmp.view.shieldView.shieldCollider.size = itemCmp.itemInfo.sheildInfo.sheildColliderScale;
                         playerCmp.view.shieldView.shieldCollider.offset = itemCmp.itemInfo.sheildInfo.sheildColliderPositionOffset;
-                        playerCmp.view.shieldView.shieldCollider.gameObject.transform.SetParent(playerCmp.view.shieldView.shieldContainer);//playerCmp.view.movementView.nonWeaponContainer
+                        playerCmp.view.shieldView.shieldCollider.gameObject.transform.SetParent(playerCmp.view.shieldView.shieldContainer);
                         if (playerCmp.view.shieldView.shieldObject.localScale.x > 0)
                             playerCmp.view.shieldView.shieldObject.localScale = new Vector3(playerCmp.view.shieldView.shieldObject.localScale.x * -1, playerCmp.view.shieldView.shieldObject.localScale.y, playerCmp.view.shieldView.shieldObject.localScale.z);
                         playerCmp.view.shieldView.shieldObject.localPosition = Vector2.zero;
@@ -1236,12 +1159,8 @@ public class InventorySystem : IEcsRunSystem
 
                     }
                     else
-                    {
-                        Debug.Log("change inv cell count swap");
                         _setInventoryCellsToNewValueEventsPool.Value.Add(_sceneData.Value.playerEntity).changedCount = itemCmp.itemInfo.backpackInfo.cellsCount - invCmp.currentCellCount;
-                       // ChangeInventoryCellCount(itemCmp.itemInfo.backpackInfo.cellsCount - invCmp.currentCellCount);
-                    }
-                    //  ChangeInventoryCellCount(_inventoryItemComponentsPool.Value.Get(specialItemCellEntity).itemInfo.backpackInfo.cellsCount - invCmp.currentCellCount);
+
 
                 }
                 _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
@@ -1257,7 +1176,7 @@ public class InventorySystem : IEcsRunSystem
                 ref var invCellForHealItemsCmp = ref _inventoryCellsComponents.Value.Get(healItemCellEntity);
                 if (movedToFastCellWeapon == healItemCellEntity)
                 {
-                    Debug.Log(oldInvItemCmp.currentItemsCount + " items to add in inv from heal cell");
+                    //  Debug.Log(oldInvItemCmp.currentItemsCount + " items to add in inv from heal cell");
                     int neededItems = oldInvItemCmp.currentItemsCount - AddItemToInventory(oldInvItemCmp.itemInfo, oldInvItemCmp.currentItemsCount, false);
                     ref var invCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity);
                     invCmp.weight -= neededItems * oldInvItemCmp.itemInfo.itemWeight;
@@ -1267,7 +1186,6 @@ public class InventorySystem : IEcsRunSystem
                         _inventoryItemComponentsPool.Value.Del(movedToFastCellWeapon);
                         oldInvCellCmp.cellView.ClearInventoryCell();
                         oldInvCellCmp.isEmpty = true;
-                        //   oldInvCellCmp.cellView.inventoryCellButton.enabled = false;
                     }
 
                     else
@@ -1315,10 +1233,7 @@ public class InventorySystem : IEcsRunSystem
                         oldInvCellCmp.cellView.ClearInventoryCell();
 
                         healInvCellCmp.isEmpty = false;
-                        //   healInvCellCmp.cellView.inventoryCellButton.enabled = true;
-
                         oldInvCellCmp.isEmpty = true;
-                        //    oldInvCellCmp.cellView.inventoryCellButton.enabled = false;
 
                         _inventoryItemComponentsPool.Value.Del(movedToFastCellWeapon);
                     }
@@ -1331,7 +1246,7 @@ public class InventorySystem : IEcsRunSystem
         }
 
         #region -take dropped item-
-        foreach (var addedItem in _addItemEventsFilter.Value)//
+        foreach (var addedItem in _addItemEventsFilter.Value)
         {
             ref var dropItem = ref _droppedItemComponents.Value.Get(addedItem);
 
@@ -1351,7 +1266,6 @@ public class InventorySystem : IEcsRunSystem
                         if (_laserPointerForGunComponentsPool.Value.Has(addedItem))
                             _laserPointerForGunComponentsPool.Value.Copy(addedItem, invCell);
                         _gunInventoryCellComponentsPool.Value.Del(addedItem);
-                        // _weaponLevelComponentsPool.Value.Del(addedItem);
                         _laserPointerForGunComponentsPool.Value.Del(addedItem);
 
                         dropItem.currentItemsCount = 0;
@@ -1359,7 +1273,7 @@ public class InventorySystem : IEcsRunSystem
                     }
                 }
 
-              
+
             }
 
             else if (dropItem.itemInfo.type == ItemInfo.itemType.flashlight || dropItem.itemInfo.type == ItemInfo.itemType.meleeWeapon || dropItem.itemInfo.type == ItemInfo.itemType.sheild || dropItem.itemInfo.type == ItemInfo.itemType.bodyArmor || dropItem.itemInfo.type == ItemInfo.itemType.helmet)
@@ -1393,17 +1307,13 @@ public class InventorySystem : IEcsRunSystem
         #endregion
 
         #region -add items to storage-
-        foreach (var addedItem in _addItemToStorageEventsFilter.Value)//
+        foreach (var addedItem in _addItemToStorageEventsFilter.Value)
         {
-
-            //  Debug.Log("add item to storage " + curAddedItemsCount);
             int droppedItemsCount = (int)_sceneData.Value.dropedItemsUIView.generalSlider.value;
             ref var deletedInvItemCmp = ref _inventoryItemComponentsPool.Value.Get(addedItem);
             ref var inventoryCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.storageEntity);
             if (_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inShopState)
             {
-                Debug.Log("sell item");
-
                 ref var shopperCmp = ref _shopCharacterComponentsPool.Value.Get(_currentInteractedCharactersComponentsPool.Value.Get(_sceneData.Value.playerEntity).interactCharacterView._entity);
                 int itemsCost = deletedInvItemCmp.itemInfo.itemCost * droppedItemsCount;
                 if (itemsCost <= shopperCmp.remainedMoneyToBuy)
@@ -1430,33 +1340,26 @@ public class InventorySystem : IEcsRunSystem
                         ref var invItemCmp = ref _inventoryItemComponentsPool.Value.Add(invCell);
                         invItemCmp.itemInfo = deletedInvItemCmp.itemInfo;
                         _gunInventoryCellComponentsPool.Value.Copy(addedItem, invCell);
-                        //      _weaponLevelComponentsPool.Value.Copy(addedItem, invCell);
-                        AddItem(ref invCellCmp, ref invItemCmp, 1, invCell);//cur item weight ��������� � gunininvCmp
+                        AddItem(ref invCellCmp, ref invItemCmp, 1, invCell);
                         if (_laserPointerForGunComponentsPool.Value.Has(addedItem))
                         {
                             _laserPointerForGunComponentsPool.Value.Copy(addedItem, invCell);
                             _laserPointerForGunComponentsPool.Value.Del(addedItem);
                         }
-                        // DeleteItem(ref invItemCmp, ref invCellCmp, 1, addedItem);
                         _deleteItemEventsPool.Value.Add(addedItem).count = 1;
-                        //  _gunInventoryCellComponentsPool.Value.Del(addedItem);
-                        // _inventoryItemComponent.Value.Del(addedItem);
-                        Debug.Log("in storage -" + addedItem + "+" + invCell);
                         break;
                     }
                 }
             }
             else
             {
-                Debug.Log("To storage");
                 int curAddedItemsCount = droppedItemsCount;
                 List<int> addedInvCell = new List<int>();
                 (curAddedItemsCount, addedInvCell) = AddItemToInventoryWithCellNumbers(deletedInvItemCmp.itemInfo, curAddedItemsCount, addedInvCell, true);
-                //Debug.Log("add inv cell num " + addedInvCell);
                 if (addedInvCell.Count != 0)
                 {
                     CopySpecialComponents(addedItem, addedInvCell[0], deletedInvItemCmp.itemInfo);
-                    Debug.Log("remove item to storage start" + (droppedItemsCount - curAddedItemsCount));
+                    //    Debug.Log("remove item to storage start" + (droppedItemsCount - curAddedItemsCount));
 
                     ref var delInvCellCmp = ref _inventoryCellsComponents.Value.Get(addedItem);
                     DeleteItem(ref deletedInvItemCmp, ref delInvCellCmp, droppedItemsCount - curAddedItemsCount, addedItem);
@@ -1514,26 +1417,15 @@ public class InventorySystem : IEcsRunSystem
                 (curAddedItemsCount, addedInvCell) = AddItemToInventoryWithCellNumbers(deletedItemFromStorage.itemInfo, curAddedItemsCount, addedInvCell, false);
                 if (addedInvCell.Count != 0)
                 {
-                    /*  if (deletedItemFromStorage.itemInfo.type == ItemInfo.itemType.flashlight || deletedItemFromStorage.itemInfo.type == ItemInfo.itemType.helmet || deletedItemFromStorage.itemInfo.type == ItemInfo.itemType.bodyArmor)
-                      {
-                          _durabilityInInventoryComponentsPool.Value.Copy(addedItem, addedInvCell[0]);
-                          if (deletedItemFromStorage.itemInfo.type == ItemInfo.itemType.helmet && deletedItemFromStorage.itemInfo.helmetInfo.addedLightIntancity != 0)
-                              _shieldComponentsPool.Value.Copy(addedItem, addedInvCell[0]);
-                      }
-                      else if (deletedItemFromStorage.itemInfo.type == ItemInfo.itemType.sheild)
-                          _shieldComponentsPool.Value.Copy(addedItem, addedInvCell[0]);
-                      else if (deletedItemFromStorage.itemInfo.type == ItemInfo.itemType.meleeWeapon)
-                          _weaponLevelComponentsPool.Value.Copy(addedItem, addedInvCell[0]);*/
                     CopySpecialComponents(addedItem, addedInvCell[0], deletedItemFromStorage.itemInfo);
                     ref var cellCmp = ref _inventoryCellsComponents.Value.Get(addedItem);
                     DeleteItem(ref deletedItemFromStorage, ref cellCmp, droppedItemsCount - curAddedItemsCount, addedItem);
-                    // Debug.Log("remove item from inv " + (droppedItemsCount - curAddedItemsCount));
 
                     if (cellCmp.isEmpty)
                         _sceneData.Value.dropedItemsUIView.divideItemsUI.gameObject.SetActive(false);
                     else
                         _sceneData.Value.dropedItemsUIView.SetSliderParametrs(deletedItemFromStorage.currentItemsCount, addedItem);
-                    // _sceneData.Value.statsStorageText.text = inventoryCmp.weight.ToString("0.0") + "kg/ " + _sceneData.Value.maxInStorageWeight + "kg \n max cells " + _sceneData.Value.storageCellsCount;
+
                     SetMoveSpeedFromWeight();
                 }
 
@@ -1553,8 +1445,6 @@ public class InventorySystem : IEcsRunSystem
             ref var gunCmp = ref _gunComponentsPool.Value.Get(reloadEvent);
             bool seekBulletsinStorage = false;
 
-            Debug.Log("one bullet reload" + gunCmp.isOneBulletReload);
-
             if (_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inStorageState)
                 seekBulletsinStorage = true;
             int possibleBulletsToReload = FindItemCountInInventory(playerGunCmp.bulletTypeId, seekBulletsinStorage);
@@ -1570,7 +1460,6 @@ public class InventorySystem : IEcsRunSystem
 
             else if (gunCmp.isOneBulletReload)
             {
-                Debug.Log("one bullet reload");
                 var oneBulletWeight = _sceneData.Value.idItemslist.items[playerGunCmp.bulletTypeId].itemWeight;
                 invCmp.weight += oneBulletWeight;
                 gunInInvCmp.currentGunWeight += oneBulletWeight;
@@ -1595,11 +1484,7 @@ public class InventorySystem : IEcsRunSystem
         #endregion
 
         foreach (var droppedItem in _dropItemEventsFilter.Value)
-        {
             DropItemsFromInventory(droppedItem);
-
-
-        }
 
         #region -find and cell items from inventory-
         foreach (var findItem in _findAndCellItemEventsFilter.Value)
@@ -1640,12 +1525,6 @@ public class InventorySystem : IEcsRunSystem
             {
                 ref var gunCmp = ref _gunInventoryCellComponentsPool.Value.Get(weaponCellCount[0]);
                 gunCmp.gunDurability = shopCellCmp.itemInfo.gunInfo.maxDurabilityPoints;
-                /*  if (shopCellCmp.itemInfo.gunInfo.laserPointer.laserMaxLenght != 0)
-                  {
-                      _laserPointerForGunComponentsPool.Value.Get(weaponCellCount[0]).remainingLaserPointerTime = shopCellCmp.itemInfo.gunInfo.laserPointer.laserLightTime;
-                      Debug.Log(_laserPointerForGunComponentsPool.Value.Get(weaponCellCount[0]).remainingLaserPointerTime + "laser pointer buy");
-                  }*/
-
             }
             else if (shopCellCmp.itemInfo.type == ItemInfo.itemType.flashlight || shopCellCmp.itemInfo.type == ItemInfo.itemType.bodyArmor || shopCellCmp.itemInfo.type == ItemInfo.itemType.helmet)
             {
@@ -1675,12 +1554,11 @@ public class InventorySystem : IEcsRunSystem
             SetMoveSpeedFromWeight();
         }
         #endregion
-        foreach(var setCellsCount in _setInventoryCellsToNewValueEventsFilter.Value)
+        foreach (var setCellsCount in _setInventoryCellsToNewValueEventsFilter.Value)
         {
             ChangeInventoryCellCount(_setInventoryCellsToNewValueEventsPool.Value.Get(setCellsCount).changedCount);
             _setInventoryCellsToNewValueEventsPool.Value.Del(setCellsCount);
         }
-        //Debug.Log(electricityGeneratorCmp.currentElectricityEnergy + "cur energy");
     }
 
 
@@ -1731,8 +1609,7 @@ public class InventorySystem : IEcsRunSystem
         if (fastCellItemCmp.itemInfo.type == ItemInfo.itemType.flashlight || fastCellItemCmp.itemInfo.type == ItemInfo.itemType.bodyArmor || fastCellItemCmp.itemInfo.type == ItemInfo.itemType.helmet)
         {
             var changedFlashlightCmp = _durabilityInInventoryComponentsPool.Value.Get(swappedCellFirst);
-            _durabilityInInventoryComponentsPool.Value.Copy(swappedCellSecond, swappedCellFirst);//
-            //ref var flashlightCmp = ref ;
+            _durabilityInInventoryComponentsPool.Value.Copy(swappedCellSecond, swappedCellFirst);
             _durabilityInInventoryComponentsPool.Value.Get(swappedCellSecond) = changedFlashlightCmp;
             if (_shieldComponentsPool.Value.Has(swappedCellSecond) && _shieldComponentsPool.Value.Has(swappedCellFirst))
             {
@@ -1779,7 +1656,6 @@ public class InventorySystem : IEcsRunSystem
         if (_storageCellTagsPool.Value.Has(cellEntity))
         {
             ref var storageCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.storageEntity);
-            //Debug.Log((itemCmp.itemInfo.type == ItemInfo.itemType.gun) + "&&" + (_gunInventoryCellComponentsPool.Value.Has(cellEntity)) + " +w " + _gunInventoryCellComponentsPool.Value.Get(cellEntity).currentGunWeight);
             if (itemCmp.itemInfo.type == ItemInfo.itemType.gun && _gunInventoryCellComponentsPool.Value.Has(cellEntity))
             {
                 storageCmp.weight += _gunInventoryCellComponentsPool.Value.Get(cellEntity).currentGunWeight;
@@ -1795,22 +1671,19 @@ public class InventorySystem : IEcsRunSystem
             if (itemCmp.itemInfo.itemId == 62)
                 _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).hasForestGuide = true;
             ref var inventoryCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity);
-            //Debug.Log((itemCmp.itemInfo.type == ItemInfo.itemType.gun) + "&&" + (_gunInventoryCellComponentsPool.Value.Has(cellEntity)) + " +w " + _gunInventoryCellComponentsPool.Value.Get(cellEntity).currentGunWeight);
             if (itemCmp.itemInfo.type == ItemInfo.itemType.gun && _gunInventoryCellComponentsPool.Value.Has(cellEntity))
-            {
                 inventoryCmp.weight += _gunInventoryCellComponentsPool.Value.Get(cellEntity).currentGunWeight;
-            }
             else
                 inventoryCmp.weight += addedItemsCount * itemCmp.itemInfo.itemWeight;
             _sceneData.Value.statsInventoryText.text = inventoryCmp.weight.ToString("0.0") + "kg/ " + inventoryCmp.currentMaxWeight + "kg \n max cells " + inventoryCmp.currentCellCount;
         }
-        Debug.Log("change added cell count to " + itemCmp.currentItemsCount);
+        //Debug.Log("change added cell count to " + itemCmp.currentItemsCount);
         invCellCmp.cellView.ChangeCellItemCount(itemCmp.currentItemsCount);
     }
 
     private void ChangeInventoryCellCount(int changedCellCount)
     {
-        Debug.Log("change inv cell count to " + changedCellCount);
+        // Debug.Log("change inv cell count to " + changedCellCount);
         ref var cellsListCmp = ref _cellsListComponentsPool.Value.Get(_sceneData.Value.playerEntity);
         ref var invCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity);
 
@@ -1843,7 +1716,7 @@ public class InventorySystem : IEcsRunSystem
                 }
                 cellCmp.cellView.gameObject.SetActive(false);
                 _inventoryCellsComponents.Value.Del(cellEntity);
-                Debug.Log("del change inv cell count to " + cellEntity);
+                //  Debug.Log("del change inv cell count to " + cellEntity);
                 cellsListCmp.cells.RemoveAt(cellsListCmp.cells.Count - 1);
                 _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
                 SetMoveSpeedFromWeight();
@@ -1854,17 +1727,16 @@ public class InventorySystem : IEcsRunSystem
             int startAddCell = cellsListCmp.cells.Count;
             for (int i = 0; i < changedCellCount; i++)
             {
-                Debug.Log(_inventoryCellsFilter.Value.GetEntitiesCount() + " cell count " + (cellsListCmp.cells.Count - 1));
+                // Debug.Log(_inventoryCellsFilter.Value.GetEntitiesCount() + " cell count " + (cellsListCmp.cells.Count - 1));
                 var cellView = _sceneData.Value.GetInventoryCell(_inventoryCellsFilter.Value.GetEntitiesCount());
                 if (cellView._entity == 0)
                 {
                     int cellEntity = _world.Value.NewEntity();
-                    Debug.Log("construct cell " + cellEntity);
+                    // Debug.Log("construct cell " + cellEntity);
                     cellView.Construct(cellEntity, _world.Value);
                     _inventoryCellTagsPool.Value.Add(cellEntity);
                 }
-                Debug.Log("add change inv cell count to " + cellView._entity);
-                //  if(_inventoryCellsComponents.Value.Has(cellView._entity))
+                // Debug.Log("add change inv cell count to " + cellView._entity);
                 if (_inventoryCellsComponents.Value.Has(cellView._entity))
                 {
                     ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(cellView._entity);
@@ -1878,7 +1750,7 @@ public class InventorySystem : IEcsRunSystem
                     invCellCmp.cellView = cellView;
                 }
 
-                cellsListCmp.cells.Add( cellView);
+                cellsListCmp.cells.Add(cellView);
             }
         }
         int backpackCellEntity = _sceneData.Value.backpackCellView._entity;
@@ -1907,7 +1779,7 @@ public class InventorySystem : IEcsRunSystem
         int delItemId = itemCmpToDel.itemInfo.itemId;
         if (_storageCellTagsPool.Value.Has(cellEntity))
         {
-            Debug.Log("del item +" + deletedItemsCount);
+            // Debug.Log("del item +" + deletedItemsCount);
             ref var storageCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.storageEntity);
             if (itemCmpToDel.itemInfo.type != ItemInfo.itemType.gun)
                 storageCmp.weight -= deletedItemsCount * itemCmpToDel.itemInfo.itemWeight;
@@ -1918,7 +1790,7 @@ public class InventorySystem : IEcsRunSystem
         else
         {
 
-            Debug.Log("del item +" + deletedItemsCount);
+            // Debug.Log("del item +" + deletedItemsCount);
             ref var inventoryCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity);
             if (itemCmpToDel.itemInfo.type != ItemInfo.itemType.gun)
                 inventoryCmp.weight -= deletedItemsCount * itemCmpToDel.itemInfo.itemWeight;
@@ -1928,7 +1800,7 @@ public class InventorySystem : IEcsRunSystem
         }
         if (itemCmpToDel.currentItemsCount == deletedItemsCount)
         {
-            Debug.Log("del item +" + deletedItemsCount);
+            //  Debug.Log("del item +" + deletedItemsCount);
             DelSpecialComponents(cellEntity, itemCmpToDel.itemInfo);
             invCellCmpToDel.cellView.inventoryCellAnimator.SetBool("buttonIsActive", false);
             _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell = 0;
@@ -1939,12 +1811,8 @@ public class InventorySystem : IEcsRunSystem
         }
         else
         {
-            Debug.Log("before change deleted cell count to " + itemCmpToDel.currentItemsCount);
             itemCmpToDel.currentItemsCount -= deletedItemsCount;
-            Debug.Log("change deleted cell count to " + itemCmpToDel.currentItemsCount);
             invCellCmpToDel.cellView.ChangeCellItemCount(itemCmpToDel.currentItemsCount);
-            //_sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
-            // _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmpToDel.currentItemsCount, cellEntity);
         }
         if (!_healthComponentsPool.Value.Get(_sceneData.Value.playerEntity).isDeath)
         {
@@ -1958,7 +1826,6 @@ public class InventorySystem : IEcsRunSystem
     private bool FindItem(int neededItemsCount, int neededItemId, bool isDeleteFindedItems, bool seekInStorage)
     {
         int curFindedItems = FindItemCountInInventory(neededItemId, seekInStorage);
-        Debug.Log("delete finded items" + curFindedItems + "/" + neededItemsCount);
 
         if (curFindedItems >= neededItemsCount)
         {
@@ -1976,7 +1843,6 @@ public class InventorySystem : IEcsRunSystem
                     if (invItemCmp.currentItemsCount <= neededItemsCount)
                     {
                         neededItemsCount -= invItemCmp.currentItemsCount;
-                        Debug.Log("delete finded items");
                         DeleteItem(ref invItemCmp, ref invCellCmp, invItemCmp.currentItemsCount, invItem);
                         _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
                         if (neededItemsCount == 0) break;
@@ -1986,7 +1852,6 @@ public class InventorySystem : IEcsRunSystem
                     {
                         DeleteItem(ref invItemCmp, ref invCellCmp, neededItemsCount, invItem);
                         _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
-                        Debug.Log("delete finded items");
                         break;
                     }
                 }
@@ -2006,7 +1871,6 @@ public class InventorySystem : IEcsRunSystem
                             neededItemsCount -= invItemCmp.currentItemsCount;
 
                             DeleteItem(ref invItemCmp, ref invCellCmp, invItemCmp.currentItemsCount, storageItem);
-                            Debug.Log("delete finded items");
                             _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
                             if (neededItemsCount == 0) break;
                         }
@@ -2014,7 +1878,6 @@ public class InventorySystem : IEcsRunSystem
                         else
                         {
                             DeleteItem(ref invItemCmp, ref invCellCmp, neededItemsCount, storageItem);
-                            Debug.Log("delete finded items");
                             _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
                             break;
                         }
@@ -2057,17 +1920,12 @@ public class InventorySystem : IEcsRunSystem
         playerMoveCmp.moveSpeed = playerMoveCmp.movementView.moveSpeed + playerMoveCmp.movementView.moveSpeed / 50 * _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).statLevels[0];
         if (inventoryCmp.weight / inventoryCmp.currentMaxWeight > 0.6f)
             playerMoveCmp.moveSpeed -= (playerMoveCmp.movementView.moveSpeed * ((inventoryCmp.weight / inventoryCmp.currentMaxWeight) - 0.6f) * 2);
-        Debug.Log(playerMoveCmp.moveSpeed + " move speed with weight");
     }
 
     private void DropItemsFromInventory(int itemInventoryCell)
     {
-        //ref var dropEvt = ref _dropItemsEventsComponent.Value.Get(itemInventoryCell);
         ref var invItemCmp = ref _inventoryItemComponentsPool.Value.Get(itemInventoryCell);
         ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(itemInventoryCell);
-
-        //bool isStorageCell = _storageCellTagsPool.Value.Has(itemInventoryCell);
-
 
         var droppedItem = _world.Value.NewEntity();
 
@@ -2164,8 +2022,6 @@ public class InventorySystem : IEcsRunSystem
 
                 TryAddSpecialItemComponent(itemInfo, cell);
 
-                //invCellCmp.inventoryItemComponent = itemCmp;
-
                 if (itemsCount > itemCmp.itemInfo.maxCount)
                 {
                     int delta = itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount;
@@ -2195,350 +2051,46 @@ public class InventorySystem : IEcsRunSystem
             }
         }
 
-
-        /*  if (!toStorage)
-          {
-              ref var inventoryCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity);
-
-              foreach (var cell in _inventoryCellsFilter.Value)
-              {
-                  ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(cell);
-                  if (!invCellCmp.isEmpty && (_inventoryItemComponentsPool.Value.Get(cell).itemInfo.itemId != itemInfo.itemId || (_inventoryItemComponentsPool.Value.Get(cell).currentItemsCount == itemInfo.maxCount && (_inventoryItemComponentsPool.Value.Get(cell).itemInfo.itemId == itemInfo.itemId)))) continue;
-
-                  if (inventoryCmp.currentMaxWeight + 0.001f < (inventoryCmp.weight + (itemsCount * itemInfo.itemWeight)))
-                  {
-                      float weightDelta = (inventoryCmp.weight + itemsCount * itemInfo.itemWeight) - inventoryCmp.currentMaxWeight;
-
-                      int neededItemsToFullInventory = itemsCount - Mathf.CeilToInt(weightDelta / itemInfo.itemWeight);
-
-                      if (neededItemsToFullInventory <= 0)
-                      {
-                          return itemsCount;
-                      }
-
-                      Debug.Log("max weight + ned items " + neededItemsToFullInventory);
-
-                      if (!invCellCmp.isEmpty)
-                      {
-                          ref var itemCmp = ref _inventoryItemComponentsPool.Value.Get(cell);
-                          if (itemCmp.currentItemsCount + neededItemsToFullInventory < itemCmp.itemInfo.maxCount)
-                          {
-                              Debug.Log("max weight + items to add " + neededItemsToFullInventory);
-                              AddItem(ref invCellCmp, ref itemCmp, neededItemsToFullInventory, cell);
-                              return AddItemToInventory(itemInfo, itemsCount - neededItemsToFullInventory, toStorage);
-                          }
-                          else
-                          {
-                              Debug.Log("max weight + items to add " + (itemInfo.maxCount) + " " + itemCmp.currentItemsCount);
-                              int delta = itemInfo.maxCount - itemCmp.currentItemsCount;
-                              AddItem(ref invCellCmp, ref itemCmp, delta, cell);
-                              //if(itemInfo.maxCount - itemCmp.currentItemsCount == 0)
-                              //     return itemsCount;
-                              Debug.Log("max weight + items to add " + itemsCount + "-" + (delta));
-                              return AddItemToInventory(itemInfo, itemsCount - delta, toStorage);
-                          }
-                      }
-                      else
-                      {
-                          ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cell);
-                          itemCmp.itemInfo = itemInfo;
-                          if (neededItemsToFullInventory >= itemInfo.maxCount)
-                          {
-                              Debug.Log("max weight + items to add " + itemCmp.itemInfo.maxCount);
-                              AddItem(ref invCellCmp, ref itemCmp, itemCmp.itemInfo.maxCount, cell);
-                              return AddItemToInventory(itemInfo, itemsCount - itemInfo.maxCount, toStorage);
-                          }
-                          else
-                          {
-                              Debug.Log("max weight + items to add " + (neededItemsToFullInventory));
-                              AddItem(ref invCellCmp, ref itemCmp, neededItemsToFullInventory, cell);
-                              return AddItemToInventory(itemInfo, itemsCount - neededItemsToFullInventory, toStorage);
-
-                          }
-                      }
-
-                  }
-
-                  else if (invCellCmp.isEmpty)
-                  {
-                      ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cell);
-
-                      itemCmp.itemInfo = itemInfo;
-
-                      TryAddSpecialItemComponent(itemInfo, cell);
-
-                      //invCellCmp.inventoryItemComponent = itemCmp;
-
-                      if (itemsCount > itemCmp.itemInfo.maxCount)
-                      {
-                          int delta = itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount;
-                          AddItem(ref invCellCmp, ref itemCmp, itemCmp.itemInfo.maxCount, cell);
-                          return AddItemToInventory(itemInfo, itemsCount - delta, toStorage);
-                      }
-                      AddItem(ref invCellCmp, ref itemCmp, itemsCount, cell);
-                      return 0;
-                  }
-                  else
-                  {
-                      ref var itemCmp = ref _inventoryItemComponentsPool.Value.Get(cell);
-
-                      if (itemCmp.itemInfo.itemId == itemInfo.itemId && itemCmp.currentItemsCount != itemCmp.itemInfo.maxCount)
-                      {
-                          if (itemsCount > itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount)
-                          {
-                              int deltaCount = itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount;
-                              AddItem(ref invCellCmp, ref itemCmp, deltaCount, cell);
-                              _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
-                              return AddItemToInventory(itemInfo, itemsCount - deltaCount, toStorage);
-                          }
-                          AddItem(ref invCellCmp, ref itemCmp, itemsCount, cell);
-                          _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
-                          return 0;
-                      }
-                  }
-              }
-          }
-          else
-          {
-              ref var storageCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.storageEntity);
-              foreach (var cell in _storageCellsFilter.Value)
-              {
-                  ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(cell);
-                  if (!invCellCmp.isEmpty && (_inventoryItemComponentsPool.Value.Get(cell).itemInfo.itemId != itemInfo.itemId || (_inventoryItemComponentsPool.Value.Get(cell).currentItemsCount == itemInfo.maxCount && (_inventoryItemComponentsPool.Value.Get(cell).itemInfo.itemId == itemInfo.itemId)))) continue;
-
-                  if (storageCmp.currentMaxWeight + 0.001f < (storageCmp.weight + (itemsCount * itemInfo.itemWeight)))
-                  {
-                      float weightDelta = (storageCmp.weight + itemsCount * itemInfo.itemWeight) - storageCmp.currentMaxWeight;
-
-                      int neededItemsToFullInventory = itemsCount - Mathf.CeilToInt(weightDelta / itemInfo.itemWeight);
-
-                      if (neededItemsToFullInventory <= 0)
-                      {
-                          return itemsCount;
-                      }
-
-                      if (!invCellCmp.isEmpty)
-                      {
-                          ref var itemCmp = ref _inventoryItemComponentsPool.Value.Get(cell);
-                          if (itemCmp.currentItemsCount + neededItemsToFullInventory < itemCmp.itemInfo.maxCount)
-                          {
-                              AddItem(ref invCellCmp, ref itemCmp, neededItemsToFullInventory, cell);
-                              return AddItemToInventory(itemInfo, itemsCount - neededItemsToFullInventory, toStorage);
-                          }
-                          else
-                          {
-                              Debug.Log("max weight + items to add " + (itemInfo.maxCount) + " " + itemCmp.currentItemsCount);
-                              int delta = itemInfo.maxCount - itemCmp.currentItemsCount;
-                              AddItem(ref invCellCmp, ref itemCmp, delta, cell);
-                              //if(itemInfo.maxCount - itemCmp.currentItemsCount == 0)
-                              //     return itemsCount;
-                              Debug.Log("max weight + items to add " + itemsCount + "-" + (delta));
-                              return AddItemToInventory(itemInfo, itemsCount - delta, toStorage);
-                          }
-                      }
-                      else
-                      {
-                          ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cell);
-                          itemCmp.itemInfo = itemInfo;
-                          if (neededItemsToFullInventory >= itemInfo.maxCount)
-                          {
-                              AddItem(ref invCellCmp, ref itemCmp, itemCmp.itemInfo.maxCount, cell);
-                              return AddItemToInventory(itemInfo, itemsCount - itemInfo.maxCount, toStorage);
-                          }
-                          else
-                          {
-                              AddItem(ref invCellCmp, ref itemCmp, neededItemsToFullInventory, cell);
-                              return AddItemToInventory(itemInfo, itemsCount - neededItemsToFullInventory, toStorage);
-
-                          }
-                      }
-                  }
-
-                  else if (invCellCmp.isEmpty)
-                  {
-                      ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cell);
-
-                      itemCmp.itemInfo = itemInfo;
-
-                      TryAddSpecialItemComponent(itemInfo, cell);
-
-                      // invCellCmp.inventoryItemComponent = itemCmp;
-
-                      if (itemsCount > itemCmp.itemInfo.maxCount)
-                      {
-                          int delta = itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount;
-                          AddItem(ref invCellCmp, ref itemCmp, delta, cell);
-                          _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
-                          return AddItemToInventory(itemInfo, itemsCount - delta, toStorage);
-                      }
-                      AddItem(ref invCellCmp, ref itemCmp, itemsCount, cell);
-                      _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
-                      return 0;
-                  }
-                  else
-                  {
-                      ref var itemCmp = ref _inventoryItemComponentsPool.Value.Get(cell);
-
-                      if (itemCmp.itemInfo.itemId == itemInfo.itemId && itemCmp.currentItemsCount != itemCmp.itemInfo.maxCount)
-                      {
-                          if (itemsCount > itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount)
-                          {
-                              int deltaCount = itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount;
-                              AddItem(ref invCellCmp, ref itemCmp, deltaCount, cell);
-                              _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
-                              return AddItemToInventory(itemInfo, itemsCount - deltaCount, toStorage);
-                          }
-                          AddItem(ref invCellCmp, ref itemCmp, itemsCount, cell);
-                          itemCmp.currentItemsCount += itemsCount;
-                          _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
-                          return 0;
-                      }
-                  }
-
-              }
-          }*/
         return itemsCount;
     }
 
     private (int addedItemsCount, List<int> cellsWithItem) AddItemToInventoryWithCellNumbers(ItemInfo itemInfo, int itemsCount, List<int> cellsWithItem, bool toStorage)
     {
         if (itemsCount == 0) return (0, cellsWithItem);
-        if (!toStorage)
+        int needInvEntity = toStorage ? _sceneData.Value.storageEntity : _sceneData.Value.inventoryEntity;
+        ref var inventoryCmp = ref _inventoryComponent.Value.Get(needInvEntity);
+        var cellsFilter = toStorage ? _storageCellsFilter.Value : _inventoryCellsFilter.Value;
+        //
+        foreach (var cell in cellsFilter)
         {
-            ref var inventoryCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity);
-            foreach (var cell in _inventoryCellsFilter.Value)
+
+            ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(cell);
+            if (!invCellCmp.isEmpty && (_inventoryItemComponentsPool.Value.Get(cell).itemInfo.itemId != itemInfo.itemId || (_inventoryItemComponentsPool.Value.Get(cell).currentItemsCount == itemInfo.maxCount && (_inventoryItemComponentsPool.Value.Get(cell).itemInfo.itemId == itemInfo.itemId)))) continue;
+
+            if (inventoryCmp.currentMaxWeight + 0.001f < (inventoryCmp.weight + (itemsCount * itemInfo.itemWeight)))
             {
-                ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(cell);
-                if (!invCellCmp.isEmpty && (_inventoryItemComponentsPool.Value.Get(cell).itemInfo.itemId != itemInfo.itemId || (_inventoryItemComponentsPool.Value.Get(cell).currentItemsCount == itemInfo.maxCount && (_inventoryItemComponentsPool.Value.Get(cell).itemInfo.itemId == itemInfo.itemId)))) continue;
+                float weightDelta = (inventoryCmp.weight + itemsCount * itemInfo.itemWeight) - inventoryCmp.currentMaxWeight;
 
-                if (inventoryCmp.currentMaxWeight + 0.001f < (inventoryCmp.weight + (itemsCount * itemInfo.itemWeight)))
-                {
-
-                    float weightDelta = (inventoryCmp.weight + itemsCount * itemInfo.itemWeight) - inventoryCmp.currentMaxWeight;
-
-                    int neededItemsToFullInventory = itemsCount - Mathf.CeilToInt(weightDelta / itemInfo.itemWeight);
-                    Debug.Log("neededItemsToFullInventory " + neededItemsToFullInventory + " weightDelta= " + ((inventoryCmp.weight + itemsCount * itemInfo.itemWeight) - inventoryCmp.currentMaxWeight) + " " + (weightDelta / itemInfo.itemWeight));
-                    if (neededItemsToFullInventory <= 0)
-                    {
-                        return (itemsCount, cellsWithItem);
-                    }
-                    else
-                    {
-                        cellsWithItem.Add(cell);
-                        Debug.Log("cell with gun " + cell);
-                        if (!invCellCmp.isEmpty)
-                        {
-                            ref var itemCmp = ref _inventoryItemComponentsPool.Value.Get(cell);
-                            if (itemCmp.currentItemsCount + neededItemsToFullInventory <= itemCmp.itemInfo.maxCount)
-                            {
-                                AddItem(ref invCellCmp, ref itemCmp, neededItemsToFullInventory, cell);
-                                Debug.Log(neededItemsToFullInventory + " it c" + itemsCount + "delt ");
-                                return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - neededItemsToFullInventory, cellsWithItem, toStorage);
-                            }
-                            else
-                            {
-                                int delta = itemInfo.maxCount - itemCmp.currentItemsCount;
-                                Debug.Log(neededItemsToFullInventory + " it c" + itemsCount + "delt " + delta);
-                                AddItem(ref invCellCmp, ref itemCmp, delta, cell);
-                                return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - delta, cellsWithItem, toStorage);
-                            }
-                        }
-                        else
-                        {
-                            ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cell);
-                            itemCmp.itemInfo = itemInfo;
-                            if (neededItemsToFullInventory > itemInfo.maxCount)
-                            {
-                                AddItem(ref invCellCmp, ref itemCmp, itemCmp.itemInfo.maxCount, cell);
-                                Debug.Log(neededItemsToFullInventory + " it c" + itemsCount + "delt ");
-                                return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - itemInfo.maxCount, cellsWithItem, toStorage);
-                            }
-                            else
-                            {
-                                AddItem(ref invCellCmp, ref itemCmp, neededItemsToFullInventory, cell);
-                                Debug.Log(neededItemsToFullInventory + " it c" + itemsCount + "delt ");
-                                return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - neededItemsToFullInventory, cellsWithItem, toStorage);
-
-                            }
-                        }
-                    }
-                }
-
-                else if (invCellCmp.isEmpty)
-                {
-                    ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cell);
-
-                    itemCmp.itemInfo = itemInfo;
-
-
-                    TryAddSpecialItemComponent(itemInfo, cell);
-                    cellsWithItem.Add(cell);
-
-                    if (itemsCount > itemCmp.itemInfo.maxCount)
-                    {
-                        int delta = itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount;
-                        AddItem(ref invCellCmp, ref itemCmp, delta, cell);
-                        _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
-                        // Debug.Log("cell with gun " + cell);
-                        return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - delta, cellsWithItem, toStorage);
-                    }
-                    AddItem(ref invCellCmp, ref itemCmp, itemsCount, cell);
-                    _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
-                    return (0, cellsWithItem);
-                }
+                int neededItemsToFullInventory = itemsCount - Mathf.CeilToInt(weightDelta / itemInfo.itemWeight);
+                
+                if (neededItemsToFullInventory <= 0)
+                    return (itemsCount, cellsWithItem);
                 else
                 {
-                    ref var itemCmp = ref _inventoryItemComponentsPool.Value.Get(cell);
-                    cellsWithItem.Add(cell);
-                    if (itemCmp.itemInfo.itemId == itemInfo.itemId && itemCmp.currentItemsCount != itemCmp.itemInfo.maxCount)
-                    {
-                        if (itemsCount > itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount)
-                        {
-                            //Debug.Log("3333333 cell with gun ");
-                            int deltaCount = itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount;
-                            AddItem(ref invCellCmp, ref itemCmp, deltaCount, cell);
-                            _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
-                            return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - deltaCount, cellsWithItem, toStorage);
-                        }
-                        AddItem(ref invCellCmp, ref itemCmp, itemsCount, cell);
-                        _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
-                        return (0, cellsWithItem);
-                    }
-                }
-            }
-        }
-        else
-        {
-            ref var storageCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.storageEntity);
-            foreach (var cell in _storageCellsFilter.Value)
-            {
-                ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(cell);
-                if (!invCellCmp.isEmpty && (_inventoryItemComponentsPool.Value.Get(cell).itemInfo.itemId != itemInfo.itemId || (_inventoryItemComponentsPool.Value.Get(cell).currentItemsCount == itemInfo.maxCount && (_inventoryItemComponentsPool.Value.Get(cell).itemInfo.itemId == itemInfo.itemId)))) continue;
-
-                if (storageCmp.currentMaxWeight + 0.001f < (storageCmp.weight + (itemsCount * itemInfo.itemWeight)))
-                {
-                    float weightDelta = (storageCmp.weight + itemsCount * itemInfo.itemWeight) - storageCmp.currentMaxWeight;
-
-                    int neededItemsToFullInventory = itemsCount - Mathf.CeilToInt(weightDelta / itemInfo.itemWeight);
-
-                    if (neededItemsToFullInventory <= 1)
-                    {
-                        return (itemsCount, cellsWithItem);
-                    }
-                    Debug.Log("cell with gun " + cell);
                     cellsWithItem.Add(cell);
                     if (!invCellCmp.isEmpty)
                     {
                         ref var itemCmp = ref _inventoryItemComponentsPool.Value.Get(cell);
-                        if (itemCmp.currentItemsCount + neededItemsToFullInventory < itemCmp.itemInfo.maxCount)
+                        if (itemCmp.currentItemsCount + neededItemsToFullInventory <= itemCmp.itemInfo.maxCount)
                         {
                             AddItem(ref invCellCmp, ref itemCmp, neededItemsToFullInventory, cell);
+                            // Debug.Log(neededItemsToFullInventory + " it c" + itemsCount + "delt ");
                             return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - neededItemsToFullInventory, cellsWithItem, toStorage);
                         }
                         else
                         {
                             int delta = itemInfo.maxCount - itemCmp.currentItemsCount;
-                            Debug.Log(neededItemsToFullInventory + " it c" + itemsCount + "delt " + delta);
+                            //Debug.Log(neededItemsToFullInventory + " it c" + itemsCount + "delt " + delta);
                             AddItem(ref invCellCmp, ref itemCmp, delta, cell);
                             return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - delta, cellsWithItem, toStorage);
                         }
@@ -2547,80 +2099,272 @@ public class InventorySystem : IEcsRunSystem
                     {
                         ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cell);
                         itemCmp.itemInfo = itemInfo;
-                        if (neededItemsToFullInventory >= itemInfo.maxCount)
+                        if (neededItemsToFullInventory > itemInfo.maxCount)
                         {
-                            Debug.Log(neededItemsToFullInventory + "needed item " + itemInfo.maxCount + " it c" + itemsCount);
-                            AddItem(ref invCellCmp, ref itemCmp, itemInfo.maxCount, cell);
+                            AddItem(ref invCellCmp, ref itemCmp, itemCmp.itemInfo.maxCount, cell);
+                            // Debug.Log(neededItemsToFullInventory + " it c" + itemsCount + "delt ");
                             return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - itemInfo.maxCount, cellsWithItem, toStorage);
                         }
                         else
                         {
-                            Debug.Log(neededItemsToFullInventory + " it c" + itemsCount);
                             AddItem(ref invCellCmp, ref itemCmp, neededItemsToFullInventory, cell);
+                            // Debug.Log(neededItemsToFullInventory + " it c" + itemsCount + "delt ");
                             return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - neededItemsToFullInventory, cellsWithItem, toStorage);
 
                         }
                     }
                 }
+            }
 
-                else if (invCellCmp.isEmpty)
+            else if (invCellCmp.isEmpty)
+            {
+                ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cell);
+
+                itemCmp.itemInfo = itemInfo;
+
+
+                TryAddSpecialItemComponent(itemInfo, cell);
+                cellsWithItem.Add(cell);
+
+                if (itemsCount > itemCmp.itemInfo.maxCount)
                 {
-                    ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cell);
-
-                    itemCmp.itemInfo = itemInfo;
-
-                    TryAddSpecialItemComponent(itemInfo, cell);
-                    cellsWithItem.Add(cell);
-                    if (itemsCount > itemCmp.itemInfo.maxCount)
-                    {
-                        int delta = itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount;
-                        AddItem(ref invCellCmp, ref itemCmp, delta, cell);
-                        _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
-                        //  Debug.Log("cell with gun " + cell);
-                        Debug.Log(delta + "delta item " + itemInfo.maxCount + " it c" + itemsCount);
-                        return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - delta, cellsWithItem, toStorage);
-                    }
-                    Debug.Log("delta item " + itemInfo.maxCount + " it c" + itemsCount);
-                    AddItem(ref invCellCmp, ref itemCmp, itemsCount, cell);
-                    return (0, cellsWithItem);
+                    int delta = itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount;
+                    AddItem(ref invCellCmp, ref itemCmp, delta, cell);
+                    _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
+                    return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - delta, cellsWithItem, toStorage);
                 }
-                else
+                AddItem(ref invCellCmp, ref itemCmp, itemsCount, cell);
+                _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
+                return (0, cellsWithItem);
+            }
+            else
+            {
+                ref var itemCmp = ref _inventoryItemComponentsPool.Value.Get(cell);
+                cellsWithItem.Add(cell);
+                if (itemCmp.itemInfo.itemId == itemInfo.itemId && itemCmp.currentItemsCount != itemCmp.itemInfo.maxCount)
                 {
-                    ref var itemCmp = ref _inventoryItemComponentsPool.Value.Get(cell);
-                    cellsWithItem.Add(cell);
                     if (itemsCount > itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount)
                     {
                         int deltaCount = itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount;
                         AddItem(ref invCellCmp, ref itemCmp, deltaCount, cell);
                         _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
-                        Debug.Log(deltaCount + "delta item " + itemInfo.maxCount + " it c" + itemsCount);
                         return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - deltaCount, cellsWithItem, toStorage);
                     }
-                    Debug.Log("delta item " + itemInfo.maxCount + " it c" + itemsCount);
                     AddItem(ref invCellCmp, ref itemCmp, itemsCount, cell);
                     _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
                     return (0, cellsWithItem);
                 }
-
             }
+
         }
-        Debug.Log("very rare return");
         return (itemsCount, cellsWithItem);
+        /* if (itemsCount == 0) return (0, cellsWithItem);
+         if (!toStorage)
+         {
+             ref var inventoryCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity);
+             foreach (var cell in _inventoryCellsFilter.Value)
+             {
+                 ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(cell);
+                 if (!invCellCmp.isEmpty && (_inventoryItemComponentsPool.Value.Get(cell).itemInfo.itemId != itemInfo.itemId || (_inventoryItemComponentsPool.Value.Get(cell).currentItemsCount == itemInfo.maxCount && (_inventoryItemComponentsPool.Value.Get(cell).itemInfo.itemId == itemInfo.itemId)))) continue;
+
+                 if (inventoryCmp.currentMaxWeight + 0.001f < (inventoryCmp.weight + (itemsCount * itemInfo.itemWeight)))
+                 {
+                     float weightDelta = (inventoryCmp.weight + itemsCount * itemInfo.itemWeight) - inventoryCmp.currentMaxWeight;
+
+                     int neededItemsToFullInventory = itemsCount - Mathf.CeilToInt(weightDelta / itemInfo.itemWeight);
+                   //  Debug.Log("neededItemsToFullInventory " + neededItemsToFullInventory + " weightDelta= " + ((inventoryCmp.weight + itemsCount * itemInfo.itemWeight) - inventoryCmp.currentMaxWeight) + " " + (weightDelta / itemInfo.itemWeight));
+                     if (neededItemsToFullInventory <= 0)
+                     {
+                         return (itemsCount, cellsWithItem);
+                     }
+                     else
+                     {
+                         cellsWithItem.Add(cell);
+                         if (!invCellCmp.isEmpty)
+                         {
+                             ref var itemCmp = ref _inventoryItemComponentsPool.Value.Get(cell);
+                             if (itemCmp.currentItemsCount + neededItemsToFullInventory <= itemCmp.itemInfo.maxCount)
+                             {
+                                 AddItem(ref invCellCmp, ref itemCmp, neededItemsToFullInventory, cell);
+                                // Debug.Log(neededItemsToFullInventory + " it c" + itemsCount + "delt ");
+                                 return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - neededItemsToFullInventory, cellsWithItem, toStorage);
+                             }
+                             else
+                             {
+                                 int delta = itemInfo.maxCount - itemCmp.currentItemsCount;
+                                //Debug.Log(neededItemsToFullInventory + " it c" + itemsCount + "delt " + delta);
+                                 AddItem(ref invCellCmp, ref itemCmp, delta, cell);
+                                 return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - delta, cellsWithItem, toStorage);
+                             }
+                         }
+                         else
+                         {
+                             ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cell);
+                             itemCmp.itemInfo = itemInfo;
+                             if (neededItemsToFullInventory > itemInfo.maxCount)
+                             {
+                                 AddItem(ref invCellCmp, ref itemCmp, itemCmp.itemInfo.maxCount, cell);
+                                // Debug.Log(neededItemsToFullInventory + " it c" + itemsCount + "delt ");
+                                 return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - itemInfo.maxCount, cellsWithItem, toStorage);
+                             }
+                             else
+                             {
+                                 AddItem(ref invCellCmp, ref itemCmp, neededItemsToFullInventory, cell);
+                                // Debug.Log(neededItemsToFullInventory + " it c" + itemsCount + "delt ");
+                                 return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - neededItemsToFullInventory, cellsWithItem, toStorage);
+
+                             }
+                         }
+                     }
+                 }
+
+                 else if (invCellCmp.isEmpty)
+                 {
+                     ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cell);
+
+                     itemCmp.itemInfo = itemInfo;
+
+
+                     TryAddSpecialItemComponent(itemInfo, cell);
+                     cellsWithItem.Add(cell);
+
+                     if (itemsCount > itemCmp.itemInfo.maxCount)
+                     {
+                         int delta = itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount;
+                         AddItem(ref invCellCmp, ref itemCmp, delta, cell);
+                         _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
+                         return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - delta, cellsWithItem, toStorage);
+                     }
+                     AddItem(ref invCellCmp, ref itemCmp, itemsCount, cell);
+                     _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
+                     return (0, cellsWithItem);
+                 }
+                 else
+                 {
+                     ref var itemCmp = ref _inventoryItemComponentsPool.Value.Get(cell);
+                     cellsWithItem.Add(cell);
+                     if (itemCmp.itemInfo.itemId == itemInfo.itemId && itemCmp.currentItemsCount != itemCmp.itemInfo.maxCount)
+                     {
+                         if (itemsCount > itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount)
+                         {
+                             int deltaCount = itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount;
+                             AddItem(ref invCellCmp, ref itemCmp, deltaCount, cell);
+                             _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
+                             return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - deltaCount, cellsWithItem, toStorage);
+                         }
+                         AddItem(ref invCellCmp, ref itemCmp, itemsCount, cell);
+                         _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
+                         return (0, cellsWithItem);
+                     }
+                 }
+             }
+         }
+         else
+         {
+             ref var storageCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.storageEntity);
+             foreach (var cell in _storageCellsFilter.Value)
+             {
+                 ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(cell);
+                 if (!invCellCmp.isEmpty && (_inventoryItemComponentsPool.Value.Get(cell).itemInfo.itemId != itemInfo.itemId || (_inventoryItemComponentsPool.Value.Get(cell).currentItemsCount == itemInfo.maxCount && (_inventoryItemComponentsPool.Value.Get(cell).itemInfo.itemId == itemInfo.itemId)))) continue;
+
+                 if (storageCmp.currentMaxWeight + 0.001f < (storageCmp.weight + (itemsCount * itemInfo.itemWeight)))
+                 {
+                     float weightDelta = (storageCmp.weight + itemsCount * itemInfo.itemWeight) - storageCmp.currentMaxWeight;
+
+                     int neededItemsToFullInventory = itemsCount - Mathf.CeilToInt(weightDelta / itemInfo.itemWeight);
+
+                     if (neededItemsToFullInventory <= 1)
+                         return (itemsCount, cellsWithItem);
+                     cellsWithItem.Add(cell);
+                     if (!invCellCmp.isEmpty)
+                     {
+                         ref var itemCmp = ref _inventoryItemComponentsPool.Value.Get(cell);
+                         if (itemCmp.currentItemsCount + neededItemsToFullInventory < itemCmp.itemInfo.maxCount)
+                         {
+                             AddItem(ref invCellCmp, ref itemCmp, neededItemsToFullInventory, cell);
+                             return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - neededItemsToFullInventory, cellsWithItem, toStorage);
+                         }
+                         else
+                         {
+                             int delta = itemInfo.maxCount - itemCmp.currentItemsCount;
+                           //  Debug.Log(neededItemsToFullInventory + " it c" + itemsCount + "delt " + delta);
+                             AddItem(ref invCellCmp, ref itemCmp, delta, cell);
+                             return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - delta, cellsWithItem, toStorage);
+                         }
+                     }
+                     else
+                     {
+                         ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cell);
+                         itemCmp.itemInfo = itemInfo;
+                         if (neededItemsToFullInventory >= itemInfo.maxCount)
+                         {
+                            // Debug.Log(neededItemsToFullInventory + "needed item " + itemInfo.maxCount + " it c" + itemsCount);
+                             AddItem(ref invCellCmp, ref itemCmp, itemInfo.maxCount, cell);
+                             return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - itemInfo.maxCount, cellsWithItem, toStorage);
+                         }
+                         else
+                         {
+                           //  Debug.Log(neededItemsToFullInventory + " it c" + itemsCount);
+                             AddItem(ref invCellCmp, ref itemCmp, neededItemsToFullInventory, cell);
+                             return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - neededItemsToFullInventory, cellsWithItem, toStorage);
+
+                         }
+                     }
+                 }
+
+                 else if (invCellCmp.isEmpty)
+                 {
+                     ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cell);
+
+                     itemCmp.itemInfo = itemInfo;
+
+                     TryAddSpecialItemComponent(itemInfo, cell);
+                     cellsWithItem.Add(cell);
+                     if (itemsCount > itemCmp.itemInfo.maxCount)
+                     {
+                         int delta = itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount;
+                         AddItem(ref invCellCmp, ref itemCmp, delta, cell);
+                         _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
+                         //  Debug.Log("cell with gun " + cell);
+                        // Debug.Log(delta + "delta item " + itemInfo.maxCount + " it c" + itemsCount);
+                         return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - delta, cellsWithItem, toStorage);
+                     }
+                    // Debug.Log("delta item " + itemInfo.maxCount + " it c" + itemsCount);
+                     AddItem(ref invCellCmp, ref itemCmp, itemsCount, cell);
+                     return (0, cellsWithItem);
+                 }
+                 else
+                 {
+                     ref var itemCmp = ref _inventoryItemComponentsPool.Value.Get(cell);
+                     cellsWithItem.Add(cell);
+                     if (itemsCount > itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount)
+                     {
+                         int deltaCount = itemCmp.itemInfo.maxCount - itemCmp.currentItemsCount;
+                         AddItem(ref invCellCmp, ref itemCmp, deltaCount, cell);
+                         _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
+                         //Debug.Log(deltaCount + "delta item " + itemInfo.maxCount + " it c" + itemsCount);
+                         return AddItemToInventoryWithCellNumbers(itemInfo, itemsCount - deltaCount, cellsWithItem, toStorage);
+                     }
+                     //Debug.Log("delta item " + itemInfo.maxCount + " it c" + itemsCount);
+                     AddItem(ref invCellCmp, ref itemCmp, itemsCount, cell);
+                     _sceneData.Value.dropedItemsUIView.SetSliderParametrs(itemCmp.currentItemsCount, cell);
+                     return (0, cellsWithItem);
+                 }
+
+             }
+         }
+        // Debug.Log("very rare return");
+         return (itemsCount, cellsWithItem);*/
     }
     private void TryAddSpecialItemComponent(ItemInfo itemInfo, int cell)
     {
         if (itemInfo.type == ItemInfo.itemType.gun)
         {
             ref var gunInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(cell);
-            /* if (itemCmp.itemInfo.gunInfo.laserPointer.laserMaxLenght != 0)
-                 _laserPointerForGunComponentsPool.Value.Add(cell);*/
             gunInvCmp.currentGunWeight = itemInfo.itemWeight;
             gunInvCmp.gunPartsId = new int[4];
             gunInvCmp.isEquipedWeapon = false;
-            //_weaponLevelComponentsPool.Value.Add(cell).neededExpToNextLevel = 10;
         }
-        //   else if (itemInfo.type == ItemInfo.itemType.meleeWeapon)
-        //  _weaponLevelComponentsPool.Value.Add(cell).neededExpToNextLevel = 10;
         else if (itemInfo.type == ItemInfo.itemType.flashlight || itemInfo.type == ItemInfo.itemType.bodyArmor || itemInfo.type == ItemInfo.itemType.helmet)
         {
             _durabilityInInventoryComponentsPool.Value.Add(cell);

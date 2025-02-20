@@ -173,7 +173,6 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
         int flashlightItemCell = _world.Value.NewEntity();
         _sceneData.Value.flashlightItemCellView.Construct(flashlightItemCell, _world.Value);
-        Debug.Log(_sceneData.Value.flashlightItemCellView._entity + "flashlight entity");
         ref var invCellCmpFlashlightItem = ref _inventoryCellsComponentsPool.Value.Add(flashlightItemCell);
         invCellCmpFlashlightItem.isEmpty = true;
         invCellCmpFlashlightItem.cellView = _sceneData.Value.flashlightItemCellView;
@@ -222,7 +221,6 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         #endregion
 
 
-        Debug.Log(_sceneData.Value.playerEntity + " player entity");
         // _nowUsedWeaponTagsPool.Value.Add(_sceneData.Value.meleeWeaponCellView._entity);
 
         //5 спец клеток
