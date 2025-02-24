@@ -88,11 +88,6 @@ public class ShopCellsSystem : IEcsInitSystem, IEcsRunSystem
             for (int i = 0; i < _sceneData.Value.shopCellsList.Length; i++)
                 _sceneData.Value.ReleaseShopCell(i);
         }
-        //   foreach (var entryInNewLocationEvtEntity in _setupShoppersOnNewLocationEventsFilter.Value)
-        //   {
-        //      foreach (var shopCharacter in _setupShoppersOnNewLocationEventsPool.Value.Get(entryInNewLocationEvtEntity).shopCharacters)
-        //          CreateShopper(shopCharacter);
-        //  }
     }
 
     public void TurnToNextShopPage()

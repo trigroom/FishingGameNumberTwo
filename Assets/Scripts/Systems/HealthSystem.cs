@@ -265,9 +265,8 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
 
             _cameraComponentsPool.Value.Get(revivePlayer).blurValue = 1;
             _sceneData.Value.depthOfFieldMainBg.focalLength.value = 1;
-            _sceneData.Value.dropedItemsUIView.scopeCrossCentreImage.gameObject.SetActive(false);
+            //_sceneData.Value.dropedItemsUIView.scopeCrossCentreImage.gameObject.SetActive(false);
 
-            // _offInScopeStateEventsPool.Value.Add(revivePlayer);
             moveCmp.speedMultiplayer = 1;
             moveCmp.currentRunTime = 0;
             moveCmp.movementView.objectTransform.gameObject.SetActive(true);
@@ -769,6 +768,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 _movementComponentsPool.Value.Get(hpEvent).currentRunTime = playerMoveCmp.playerView.runTime;
                 playerMoveCmp.currentHungerPoints = playerMoveCmp.maxHungerPoints / 2;
                 healthCmp.healthPoint = healthCmp.maxHealthPoint / 2;
+                _offInScopeStateEventsPool.Value.Add(hpEvent);
                 //сделать этот метод при спавне если будут баги
             }
             else

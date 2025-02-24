@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6d066b48019e341418c014e91807bc1b, type: 3}
-  m_Name: 12GaugeBulletsBuy
+  m_Name: 556BulletsBuy
   m_EditorClassIdentifier: 
-  itemInfo: {fileID: 11400000, guid: 61b81eecae6f38947a729145a4447523, type: 2}
+  itemInfo: {fileID: 11400000, guid: 7f247fe143b2e5f4e872ebc86ad35d30, type: 2}
   count: 5
-  price: 10
-  needSkillLevelToUnlock: 1
-  needSkillToUnlock: 999
-  itemsCountToBuy: 7
+  price: 2
+  needSkillLevelToUnlock: 0
+  needSkillToUnlock: 0
+  itemsCountToBuy: 10

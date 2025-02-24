@@ -573,7 +573,7 @@ public class AttackSystem : IEcsRunSystem
 
             else
             {
-                // Debug.Log(_sceneData.Value.mainCamera.orthographicSize + " camera ort size");
+                Debug.Log(_sceneData.Value.mainCamera.orthographicSize + " camera ort size");
                 playerGunCmp.timeAfterChangedInScopeState -= Time.deltaTime;
 
                 if (playerGunCmp.inScope)
@@ -601,10 +601,7 @@ public class AttackSystem : IEcsRunSystem
                 {
                     playerGunCmp.changedInScopeState = false;
                     if (playerGunCmp.inScope)
-                    {
-                        //_sceneData.Value.mainCamera.orthographicSize = 5 * playerGunCmp.scopeMultiplicity;
                         cameraCmp.playerPositonPart = 6;
-                    }
                     else
                     {
                         if (playerGunCmp.currentScopeMultiplicity <= 3)
@@ -618,7 +615,8 @@ public class AttackSystem : IEcsRunSystem
 
             foreach (var offInScopeEvent in _offInScopeStateEventsFilter.Value)
             {
-                if (playerGunCmp.inScope)
+                Debug.Log("off scope "+ playerGunCmp.inScope);
+                    if (playerGunCmp.inScope)
                     ChangeScopeMultiplicity();
                 _offInScopeStateEventsPool.Value.Del(offInScopeEvent);
             }
@@ -759,21 +757,16 @@ public class AttackSystem : IEcsRunSystem
                      && moveCmp.currentRunTime >= playerGunCmp.gunInfo.attackCouldown * gunInInvCmp.currentGunWeight * 2f))))
                 {
                     if (!playerGunCmp.gunInfo.isOneHandedGun && playerView.shieldView.shieldObject.localPosition != Vector3.zero)
-                    {
                         moveCmp.currentRunTime -= playerGunCmp.gunInfo.attackCouldown * gunInInvCmp.currentGunWeight * 2f;
-                    }
 
                     Vector2 direction = (moveCmp.pointToRotateInput - (Vector2)moveCmp.entityTransform.position).normalized;
-                    //  var _menuStatesCmp = _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                     if (Physics2D.Raycast(playerCmp.view.playerTransform.position, direction, 1f, LayerMask.GetMask("Obstacle")) /*|| _menuStatesCmp.inMainMenuState || _menuStatesCmp.inInventoryState*/) continue;
 
                     if (playerGunCmp.gunInfo.bulletShellSpawnOnShot)
                         BulletShellSpawn(playerGunCmp.gunInfo.bulletShellIndex, moveCmp.movementView.bulletShellSpawnPoint.position, moveCmp.movementView.weaponContainer.localEulerAngles.z, moveCmp.movementView.characterSpriteTransform.localRotation.y == 0);
-                  //  Debug.Log("spawn bs with rot " + moveCmp.movementView.weaponContainer.localRotation.z);
                     if (gunInInvCmp.gunDurability < playerGunCmp.gunInfo.maxDurabilityPoints * 0.6f)
                     {
                         playerGunCmp.durabilityGunMultiplayer = (float)System.Math.Round(1 - ((float)gunInInvCmp.gunDurability / ((float)playerGunCmp.gunInfo.maxDurabilityPoints * 1.6f) + 0.4f), 2);
-                        //Debug.Log(playerGunCmp.durabilityGunMultiplayer + "playerGunCmp.durabilityGunMultiplayer");
                         playerGunCmp.misfirePercent = Mathf.FloorToInt((playerGunCmp.durabilityGunMultiplayer) * 60);
 
                         CalculateRecoil(ref gunCmp, playerGunCmp, false);
@@ -790,7 +783,9 @@ public class AttackSystem : IEcsRunSystem
                         float needVolume = 0.7f;
                         if (_buildingCheckerComponentsPool.Value.Get(_sceneData.Value.playerEntity).isHideRoof)
                             needVolume = 1f;
-                        _sceneData.Value.PlaySoundFXClip(playerGunCmp.gunInfo.shotSound, moveCmp.entityTransform.position, needVolume);
+                       ref var oneShotSoundCmp = ref _oneShotSoundComponentsPool.Value.Add(_world.Value.NewEntity());
+                        oneShotSoundCmp.audioSource = _sceneData.Value.PlaySoundFXClip(playerGunCmp.gunInfo.shotSound, moveCmp.entityTransform.position, needVolume);
+                        oneShotSoundCmp.time = playerGunCmp.gunInfo.shotSound.length;
 
 
                         for (int i = 0; i < gunCmp.bulletInShotCount; i++)
@@ -820,28 +815,21 @@ public class AttackSystem : IEcsRunSystem
                             }
                         }
 
-                        //  Debug.Log("add cam spread" + (playerGunCmp.gunInfo.addedCameraSpread * playerGunCmp.currentScopeMultiplicity) +"*(1-("+  (_sceneData.Value.mainCamera.orthographicSize - 5f)+ "/"+ playerGunCmp.gunInfo.maxCameraSpread*playerGunCmp.currentScopeMultiplicity +"- "+5f);
                         if (!playerGunCmp.inScope && _sceneData.Value.mainCamera.orthographicSize > cameraCmp.currentMaxCameraSpread)
                         {
-                            float addCamSpread = playerGunCmp.gunInfo.damage * playerGunCmp.gunInfo.bulletCount * gunInInvCmp.currentGunWeight * 0.005f;
+                            float addCamSpread = playerGunCmp.gunInfo.damage * playerGunCmp.gunInfo.bulletCount * gunInInvCmp.currentGunWeight * 0.003f;
                             _sceneData.Value.mainCamera.orthographicSize -= (addCamSpread + addCamSpread * playerGunCmp.sumAddedCameraSpreadMultiplayer) * (1 - ((_sceneData.Value.mainCamera.orthographicSize - 5f) / (cameraCmp.currentMaxCameraSpread - 5f)));
-                           // Debug.Log("added camera spread without scope " + (addCamSpread + addCamSpread * playerGunCmp.sumAddedCameraSpreadMultiplayer) * (1 - ((_sceneData.Value.mainCamera.orthographicSize - 5f) / (cameraCmp.currentMaxCameraSpread - 5f))));
                         }
                         else if (playerGunCmp.inScope && _sceneData.Value.mainCamera.orthographicSize > cameraCmp.currentMaxCameraSpread * playerGunCmp.currentScopeMultiplicity)
                         {
-                            float addCamSpread = playerGunCmp.gunInfo.damage * playerGunCmp.gunInfo.bulletCount * gunInInvCmp.currentGunWeight * 0.005f;
-                            _sceneData.Value.mainCamera.orthographicSize -= (addCamSpread + addCamSpread * playerGunCmp.sumAddedCameraSpreadMultiplayer) * playerGunCmp.currentScopeMultiplicity * (1 - ((_sceneData.Value.mainCamera.orthographicSize / playerGunCmp.currentScopeMultiplicity - 5f)) / (cameraCmp.currentMaxCameraSpread - 5f)) /* Mathf.Pow(0.9f,)*/;
-                            //  _sceneData.Value.mainCamera.orthographicSize += (playerGunCmp.gunInfo.addedCameraSpread + playerGunCmp.gunInfo.addedCameraSpread * playerGunCmp.sumAddedCameraSpreadMultiplayer) * playerGunCmp.currentScopeMultiplicity * (1 - ((_sceneData.Value.mainCamera.orthographicSize - 5f) / (playerGunCmp.gunInfo.maxCameraSpread * playerGunCmp.currentScopeMultiplicity)));
-                          //  Debug.Log("added camera spread in scope " + (addCamSpread + addCamSpread * playerGunCmp.sumAddedCameraSpreadMultiplayer) * playerGunCmp.currentScopeMultiplicity * (1 - ((_sceneData.Value.mainCamera.orthographicSize / playerGunCmp.currentScopeMultiplicity - 5f)) / (cameraCmp.currentMaxCameraSpread - 5f)));
+                            float addCamSpread = playerGunCmp.gunInfo.damage * playerGunCmp.gunInfo.bulletCount * gunInInvCmp.currentGunWeight * 0.003f;
+                            _sceneData.Value.mainCamera.orthographicSize -= (addCamSpread + addCamSpread * playerGunCmp.sumAddedCameraSpreadMultiplayer) * playerGunCmp.currentScopeMultiplicity * (1 - ((_sceneData.Value.mainCamera.orthographicSize / playerGunCmp.currentScopeMultiplicity - 5f)) / (cameraCmp.currentMaxCameraSpread - 5f));
                         }
-
-
                     }
                     attackCmp.currentAttackCouldown = 0;
 
                     ref var playerStats = ref _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity);
                     playerStats.currentStatsExp[1] += attackCmp.damage * playerGunCmp.gunInfo.bulletCount * Mathf.Pow(0.95f, playerGunCmp.gunInfo.bulletCount) * 0.05f;
-                   // Debug.Log("add gun exp" + Mathf.Pow(0.95f, playerGunCmp.gunInfo.bulletCount));
                     if (playerStats.currentStatsExp[0] >= _sceneData.Value.levelExpCounts[playerStats.statLevels[0]])//0 потому что стат sili
                     {
                         playerStats.statLevels[0]++;
@@ -911,7 +899,6 @@ public class AttackSystem : IEcsRunSystem
                             return;
                         }
                         gunCmp.isReloading = false;
-                        // _sceneData.Value.ammoInfoText.text = gunInInvCmp.currentAmmo + "/" + gunCmp.magazineCapacity;
                         _sceneData.Value.ammoInfoText.text = "";
                     }
                 }
@@ -1373,7 +1360,6 @@ public class AttackSystem : IEcsRunSystem
             fovCmp.viewDistance /= plyerGunCmp.currentScopeMultiplicity;
             plyerGunCmp.cameraOrtograficalSizeDifference = _sceneData.Value.mainCamera.orthographicSize / (5 * plyerGunCmp.currentScopeMultiplicity);
         }
-      //  Debug.Log(plyerGunCmp.cameraOrtograficalSizeDifference + " camera ort size diff");
         plyerGunCmp.inScope = !plyerGunCmp.inScope;
 
         if (playerCmp.nvgIsUsed && plyerGunCmp.inScope && plyerGunCmp.currentScopeMultiplicity > 2.1f)
@@ -1398,7 +1384,7 @@ public class AttackSystem : IEcsRunSystem
         CalculateRecoil(ref gunCmp, plyerGunCmp, true);
         plyerGunCmp.timeAfterChangedInScopeState = 1f;
         plyerGunCmp.changedInScopeState = true;
-
+      //  Debug.Log("changedInScopeState " + plyerGunCmp.changedInScopeState);
     }
     private void ChangeWeapon(int curWeapon)
     {

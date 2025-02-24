@@ -147,6 +147,10 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
     public void Run(IEcsSystems systems)
     {
+        if(Input.GetKeyDown(KeyCode.Z)) 
+            _inventoryComponentsPool.Value.Get(_sceneService.Value.inventoryEntity).moneyCount += 50;
+        //del in full game
+
         ref var curInteactedObjectsCmp = ref _currentInteractedCharactersComponentsPool.Value.Get(_playerEntity);
         if (curInteactedObjectsCmp.interactionType != InteractionType.none)
         {
@@ -194,8 +198,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                             openedDoorView.gameObject.GetComponent<SpriteRenderer>().sprite = openedDoorView.openDoorSprite;
                             return;
                         }
-                        //     foreach (var invItemEntity in _inventoryItemsFilter.Value)
-                        //   if (_inventoryItemComponentsPool.Value.Get(invItemEntity).itemInfo.itemId == needItemIdToOpen)
                     }
                 }
                 else if (curInteactedObjectsCmp.interactionType == InteractionType.trap)
@@ -214,15 +216,15 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             {
                 var currentQuestCharacter = curInteactedObjectsCmp.interactCharacterView.gameObject.GetComponent<QuestCharacterView>();
                 var questNPCCmp = _questNPCComponentsPool.Value.Get(curInteactedObjectsCmp.interactCharacterView._entity);
-                if (questNPCCmp.questIsGiven)
+                if (questNPCCmp.currentQuest < currentQuestCharacter.questNode.Length)
                 {
-                    _checkComplitedQuestEventsPool.Value.Add(currentQuestCharacter.GetComponent<InteractCharacterView>()._entity).characterId = currentQuestCharacter.characterId;
-                    Debug.Log("Check quest b");
-                }
-                else
-                {
-                    _npcStartDialogeEventsPool.Value.Add(currentQuestCharacter.GetComponent<InteractCharacterView>()._entity).questNPCId = currentQuestCharacter.characterId;
-                    curInteactedObjectsCmp.isNPCNowIsUsed = true;
+                    if (questNPCCmp.questIsGiven)
+                        _checkComplitedQuestEventsPool.Value.Add(currentQuestCharacter.GetComponent<InteractCharacterView>()._entity).characterId = currentQuestCharacter.characterId;
+                    else
+                    {
+                        _npcStartDialogeEventsPool.Value.Add(currentQuestCharacter.GetComponent<InteractCharacterView>()._entity).questNPCId = currentQuestCharacter.characterId;
+                        curInteactedObjectsCmp.isNPCNowIsUsed = true;
+                    }
                 }
             }
             //Debug.Log("gusmithCheck " + (Input.GetKeyDown(KeyCode.T)) + "" + (isColliderInteract) + "" + (currentInteractNPCType == InteractNPCType.shopAndDialogeNpc) + "" + (!isNPCNowIsUsed));
@@ -238,9 +240,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             curInteactedObjectsCmp.interactionType = checkInteractCmp.interactionType;
 
             if (checkInteractCmp.interactionType == InteractionType.none)
-            {
                 interactText.text = "";
-            }
             else
             {
                 if (checkInteractCmp.interactionType == InteractionType.droppedItem /*&& _droppedItemComponentsPool.Value.Has(curInteactedObjectsCmp.dropItemView.itemEntity)*/)
@@ -338,8 +338,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     ref var inventoryCmp = ref _inventoryComponentsPool.Value.Get(_sceneService.Value.inventoryEntity);
                     moveCmp.moveSpeed = moveCmp.movementView.moveSpeed + moveCmp.movementView.moveSpeed / 50 * playerStatsCmp.statLevels[0];
                     if (inventoryCmp.weight / inventoryCmp.currentMaxWeight > 0.7f)
-                        moveCmp.moveSpeed -= (moveCmp.movementView.moveSpeed * ((inventoryCmp.weight / inventoryCmp.currentMaxWeight) - 0.7f) * 2);
-                    Debug.Log(moveCmp.moveSpeed);
+                        moveCmp.moveSpeed -= moveCmp.movementView.moveSpeed * ((inventoryCmp.weight / inventoryCmp.currentMaxWeight) - 0.7f) * 2;
                     var playerGunCmp = _playerGunComponentsPool.Value.Get(_playerEntity);
                     if (playerGunCmp.inScope)
                         moveCmp.moveSpeed /= playerGunCmp.currentScopeMultiplicity;
@@ -371,7 +370,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             {
                 _trapIsNeutralizedEventsPool.Value.Add(neutralizeTrap).trapType = curInteactedObjectsCmp.trapView.type;
                 _sceneService.Value.ammoInfoText.text = "";
-                var playerView = _playerComponentsPool.Value.Get(neutralizeTrap).view.playerInputView;
                 curInteactedObjectsCmp.trapView.spriteRenderer.sprite = curInteactedObjectsCmp.trapView.safetyTrapSprite;
                 curInteactedObjectsCmp.trapView.trapCollider.enabled = false;
                 curInteactedObjectsCmp.trapView = null;
@@ -404,7 +402,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 buildChecker.timeBeforeHideRoof = 1f - buildChecker.timeBeforeHideRoof;
             else
                 buildChecker.timeBeforeHideRoof = 1f;
-            Debug.Log("change roof state");
             _changeInBuildingStateEventsPool.Value.Del(changeRoofState);
         }
         ref var playerCmp = ref _playerComponentsPool.Value.Get(_playerEntity);
@@ -556,16 +553,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         bool inInventory = _menuStatesComponentsPool.Value.Get(_playerEntity).inInventoryState;
 
-        /* if (Input.GetKeyDown(KeyCode.M))
-         {
-             _playerComponentsPool.Value.Get(_playerEntity).money += 10;
-             Debug.Log("now " + _playerComponentsPool.Value.Get(_playerEntity).money + " money");
-         }*/
-        /*   if (Input.GetKeyDown(KeyCode.P))
-           {
-               _saveGameEventsPool.Value.Add(_playerEntity);
-           }*/
-
         if (inInventory && _sceneService.Value.dropedItemsUIView.divideItemsUI.gameObject.activeInHierarchy)
         {
             if (Input.GetKeyDown(KeyCode.D) && _sceneService.Value.dropedItemsUIView.dropButton.gameObject.activeInHierarchy)
@@ -576,7 +563,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             {
                 _sceneService.Value.dropedItemsUIView.generalSlider.value = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.dropedItemsUIView.curCell).currentItemsCount;
             }
-            else if (Input.GetKeyDown(KeyCode.S)/* && _menuStatesComponentsPool.Value.Get(_playerEntity).inStorageState */&& _sceneService.Value.dropedItemsUIView.storageButton.gameObject.activeInHierarchy)
+            else if (Input.GetKeyDown(KeyCode.S)&& _sceneService.Value.dropedItemsUIView.storageButton.gameObject.activeInHierarchy)
             {
                 _addItemFromCellEventsPool.Value.Add(_sceneService.Value.dropedItemsUIView.curCell);
             }
@@ -590,17 +577,12 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             }
         }
 
-        //  Debug.Log("check na pleshivost 7");
         if (healthCmp.isDeath) return;
 
         float horizontalInput = Input.GetAxisRaw("Horizontal");
         float verticalInput = Input.GetAxisRaw("Vertical");
         Vector2 moveDirection = new Vector2(horizontalInput, verticalInput);
 
-        //условие какое то
-        // if (verticalInput > 1 || verticalInput < -1 || horizontalInput > 1 || horizontalInput < -1)
-        //Debug.Log(verticalInput + "y " + horizontalInput + "x ");
-        // if (verticalInput != 0 && horizontalInput != 0)
         moveDirection = moveDirection.normalized;
 
         if (playerMoveCmp.nowIsMoving && moveDirection == Vector2.zero)
@@ -649,9 +631,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     {
                         if (moveCmp.currentRunTime <= 0)
                             moveCmp.currentRunTime--;
-                        // moveCmp.moveSpeed /= playerMoveCmp.playerView.runSpeedMultiplayer;
                         moveCmp.isRun = false;
-                     //   Debug.Log("move aspeed after run " + moveCmp.moveSpeed);
                         _calculateRecoilEventsPool.Value.Add(_world.Value.NewEntity());
                     }
                     _sceneService.Value.playerStaminaBarFilled.fillAmount = moveCmp.currentRunTime / moveCmp.maxRunTime;
@@ -814,7 +794,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     playerCmp.view.flashLightObject.gameObject.SetActive(playerCmp.useFlashlight);
                 }
             }
-        } 
+        }
         foreach (var objEntity in _hidedObjectOutsideFOVComponentsFilter.Value)
         {
             ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(objEntity);
@@ -823,7 +803,8 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             {
                 hidedObjCmp.timeBeforeHide = 0;
                 foreach (var spriteRenderer in hidedObjCmp.hidedObjects)
-                    spriteRenderer.gameObject.SetActive(false);
+                    if (spriteRenderer != null)
+                        spriteRenderer.gameObject.SetActive(false);
                 //spriteRenderer.enabled = false;
             }
             else if (hidedObjCmp.timeBeforeHide > 0)
@@ -849,8 +830,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         ref var fOVCmp = ref _fieldOfViewComponentsPool.Value.Get(_playerEntity);
         float fov = fOVCmp.fieldOfView;
         float viewDistance = fOVCmp.viewDistance;
-        //float viewDistance = 5;
-        // Vector3 origin = playerCmp.view.healthView.characterHeadCollaider.transform.position;
         Vector3 origin = new Vector2(playerCmp.view.movementView.transform.position.x, playerCmp.view.movementView.transform.position.y - 0.2f);
         int rayCount = Mathf.CeilToInt(fov / 3);
         float angle = GetAngleFromVectorFloat(moveCmp.pointToRotateInput - (Vector2)origin) - fov / 2;
@@ -875,20 +854,15 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     bool isHasThisCollider = false;
                     foreach (var col in checkedColliders)
                         if (col == raycastHit2D.collider)
-                        {
                             isHasThisCollider = true;
-                            // Debug.Log("ignoreCollider");
-                        }
                     if (!isHasThisCollider)
                     {
                         checkedColliders.Add(raycastHit2D.collider);
-                        //  Debug.Log("addCheckCollider" + raycastHit2D.collider.gameObject.layer);
                         int objectLayer = raycastHit2D.collider.gameObject.layer;
                         switch (objectLayer)
                         {
                             case 7:
                                 ref var hidedObjCmp = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<CreatureView>().entity);//может быть как то оптимизировать
-                                Debug.Log("fov contact with enemy");
                                 hidedObjCmp.timeBeforeHide = 0.5f;
                                 foreach (var spriteRenderer in hidedObjCmp.hidedObjects)
                                     spriteRenderer.gameObject.SetActive(true);
@@ -1013,8 +987,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     int enemyEntity = ray.transform.gameObject.GetComponent<HealthView>()._entity;
                     ref var aiCmpEnemy = ref _creatureAIComponentsPool.Value.Get(enemyEntity);
                     var enemySpriteTransform = aiCmpEnemy.creatureView.movementView.characterSpriteTransform;
-                    Debug.Log("enemy on flashlight");
-                    //((aiCmpEnemy.creatureView.movementView.characterSpriteTransform.localScale.x > 0 && playerView.movementView.transform.position.x > aiCmpEnemy.creatureView.movementView.characterSpriteTransform.position.x) || (aiCmpEnemy.creatureView.movementView.characterSpriteTransform.localScale.x < 0 && playerView.movementView.transform.position.x < aiCmpEnemy.creatureView.movementView.characterSpriteTransform.position.x))
+                    
                     if ((enemySpriteTransform.localScale.x > 0 && playerCmp.view.movementView.transform.position.x > enemySpriteTransform.position.x) || (enemySpriteTransform.localScale.x < 0 && playerCmp.view.movementView.transform.position.x < enemySpriteTransform.position.x))//see the player
                     {
                         aiCmpEnemy.targetPositionCached = playerCmp.view.transform.position;
@@ -1034,7 +1007,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     Debug.DrawRay(origin, GetVectorFromAngle(angle) * flashlightInfo.lightRange, Color.green);
                     if (raycastHit2D.collider != null)
                     {
-                        //  Debug.Log("checkCollider");
                         bool isHasThisCollider = false;
                         foreach (var col in checkedColliders)
                             if (col == raycastHit2D.collider)
@@ -1042,7 +1014,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                         if (!isHasThisCollider)
                         {
                             checkedColliders.Add(raycastHit2D.collider);
-                            //  Debug.Log("addCheckCollider" + raycastHit2D.collider.gameObject.layer);
                             if (raycastHit2D.collider.gameObject.layer == 7)
                             {
                                 int enemyEntity = raycastHit2D.transform.gameObject.GetComponent<HealthView>()._entity;

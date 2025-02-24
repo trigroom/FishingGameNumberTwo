@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d066b48019e341418c014e91807bc1b, type: 3}
   m_Name: S&WVictoryBuy
   m_EditorClassIdentifier: 
-  isBuyItem: 1
   itemInfo: {fileID: 11400000, guid: c21a8554740886843853f934666f02f0, type: 2}
   count: 1
-  price: 1
+  price: 25
   needSkillLevelToUnlock: 0
   needSkillToUnlock: 0
-  itemsCountToBuy: 5
+  itemsCountToBuy: 1

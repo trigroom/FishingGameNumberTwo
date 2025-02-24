@@ -317,19 +317,40 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                 int needCount = needShopper.characterView.shopItems.Length < gameData.shoppersInfoForSafeData[i].collectedItems.Length ? needShopper.characterView.shopItems.Length : gameData.shoppersInfoForSafeData[i].collectedItems.Length;
                 needShopper.remainedShopItems = new int[needShopper.characterView.shopItems.Length];
                 for (int j = 0; j < needCount; j++)
-                {
                     needShopper.remainedShopItems[j] = gameData.shoppersInfoForSafeData[i].collectedItems[j];
-                }
             }
             else
             {
                 needShopper.remainedShopItems = new int[gameData.shoppersInfoForSafeData[i].collectedItems.Length];
                 for (int j = 0; j < needShopper.remainedShopItems.Length; j++)
-                {
                     needShopper.remainedShopItems[j] = gameData.shoppersInfoForSafeData[i].collectedItems[j];
-                }
             }
         }
+
+        int gunCount = 0;
+        foreach (var weapon in _sceneData.Value.idItemslist.items)
+            if (weapon != null && (weapon.type == ItemInfo.itemType.gun || weapon.type == ItemInfo.itemType.meleeWeapon))
+                gunCount++;
+
+        if (gunCount != gameData.weaponsCurrentExpForSaveData.Length)
+        {
+            Dictionary<int, int> curWeaponsExp = new Dictionary<int, int>();
+            foreach (var weaponExpInfo in gameData.weaponsCurrentExpForSaveData)
+                curWeaponsExp.Add(weaponExpInfo.cellId, weaponExpInfo.num);
+
+            foreach (var weapon in _sceneData.Value.idItemslist.items)
+                if (weapon != null && (weapon.type == ItemInfo.itemType.gun || weapon.type == ItemInfo.itemType.meleeWeapon) && !curWeaponsExp.ContainsKey(weapon.itemId))
+                {
+                    curWeaponsExp.Add(weapon.itemId, 0);
+                    Debug.Log("addd gun to exp list" +  weapon.itemId);
+                }
+
+            gameData.weaponsCurrentExpForSaveData = new NumAndIdForSafeData[curWeaponsExp.Count];
+            int i = 0;
+            foreach(var weaponExp in curWeaponsExp)
+                gameData.weaponsCurrentExpForSaveData[i++] = new NumAndIdForSafeData(weaponExp.Key, weaponExp.Value);
+        }
+
 
         _sceneData.Value.dropedItemsUIView.uiScalerSlider.value = this.gameData.currentUIScaleMultiplayer;
         // _sceneData.Value.dropedItemsUIView.uiScalerSlider.value = 0.7f;
@@ -363,6 +384,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             while (curExp >= _sceneData.Value.levelExpCounts[curLevel])
                 curLevel++;
             playerStats.weaponsExp.Add(weaponExp.cellId, new GunLevelInfoElement((int)curExp, curLevel));
+            Debug.Log(weaponExp.cellId + " weapon in exp cmp"+ curExp);
         }
 
         playerStats.statLevels = new int[3];
@@ -763,6 +785,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             gameData.playerHP = _healthComponentsPool.Value.Get(playerEntity).healthPoint;
             for (int i = 0; i < _sceneData.Value.startShoppers.Length; i++)
             {
+                if (_sceneData.Value.startShoppers[i] == 1) continue;
                 // gameData.shoppersInfoForSafeData = new QuestInfoForSafeData[_sceneData.Value.startShoppers.Length];
                 //  Debug.Log(_sceneData.Value.interactCharacters[_sceneData.Value.startShoppers[i]]._entity + " need shopper to save");
                 gameData.shoppersInfoForSafeData[i].questNPCId = _sceneData.Value.startShoppers[i];
@@ -783,6 +806,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
             for (int i = 0; i < _sceneData.Value.startShoppers.Length; i++)
             {
+                if (_sceneData.Value.startShoppers[i] == 1) continue;
                 gameData.shoppersInfoForSafeData[i].questNPCId = _sceneData.Value.startShoppers[i];
                 var needShopper = _shopCharacterComponentsPool.Value.Get(_sceneData.Value.interactCharacters[gameData.shoppersInfoForSafeData[i].questNPCId]._entity);
                 gameData.shoppersInfoForSafeData[i].currentQuest = needShopper.characterView.startMoneyToBuy;

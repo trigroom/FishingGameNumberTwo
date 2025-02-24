@@ -10,26 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7718247f6aa85b84f813578fb0d5b327, type: 3}
-  m_Name: HkMp5GunInfo
+  m_Name: M16GunInfo
   m_EditorClassIdentifier: 
-  gunType: 4
-  attackLenght: 18
-  shotSoundDistance: 20
-  reloadDuration: 1.7
-  magazineCapacity: 15
-  damage: 18
-  attackCouldown: 0.08
-  maxSpread: 30
+  gunType: 5
+  attackLenght: 30
+  shotSoundDistance: 40
+  reloadDuration: 2.3
+  magazineCapacity: 20
+  damage: 33
+  attackCouldown: 0.1
+  maxSpread: 40
   minSpread: 1
-  addedSpread: 1.2
-  weaponChangeSpeed: 1.4
-  isAuto: 1
-  bulletTypeId: 4
+  addedSpread: 1.6
+  weaponChangeSpeed: 2
+  isAuto: 0
+  bulletTypeId: 5
   bulletCount: 1
   isOneBulletReloaded: 0
-  maxDurabilityPoints: 2000
+  maxDurabilityPoints: 2500
   bulletShellIndex: 3
-  firepointPosition: {x: 0.18, y: 0.035}
+  firepointPosition: {x: 0.23, y: 0.02}
   bulletShellPointPosition: {x: -0.02, y: 0.045}
   bulletShellSpawnOnShot: 1
   durabilityRecoveryCost: 10
@@ -71,31 +71,36 @@ MonoBehaviour:
       m_NumAlphaKeys: 2
   spriteScaleMultiplayer: 2.5
   spriteRotation: 90
-  weaponSprite: {fileID: 21300000, guid: c561169f6cbfeb140acd4e9818232bed, type: 3}
-  shotFlashDistance: 3
+  weaponSprite: {fileID: 21300000, guid: c85c8472ef789014d9f5b830fde7e09e, type: 3}
+  shotFlashDistance: 3.5
   shotFlashIntance: 10
   shotFlashAngle: 50
   bulletsUIPositions:
-  - {x: 0, y: 105.2}
-  - {x: 2.28, y: 90.38}
-  - {x: -2.38, y: 76.36}
-  - {x: 2.28, y: 62.31}
-  - {x: -2.38, y: 48.29}
-  - {x: 2.28, y: 34.25}
-  - {x: -2.38, y: 20.23}
-  - {x: 2.28, y: 6.27}
-  - {x: -2.38, y: -7.75}
-  - {x: 2.28, y: -21.81}
-  - {x: -2.38, y: -35.83}
-  - {x: 2.28, y: -49.78}
-  - {x: -2.38, y: -63.82}
-  - {x: 2.28, y: -77.77}
-  - {x: -2.38, y: -91.75}
+  - {x: 0, y: 93.51}
+  - {x: 2.5, y: 81}
+  - {x: -2.5, y: 71.81}
+  - {x: 2.5, y: 62.67}
+  - {x: -2.5, y: 53.48}
+  - {x: 2.5, y: 44.32}
+  - {x: -2.5, y: 35.13}
+  - {x: 2.5, y: 26.6}
+  - {x: -2.5, y: 16.87}
+  - {x: 2.5, y: 7.72}
+  - {x: -2.5, y: -1.47}
+  - {x: 2.5, y: -10.64}
+  - {x: -2.5, y: -19.83}
+  - {x: 2.5, y: -28.96}
+  - {x: -2.5, y: -38.15}
+  - {x: 2.5, y: -47.27}
+  - {x: -2.5, y: -56.46}
+  - {x: 2.5, y: -65.65}
+  - {x: -2.5, y: -74.84}
+  - {x: 2.5, y: -83.81}
   bulletUISprite: {fileID: 21300000, guid: 76dded18b3f1faf449cbb67a700fa60f, type: 3}
   magUISprite: {fileID: 21300000, guid: 898988cd0f301e54bb18c0e3c96d4668, type: 3}
-  magUISize: {x: 23.5, y: 202}
-  magUIPosition: {x: 17, y: 80}
-  bulletUISize: {x: 14, y: 14}
+  magUISize: {x: 17.5, y: 181}
+  magUIPosition: {x: 0, y: 69}
+  bulletUISize: {x: 10, y: 10}
   scopeMultiplicity: 1
   blackBGSize: 0
   centreCrossSprite: {fileID: 0}
@@ -104,4 +109,4 @@ MonoBehaviour:
   upgradeCost: 0
   upgradedGunId: 0
   neededGunsmithLevelToUpgrade: 0
-  gunParts: 9
+  gunParts: 10

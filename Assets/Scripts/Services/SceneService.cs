@@ -8,6 +8,10 @@ using UnityEngine.UI;
 
 public class SceneService : MonoBehaviour
 {
+    [field: SerializeField] public Transform startLocationLightsContainer { get; private set; }
+    [field: SerializeField] public RectTransform mainCanvas { get; private set; }
+    [field: SerializeField] public Animator warningInfoTextAnimator { get; private set; }
+    [field: SerializeField] public TMP_Text warningInfoText { get; private set; }
     [field: SerializeField] public AudioSource uiAudioSourse { get; private set; }
     [field: SerializeField] public AudioClip equipItemSound { get; private set; }
     [field: SerializeField] public AudioClip closeInventorySound { get; private set; }
@@ -385,6 +389,14 @@ public class SceneService : MonoBehaviour
         return droppedItemObj;
     }
 
+    public void ShowWarningText(string needText)
+    {
+        var screenPoint =(Input.mousePosition-mainCanvas.position)/mainCanvas.localScale.x;
+        warningInfoText.rectTransform.anchoredPosition = screenPoint;
+        warningInfoTextAnimator.SetTrigger("SetText");
+        warningInfoText.text = needText;
+    }
+
     public Vector3 GetOutOfScreenPosition()
     {
         var randomX = Random.Range(-1000, 1000);
@@ -405,7 +417,6 @@ public class SceneService : MonoBehaviour
         audioSource.clip = clip;
         audioSource.volume = volume;
         audioSource.Play();
-
         return audioSource;
     }
 

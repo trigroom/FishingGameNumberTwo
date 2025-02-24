@@ -77,12 +77,13 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
             //удалять всех врагов при переходе на некст локацию
             _sceneService.Value.DestroyLevel(curLocationCmp.currentLevelPrefab);
         }
-
+        ref var globalTimeCmp = ref _globalTimeComponentsPool.Value.Get(_sceneService.Value.playerEntity);
         if (curLocationCmp.currentLocation == null || curLocationCmp.currentLocation.levels.Length == curLocationCmp.levelNum || needLocation == null)
         {
             foreach (var shopperIndex in _sceneService.Value.startShoppers)
             {
                 _sceneService.Value.interactCharacters[shopperIndex].gameObject.SetActive(true);
+                if (shopperIndex == 1) continue;
                 _setupShoppersOnNewLocationEventsPool.Value.Add(_sceneService.Value.interactCharacters[shopperIndex]._entity);
             }
             _sceneService.Value.startLocation.gameObject.SetActive(true);
@@ -93,11 +94,13 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
             }
             curLocationCmp.levelNum = 0;
             _movementComponentsPool.Value.Get(_sceneService.Value.playerEntity).movementView.gameObject.transform.position = Vector2.zero;
+
+            _sceneService.Value.startLocationLightsContainer.gameObject.SetActive(globalTimeCmp.isNight);
             return;
         }
         else
         {
-            ref var globalTimeCmp = ref _globalTimeComponentsPool.Value.Get(_sceneService.Value.playerEntity);
+
             curLocationCmp.currentLevelPrefab = _sceneService.Value.InstantiateLevel(needLocation.levels[curLocationCmp.levelNum].levelPrefab.transform);
             curLocationCmp.currentEnemySpawns = new List<Vector2>();
             var curLevelView = curLocationCmp.currentLevelPrefab.GetComponent<LevelSceneView>();
@@ -143,9 +146,9 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     globalTimeCmp.currentDay++;
                     globalTimeCmp.isNight = false;
-                }  
+                }
                 if (!globalTimeCmp.changedToRain)
-                globalTimeCmp.currentGlobalLightIntensity -= 0.1f;
+                    globalTimeCmp.currentGlobalLightIntensity -= 0.1f;
             }
             else if (globalTimeCmp.currentDayTime == 3)
             {
@@ -163,15 +166,15 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 if (!globalTimeCmp.changedToRain)
                     globalTimeCmp.currentGlobalLightIntensity -= 0.1f;
             }
-          
+
             Debug.Log(globalTimeCmp.currentGlobalLightIntensity + "globalLightint");
             if (globalTimeCmp.currentGlobalLightIntensity < 0.001f)
                 globalTimeCmp.currentGlobalLightIntensity = 0;
 
             Color needColor = _sceneService.Value.nightLightColor.Evaluate(0);
-            if(globalTimeCmp.currentDayTime > 12)
+            if (globalTimeCmp.currentDayTime > 12)
                 needColor = _sceneService.Value.nightLightColor.Evaluate(1f);
-            else if(globalTimeCmp.currentDayTime == 0 || globalTimeCmp.currentDayTime == 12)
+            else if (globalTimeCmp.currentDayTime == 0 || globalTimeCmp.currentDayTime == 12)
                 needColor = _sceneService.Value.nightLightColor.Evaluate(0.5f);
             foreach (var houseLight in curLevelView.lightsInHouses)
             {
@@ -206,15 +209,9 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 _sceneService.Value.dropedItemsUIView.solarBatteryenergyText.text = (int)electricityGeneratorCmp.currentElectricityEnergy + "mAh/ \n" + _sceneService.Value.solarEnergyGeneratorMaxCapacity + "mAh";
             }
             if (curLocationCmp.levelNum != 0)
-            {
                 _saveGameEventsPool.Value.Add(_sceneService.Value.playerEntity).type = DataPersistenceManagerSystem.SavePriority.betweenLevelSave;
-                Debug.Log("betweenLevelSave");
-            }
             else
-            {
                 _saveGameEventsPool.Value.Add(_sceneService.Value.playerEntity).type = DataPersistenceManagerSystem.SavePriority.startLocationSave;
-                Debug.Log("startLocationSave");
-            }
 
 
             ShopCharacterView[] shoppers;
@@ -234,11 +231,11 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 if (interestObjectView.spawnChance < Random.value)
                     interestObjectView.gameObject.SetActive(false);
                 else
-                {   
+                {
                     int itemEntity = _world.Value.NewEntity();
                     if (interestObjectView.objectType == InterestObjectOnLocationView.InterestObjectType.collecting)
                     {
-                   
+
 
                         ref var droppedItemComponent = ref _droppedItemComponentsPool.Value.Add(itemEntity);
 
@@ -277,18 +274,16 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
             {
                 int needShopperIndex = Random.Range(0, remainngShoppers.Count);
                 int needRandomShopperPositionIndex = Random.Range(0, currentInterestsSpawns.Count);
-                Debug.Log(remainngShoppers[needShopperIndex] + " shopper index");
                 var curShopper = _sceneService.Value.interactCharacters[remainngShoppers[needShopperIndex]].transform.GetComponent<ShopCharacterView>();
                 _setupShoppersOnNewLocationEventsPool.Value.Add(_sceneService.Value.interactCharacters[remainngShoppers[needShopperIndex]]._entity);
                 shoppers[i] = curShopper;
-                //shoppers[i].gameObject.transform.SetParent(curLocationCmp.currentLevelPrefab);
                 shoppers[i].gameObject.SetActive(true);
                 shoppers[i].gameObject.transform.position = currentInterestsSpawns[needRandomShopperPositionIndex];
 
                 remainngShoppers.RemoveAt(needShopperIndex);
                 currentInterestsSpawns.RemoveAt(needRandomShopperPositionIndex);
             }
-            if (globalTimeCmp.isNight)
+            /*if (globalTimeCmp.isNight)
             {
                 int needRandomShopperPositionIndex = Random.Range(0, currentInterestsSpawns.Count);
 
@@ -299,7 +294,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
 
 
                 currentInterestsSpawns.RemoveAt(needRandomShopperPositionIndex);
-            }
+            }*/
 
             _movementComponentsPool.Value.Get(_sceneService.Value.playerEntity).movementView.gameObject.transform.position = curLocationCmp.currentLocation.levels[curLocationCmp.levelNum].levelPrefab.playerSpawns[Random.Range(0, curLocationCmp.currentLocation.levels[curLocationCmp.levelNum].levelPrefab.playerSpawns.Length)].position;
 
@@ -403,8 +398,8 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
             if (globalTimeCmp.currentDayTime == 0 || globalTimeCmp.currentDayTime == 12)
             {
                 globalTimeCmp.currentGlobalLightIntensity = 0.45f;
-                if(globalTimeCmp.currentDayTime == 12)
-                globalTimeCmp.isNight = true;
+                if (globalTimeCmp.currentDayTime == 12)
+                    globalTimeCmp.isNight = true;
                 _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(0.5f);
             }
             else if (globalTimeCmp.currentDayTime < 12)
@@ -427,6 +422,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 globalTimeCmp.currentGlobalLightIntensity = 0;
             _sceneService.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity;
 
+            _sceneService.Value.startLocationLightsContainer.gameObject.SetActive(globalTimeCmp.isNight);
 
             /* globalTimeCmp.changeGloabalLightTime = 46;
 
