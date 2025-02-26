@@ -528,12 +528,6 @@ public class InventorySystem : IEcsRunSystem
                 }
                 else if (specialItemInventoryCell == _sceneData.Value.bodyArmorCellView._entity)
                 {
-                    ref var bodyArmorCell = ref _inventoryCellsComponents.Value.Get(_sceneData.Value.bodyArmorCellView._entity);
-                    bodyArmorCell.isEmpty = false;
-                    ref var bodyArmorItem = ref _inventoryItemComponentsPool.Value.Get(_sceneData.Value.bodyArmorCellView._entity);
-                    bodyArmorItem.itemInfo = _sceneData.Value.idItemslist.items[90];
-                    bodyArmorItem.currentItemsCount = 1;
-                    //   playerCmp.view.movementView.bodyArmorSpriteRenderer.transform.localPosition = bodyArmorItem.itemInfo.bodyArmorInfo.inGamePositionOnPlayer;
                 }
                 else
                 {
@@ -1627,6 +1621,12 @@ public class InventorySystem : IEcsRunSystem
 
             invCmp.moneyCount -= shopCellCmp.itemCost;
             _sceneData.Value.moneyText.text = invCmp.moneyCount + "$";
+            ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+            if(menuStatesCmp.lastMarkedCell != 0)
+            {
+            _inventoryCellsComponents.Value.Get(menuStatesCmp.lastMarkedCell).cellView.inventoryCellAnimator.SetBool("buttonIsActive", false);
+            menuStatesCmp.lastMarkedCell = 0;
+            }
             _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
             SetMoveSpeedFromWeight();
         }

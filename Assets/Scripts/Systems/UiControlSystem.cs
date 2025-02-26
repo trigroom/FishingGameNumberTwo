@@ -256,9 +256,9 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             else
             {
                 int gunEntity = _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell;
-                Debug.Log("changed gun desc" + gunEntity + " gp desc " + (_gunInventoryCellComponentsPool.Value.Get(_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell).gunPartsId[(int)gunPartCellView.cellGunPartType]));
+               // Debug.Log("changed gun desc" + gunEntity + " gp desc " + (_gunInventoryCellComponentsPool.Value.Get(_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell).gunPartsId[(int)gunPartCellView.cellGunPartType]));
                 var gunItem = _inventoryItemComponentPool.Value.Get(gunEntity).itemInfo;
-                Debug.Log(gunItem.itemName);
+              //  Debug.Log(gunItem.itemName);
                 _sceneData.Value.dropedItemsUIView.itemDescriptionText.text = "<b>" + gunItem.itemName + "</b>" + "\n" + "Type: " + gunItem.type + "\n" + "Weight: " + _gunInventoryCellComponentsPool.Value.Get(_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell).currentGunWeight + "\n";
                 ChangeGunDescription(gunItem, _gunInventoryCellComponentsPool.Value.Get(gunEntity), _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[gunItem.itemId]);
             }
@@ -493,10 +493,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                             _sceneData.Value.dropedItemsUIView.secondButtonActionText.text = "charge laser pointer " + _sceneData.Value.idItemslist.items[gunInInvCellCmp.gunPartsId[2]].gunPartInfo.energyToCharge + "mAh";
                         }
                         if (_storageCellTagsPool.Value.Has(desription))
-                        {
                             _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(false);
-                            //_sceneData.Value.dropedItemsUIView.divideItemsUI.gameObject.SetActive(true);
-                        }
                         else
                             _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "equip";
                     }
@@ -967,7 +964,6 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     private void ChangeInventoryMenuState(ref MenuStatesComponent menusStatesCmp)
     {
 
-        Cursor.visible = !menusStatesCmp.inInventoryState;
         if (!menusStatesCmp.inInventoryState)
         {
            
@@ -996,6 +992,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).canMove = !menusStatesCmp.inInventoryState;
         _currentAttackComponentsPool.Value.Get(_sceneData.Value.playerEntity).canAttack = !menusStatesCmp.inInventoryState;
         _currentInteractedCharactersComponentsPool.Value.Get(_sceneData.Value.playerEntity).isNPCNowIsUsed = menusStatesCmp.inInventoryState;
+        Cursor.visible = menusStatesCmp.inInventoryState;
         //изменение состояния стрелбы и ходьбы
     }
     private void ChangeQuestHelperState(ref MenuStatesComponent menusStatesCmp)

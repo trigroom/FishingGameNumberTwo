@@ -16,7 +16,7 @@ MonoBehaviour:
   type: 6
   maxCount: 15
   itemWeight: 0.1
-  itemId: 60
+  itemId: 80
   itemName: Nails
   itemDescription: 
   itemCost: 5

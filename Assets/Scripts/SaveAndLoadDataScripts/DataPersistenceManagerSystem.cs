@@ -80,6 +80,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             playerCmp.canDeffuseMines = false;
             fOVCmp.fieldOfView = playerView.defaultFOV;
             fOVCmp.viewDistance = playerView.viewDistance;
+            _meleeWeaponComponentsPool.Value.Get(playerDeath).isHitting = false;
             Cursor.visible = true;
             _deathEventsPool.Value.Del(playerDeath);
             _buildingCheckerComponentsPool.Value.Get(_sceneData.Value.playerEntity).isHideRoof = false;
@@ -292,9 +293,10 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             for (int i = 0; i < weaponsList.Count; i++)
                 gameData.weaponsCurrentExpForSaveData[i] = weaponsList[i];
 
-            gameData.shoppersInfoForSafeData = new QuestInfoForSafeData[_sceneData.Value.startShoppers.Length];
+            gameData.shoppersInfoForSafeData = new QuestInfoForSafeData[_sceneData.Value.startShoppers.Length-1];
             for (int i = 0; i < _sceneData.Value.startShoppers.Length; i++)
             {
+                if (i == 1) continue;
                 gameData.shoppersInfoForSafeData[i].questNPCId = _sceneData.Value.startShoppers[i];
                 ref var needShopper = ref _shopCharacterComponentsPool.Value.Get(_sceneData.Value.interactCharacters[gameData.shoppersInfoForSafeData[i].questNPCId]._entity);
 
@@ -340,10 +342,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
             foreach (var weapon in _sceneData.Value.idItemslist.items)
                 if (weapon != null && (weapon.type == ItemInfo.itemType.gun || weapon.type == ItemInfo.itemType.meleeWeapon) && !curWeaponsExp.ContainsKey(weapon.itemId))
-                {
                     curWeaponsExp.Add(weapon.itemId, 0);
-                    Debug.Log("addd gun to exp list" +  weapon.itemId);
-                }
 
             gameData.weaponsCurrentExpForSaveData = new NumAndIdForSafeData[curWeaponsExp.Count];
             int i = 0;
@@ -607,7 +606,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         curAttackCmp.changeWeaponTime = invItemCmp.itemInfo.meleeWeaponInfo.weaponChangeSpeed;
         curAttackCmp.attackCouldown = invItemCmp.itemInfo.meleeWeaponInfo.attackCouldown;
         curAttackCmp.damage = invItemCmp.itemInfo.meleeWeaponInfo.damage;
-        meleeCmp.curAttackLenght = invItemCmp.itemInfo.meleeWeaponInfo.attackLenght;
+        meleeCmp.curAttackLenghtMultiplayer = 1;
         playerMeleeCmp.weaponInfo = invItemCmp.itemInfo.meleeWeaponInfo;
         curAttackCmp.weaponRotateSpeed = 10f / invItemCmp.itemInfo.itemWeight;
 
@@ -800,7 +799,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         else if (savePriority == SavePriority.startLocationSave)
         {
             this.gameData.moneyInInventory = 0;
-            gameData.playerHunger = (int)_playerMoveComponentsPool.Value.Get(_sceneData.Value.playerEntity).maxHungerPoints;
+            gameData.playerHunger = (int)_playerMoveComponentsPool.Value.Get(_sceneData.Value.playerEntity).maxHungerPoints/2;
             gameData.playerHP = _healthComponentsPool.Value.Get(playerEntity).maxHealthPoint / 2;
             gameData.invCellsCount = 4;
 
@@ -842,7 +841,12 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
         for (int i = 0; i < cellsInventory.Count; i++)
         {
-            if (_inventoryItemComponentsPool.Value.Has(cellsInventory[i]._entity))
+            if (savePriority == SavePriority.startLocationSave && cellsInventory[i]._entity == _sceneData.Value.bodyArmorCellView._entity)
+            {
+                items.Add(new ItemInfoForSaveData(90, 1, i));
+                durabilityItemsForSaveData.Add(new NumAndIdForSafeData(i, _sceneData.Value.idItemslist.items[90].bodyArmorInfo.armorDurability));
+            }
+            else if (_inventoryItemComponentsPool.Value.Has(cellsInventory[i]._entity))
             {
                 if (savePriority == SavePriority.startLocationSave && (_inventoryCellTagsPool.Value.Has(cellsInventory[i]._entity) || _specialInventoryCellTagsPool.Value.Has(cellsInventory[i]._entity)))
                 {
@@ -886,11 +890,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                 else if (invItemCmp.itemInfo.itemId == 62)//айди дэф китов
                     _playerComponentsPool.Value.Get(playerEntity).hasForestGuide = true;
             }
-            else if (savePriority == SavePriority.startLocationSave && cellsInventory[i]._entity == _sceneData.Value.bodyArmorCellView._entity)
-            {
-                items.Add(new ItemInfoForSaveData(90, 1, i));
-                durabilityItemsForSaveData.Add(new NumAndIdForSafeData(i, _sceneData.Value.idItemslist.items[90].bodyArmorInfo.armorDurability));
-            }
+          
         }
         this.gameData.itemsCellinfo = new ItemInfoForSaveData[items.Count];
         for (int i = 0; i < items.Count; i++)

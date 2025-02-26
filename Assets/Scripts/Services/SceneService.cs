@@ -8,6 +8,13 @@ using UnityEngine.UI;
 
 public class SceneService : MonoBehaviour
 {
+    [field: SerializeField] public AudioClip[] randomEmbientSounds { get; private set; }
+    [field: SerializeField] public AudioClip offOnDeviceSound { get; private set; }
+    [field: SerializeField] public AudioSource backgroundAudioSource { get; private set; }
+    [field: SerializeField] public AudioClip rainEmbient { get; private set; }
+    [field: SerializeField] public AudioClip windEmbient { get; private set; }
+    [field: SerializeField] public Animator staminaAnimator { get; private set; }
+    [field: SerializeField] public Animator healthAnimator { get; private set; }
     [field: SerializeField] public Transform startLocationLightsContainer { get; private set; }
     [field: SerializeField] public RectTransform mainCanvas { get; private set; }
     [field: SerializeField] public Animator warningInfoTextAnimator { get; private set; }

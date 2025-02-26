@@ -12,9 +12,9 @@ public class MeleeWeaponInfo : ScriptableObject
     public bool isWideHit;
     public bool isAuto;
     public float attackSpeed;
-    public float secondAttackSpeed;
-    public float secondAttackLenght;
     public Vector2 colliderSize;
+    public float wideAttackSpeed;
+    public float wideAttackLenght;
 
     public float knockbackSpeed;
     public float stunTime;

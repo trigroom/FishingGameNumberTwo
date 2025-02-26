@@ -61,7 +61,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<OpenCraftingTableEvent> _openCraftingTableEventsPool;
     private EcsPoolInject<BreakNeutralizeTrapEvent> _breakNeutralizeTrapEventsPool;
     private EcsPoolInject<AddItemEvent> _addItemEventsPool;
-
+    private EcsPoolInject<EmbientHelperComponent> _embientHelperComponentsPool;
 
 
     private EcsFilterInject<Inc<LoadGameEvent>> loadGameEventsFilter;
@@ -91,21 +91,14 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         _solarPanelElectricGeneratorComponentsPool.Value.Add(_playerEntity);
         ref var playerCmp = ref _playerComponentsPool.Value.Add(_playerEntity);
         playerCmp.view = _sceneService.Value.SpawnPlayer(_world.Value, _playerEntity);
-        //playerCmp.money = _sceneService.Value.startMoneyForTest;
-        //playerCmp.visionZoneCollider = playerCmp.view.playerInputView.visionZoneCollider;
         _currentInteractedCharactersComponentsPool.Value.Add(_playerEntity);
         ref var weaponsInInventoryCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Add(_playerEntity);
-        //Брать оружия из сэйва
-        //weaponsInInventoryCmp.gunFirstObject = _sceneService.Value.firstWeaponTest;
-        //weaponsInInventoryCmp.gunSecondObject = _sceneService.Value.secondWeaponTest;
-        //weaponsInInventoryCmp.curWeapon = 0;
         ref var cameraCmp = ref _cameraComponentsPool.Value.Add(_playerEntity);
         cameraCmp.cursorPositonPart = 1;
         cameraCmp.playerPositonPart = 6;
         cameraCmp.currentMaxCameraSpread = playerCmp.view.maxCameraSpread;
         cameraCmp.currentRecoveryCameraSpread = playerCmp.view.recoveryCameraSpread;
         _healthComponentsPool.Value.Add(_playerEntity);
-        //вернуть сюда настройку хп игрока
         ref var attackCmp = ref _currentAttackComponentsPool.Value.Add(_playerEntity);
         _currentHealingItemComponentsPool.Value.Add(_playerEntity);
         _currentLocationComponentsPool.Value.Add(_playerEntity);
@@ -121,12 +114,11 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Add(_playerEntity);
         playerMoveCmp.playerView = playerCmp.view;
 
-
+        _embientHelperComponentsPool.Value.Add(_playerEntity).timeToNextShot = Random.Range(15,40);
 
         ref var gunCmp = ref _gunComponentsPool.Value.Add(_playerEntity);
         gunCmp.gunSpritePositionRecoil = 0.7f;
         gunCmp.lightFromGunShot = playerCmp.view.lightFromGunShot;
-        //healthCmp.healthPoint = healthCmp.healthView.maxHealth;//для тестов
 
 
         ref var movementComponent = ref _movementComponentPool.Value.Add(_playerEntity);
@@ -136,7 +128,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         movementComponent.canMove = true;
         movementComponent.currentRunTime = playerMoveCmp.playerView.runTime;
         _currentDialogeComponentsPool.Value.Add(_playerEntity);
-        gunCmp.firePoint = movementComponent.movementView.firePoint;//временно, потом разделить точку спавна и точку стрельбы
+        gunCmp.firePoint = movementComponent.movementView.firePoint;
         gunCmp.weaponContainer = movementComponent.movementView.weaponContainer;
 
         _meleeWeaponComponentsPool.Value.Add(_playerEntity).startHitPoint = playerCmp.view.movementView.weaponContainer.localPosition;
@@ -150,6 +142,8 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         if(Input.GetKeyDown(KeyCode.Z)) 
             _inventoryComponentsPool.Value.Get(_sceneService.Value.inventoryEntity).moneyCount += 50;
         //del in full game
+
+     
 
         ref var curInteactedObjectsCmp = ref _currentInteractedCharactersComponentsPool.Value.Get(_playerEntity);
         if (curInteactedObjectsCmp.interactionType != InteractionType.none)
@@ -191,7 +185,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     else if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.openedDoor)
                     {
                         var openedDoorView = curInteactedObjectsCmp.interactCharacterView.gameObject.GetComponent<OpenedDoorView>();
-                        // int needItemIdToOpen = openedDoorView.needItemIdToOpen;
                         if (_sceneService.Value.dropedItemsUIView.charactersInteractText.text == "(press F to open door)")
                         {
                             openedDoorView.doorCollider.enabled = false;
@@ -227,8 +220,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     }
                 }
             }
-            //Debug.Log("gusmithCheck " + (Input.GetKeyDown(KeyCode.T)) + "" + (isColliderInteract) + "" + (currentInteractNPCType == InteractNPCType.shopAndDialogeNpc) + "" + (!isNPCNowIsUsed));
-
         }
         ref var moveCmp = ref _movementComponentPool.Value.Get(_playerEntity);
         foreach (var interactCheck in _checkInteractedObjectsEventsFilter.Value)
@@ -243,11 +234,10 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 interactText.text = "";
             else
             {
-                if (checkInteractCmp.interactionType == InteractionType.droppedItem /*&& _droppedItemComponentsPool.Value.Has(curInteactedObjectsCmp.dropItemView.itemEntity)*/)
+                if (checkInteractCmp.interactionType == InteractionType.droppedItem)
                 {
                     curInteactedObjectsCmp.dropItemView = checkInteractCmp.currentDropItem;
                     var itemInfo = _droppedItemComponentsPool.Value.Get(curInteactedObjectsCmp.dropItemView.itemEntity);
-                    // ref var itemCmp = ref _world.GetPool<DroppedItemComponent>().Get(droppedItem);
                     interactText.text = "Press F to take " + itemInfo.currentItemsCount + " " + itemInfo.itemInfo.itemName;
                 }
                 else if (checkInteractCmp.interactionType == InteractionType.interactedCharacter)
@@ -439,7 +429,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             }
             else
             {
-
                 buildChecker.timeBeforeHideRoof -= Time.deltaTime;
                 if (buildChecker.isHideRoof)
                 {
@@ -536,8 +525,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         foreach (var loadGame in loadGameEventsFilter.Value)
         {
-            Debug.Log(_sceneService.Value.playerEntity + " pl ent");
-
             ref var inventoryCmp = ref _inventoryComponentsPool.Value.Get(_sceneService.Value.inventoryEntity);
             _sceneService.Value.moneyText.text = inventoryCmp.moneyCount + "$";
             var upgradedStatsCmp = _playerUpgradedStatsPool.Value.Get(_playerEntity);
@@ -548,7 +535,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             moveCmp.moveSpeed = moveCmp.movementView.moveSpeed + moveCmp.movementView.moveSpeed / 50 * upgradedStatsCmp.statLevels[0];
             if (inventoryCmp.weight / inventoryCmp.currentMaxWeight > 0.6f)
                 moveCmp.moveSpeed -= (moveCmp.movementView.moveSpeed * ((inventoryCmp.weight / inventoryCmp.currentMaxWeight) - 0.6f) * 2);
-            Debug.Log("Start move speed " + moveCmp.moveSpeed);
         }
 
         bool inInventory = _menuStatesComponentsPool.Value.Get(_playerEntity).inInventoryState;
@@ -556,22 +542,14 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         if (inInventory && _sceneService.Value.dropedItemsUIView.divideItemsUI.gameObject.activeInHierarchy)
         {
             if (Input.GetKeyDown(KeyCode.D) && _sceneService.Value.dropedItemsUIView.dropButton.gameObject.activeInHierarchy)
-            {
                 _dropItemsIventsPool.Value.Add(_sceneService.Value.dropedItemsUIView.curCell);
-            }
             else if (Input.GetKeyDown(KeyCode.A) && _inventoryItemComponentsPool.Value.Get(_sceneService.Value.dropedItemsUIView.curCell).currentItemsCount > 1)
-            {
                 _sceneService.Value.dropedItemsUIView.generalSlider.value = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.dropedItemsUIView.curCell).currentItemsCount;
-            }
             else if (Input.GetKeyDown(KeyCode.S)&& _sceneService.Value.dropedItemsUIView.storageButton.gameObject.activeInHierarchy)
-            {
                 _addItemFromCellEventsPool.Value.Add(_sceneService.Value.dropedItemsUIView.curCell);
-            }
             else if (Input.GetKeyDown(KeyCode.W) && _sceneService.Value.dropedItemsUIView.divideButton.gameObject.activeInHierarchy)
-            {
                 _divideItemEventsPool.Value.Add(_sceneService.Value.dropedItemsUIView.curCell);
-            }
-            else if (Input.GetKeyDown(KeyCode.E))
+            else if (Input.GetKeyDown(KeyCode.E) && _sceneService.Value.dropedItemsUIView.weaponEquipButton.gameObject.activeInHierarchy)
             {
                 //экипировать чтолибо
             }
@@ -636,12 +614,14 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     }
                     _sceneService.Value.playerStaminaBarFilled.fillAmount = moveCmp.currentRunTime / moveCmp.maxRunTime;
                     _sceneService.Value.playerStaminaText.text = moveCmp.currentRunTime.ToString("0.0") + "/" + moveCmp.maxRunTime;
+                    _sceneService.Value.staminaAnimator.SetFloat("StaminaAnimSpeed", 1 + (1 - _sceneService.Value.playerStaminaBarFilled.fillAmount) * 2);
                 }
                 else if ((moveCmp.currentRunTime < moveCmp.maxRunTime && hungerMultiplayer > 0.5f || hungerMultiplayer <= 0.5f && moveCmp.currentRunTime < moveCmp.maxRunTime * (hungerMultiplayer + 0.5f)) && !_playerGunComponentsPool.Value.Get(_sceneService.Value.playerEntity).inScope)
                 {
                     moveCmp.currentRunTime += Time.deltaTime * moveCmp.currentRunTimeRecoverySpeed;
                     _sceneService.Value.playerStaminaBarFilled.fillAmount = moveCmp.currentRunTime / moveCmp.maxRunTime;
                     _sceneService.Value.playerStaminaText.text = moveCmp.currentRunTime.ToString("0.0") + "/" + moveCmp.maxRunTime;
+                    _sceneService.Value.staminaAnimator.SetFloat("StaminaAnimSpeed", 1+(1-_sceneService.Value.playerStaminaBarFilled.fillAmount)*2);
                 }
                 else if (moveCmp.currentRunTime > moveCmp.maxRunTime)
                     moveCmp.currentRunTime = moveCmp.maxRunTime;
@@ -659,7 +639,9 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 var helmetInfo = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).itemInfo.helmetInfo;
 
                 playerCmp.nvgIsUsed = !playerCmp.nvgIsUsed;
-                var playerGunCmp = _playerGunComponentsPool.Value.Get(_playerEntity);
+                _sceneService.Value.uiAudioSourse.clip = _sceneService.Value.offOnDeviceSound;
+                _sceneService.Value.uiAudioSourse.Play();
+               var playerGunCmp = _playerGunComponentsPool.Value.Get(_playerEntity);
                 bool isHideRoof = _buildingCheckerComponentsPool.Value.Get(_playerEntity).isHideRoof;
                 if (playerCmp.nvgIsUsed)
                 {
@@ -741,7 +723,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                             if (_playerWeaponsInInventoryComponentsPool.Value.Get(_sceneService.Value.playerEntity).curWeapon == 2)
                             {
                                 int meleeWeaponEntity = _sceneService.Value.meleeWeaponCellView._entity;
-                                _meleeWeaponComponentsPool.Value.Get(_sceneService.Value.playerEntity).curAttackLenght = _inventoryItemComponentsPool.Value.Get(meleeWeaponEntity).itemInfo.meleeWeaponInfo.attackLenght;
+                                _meleeWeaponComponentsPool.Value.Get(_sceneService.Value.playerEntity).curAttackLenghtMultiplayer = _inventoryItemComponentsPool.Value.Get(meleeWeaponEntity).itemInfo.meleeWeaponInfo.attackLenght;
                             }
                         }
                         else
@@ -754,7 +736,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                             if (_playerWeaponsInInventoryComponentsPool.Value.Get(_sceneService.Value.playerEntity).curWeapon == 2)
                             {
                                 int meleeWeaponEntity = _sceneService.Value.meleeWeaponCellView._entity;
-                                _meleeWeaponComponentsPool.Value.Get(_sceneService.Value.playerEntity).curAttackLenght = _inventoryItemComponentsPool.Value.Get(meleeWeaponEntity).itemInfo.meleeWeaponInfo.attackLenght * _inventoryItemComponentsPool.Value.Get(_sceneService.Value.shieldCellView._entity).itemInfo.sheildInfo.recoilPercent;
+                                _meleeWeaponComponentsPool.Value.Get(_sceneService.Value.playerEntity).curAttackLenghtMultiplayer = _inventoryItemComponentsPool.Value.Get(meleeWeaponEntity).itemInfo.meleeWeaponInfo.attackLenght * _inventoryItemComponentsPool.Value.Get(_sceneService.Value.shieldCellView._entity).itemInfo.sheildInfo.recoilPercent;
                             }
                         }
                     }
@@ -780,7 +762,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     flashlightCmp.currentDurability -= Time.deltaTime;
 
-
                     if (flashlightCmp.currentDurability <= 0)
                     {
                         playerCmp.useFlashlight = false;
@@ -791,6 +772,8 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 if (Input.GetKeyDown(KeyCode.L))
                 {
                     playerCmp.useFlashlight = !playerCmp.useFlashlight;
+                    _sceneService.Value.uiAudioSourse.clip = _sceneService.Value.offOnDeviceSound;
+                    _sceneService.Value.uiAudioSourse.Play();
                     playerCmp.view.flashLightObject.gameObject.SetActive(playerCmp.useFlashlight);
                 }
             }
@@ -805,11 +788,32 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 foreach (var spriteRenderer in hidedObjCmp.hidedObjects)
                     if (spriteRenderer != null)
                         spriteRenderer.gameObject.SetActive(false);
-                //spriteRenderer.enabled = false;
             }
             else if (hidedObjCmp.timeBeforeHide > 0)
                 hidedObjCmp.timeBeforeHide -= Time.deltaTime;
+        } 
+
+        ref var embientHelperCmp = ref _embientHelperComponentsPool.Value.Get(_playerEntity);
+        embientHelperCmp.timeToNextShot -= Time.deltaTime;
+        if (embientHelperCmp.timeToNextShot <= 0)
+        {
+             embientHelperCmp.timeToNextShot -= Time.deltaTime;
+            if(embientHelperCmp.audioSource == null)
+            {
+                embientHelperCmp.audioSource = _sceneService.Value.PlaySoundFXClip(_sceneService.Value.randomEmbientSounds[Random.Range(0,_sceneService.Value.randomEmbientSounds.Length)],playerMoveCmp.playerView.transform.position,Random.Range(0.01f, 0.15f));
+                embientHelperCmp.audioSource.panStereo = Random.Range(-1f, 1f);
+            }
+            else
+            {
+                embientHelperCmp.audioSource.volume = Random.Range(0.01f, 0.15f);
+                embientHelperCmp.audioSource.clip = _sceneService.Value.randomEmbientSounds[Random.Range(0, _sceneService.Value.randomEmbientSounds.Length)];
+                embientHelperCmp.audioSource.panStereo = Random.Range(-1f, 1f);
+                embientHelperCmp.audioSource.transform.position = playerMoveCmp.playerView.transform.position;
+                embientHelperCmp.audioSource.Play();
+            }
+            embientHelperCmp.timeToNextShot = Random.Range(15, 40);
         }
+
         FieldOfViewCheck();
     }
 

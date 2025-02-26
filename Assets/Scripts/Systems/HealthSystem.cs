@@ -1,6 +1,7 @@
 using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class HealthSystem : IEcsRunSystem, IEcsInitSystem
 {
@@ -59,6 +60,13 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
     }
     public void Run(IEcsSystems systems)
     {
+        if(Input.GetKeyDown(KeyCode.P)) 
+        {
+            ref var ch = ref _changeHealthEventsPool.Value.Add(_sceneData.Value.playerEntity);
+            ch.changedHealth = 100;
+            ch.changedEntity = _sceneData.Value.playerEntity;
+        }
+
         foreach (var effectEntity in _effectComponentsFilter.Value)
         {
             ref var effectCmp = ref _effectComponentsPool.Value.Get(effectEntity);
@@ -258,14 +266,12 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             ref var healthCmp = ref _healthComponentsPool.Value.Get(revivePlayer);
             ref var moveCmp = ref _movementComponentsPool.Value.Get(revivePlayer);
 
-         //   Debug.Log(_inventoryItemComponentsPool.Value.Get(_sceneData.Value.bodyArmorCellView._entity).itemInfo);
             var bodyArmorItemInfo = _inventoryItemComponentsPool.Value.Get(_sceneData.Value.bodyArmorCellView._entity).itemInfo.bodyArmorInfo;
             moveCmp.movementView.bodyArmorSpriteRenderer.sprite = bodyArmorItemInfo.bodyArmorSprite;
             moveCmp.movementView.bodyArmorSpriteRenderer.transform.localPosition = bodyArmorItemInfo.inGamePositionOnPlayer;
 
             _cameraComponentsPool.Value.Get(revivePlayer).blurValue = 1;
             _sceneData.Value.depthOfFieldMainBg.focalLength.value = 1;
-            //_sceneData.Value.dropedItemsUIView.scopeCrossCentreImage.gameObject.SetActive(false);
 
             moveCmp.speedMultiplayer = 1;
             moveCmp.currentRunTime = 0;
@@ -275,7 +281,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             _gunComponentsPool.Value.Get(revivePlayer).isReloading = false;
             _attackComponentsPool.Value.Get(revivePlayer).weaponIsChanged = false;
             Time.timeScale = 1;
-
+            
             foreach (var effectEntity in _effectComponentsFilter.Value)
             {
                 ref var effectCmp = ref _effectComponentsPool.Value.Get(effectEntity);
@@ -295,7 +301,6 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 else if (effectCmp.effectType == EffectInfo.EffectType.cheerfulness)
                 {
                     var playerCmp = _playerComponentsPool.Value.Get(revivePlayer);
-                   // ref var moveCmp = ref _movementComponentsPool.Value.Get(effectCmp.effectEntity);
                     moveCmp.maxRunTime = playerCmp.view.runTime * (1 + _playerUpgradedStatsPool.Value.Get(effectCmp.effectEntity).statLevels[2]);
                     if (moveCmp.currentRunTime > moveCmp.maxRunTime)
                         moveCmp.currentRunTime = moveCmp.maxRunTime;
@@ -332,6 +337,12 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
 
             healthCmp.isDeath = false;
             ChangeHealthBarInfo(healthCmp);
+            _sceneData.Value.ammoInfoText.text = "";
+
+            var playerMoveCmp = _playerMoveComponentsPool.Value.Get(revivePlayer);
+
+            _sceneData.Value.playerArmorBarFilled.fillAmount = 0.5f;
+            _sceneData.Value.playerArmorText.text = (int)playerMoveCmp.currentHungerPoints + " / " + (int)playerMoveCmp.maxHungerPoints;
         }
         foreach (var curHealingItem in _currentHealingItemComponentsFilter.Value)
         {
@@ -816,7 +827,8 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
     private void ChangeHealthBarInfo(HealthComponent healthComponent)
     {
         _sceneData.Value.playerHealthBarFilled.fillAmount = (float)healthComponent.healthPoint / healthComponent.maxHealthPoint;
-        _sceneData.Value.playerHealthText.text = healthComponent.healthPoint + " / " + healthComponent.maxHealthPoint;
+        _sceneData.Value.playerHealthText.text = healthComponent.healthPoint + "/\n" + healthComponent.maxHealthPoint;
+        _sceneData.Value.healthAnimator.SetFloat("HealthState", _sceneData.Value.playerHealthBarFilled.fillAmount);
     }
 
 

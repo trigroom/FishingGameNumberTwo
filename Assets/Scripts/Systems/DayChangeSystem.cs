@@ -24,11 +24,9 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<SolarPanelElectricGeneratorComponent> _solarPanelElectricGeneratorComponentsPool;
 
     private EcsFilterInject<Inc<DroppedItemComponent>> _droppedItemComponentsFilter;
-    private EcsFilterInject<Inc<GlobalTimeComponent>> _globalTimeComponentsFilter;
     private EcsFilterInject<Inc<SlowTextInstanceEvent>> _slowTextInstanceEventsFilter;
     private EcsFilterInject<Inc<EntryInNewLocationEvent>> _entryInNewLocationEventsFilter;
     private EcsFilterInject<Inc<LoadGameEvent>> _loadGameEventsFilter;
-    // private EcsFilterInject<Inc<ShopCharacterComponent>, Exc<StartLocationShopperTag>> _currentLocationShoppersFilter;
     private EcsFilterInject<Inc<HealthComponent>, Exc<PlayerComponent>> _healthComponentsFilter;
 
     private EcsCustomInject<SceneService> _sceneService;
@@ -69,8 +67,6 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
 
             foreach (var healthEntity in _healthComponentsFilter.Value)
                 _world.Value.DelEntity(healthEntity);
-            // foreach (var shopperEntity in _currentLocationShoppersFilter.Value)
-            //   _world.Value.DelEntity(shopperEntity);
             foreach (var iteractChar in _sceneService.Value.interactCharacters)
                 iteractChar.gameObject.SetActive(false);
 
@@ -88,10 +84,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
             }
             _sceneService.Value.startLocation.gameObject.SetActive(true);
             if (curLocationCmp.levelNum != 0)
-            {
                 _saveGameEventsPool.Value.Add(_sceneService.Value.playerEntity).type = DataPersistenceManagerSystem.SavePriority.fullSave;
-                Debug.Log("fullSave");
-            }
             curLocationCmp.levelNum = 0;
             _movementComponentsPool.Value.Get(_sceneService.Value.playerEntity).movementView.gameObject.transform.position = Vector2.zero;
 
@@ -120,6 +113,8 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                     globalTimeCmp.levelsToRain = Random.Range(5, 10);
                     globalTimeCmp.currentGlobalLightIntensity += 0.1f;
                 }
+                _sceneService.Value.backgroundAudioSource.clip = globalTimeCmp.changedToRain ? _sceneService.Value.windEmbient : _sceneService.Value.rainEmbient;
+                _sceneService.Value.backgroundAudioSource.Play();
                 _sceneService.Value.rainEffectContainer.gameObject.SetActive(!globalTimeCmp.changedToRain);
             }
 
@@ -133,7 +128,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
 
                 if (globalTimeCmp.currentDayTime == 12)
                 {
-                    if ((globalTimeCmp.nightLightIntensity == 0.3f && globalTimeCmp.goToLightNight) || (globalTimeCmp.nightLightIntensity == 0f && !globalTimeCmp.goToLightNight))
+                    if ((globalTimeCmp.nightLightIntensity >= 0.3f && globalTimeCmp.goToLightNight) || (globalTimeCmp.nightLightIntensity <= 0f && !globalTimeCmp.goToLightNight))
                         globalTimeCmp.goToLightNight = !globalTimeCmp.goToLightNight;
 
                     if (globalTimeCmp.goToLightNight)
@@ -283,23 +278,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 remainngShoppers.RemoveAt(needShopperIndex);
                 currentInterestsSpawns.RemoveAt(needRandomShopperPositionIndex);
             }
-            /*if (globalTimeCmp.isNight)
-            {
-                int needRandomShopperPositionIndex = Random.Range(0, currentInterestsSpawns.Count);
-
-                var curShopper = _sceneService.Value.InstantiateLevel(_sceneService.Value.interactCharacters[curLocationCmp.currentLocation.nightShoppers[Random.Range(0, curLocationCmp.currentLocation.nightShoppers.Length)]].transform).GetComponent<ShopCharacterView>();
-                shoppers[shoppers.Length - 1] = curShopper;
-                shoppers[shoppers.Length - 1].gameObject.transform.SetParent(curLocationCmp.currentLevelPrefab);
-                shoppers[shoppers.Length - 1].gameObject.transform.position = currentInterestsSpawns[needRandomShopperPositionIndex];
-
-
-                currentInterestsSpawns.RemoveAt(needRandomShopperPositionIndex);
-            }*/
-
             _movementComponentsPool.Value.Get(_sceneService.Value.playerEntity).movementView.gameObject.transform.position = curLocationCmp.currentLocation.levels[curLocationCmp.levelNum].levelPrefab.playerSpawns[Random.Range(0, curLocationCmp.currentLocation.levels[curLocationCmp.levelNum].levelPrefab.playerSpawns.Length)].position;
-
-            // var exitSpawns = curLocationCmp.currentLocation.levels[curLocationCmp.levelNum].levelPrefab.exitSpawns;
-            //curLocationCmp.currentLocation.levels[curLocationCmp.levelNum].levelPrefab.exitTransform.position = exitSpawns[Random.Range(0, exitSpawns.Length)].position;
 
             foreach (var enemySpawn in curLocationCmp.currentLocation.levels[curLocationCmp.levelNum].levelPrefab.enemySpawns)
                 curLocationCmp.currentEnemySpawns.Add(enemySpawn.position);
@@ -317,14 +296,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 _hidedObjectOutsideFOVComponentsPool.Value.Add(trapEntity).hidedObjects = new Transform[] { curLocationCmp.trapsPrefabs[i].GetChild(0) };
                 curLocationCmp.currentEnemySpawns.RemoveAt(needPositionIndex);
             }
-
-
         }
-
-
-
-
-        Debug.Log("Entry to level " + curLocationCmp.levelNum);
 
         curLocationCmp.levelNum++;
     }
@@ -336,7 +308,6 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
             slowTextEvt.currentTime += Time.deltaTime;
             if (slowTextEvt.curChar != (int)(slowTextEvt.currentTime / 0.15f))
             {
-                Debug.Log(slowTextEvt.curChar + " curchar of " + slowTextEvt.needText);
                 slowTextEvt.curChar = (int)(slowTextEvt.currentTime / 0.15f);
                 if (slowTextEvt.curChar <= slowTextEvt.needText.Length)
                 {
@@ -373,7 +344,6 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
             {
                 ref var moveCmp = ref _movementComponentsPool.Value.Get(_sceneService.Value.playerEntity);
                 _sceneService.Value.fadeScreenAnimator.SetBool("isEntry", false);
-                //спавн на одной из рандомных точек
                 moveCmp.canMove = true;
                 _entryInNewLocationEventsPool.Value.Del(entry);
                 var curLocation = _currentLocationComponentsPool.Value.Get(_sceneService.Value.playerEntity);
@@ -384,7 +354,6 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 else
                     _slowTextInstanceEventsPool.Value.Add(_sceneService.Value.playerEntity).needText = "Start location";
                 return;
-                //не забыть включить коллайдер входа в локацию когда игрок выигрывает или проигрывает
             }
             entryEvt.timeSinceEntry += Time.unscaledDeltaTime;
 
@@ -421,28 +390,10 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
             if (globalTimeCmp.currentGlobalLightIntensity < 0.001f)
                 globalTimeCmp.currentGlobalLightIntensity = 0;
             _sceneService.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity;
-
+            _sceneService.Value.backgroundAudioSource.clip = globalTimeCmp.changedToRain ? _sceneService.Value.windEmbient : _sceneService.Value.rainEmbient;
             _sceneService.Value.startLocationLightsContainer.gameObject.SetActive(globalTimeCmp.isNight);
 
-            /* globalTimeCmp.changeGloabalLightTime = 46;
-
-             if (globalTimeCmp.currentDayTime > _sceneService.Value.dayTime * 0.7f)
-             {
-                 Debug.Log("isNight" + globalTimeCmp.currentDayTime);
-                 globalTimeCmp.isNight = true;
-                 //globalTimeCmp.isNight = false;
-                 _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.colorKeys[2].color;
-                 globalTimeCmp.currentGlobalLightIntensity = 0.2f;
-             }
-             else
-             {
-                 Debug.Log("isDay" + globalTimeCmp.currentDayTime);
-                 globalTimeCmp.isNight = false;
-                 // globalTimeCmp.isNight = true;
-                 _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.colorKeys[0].color;
-                 globalTimeCmp.currentGlobalLightIntensity = 0.75f;
-             }
-             _sceneService.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity;*/
+            _sceneService.Value.backgroundAudioSource.Play();
         }
         /* foreach (var entity in _globalTimeComponentsFilter.Value)
          {

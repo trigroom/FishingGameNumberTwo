@@ -20,8 +20,12 @@ public class UIMenuView : MonoBehaviour
         menuAnimator.SetBool("isShowed", isOpen);
     }
 
-    public void ChangeIsActiveState()
+    public void ChangeIsActiveStateToFalse()
     {
-        hidedUI.gameObject.SetActive(!hidedUI.gameObject.activeInHierarchy);
+        hidedUI.gameObject.SetActive(false);
+    }
+    public void ChangeIsActiveStateToTrue()
+    {
+        hidedUI.gameObject.SetActive(true);
     }
 }

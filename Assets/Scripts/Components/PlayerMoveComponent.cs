@@ -4,7 +4,7 @@ using UnityEngine;
 
 public struct PlayerMoveComponent 
 {
-    public float currentHungerPoints;
+    public float currentHungerPoints { get;set; }
     public float currentHealingOneHealTime;
     public float maxHungerPoints;
     public bool nowIsMoving;
