@@ -36,11 +36,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9090315e38632c644a229aab74a5f49e, type: 2}
   - {fileID: 11400000, guid: 3545025227e525c46bbda80f3fd8e2c8, type: 2}
   - {fileID: 11400000, guid: 4503430dbb8e5b447acaa6917f266114, type: 2}
+  shieldItemsInfo:
+  - {fileID: 11400000, guid: eedc27cdc67953f4785b57cb67cb4eb1, type: 2}
+  - {fileID: 11400000, guid: fa2ef5157d194b447b4af9a46168e2a2, type: 2}
   chanceToOneWeapon: 0.5
   chanceToMeleeWeapon: 0.5
   chanceToHealingItem: 0.5
   chanceToBodyArmorItem: 0.5
   chanceToHelmetItem: 0.5
+  chanceToShieldItem: 0.5
   traps:
   - {fileID: 8286993370284143180, guid: ef5d2909425f3d24d88c94afbd3c0bc0, type: 3}
   enemiesCount: 10

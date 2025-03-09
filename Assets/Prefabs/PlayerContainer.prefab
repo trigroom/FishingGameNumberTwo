@@ -92,7 +92,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9233f5e3c5daa8047a382ab8a8754036, type: 2}
+  - {fileID: 2100000, guid: 59a4dc6772bb50347a61837a434849ce, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -357,7 +357,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9233f5e3c5daa8047a382ab8a8754036, type: 2}
+  - {fileID: 2100000, guid: 59a4dc6772bb50347a61837a434849ce, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -671,6 +671,7 @@ MonoBehaviour:
   <helmetSpriteRenderer>k__BackingField: {fileID: 6767696854121193596}
   <hairSpriteRenderer>k__BackingField: {fileID: 4677590771853162060}
   <weaponCollider>k__BackingField: {fileID: 2784060346750093984}
+  <shieldView>k__BackingField: {fileID: 1813482784159630199}
 --- !u!114 &8459350594874664624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -685,7 +686,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <maxCameraSpread>k__BackingField: 1
   <recoveryCameraSpread>k__BackingField: 0.3
-  <shieldView>k__BackingField: {fileID: 1813482784159630199}
   <healthView>k__BackingField: {fileID: 1550632186655800908}
   <movementView>k__BackingField: {fileID: 3837109945980023527}
   <playerInputView>k__BackingField: {fileID: 5851148236967141977}
@@ -1038,7 +1038,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9233f5e3c5daa8047a382ab8a8754036, type: 2}
+  - {fileID: 2100000, guid: 59a4dc6772bb50347a61837a434849ce, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1127,7 +1127,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9233f5e3c5daa8047a382ab8a8754036, type: 2}
+  - {fileID: 2100000, guid: 59a4dc6772bb50347a61837a434849ce, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

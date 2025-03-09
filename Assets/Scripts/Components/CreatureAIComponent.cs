@@ -44,8 +44,8 @@ public struct CreatureAIComponent
 
     public int teammatesCount;
     //для рандомного движение в идле
-    public Vector2 randomDirection;
-    public float randomMoveTime;
+    public Vector2 randomDirection ;
+    public float randomMoveTime{ get; set; }
 
     public BodyArmorInfo armorInfo;
     public HelmetInfo helmetInfo;

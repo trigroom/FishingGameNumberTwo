@@ -9,10 +9,10 @@ using UnityEngine.UI;
 public class SceneService : MonoBehaviour
 {
     [field: SerializeField] public AudioClip[] randomEmbientSounds { get; private set; }
+    [field: SerializeField] public AudioClip[] thunderSounds { get; private set; }
     [field: SerializeField] public AudioClip offOnDeviceSound { get; private set; }
     [field: SerializeField] public AudioSource backgroundAudioSource { get; private set; }
-    [field: SerializeField] public AudioClip rainEmbient { get; private set; }
-    [field: SerializeField] public AudioClip windEmbient { get; private set; }
+    [field: SerializeField] public AudioClip[] weatherEmbient { get; private set; }
     [field: SerializeField] public Animator staminaAnimator { get; private set; }
     [field: SerializeField] public Animator healthAnimator { get; private set; }
     [field: SerializeField] public Transform startLocationLightsContainer { get; private set; }
@@ -49,7 +49,7 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public ParticleSettingsInfo smallBloodParticleInfo { get; private set; }
     [field: SerializeField] public int timeHourOffset { get; private set; }
     [field: SerializeField] public float dayTime { get; private set; }
-    [field: SerializeField] public Gradient nightLightColor { get; private set; }
+    [field: SerializeField] public Color[] globalLightColors { get; private set; }
     [field: SerializeField] public InteractCharacterView storageInteractView { get; private set; }
     //  [field: SerializeField] public Color dayLightColor { get; private set; }
     [field: SerializeField] public InventoryCellView flashlightItemCellView { get; private set; }

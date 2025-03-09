@@ -12,11 +12,13 @@ public class LevelSettingsInfo : ScriptableObject
     public GunInfo[] gunsInfo;
     public MeleeWeaponInfo[] meleeWeaponsInfo;
     public HealingItemInfo[] healingItemsInfo;
+    public SheildInfo[] shieldItemsInfo;
     public float chanceToOneWeapon;
     public float chanceToMeleeWeapon;
     public float chanceToHealingItem;
     public float chanceToBodyArmorItem;
     public float chanceToHelmetItem;
+    public float chanceToShieldItem;
     public Transform[] traps;
     public int enemiesCount;
     public int trapsCount;

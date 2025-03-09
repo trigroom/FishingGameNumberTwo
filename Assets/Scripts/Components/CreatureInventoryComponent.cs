@@ -11,6 +11,6 @@ public struct CreatureInventoryComponent
     public HealingItemInfo healingItem;
     public BodyArmorInfo bodyArmorItem;
     public HelmetInfo helmetItem;
-
+    public SheildInfo shieldItem;
     public EnemyClassSettingsInfo enemyClassSettingInfo;
 }

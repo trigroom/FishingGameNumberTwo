@@ -109,7 +109,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                             {
                                 checkedEffectCmp.effectDuration += effectCmp.effectDuration;
                                 if (isPlayer)
-                                    checkedEffectCmp.effectIconView.effectTimerText.text = ((int)checkedEffectCmp.effectDuration).ToString();
+                                    checkedEffectCmp.effectIconView.effectTimerText.text = ((int)checkedEffectCmp.effectDuration).ToString();//
                             }
                             if (isNewEffect)
                             {
@@ -223,7 +223,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             }
 
             if (isPlayer)
-                effectCmp.effectIconView.effectTimerText.text = ((int)effectCmp.effectDuration).ToString();
+                effectCmp.effectIconView.effectTimerText.text = ((int)effectCmp.effectDuration).ToString();//
 
             if (effectCmp.effectType == EffectInfo.EffectType.bleeding)
             {
@@ -270,7 +270,9 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             moveCmp.movementView.bodyArmorSpriteRenderer.sprite = bodyArmorItemInfo.bodyArmorSprite;
             moveCmp.movementView.bodyArmorSpriteRenderer.transform.localPosition = bodyArmorItemInfo.inGamePositionOnPlayer;
 
-            _cameraComponentsPool.Value.Get(revivePlayer).blurValue = 1;
+            ref var cameraCmp = ref _cameraComponentsPool.Value.Get(revivePlayer);
+            cameraCmp.blurValue = 1;
+            cameraCmp.playerPositonPart = 6;
             _sceneData.Value.depthOfFieldMainBg.focalLength.value = 1;
 
             moveCmp.speedMultiplayer = 1;
@@ -334,7 +336,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 _bloodParticleOnScreenComponentsPool.Value.Del(screenParticle);
             }
             //удаление текущей арены на которой был игрок
-
+            
             healthCmp.isDeath = false;
             ChangeHealthBarInfo(healthCmp);
             _sceneData.Value.ammoInfoText.text = "";

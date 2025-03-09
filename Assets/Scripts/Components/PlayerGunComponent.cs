@@ -32,5 +32,6 @@ public struct PlayerGunComponent
     public float sumAddedCameraSpreadMultiplayer;
     public float sumAddedWeaponChangeSpeedMultiplayer;
     public float sumAddedAttackLenght;
+    public float currentShotSoundLenght;
     public float sumAddedReloadSpeedMultiplayer{ get; set; }
 }

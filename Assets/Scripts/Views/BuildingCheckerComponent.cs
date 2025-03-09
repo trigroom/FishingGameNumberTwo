@@ -5,7 +5,7 @@ using UnityEngine;
 public struct BuildingCheckerComponent 
 {
     public float timeBeforeHideRoof;
-    public SpriteGroupView roofSpriteRenderer;
+    public TilemapsGroup roofSpriteRenderer;
     public bool isHideRoof;
   //  public float globalLightIntensityBeforeHide;
 }

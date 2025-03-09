@@ -28,7 +28,7 @@ public class GameData
     public float currentNightLightIntensity;
     public bool goToLightNight;
     public int roundsToWeaterChange;
-    public bool changeToRain;
+    public GlobalTimeComponent.WeatherType weaterType;
     [Header("Settings")]
     public int maxFPS;
     public float currentUIScaleMultiplayer;

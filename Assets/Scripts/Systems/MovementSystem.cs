@@ -160,10 +160,13 @@ public class MovementSystem : IEcsRunSystem
             float rotY = moveCmp.movementView.characterSpriteTransform.rotation.y;
 
 
-            if (moveCmp.movementView.weaponSpriteRenderer.transform.localRotation.y == 0 && rotateZ > -85 && rotateZ < 85)
-                moveCmp.movementView.weaponSpriteRenderer.transform.localRotation = Quaternion.Euler(0, -180, moveCmp.movementView.weaponSpriteRenderer.transform.localEulerAngles.z);
-            else if (moveCmp.movementView.weaponSpriteRenderer.transform.localRotation.y != 0 && (rotateZ < -95 || rotateZ > 95))
-                moveCmp.movementView.weaponSpriteRenderer.transform.localRotation = Quaternion.Euler(0, 0, moveCmp.movementView.weaponSpriteRenderer.transform.localEulerAngles.z);
+           if (moveCmp.movementView.weaponSpriteRenderer.transform.localRotation.y == 0 && rotateZ > -85 && rotateZ < 85)
+                  moveCmp.movementView.weaponSpriteRenderer.transform.localRotation = Quaternion.Euler(0, -180, moveCmp.movementView.weaponSpriteRenderer.transform.localEulerAngles.z);
+              else if (moveCmp.movementView.weaponSpriteRenderer.transform.localRotation.y != 0 && (rotateZ < -95 || rotateZ > 95))
+                  moveCmp.movementView.weaponSpriteRenderer.transform.localRotation = Quaternion.Euler(0, 0, moveCmp.movementView.weaponSpriteRenderer.transform.localEulerAngles.z);
+           // var weaponTransform = moveCmp.movementView.weaponSpriteRenderer.transform;
+           // if ((weaponTransform.localScale.x < 0 && rotateZ > -85 && rotateZ < 85)||(weaponTransform.localScale.x > 0 && (rotateZ < -95 || rotateZ > 95)))
+           //     weaponTransform.localScale = new Vector2 (-weaponTransform.localScale.x, weaponTransform.localScale.y);
 
             if (_meleeWeaponComponentsPool.Value.Has(movableObject) && !_meleeWeaponComponentsPool.Value.Get(movableObject).isHitting && moveCmp.movementView.nonWeaponContainer != null)
             {
@@ -174,10 +177,13 @@ public class MovementSystem : IEcsRunSystem
 
                 moveCmp.movementView.RotateNonWeaponCentre(needRotation);
             }
-            if (direction.x < 0 && rotY == 0)
-                moveCmp.movementView.characterSpriteTransform.localRotation = Quaternion.Euler(0, -180, 0);
-            else if (direction.x > 0 && rotY != 0)
-                moveCmp.movementView.characterSpriteTransform.localRotation = Quaternion.Euler(0, 0, 0);
+             if (direction.x < 0 && rotY == 0)
+                 moveCmp.movementView.characterSpriteTransform.localRotation = Quaternion.Euler(0, -180, 0);
+             else if (direction.x > 0 && rotY != 0)
+                 moveCmp.movementView.characterSpriteTransform.localRotation = Quaternion.Euler(0, 0, 0);
+
+          //  if ((direction.x < 0 && moveCmp.movementView.characterSpriteTransform.localScale.x > 0) ||(direction.x > 0 && moveCmp.movementView.characterSpriteTransform.localScale.x < 0) )
+           //     moveCmp.movementView.characterSpriteTransform.localScale = new Vector2(-moveCmp.movementView.characterSpriteTransform.localScale.x, moveCmp.movementView.characterSpriteTransform.localScale.y);
         }
     }
 

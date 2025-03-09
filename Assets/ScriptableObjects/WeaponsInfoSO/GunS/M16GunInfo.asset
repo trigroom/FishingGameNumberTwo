@@ -28,7 +28,7 @@ MonoBehaviour:
   bulletCount: 1
   isOneBulletReloaded: 0
   maxDurabilityPoints: 2500
-  bulletShellIndex: 3
+  bulletShellIndex: 1
   firepointPosition: {x: 0.23, y: 0.02}
   bulletShellPointPosition: {x: -0.02, y: 0.045}
   bulletShellSpawnOnShot: 1

@@ -4,12 +4,12 @@ using UnityEngine;
 
 public struct ChangeInBuildingStateEvent 
 {
-    public SpriteGroupView roofSpriteRenderer;
+    public TilemapsGroup roofTilemaps;
     public bool isHideRoof;
 
-    public ChangeInBuildingStateEvent(bool _isHideRoof, SpriteGroupView _spriteRenderer)
+    public ChangeInBuildingStateEvent(bool _isHideRoof, TilemapsGroup _tilemaps)
     {
         isHideRoof = _isHideRoof;
-        roofSpriteRenderer = _spriteRenderer;
+        roofTilemaps = _tilemaps;
     }
 }

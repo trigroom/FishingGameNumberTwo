@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public struct GlobalTimeComponent
 {
     public int currentDayTime;
@@ -15,8 +11,19 @@ public struct GlobalTimeComponent
     public bool goToLightNight;
 
     public int levelsToRain;
-    public bool changedToRain { get; set; }
+    public WeatherType currentWeatherType { get; set; }
 
     public float lastRainDropTime;
+
+    public float currentThunderLight;
+    public bool thuderIsLighting;
+    public float lastThunderTime;
+
+    public enum WeatherType
+    {
+        none,
+        rain,
+        thunderstorm
+    }
     // public float minutesToTimerTextCount;
 }

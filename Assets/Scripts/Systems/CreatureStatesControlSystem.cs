@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
 public class CreatureStatesControlSystem : IEcsRunSystem
 {
     private EcsWorldInject _world;
@@ -76,68 +77,47 @@ public class CreatureStatesControlSystem : IEcsRunSystem
 
         if (aiCmp.currentState == CreatureAIComponent.CreatureStates.idle)
         { //random move
-            /* 
-             if (!aiCmp.isStoppedMoveInIdleState)
-              {
-                  if (danger.Max() < 0.2f)
-                      interest[aiCmp.randomMoveDirectionIndex] = 1;
-                  else
-                  {
-                      int maxDanger = Array.IndexOf(danger, danger.Max());//тут продолжить
 
-                      interest = new float[8];
+            if (!aiCmp.isStoppedMoveInIdleState)
+            {
+                if (danger.Max() < 0.2f)
+                    interest[aiCmp.randomMoveDirectionIndex] = 1;
+                else
+                {
+                    int maxDanger = System.Array.IndexOf(danger, danger.Max());//тут продолжить
 
-                      int needNum = maxDanger;
+                    interest = new float[8];
 
-                      if (maxDanger < 4)
-                          needNum += 4;
-                      else
-                          needNum -= 4;
+                    int needNum = maxDanger;
 
-                      aiCmp.randomMoveDirectionIndex = needNum;
+                    if (maxDanger < 4)
+                        needNum += 4;
+                    else
+                        needNum -= 4;
 
-                      interest[aiCmp.randomMoveDirectionIndex] = 1;
+                    aiCmp.randomMoveDirectionIndex = needNum;
 
-                  }
-              }
-              if (aiCmp.randomMoveTime <= 0)
-              {
+                    interest[aiCmp.randomMoveDirectionIndex] = 1;
 
+                }
+            }
+            if (aiCmp.randomMoveTime <= 0)
+            {
+                aiCmp.randomMoveTime = Random.Range(0.3f, 1.5f);
+                if (aiCmp.isStoppedMoveInIdleState)
+                {
+                    aiCmp.randomMoveDirectionIndex = Random.Range(0, 8);
+                    aiCmp.isStoppedMoveInIdleState = false;
+                    Ray2D ray = new Ray2D(moveCmp.entityTransform.position, _sceneData.Value.eightDirections[aiCmp.randomMoveDirectionIndex]);//
+                    moveCmp.pointToRotateInput = ray.origin + (ray.direction * 20);//
+                }
 
+                else
+                    aiCmp.isStoppedMoveInIdleState = true;
+            }
+            else
+                aiCmp.randomMoveTime -= Time.deltaTime;
 
-
-
-
-                  aiCmp.randomMoveTime = UnityEngine.Random.Range(0.3f, 1.5f);
-                  if (aiCmp.isStoppedMoveInIdleState)
-                  {
-                      aiCmp.randomMoveDirectionIndex = UnityEngine.Random.Range(0, 8);
-                      aiCmp.isStoppedMoveInIdleState = false;
-                      Debug.Log("ran mone yes");
-                      Ray2D ray = new Ray2D(moveCmp.entityTransform.position, _sceneData.Value.eightDirections[aiCmp.randomMoveDirectionIndex]);//
-                      moveCmp.pointToRotateInput = ray.origin + (ray.direction * 20);//
-                  }
-
-                  else
-                  {
-                      // moveCmp.canMove = false;
-                      aiCmp.isStoppedMoveInIdleState = true;
-                      Debug.Log("ran mone not");
-                  }
-
-
-
-
-
-
-
-
-
-              }
-              else
-                  aiCmp.randomMoveTime -= Time.deltaTime;
-              // Debug.Log(aiCmp.randomMoveTime + " ran move time");
-            */
             return (danger, interest);
         }
 
@@ -163,7 +143,6 @@ public class CreatureStatesControlSystem : IEcsRunSystem
 
         if (Vector2.Distance(creaturePosition, aiCmp.targetPositionCached) < 0.5f)
         {
-            Debug.Log("stop move");
             aiCmp.reachedLastTarget = true;
             aiCmp.currentTarget = null;
             return (danger, interest);
@@ -174,7 +153,7 @@ public class CreatureStatesControlSystem : IEcsRunSystem
         float result = 0;
         bool isHealing = creatureInv.healingItem != null && _healingItemComponentsPool.Value.Get(aiEntity).isHealing;
         moveCmp.isRun = false;
-        if ((aiCmp.isTwoWeapon && _creatureInventoryComponentsPool.Value.Get(aiEntity).isSecondWeaponUsed) && !isHealing || aiCmp.currentState == CreatureAIComponent.CreatureStates.follow || (aiCmp.currentState != CreatureAIComponent.CreatureStates.idle && creatureInv.gunItem == null && !isHealing) || (aiCmp.isTwoWeapon && aiCmp.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget && aiCmp.teammatesCount > 1 && !isHealing))
+        if (((aiCmp.isTwoWeapon && _creatureInventoryComponentsPool.Value.Get(aiEntity).isSecondWeaponUsed) || aiCmp.currentState == CreatureAIComponent.CreatureStates.follow || (aiCmp.currentState != CreatureAIComponent.CreatureStates.idle && creatureInv.gunItem == null) || (aiCmp.isTwoWeapon && aiCmp.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget && aiCmp.teammatesCount > 1)) && !isHealing)
         {
             for (int i = 0; i < interest.Length; i++)
             {
@@ -187,12 +166,11 @@ public class CreatureStatesControlSystem : IEcsRunSystem
                         interest[i] = valueToPutIn;
                 }
             }
-            if(!moveCmp.isRun && moveCmp.currentRunTime > 1)
-            moveCmp.isRun = true;
+            if (!moveCmp.isRun && moveCmp.currentRunTime > 1)
+                moveCmp.isRun = true;
         }
-        else if ((aiCmp.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget && (!aiCmp.isTwoWeapon || (aiCmp.isTwoWeapon && aiCmp.teammatesCount <= 1)) || (creatureInv.healingItem != null && isHealing)) && danger.Max() < 0.8f)
+        else if ((aiCmp.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget && (!aiCmp.isTwoWeapon || (aiCmp.isTwoWeapon && aiCmp.teammatesCount <= 1)) || isHealing) && danger.Max() < 0.8f)
         {
-            Debug.Log("backwardMove" + danger.Max());
             for (int i = 0; i < interest.Length; i++)
             {
                 int needDirection = i;
@@ -338,10 +316,7 @@ public class CreatureStatesControlSystem : IEcsRunSystem
                 float valueToPutIn = result * weight;
 
                 if (valueToPutIn > danger[i])
-                {
-                    // Debug.Log(valueToPutIn + " danger res" + danger[i]);
                     danger[i] = valueToPutIn;
-                }
             }
         }
         aiCmp.dangersResultTemp = danger;
@@ -359,7 +334,6 @@ public class CreatureStatesControlSystem : IEcsRunSystem
 
         Collider2D[] obstaclesColliders = Physics2D.OverlapCircleAll(moveCmp.entityTransform.position, /*расстояние нахождения препятствий*/1.2f, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy"));
         aiCmp.teammatesCount = Physics2D.OverlapCircleAll(moveCmp.entityTransform.position, /*расстояние нахождения препятствий*/8f, LayerMask.GetMask("Enemy")).Length;
-    //    Debug.Log("TeammatesCount" + aiCmp.teammatesCount);
         aiCmp.obstacles = obstaclesColliders;
 
         Collider2D playerCollider = Physics2D.OverlapCircle(moveCmp.entityTransform.position, aiCmp.followDistance, LayerMask.GetMask("Player")/*каких нибудь животных добавить*/);
@@ -371,18 +345,14 @@ public class CreatureStatesControlSystem : IEcsRunSystem
             Vector2 direction = (needPlayerPosition - moveCmp.entityTransform.position).normalized;
             RaycastHit2D hit = Physics2D.Raycast(moveCmp.entityTransform.position, direction, aiCmp.followDistance, LayerMask.GetMask("Obstacle", "Player", "InteractedCharacter"/*, "Enemy"*/));
 
-
-
             RaycastHit2D hitSightOnTarget = Physics2D.Raycast(moveCmp.entityTransform.position, aiCmp.creatureView.movementView.weaponContainer.up, aiCmp.followDistance, LayerMask.GetMask("Obstacle", "Player", "InteractedCharacter"/*, "Enemy"*/));//если что перенести в ран
             aiCmp.sightOnTarget = hitSightOnTarget.collider != null && hitSightOnTarget.collider.gameObject.layer == 6;
-       //     Debug.Log(aiCmp.sightOnTarget + "aiCmp.sightOnTarget");
-     //       Debug.Log(hit);
             float distanceToTarget = Vector2.Distance(needPlayerPosition, moveCmp.entityTransform.position);
             if (hit.collider != null && (LayerMask.GetMask("Player") & (1 << hit.collider.gameObject.layer)) != 0)
             {
                 if (aiCmp.colliders == null)
                 {
-             //       Debug.Log("Сообщить о игроке");
+                    //       Debug.Log("Сообщить о игроке");
                     Collider2D[] closestEnemies = Physics2D.OverlapCircleAll(moveCmp.entityTransform.position, 6f, LayerMask.GetMask("Enemy"));
                     foreach (var enemy in closestEnemies)
                     {
@@ -422,18 +392,15 @@ public class CreatureStatesControlSystem : IEcsRunSystem
                 }
                 aiCmp.colliders = new List<Transform>() { playerCollider.transform };
                 //Debug.DrawRay(moveCmp.entityTransform.position, direction * creatureAiCmp.followDistance, Color.green);
-            //    Debug.Log("Player");
                 if (distanceToTarget <= aiCmp.minSafeDistance)
-                {
-                //    Debug.Log("runaway");
                     aiCmp.currentState = CreatureAIComponent.CreatureStates.runAwayFromTarget;
-                }
+
                 else if (distanceToTarget <= aiCmp.safeDistance && !aiCmp.isPeaceful)
                     aiCmp.currentState = CreatureAIComponent.CreatureStates.shootingToTarget;
 
                 else if (distanceToTarget <= aiCmp.followDistance && !aiCmp.isPeaceful)
                     aiCmp.currentState = CreatureAIComponent.CreatureStates.follow;
-                //
+
                 if (aiCmp.timeFromLastTargetSeen != 0)
                     aiCmp.timeFromLastTargetSeen = 0;
 
@@ -466,7 +433,7 @@ public class CreatureStatesControlSystem : IEcsRunSystem
                     {
                         aiCmp.currentState = CreatureAIComponent.CreatureStates.idle;
                         aiCmp.timeFromLastTargetSeen = 0;
-                    //    Debug.Log("not detected targets and set idle state");
+                        //    Debug.Log("not detected targets and set idle state");
 
                     }
                     else if (aiCmp.timeFromLastTargetSeen >= 1.5f)
@@ -478,25 +445,21 @@ public class CreatureStatesControlSystem : IEcsRunSystem
 
                 }
                 Debug.DrawRay(moveCmp.entityTransform.position, direction * aiCmp.followDistance, Color.red);
-           //     Debug.Log("Player now not detect");
+                //     Debug.Log("Player now not detect");
             }
         }
         else
         {
-            //creatureAiCmp.currentState = CreatureAIComponent.CreatureStates.idle;
             if (aiCmp.currentState != CreatureAIComponent.CreatureStates.idle)
             {
                 if (aiCmp.reachedLastTarget)
                 {
                     aiCmp.currentState = CreatureAIComponent.CreatureStates.idle;
                     aiCmp.timeFromLastTargetSeen = 0;
-                //    Debug.Log("not detected targets and set idle state");
 
                 }
                 else if (aiCmp.timeFromLastTargetSeen >= 1.5f)
-                {
                     aiCmp.reachedLastTarget = true;
-                }
                 else
                     aiCmp.timeFromLastTargetSeen += Time.deltaTime;
             }
@@ -505,64 +468,63 @@ public class CreatureStatesControlSystem : IEcsRunSystem
             aiCmp.colliders = null;
         }
         aiCmp.targets = aiCmp.colliders;
-       // Debug.Log("state " + aiCmp.currentState + " rached las tarrget" + aiCmp.reachedLastTarget);
     }
 
 
-    private void CheckPlayerDistance(int aiEntity, ref CreatureAIComponent aiEntityCmp)
-    {
-        ref var moveCmp = ref _movementComponentsPool.Value.Get(aiEntity);
-        if (_healingItemComponentsPool.Value.Has(aiEntity) && _healingItemComponentsPool.Value.Get(aiEntity).isHealing) return;
+    /*  private void CheckPlayerDistance(int aiEntity, ref CreatureAIComponent aiEntityCmp)
+      {
+          ref var moveCmp = ref _movementComponentsPool.Value.Get(aiEntity);
+          if (_healingItemComponentsPool.Value.Has(aiEntity) && _healingItemComponentsPool.Value.Get(aiEntity).isHealing) return;
 
-        //тут потом менять
-        RaycastHit2D ray = Physics2D.CircleCast(moveCmp.entityTransform.position, aiEntityCmp.followDistance, moveCmp.entityTransform.up, aiEntityCmp.followDistance, LayerMask.GetMask("Player"));
-        if (ray.collider == null)
-        {
-            Debug.Log("creature is nor collide");
-            if (aiEntityCmp.currentState != CreatureAIComponent.CreatureStates.idle)
-                aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.idle;
-            return;
+          //тут потом менять
+          RaycastHit2D ray = Physics2D.CircleCast(moveCmp.entityTransform.position, aiEntityCmp.followDistance, moveCmp.entityTransform.up, aiEntityCmp.followDistance, LayerMask.GetMask("Player"));
+          if (ray.collider == null)
+          {
+              Debug.Log("creature is nor collide");
+              if (aiEntityCmp.currentState != CreatureAIComponent.CreatureStates.idle)
+                  aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.idle;
+              return;
 
-        }
-        var distanceBetweenPlayer = Vector2.Distance(moveCmp.entityTransform.position, ray.collider.transform.position);
-        switch (aiEntityCmp.currentState)
-        {
-            case CreatureAIComponent.CreatureStates.idle:
-                if (aiEntityCmp.isPeaceful && distanceBetweenPlayer < aiEntityCmp.minSafeDistance)
-                    aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.runAwayFromTarget;
-                if (distanceBetweenPlayer > aiEntityCmp.safeDistance && !aiEntityCmp.isPeaceful)
-                    aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.follow;
-                break;
+          }
+          var distanceBetweenPlayer = Vector2.Distance(moveCmp.entityTransform.position, ray.collider.transform.position);
+          switch (aiEntityCmp.currentState)
+          {
+              case CreatureAIComponent.CreatureStates.idle:
+                  if (aiEntityCmp.isPeaceful && distanceBetweenPlayer < aiEntityCmp.minSafeDistance)
+                      aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.runAwayFromTarget;
+                  if (distanceBetweenPlayer > aiEntityCmp.safeDistance && !aiEntityCmp.isPeaceful)
+                      aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.follow;
+                  break;
 
-            case CreatureAIComponent.CreatureStates.follow:
-                if (distanceBetweenPlayer < aiEntityCmp.safeDistance && distanceBetweenPlayer > aiEntityCmp.minSafeDistance)
-                    aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.shootingToTarget;
-                break;
+              case CreatureAIComponent.CreatureStates.follow:
+                  if (distanceBetweenPlayer < aiEntityCmp.safeDistance && distanceBetweenPlayer > aiEntityCmp.minSafeDistance)
+                      aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.shootingToTarget;
+                  break;
 
-            case CreatureAIComponent.CreatureStates.shootingToTarget:
-                ref var curAtkCmp = ref _currentAttackComponentsPool.Value.Get(aiEntity);
-                if (!curAtkCmp.canAttack)
-                    curAtkCmp.canAttack = true;
-                // Debug.Log(distanceBetweenPlayer + "<=" + aiEntityCmp.minSafeDistance);
-                if (distanceBetweenPlayer <= aiEntityCmp.minSafeDistance)
-                    aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.runAwayFromTarget;
-                else if (distanceBetweenPlayer >= aiEntityCmp.safeDistance * 1.15f)
-                    aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.follow;
-                break;
+              case CreatureAIComponent.CreatureStates.shootingToTarget:
+                  ref var curAtkCmp = ref _currentAttackComponentsPool.Value.Get(aiEntity);
+                  if (!curAtkCmp.canAttack)
+                      curAtkCmp.canAttack = true;
+                  // Debug.Log(distanceBetweenPlayer + "<=" + aiEntityCmp.minSafeDistance);
+                  if (distanceBetweenPlayer <= aiEntityCmp.minSafeDistance)
+                      aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.runAwayFromTarget;
+                  else if (distanceBetweenPlayer >= aiEntityCmp.safeDistance * 1.15f)
+                      aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.follow;
+                  break;
 
-            case CreatureAIComponent.CreatureStates.runAwayFromTarget:
-                if (distanceBetweenPlayer >= aiEntityCmp.safeDistance)
-                {
-                    if (!aiEntityCmp.isPeaceful)
-                    {
-                        _currentAttackComponentsPool.Value.Get(aiEntity).canAttack = false;
-                        aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.shootingToTarget;
-                    }
-                    else
-                        aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.idle;
-                }
-                break;
-        }
+              case CreatureAIComponent.CreatureStates.runAwayFromTarget:
+                  if (distanceBetweenPlayer >= aiEntityCmp.safeDistance)
+                  {
+                      if (!aiEntityCmp.isPeaceful)
+                      {
+                          _currentAttackComponentsPool.Value.Get(aiEntity).canAttack = false;
+                          aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.shootingToTarget;
+                      }
+                      else
+                          aiEntityCmp.currentState = CreatureAIComponent.CreatureStates.idle;
+                  }
+                  break;
+          }
 
-    }
+      }*/
 }

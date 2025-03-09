@@ -888,10 +888,10 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             else
                 _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Days to next dark night " + (globalTimeCmp.nightLightIntensity / 0.1f) + "\n";
 
-            if (globalTimeCmp.changedToRain)
+            if (globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none)
                 _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Hours to next rain " + (globalTimeCmp.levelsToRain * 3) + "\n";
             else
-                _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Rain duration: " + (globalTimeCmp.levelsToRain * 3) + " hours\n";
+                _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += globalTimeCmp.currentWeatherType + " duration: " + (globalTimeCmp.levelsToRain * 3) + " hours\n";
 
             float hours = globalTimeCmp.currentDayTime + _sceneData.Value.timeHourOffset;
             if (hours > 24)

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b80ee9bcd9af2f43b8f4efe1237e19e, type: 3}
+  m_Name: MotoHelmetInfo
+  m_EditorClassIdentifier: 
+  helmetSprite: {fileID: 21300000, guid: a45d28f5a571d3b4298ca1bf5612b964, type: 3}
+  armorDurability: 2000
+  headDefenceMultiplayer: 0.6
+  inGamePositionOnPlayer: {x: 0.005, y: 0.06}
+  hairSpriteIndex: 0
+  audibilityMultiplayer: 0.7
+  fowAngleRemove: 10
+  fowLenghtRemove: 0
+  autoBloodCleaning: 1
+  dropTransparentMultiplayer: 0.5
+  nightTimeModeDuration: 0
+  addedLightIntancity: 0
+  addedBloom: 0
+  visionColor: {r: 0, g: 0, b: 0, a: 0}
+  recoveryCost: 20

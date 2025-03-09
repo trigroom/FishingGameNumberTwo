@@ -8,7 +8,6 @@ public class PlayerView : MonoBehaviour
     //[field: SerializeField] public Transform playerComponentsContainer { get; private set; }
     [field: SerializeField] public float maxCameraSpread { get; private set; }
     [field: SerializeField] public float recoveryCameraSpread { get; private set; }
-    [field: SerializeField] public ShieldView shieldView { get; private set; }
     [field: SerializeField] public HealthView healthView { get; private set; }
     [field: SerializeField] public MovementView movementView { get; private set; }
     [field: SerializeField] public PlayerInputView playerInputView { get; private set; }

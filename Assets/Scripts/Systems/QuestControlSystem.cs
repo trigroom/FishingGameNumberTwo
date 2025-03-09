@@ -332,11 +332,11 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
                         if (task.killTaskInfo.maxTimeToKill != 0 && task.killTaskInfo.minTimeToKill != 0)
                         {
                             var curTime = _globalTimeComponentsPool.Value.Get(_sceneService.Value.playerEntity).currentDayTime;
-                            int maxTime = curTime + _sceneService.Value.timeHourOffset + task.killTaskInfo.maxTimeToKill;
+                            int maxTime = /*curTime +*/ _sceneService.Value.timeHourOffset + task.killTaskInfo.maxTimeToKill;
                             if (maxTime > 24)
                                 maxTime -= 24;
 
-                            int minTime = curTime + _sceneService.Value.timeHourOffset + task.killTaskInfo.minTimeToKill;
+                            int minTime = /*curTime +*/ _sceneService.Value.timeHourOffset + task.killTaskInfo.minTimeToKill;
                             if (minTime > 24)
                                 minTime -= 24;
 
@@ -363,9 +363,10 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
 
                 for (int i = 0; i < questNPC.questNode[questNPCCmp.currentQuest].rewards.Length; i++)
                 {
+                    Debug.Log(questNPCCmp.currentQuest + "quest NPC NUM" + questNPC.characterId);
                     var reward = questNPC.questNode[questNPCCmp.currentQuest].rewards[i];
 
-                    if (reward.rewardItemId != 999)
+                    if (reward.rewardItemId != 0)
                         questDescription.text += reward.rewardItemsCount + " " + _sceneService.Value.idItemslist.items[reward.rewardItemId].itemName + "\n";
                     else
                         questDescription.text += reward.rewardItemsCount + "$" + "\n";

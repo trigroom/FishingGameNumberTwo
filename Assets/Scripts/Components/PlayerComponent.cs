@@ -8,7 +8,7 @@ public struct PlayerComponent
     public bool useFlashlight;
     public bool canDeffuseMines;
     public bool hasForestGuide;
-    public bool nvgIsUsed;
+    public bool nvgIsUsed { get;set; }
     public int levelOfPainkillers;
     public float currentAudibility;
     // public SpriteRenderer visionZoneMask;

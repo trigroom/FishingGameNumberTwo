@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gunType: 3
   attackLenght: 20
-  shotSoundDistance: 0
+  shotSoundDistance: 30
   reloadDuration: 1
   magazineCapacity: 6
-  damage: 10
-  attackCouldown: 0.5
+  damage: 23
+  attackCouldown: 0.4
   maxSpread: 10
-  minSpread: 5
+  minSpread: 1
   addedSpread: 2
   weaponChangeSpeed: 1
   isAuto: 0
@@ -28,7 +28,7 @@ MonoBehaviour:
   bulletCount: 1
   isOneBulletReloaded: 1
   maxDurabilityPoints: 500
-  bulletShellIndex: 0
+  bulletShellIndex: 4
   firepointPosition: {x: 0.13, y: 0.04}
   bulletShellPointPosition: {x: 0, y: 0}
   bulletShellSpawnOnShot: 0

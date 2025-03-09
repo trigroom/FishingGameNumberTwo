@@ -2,6 +2,7 @@ using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using static InteractCharacterView;
 using static PlayerInputView;
@@ -62,7 +63,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<BreakNeutralizeTrapEvent> _breakNeutralizeTrapEventsPool;
     private EcsPoolInject<AddItemEvent> _addItemEventsPool;
     private EcsPoolInject<EmbientHelperComponent> _embientHelperComponentsPool;
-
+    private EcsPoolInject<OneShotSoundComponent> _oneShotSoundComponentsPool;
 
     private EcsFilterInject<Inc<LoadGameEvent>> loadGameEventsFilter;
     private EcsFilterInject<Inc<CheckInteractedObjectsEvent>> _checkInteractedObjectsEventsFilter;
@@ -106,7 +107,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         attackCmp.canAttack = true;
 
         playerCmp.view.meleeColliderView.Construct(_world.Value, _playerEntity);
-        playerCmp.view.shieldView._entity = _playerEntity;
+        playerCmp.view.movementView.shieldView._entity = _playerEntity;
         ref var fieldOfViewCmp = ref _fieldOfViewComponentsPool.Value.Add(_playerEntity);
         fieldOfViewCmp.fieldOfView = playerCmp.view.defaultFOV;
         fieldOfViewCmp.viewDistance = playerCmp.view.viewDistance;
@@ -114,7 +115,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Add(_playerEntity);
         playerMoveCmp.playerView = playerCmp.view;
 
-        _embientHelperComponentsPool.Value.Add(_playerEntity).timeToNextShot = Random.Range(15,40);
+        _embientHelperComponentsPool.Value.Add(_playerEntity).timeToNextShot = Random.Range(15, 40);
 
         ref var gunCmp = ref _gunComponentsPool.Value.Add(_playerEntity);
         gunCmp.gunSpritePositionRecoil = 0.7f;
@@ -139,11 +140,11 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
     public void Run(IEcsSystems systems)
     {
-        if(Input.GetKeyDown(KeyCode.Z)) 
+        if (Input.GetKeyDown(KeyCode.Z))
             _inventoryComponentsPool.Value.Get(_sceneService.Value.inventoryEntity).moneyCount += 50;
         //del in full game
 
-     
+
 
         ref var curInteactedObjectsCmp = ref _currentInteractedCharactersComponentsPool.Value.Get(_playerEntity);
         if (curInteactedObjectsCmp.interactionType != InteractionType.none)
@@ -355,7 +356,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 _sceneService.Value.ammoInfoText.text = "Neutralize Trap";
             }
             trapEvent.currentNeutralizeTime -= Time.deltaTime;
-            Debug.Log(trapEvent.currentNeutralizeTime);
+            //Debug.Log(trapEvent.currentNeutralizeTime);
             if (trapEvent.currentNeutralizeTime <= 0)
             {
                 _trapIsNeutralizedEventsPool.Value.Add(neutralizeTrap).trapType = curInteactedObjectsCmp.trapView.type;
@@ -370,16 +371,55 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         }
         ref var buildChecker = ref _buildingCheckerComponentsPool.Value.Get(_playerEntity);
         ref var gloabalTimeCmp = ref _globalTimeComponentsPool.Value.Get(_playerEntity);
-        if (!buildChecker.isHideRoof && !gloabalTimeCmp.changedToRain)
+        ref var playerCmp = ref _playerComponentsPool.Value.Get(_playerEntity);
+        if (gloabalTimeCmp.currentWeatherType != GlobalTimeComponent.WeatherType.none)
         {
-            gloabalTimeCmp.lastRainDropTime -= Time.deltaTime;
-            if (gloabalTimeCmp.lastRainDropTime <= 0)
+            if (!buildChecker.isHideRoof)
             {
-                gloabalTimeCmp.lastRainDropTime = Random.Range(0.3f, 0.8f);
-                if (_inventoryItemComponentsPool.Value.Has(_sceneService.Value.helmetCellView._entity))
-                    _fadedParticleOnScreenComponentsPool.Value.Add(_world.Value.NewEntity()).particleImage = _sceneService.Value.GetParticleOnScreen(_sceneService.Value.rainDropOnScreenColor, 1f - _inventoryItemComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).itemInfo.helmetInfo.dropTransparentMultiplayer, true);
-                else
-                    _fadedParticleOnScreenComponentsPool.Value.Add(_world.Value.NewEntity()).particleImage = _sceneService.Value.GetParticleOnScreen(_sceneService.Value.rainDropOnScreenColor, 1f, true);
+                if (gloabalTimeCmp.lastRainDropTime <= 0)
+                {
+                    gloabalTimeCmp.lastRainDropTime = gloabalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.rain ? Random.Range(0.3f, 0.8f) : Random.Range(0.1f, 0.25f);
+                    if (_inventoryItemComponentsPool.Value.Has(_sceneService.Value.helmetCellView._entity))
+                        _fadedParticleOnScreenComponentsPool.Value.Add(_world.Value.NewEntity()).particleImage = _sceneService.Value.GetParticleOnScreen(_sceneService.Value.rainDropOnScreenColor, 1f - _inventoryItemComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).itemInfo.helmetInfo.dropTransparentMultiplayer, true);
+                    else
+                        _fadedParticleOnScreenComponentsPool.Value.Add(_world.Value.NewEntity()).particleImage = _sceneService.Value.GetParticleOnScreen(_sceneService.Value.rainDropOnScreenColor, 1f, true);
+                }
+
+                gloabalTimeCmp.lastRainDropTime -= Time.deltaTime;
+
+            }
+            if (gloabalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.thunderstorm)
+            {
+                gloabalTimeCmp.lastThunderTime -= Time.deltaTime;
+                if (gloabalTimeCmp.lastThunderTime <= 0)
+                {
+                    if (!buildChecker.isHideRoof)
+                        gloabalTimeCmp.thuderIsLighting = true;
+                    gloabalTimeCmp.lastThunderTime = Random.Range(10, 20);
+                    var needSound = _sceneService.Value.thunderSounds[Random.Range(0, _sceneService.Value.thunderSounds.Length)];
+                    _oneShotSoundComponentsPool.Value.Add(_world.Value.NewEntity()).Construct(_sceneService.Value.PlaySoundFXClip(needSound, moveCmp.movementView.transform.position, buildChecker.isHideRoof ? Random.Range(0.1f, 0.4f) : Random.Range(0.5f, 1f)), needSound.length);
+                }
+                if (gloabalTimeCmp.thuderIsLighting)
+                {
+                    gloabalTimeCmp.currentThunderLight += Time.deltaTime * 3;
+                    if (gloabalTimeCmp.currentThunderLight > 2f)
+                        gloabalTimeCmp.thuderIsLighting = false;
+                }
+                else if (gloabalTimeCmp.currentThunderLight > 0 && !buildChecker.isHideRoof)
+                {
+                    gloabalTimeCmp.currentThunderLight -= Time.deltaTime;
+
+                    var defaultLightIntancity = gloabalTimeCmp.currentGlobalLightIntensity;
+                    if (playerCmp.nvgIsUsed)
+                        defaultLightIntancity += _inventoryItemComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).itemInfo.helmetInfo.addedLightIntancity;
+
+                    if (defaultLightIntancity < gloabalTimeCmp.currentThunderLight)
+                        _sceneService.Value.gloabalLight.intensity = gloabalTimeCmp.currentThunderLight;
+                    else
+                        _sceneService.Value.gloabalLight.intensity = defaultLightIntancity;
+                }
+                else if(gloabalTimeCmp.currentThunderLight < 0)
+                    gloabalTimeCmp.currentThunderLight = 0;
             }
         }
         var healthCmp = _healthComponentsPool.Value.Get(_playerEntity);
@@ -387,14 +427,20 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         {
             ref var changeStateCmp = ref _changeInBuildingStateEventsPool.Value.Get(changeRoofState);
             buildChecker.isHideRoof = changeStateCmp.isHideRoof;
-            buildChecker.roofSpriteRenderer = changeStateCmp.roofSpriteRenderer;
+            buildChecker.roofSpriteRenderer = changeStateCmp.roofTilemaps;
             if (buildChecker.timeBeforeHideRoof > 0)
                 buildChecker.timeBeforeHideRoof = 1f - buildChecker.timeBeforeHideRoof;
             else
                 buildChecker.timeBeforeHideRoof = 1f;
+
+            _sceneService.Value.backgroundAudioSource.volume = buildChecker.isHideRoof ? 0.3f : 1f;
+            if(gloabalTimeCmp.currentWeatherType != GlobalTimeComponent.WeatherType.none)
+            _sceneService.Value.rainEffectContainer.gameObject.SetActive(!buildChecker.isHideRoof);
+            //change rain sound to roof rain sound
+
             _changeInBuildingStateEventsPool.Value.Del(changeRoofState);
         }
-        ref var playerCmp = ref _playerComponentsPool.Value.Get(_playerEntity);
+
         if (playerCmp.nvgIsUsed)
         {
             ref var nvgChargeCmp = ref _shieldComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity);
@@ -409,11 +455,11 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 else
                     _sceneService.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity;
                 if (globalTimeCmp.currentDayTime >= 15)
-                    _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(1f);
+                    _sceneService.Value.gloabalLight.color = _sceneService.Value.globalLightColors[2];
                 else if (globalTimeCmp.currentDayTime == 12 || globalTimeCmp.currentDayTime == 0)
-                    _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(0.5f);
+                    _sceneService.Value.gloabalLight.color = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? _sceneService.Value.globalLightColors[1] : _sceneService.Value.globalLightColors[4];
                 else
-                    _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(0);
+                    _sceneService.Value.gloabalLight.color = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? _sceneService.Value.globalLightColors[0] : _sceneService.Value.globalLightColors[3];
                 _sceneService.Value.bloomMainBg.intensity.value = 0;
 
                 if (_sceneService.Value.gloabalLight.intensity < 0)
@@ -435,7 +481,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     if (playerCmp.nvgIsUsed)
                     {
                         var helmetInfo = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).itemInfo.helmetInfo;
-                        var addHelmetIntansity = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.helmetCellView._entity).itemInfo.helmetInfo.addedLightIntancity;
+                        var addHelmetIntansity = helmetInfo.addedLightIntancity;
                         if (_sceneService.Value.gloabalLight.intensity > addHelmetIntansity)
                         {
                             if (gloabalTimeCmp.isNight)
@@ -460,12 +506,12 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                         else if (_sceneService.Value.gloabalLight.intensity < 0)
                             _sceneService.Value.gloabalLight.intensity = 0;
                     }
-                    ChangeAlfaAllSpriteInGroup(buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.renderers);
+                    ChangeAlfaAllSpriteInGroup(buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.tilemaps);
                 }
                 else
                 {
                     float sumIntansity = 0;
-                    ChangeAlfaAllSpriteInGroup(1 - buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.renderers);
+                    ChangeAlfaAllSpriteInGroup(1 - buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.tilemaps);
                     if (gloabalTimeCmp.currentGlobalLightIntensity > 0f)
                         sumIntansity = gloabalTimeCmp.currentGlobalLightIntensity - buildChecker.timeBeforeHideRoof * 0.35f;
                     if (playerCmp.nvgIsUsed)
@@ -489,7 +535,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     float sumIntansity = 0;
                     if (buildChecker.isHideRoof)
                     {
-                        ChangeAlfaAllSpriteInGroup(buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.renderers);
+                        ChangeAlfaAllSpriteInGroup(buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.tilemaps);
                         if (gloabalTimeCmp.currentGlobalLightIntensity - 0.35f > 0f)
                             sumIntansity = gloabalTimeCmp.currentGlobalLightIntensity - 0.35f;
                         else
@@ -497,7 +543,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     }
                     else
                     {
-                        ChangeAlfaAllSpriteInGroup(1 - buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.renderers);
+                        ChangeAlfaAllSpriteInGroup(1 - buildChecker.timeBeforeHideRoof, buildChecker.roofSpriteRenderer.tilemaps);
                         if (gloabalTimeCmp.currentGlobalLightIntensity > 0f)
                             sumIntansity = gloabalTimeCmp.currentGlobalLightIntensity;
                         else
@@ -545,7 +591,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 _dropItemsIventsPool.Value.Add(_sceneService.Value.dropedItemsUIView.curCell);
             else if (Input.GetKeyDown(KeyCode.A) && _inventoryItemComponentsPool.Value.Get(_sceneService.Value.dropedItemsUIView.curCell).currentItemsCount > 1)
                 _sceneService.Value.dropedItemsUIView.generalSlider.value = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.dropedItemsUIView.curCell).currentItemsCount;
-            else if (Input.GetKeyDown(KeyCode.S)&& _sceneService.Value.dropedItemsUIView.storageButton.gameObject.activeInHierarchy)
+            else if (Input.GetKeyDown(KeyCode.S) && _sceneService.Value.dropedItemsUIView.storageButton.gameObject.activeInHierarchy)
                 _addItemFromCellEventsPool.Value.Add(_sceneService.Value.dropedItemsUIView.curCell);
             else if (Input.GetKeyDown(KeyCode.W) && _sceneService.Value.dropedItemsUIView.divideButton.gameObject.activeInHierarchy)
                 _divideItemEventsPool.Value.Add(_sceneService.Value.dropedItemsUIView.curCell);
@@ -603,7 +649,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     if (playerStats.currentStatsExp[2] >= _sceneService.Value.levelExpCounts[playerStats.statLevels[2]] && !_upgradePlayerStatEventsPool.Value.Has(_sceneService.Value.playerEntity))
                         _upgradePlayerStatEventsPool.Value.Add(_sceneService.Value.playerEntity).statIndex = 2;
 
-                    //Debug.Log("running");
                     moveCmp.currentRunTime -= Time.deltaTime;
                     if (moveCmp.currentRunTime <= 0 || moveDirection == Vector2.zero || !moveCmp.canMove || inInventory || healthCmp.isDeath || moveCmp.isTrapped)
                     {
@@ -621,7 +666,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     moveCmp.currentRunTime += Time.deltaTime * moveCmp.currentRunTimeRecoverySpeed;
                     _sceneService.Value.playerStaminaBarFilled.fillAmount = moveCmp.currentRunTime / moveCmp.maxRunTime;
                     _sceneService.Value.playerStaminaText.text = moveCmp.currentRunTime.ToString("0.0") + "/" + moveCmp.maxRunTime;
-                    _sceneService.Value.staminaAnimator.SetFloat("StaminaAnimSpeed", 1+(1-_sceneService.Value.playerStaminaBarFilled.fillAmount)*2);
+                    _sceneService.Value.staminaAnimator.SetFloat("StaminaAnimSpeed", 1 + (1 - _sceneService.Value.playerStaminaBarFilled.fillAmount) * 2);
                 }
                 else if (moveCmp.currentRunTime > moveCmp.maxRunTime)
                     moveCmp.currentRunTime = moveCmp.maxRunTime;
@@ -641,7 +686,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 playerCmp.nvgIsUsed = !playerCmp.nvgIsUsed;
                 _sceneService.Value.uiAudioSourse.clip = _sceneService.Value.offOnDeviceSound;
                 _sceneService.Value.uiAudioSourse.Play();
-               var playerGunCmp = _playerGunComponentsPool.Value.Get(_playerEntity);
+                var playerGunCmp = _playerGunComponentsPool.Value.Get(_playerEntity);
                 bool isHideRoof = _buildingCheckerComponentsPool.Value.Get(_playerEntity).isHideRoof;
                 if (playerCmp.nvgIsUsed)
                 {
@@ -675,11 +720,11 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     else
                         _sceneService.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity;
                     if (globalTimeCmp.currentDayTime >= 15)
-                        _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(1f);
+                        _sceneService.Value.gloabalLight.color = _sceneService.Value.globalLightColors[2];
                     else if (globalTimeCmp.currentDayTime == 12 || globalTimeCmp.currentDayTime == 0)
-                        _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(0.5f);
+                        _sceneService.Value.gloabalLight.color = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? _sceneService.Value.globalLightColors[1] : _sceneService.Value.globalLightColors[4];
                     else
-                        _sceneService.Value.gloabalLight.color = _sceneService.Value.nightLightColor.Evaluate(0);
+                        _sceneService.Value.gloabalLight.color = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? _sceneService.Value.globalLightColors[0] : _sceneService.Value.globalLightColors[3];
                     _sceneService.Value.bloomMainBg.intensity.value = 0;
 
                 }
@@ -689,11 +734,8 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
             else if (!_currentAttackComponentsPool.Value.Get(_playerEntity).weaponIsChanged && !_playerGunComponentsPool.Value.Get(_playerEntity).inScope)
             {
-                if (Input.GetKeyDown(KeyCode.H) && healthCmp.maxHealthPoint != healthCmp.healthPoint && !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.healingItemCellView._entity).isEmpty && !_gunComponentsPool.Value.Get(_playerEntity).isReloading) //возможно что то ещё
-                {
+                if (Input.GetKeyDown(KeyCode.H) && healthCmp.maxHealthPoint != healthCmp.healthPoint && !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.healingItemCellView._entity).isEmpty && !_gunComponentsPool.Value.Get(_playerEntity).isReloading)
                     _healFromHealItemCellEventsPool.Value.Add(_playerEntity);
-                    // _sceneService.Value.ammoInfoText.text = "восстановление здоровья...";
-                }
 
                 else if (Input.GetKeyDown(KeyCode.G) && !_inventoryCellComponentsPool.Value.Get(_sceneService.Value.grenadeCellView._entity).isEmpty) //возможно что то ещё
                 {
@@ -713,13 +755,13 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     {
                         ref var shieldCmp = ref _shieldComponentsPool.Value.Get(_sceneService.Value.shieldCellView._entity);
 
-                        if (playerCmp.view.shieldView.shieldObject.localPosition != Vector3.zero)
+                        if (playerCmp.view.movementView.shieldView.shieldObject.localPosition != Vector3.zero)
                         {
-                            playerCmp.view.shieldView.shieldObject.SetParent(playerCmp.view.shieldView.shieldContainer);
-                            playerCmp.view.shieldView.shieldObject.localPosition = Vector3.zero;
-                            playerCmp.view.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, 0);
-                            playerCmp.view.shieldView.shieldObject.localScale = new Vector3(playerCmp.view.shieldView.shieldObject.localScale.x * -1, playerCmp.view.shieldView.shieldObject.localScale.y, playerCmp.view.shieldView.shieldObject.localScale.z);
-                            playerCmp.view.shieldView.shieldSpriteRenderer.sortingOrder = 2;
+                            playerCmp.view.movementView.shieldView.shieldObject.SetParent(playerCmp.view.movementView.shieldView.shieldContainer);
+                            playerCmp.view.movementView.shieldView.shieldObject.localPosition = Vector3.zero;
+                            playerCmp.view.movementView.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, 0);
+                            playerCmp.view.movementView.shieldView.shieldObject.localScale = new Vector3(playerCmp.view.movementView.shieldView.shieldObject.localScale.x * -1, playerCmp.view.movementView.shieldView.shieldObject.localScale.y, playerCmp.view.movementView.shieldView.shieldObject.localScale.z);
+                            playerCmp.view.movementView.shieldView.shieldSpriteRenderer.sortingOrder = 2;
                             if (_playerWeaponsInInventoryComponentsPool.Value.Get(_sceneService.Value.playerEntity).curWeapon == 2)
                             {
                                 int meleeWeaponEntity = _sceneService.Value.meleeWeaponCellView._entity;
@@ -728,11 +770,11 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                         }
                         else
                         {
-                            playerCmp.view.shieldView.shieldObject.localScale = new Vector3(playerCmp.view.shieldView.shieldObject.localScale.x * -1, playerCmp.view.shieldView.shieldObject.localScale.y, playerCmp.view.shieldView.shieldObject.localScale.z);
-                            playerCmp.view.shieldView.shieldObject.SetParent(playerCmp.view.movementView.nonWeaponContainer);
-                            playerCmp.view.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, -90);
-                            playerCmp.view.shieldView.shieldObject.localPosition = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.shieldCellView._entity).itemInfo.sheildInfo.sheildInHandsPosition;
-                            playerCmp.view.shieldView.shieldSpriteRenderer.sortingOrder = 6;
+                            playerCmp.view.movementView.shieldView.shieldObject.localScale = new Vector3(playerCmp.view.movementView.shieldView.shieldObject.localScale.x * -1, playerCmp.view.movementView.shieldView.shieldObject.localScale.y, playerCmp.view.movementView.shieldView.shieldObject.localScale.z);
+                            playerCmp.view.movementView.shieldView.shieldObject.SetParent(playerCmp.view.movementView.nonWeaponContainer);
+                            playerCmp.view.movementView.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, -90);
+                            playerCmp.view.movementView.shieldView.shieldObject.localPosition = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.shieldCellView._entity).itemInfo.sheildInfo.sheildInHandsPosition;
+                            playerCmp.view.movementView.shieldView.shieldSpriteRenderer.sortingOrder = 6;
                             if (_playerWeaponsInInventoryComponentsPool.Value.Get(_sceneService.Value.playerEntity).curWeapon == 2)
                             {
                                 int meleeWeaponEntity = _sceneService.Value.meleeWeaponCellView._entity;
@@ -747,7 +789,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 else if (Input.GetKeyDown(KeyCode.LeftShift) && moveDirection != Vector2.zero && moveCmp.canMove && !inInventory && !healthCmp.isDeath && !moveCmp.isStunned && moveCmp.currentRunTime > 0)
                 {
                     moveCmp.isRun = !moveCmp.isRun;
-
                     _calculateRecoilEventsPool.Value.Add(_world.Value.NewEntity());
                 }
             }
@@ -791,16 +832,16 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             }
             else if (hidedObjCmp.timeBeforeHide > 0)
                 hidedObjCmp.timeBeforeHide -= Time.deltaTime;
-        } 
+        }
 
         ref var embientHelperCmp = ref _embientHelperComponentsPool.Value.Get(_playerEntity);
         embientHelperCmp.timeToNextShot -= Time.deltaTime;
         if (embientHelperCmp.timeToNextShot <= 0)
         {
-             embientHelperCmp.timeToNextShot -= Time.deltaTime;
-            if(embientHelperCmp.audioSource == null)
+            embientHelperCmp.timeToNextShot -= Time.deltaTime;
+            if (embientHelperCmp.audioSource == null)
             {
-                embientHelperCmp.audioSource = _sceneService.Value.PlaySoundFXClip(_sceneService.Value.randomEmbientSounds[Random.Range(0,_sceneService.Value.randomEmbientSounds.Length)],playerMoveCmp.playerView.transform.position,Random.Range(0.01f, 0.15f));
+                embientHelperCmp.audioSource = _sceneService.Value.PlaySoundFXClip(_sceneService.Value.randomEmbientSounds[Random.Range(0, _sceneService.Value.randomEmbientSounds.Length)], playerMoveCmp.playerView.transform.position, Random.Range(0.01f, 0.15f));
                 embientHelperCmp.audioSource.panStereo = Random.Range(-1f, 1f);
             }
             else
@@ -817,9 +858,9 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         FieldOfViewCheck();
     }
 
-    private void ChangeAlfaAllSpriteInGroup(float needAlpfa, SpriteRenderer[] spriteRenderers)
+    private void ChangeAlfaAllSpriteInGroup(float needAlpfa, Tilemap[] spriteRenderers)
     {
-        foreach (SpriteRenderer spriteRenderer in spriteRenderers)
+        foreach (Tilemap spriteRenderer in spriteRenderers)
         {
             Color color = spriteRenderer.color;
             color.a = needAlpfa;
@@ -853,8 +894,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 Debug.DrawRay(origin, GetVectorFromAngle(angle) * viewDistance, Color.yellow);
                 if (raycastHit2D.collider != null)
                 {
-
-                    //  Debug.Log("checkCollider");
                     bool isHasThisCollider = false;
                     foreach (var col in checkedColliders)
                         if (col == raycastHit2D.collider)
@@ -911,7 +950,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             }
 
             angleIncrease = (360 - fov) / rayCount;
-            // origin = playerCmp.view.healthView.characterMainCollaider.transform.position;
             origin = new Vector2(playerCmp.view.movementView.transform.position.x, playerCmp.view.movementView.transform.position.y - 0.9f);
 
             for (int i = 0; i < rayCount; i++)//check around
@@ -920,18 +958,13 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 Debug.DrawRay(origin, GetVectorFromAngle(angle) * 2, Color.yellow);
                 if (raycastHit2D.collider != null)
                 {
-                    //Debug.Log("checkCollider");
                     bool isHasThisCollider = false;
                     foreach (var col in checkedColliders)
                         if (col == raycastHit2D.collider)
-                        {
                             isHasThisCollider = true;
-                            //Debug.Log("ignoreCollider");
-                        }
                     if (!isHasThisCollider)
                     {
                         checkedColliders.Add(raycastHit2D.collider);
-                        //  Debug.Log("addCheckCollider" + raycastHit2D.collider.gameObject.layer);
                         int objectLayer = raycastHit2D.collider.gameObject.layer;
                         switch (objectLayer)
                         {
@@ -991,7 +1024,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     int enemyEntity = ray.transform.gameObject.GetComponent<HealthView>()._entity;
                     ref var aiCmpEnemy = ref _creatureAIComponentsPool.Value.Get(enemyEntity);
                     var enemySpriteTransform = aiCmpEnemy.creatureView.movementView.characterSpriteTransform;
-                    
+
                     if ((enemySpriteTransform.localScale.x > 0 && playerCmp.view.movementView.transform.position.x > enemySpriteTransform.position.x) || (enemySpriteTransform.localScale.x < 0 && playerCmp.view.movementView.transform.position.x < enemySpriteTransform.position.x))//see the player
                     {
                         aiCmpEnemy.targetPositionCached = playerCmp.view.transform.position;

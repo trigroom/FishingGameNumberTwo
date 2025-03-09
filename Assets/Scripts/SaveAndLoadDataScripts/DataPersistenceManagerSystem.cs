@@ -22,7 +22,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<InventoryComponent> _inventoryComponent;
     private EcsPoolInject<GunInventoryCellComponent> _gunInventoryCellComponentsPool;
     private EcsPoolInject<DurabilityInInventoryComponent> _flashLightInInventoryComponentsPool;
-    private EcsPoolInject<NowUsedWeaponTag> _nowUsedWeaponTagsPool;
+    private EcsPoolInject<NowUsedWeaponTag> _nowUsedWeaponTagsPool { get; set; }
     private EcsPoolInject<PlayerMeleeWeaponComponent> _playerMeleeWeaponComponentsPool;
     private EcsPoolInject<MeleeWeaponComponent> _meleeWeaponComponentsPool;
     private EcsPoolInject<AttackComponent> _attackComponentsPool;
@@ -161,7 +161,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         _specialInventoryCellTagsPool.Value.Add(meleeCell);
         // int meleeCellId = cells.Count;
         cells.Add(invCellCmpMeleeWeapon.cellView);
-        _nowUsedWeaponTagsPool.Value.Add(meleeCell);
+        //_nowUsedWeaponTagsPool.Value.Add(meleeCell);
 
         int healingItemCell = _world.Value.NewEntity();
         _sceneData.Value.healingItemCellView.Construct(healingItemCell, _world.Value);
@@ -228,7 +228,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
 
         this.gameData = dataHandler.Load();
-        // this.gameData = null;
+       // this.gameData = null;
 
         int playerEntity = _sceneData.Value.playerEntity;
         ref var globalTimeCmp = ref _globalTimeComponentsPool.Value.Get(playerEntity);
@@ -278,7 +278,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
             gameData.currentNightLightIntensity = 0.3f;
             gameData.currentDayTime = 3;
-            gameData.changeToRain = true;
+            gameData.weaterType = GlobalTimeComponent.WeatherType.none;
             gameData.roundsToWeaterChange = Random.Range(10, 20);
             gameData.playerHP = healthCmp.maxHealthPoint;
             gameData.invCellsCount = _sceneData.Value.dropedItemsUIView.startBackpackInfo.cellsCount;
@@ -293,7 +293,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             for (int i = 0; i < weaponsList.Count; i++)
                 gameData.weaponsCurrentExpForSaveData[i] = weaponsList[i];
 
-            gameData.shoppersInfoForSafeData = new QuestInfoForSafeData[_sceneData.Value.startShoppers.Length-1];
+            gameData.shoppersInfoForSafeData = new QuestInfoForSafeData[_sceneData.Value.startShoppers.Length - 1];
             for (int i = 0; i < _sceneData.Value.startShoppers.Length; i++)
             {
                 if (i == 1) continue;
@@ -346,7 +346,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
             gameData.weaponsCurrentExpForSaveData = new NumAndIdForSafeData[curWeaponsExp.Count];
             int i = 0;
-            foreach(var weaponExp in curWeaponsExp)
+            foreach (var weaponExp in curWeaponsExp)
                 gameData.weaponsCurrentExpForSaveData[i++] = new NumAndIdForSafeData(weaponExp.Key, weaponExp.Value);
         }
 
@@ -383,7 +383,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             while (curExp >= _sceneData.Value.levelExpCounts[curLevel])
                 curLevel++;
             playerStats.weaponsExp.Add(weaponExp.cellId, new GunLevelInfoElement((int)curExp, curLevel));
-            Debug.Log(weaponExp.cellId + " weapon in exp cmp"+ curExp);
+            Debug.Log(weaponExp.cellId + " weapon in exp cmp" + curExp);
         }
 
         playerStats.statLevels = new int[3];
@@ -539,7 +539,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                     _flashLightInInventoryComponentsPool.Value.Add(cellEntity).currentDurability = durabilityItemsForSaveDataList[item.itemCellId];
 
                     if (itemCmp.itemInfo.type == ItemInfo.itemType.helmet && itemCmp.itemInfo.helmetInfo.addedLightIntancity != 0)
-                        _shieldComponentsPool.Value.Add(cellEntity).currentDurability = durabilityItemsForSaveDataList[item.itemCellId];
+                        _shieldComponentsPool.Value.Add(cellEntity).currentDurability = laserPoinerRemainingTimeForSaveDataList[item.itemCellId];
                 }
 
                 else if (itemCmp.itemInfo.type == ItemInfo.itemType.sheild)
@@ -548,14 +548,14 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
                     if (cellEntity == _sceneData.Value.shieldCellView._entity)
                     {
-                        playerCmp.view.shieldView.shieldSpriteRenderer.sprite = itemCmp.itemInfo.sheildInfo.sheildSprite;
-                        playerCmp.view.shieldView.shieldCollider.size = itemCmp.itemInfo.sheildInfo.sheildColliderScale;
-                        playerCmp.view.shieldView.shieldCollider.offset = itemCmp.itemInfo.sheildInfo.sheildColliderPositionOffset;
-                        playerCmp.view.shieldView.shieldCollider.gameObject.transform.SetParent(playerCmp.view.shieldView.shieldContainer);//playerCmp.view.movementView.nonWeaponContainer
-                        playerCmp.view.shieldView.shieldObject.localPosition = Vector2.zero;
+                        playerCmp.view.movementView.shieldView.shieldSpriteRenderer.sprite = itemCmp.itemInfo.sheildInfo.sheildSprite;
+                        playerCmp.view.movementView.shieldView.shieldCollider.size = itemCmp.itemInfo.sheildInfo.sheildColliderScale;
+                        playerCmp.view.movementView.shieldView.shieldCollider.offset = itemCmp.itemInfo.sheildInfo.sheildColliderPositionOffset;
+                        playerCmp.view.movementView.shieldView.shieldCollider.gameObject.transform.SetParent(playerCmp.view.movementView.shieldView.shieldContainer);//playerCmp.view.movementView.nonWeaponContainer
+                        playerCmp.view.movementView.shieldView.shieldObject.localPosition = Vector2.zero;
                         if (_shieldComponentsPool.Value.Get(cellEntity).currentDurability > 0)//сделать поставку разных спрайтов щита в засимости от его прочности
-                            playerCmp.view.shieldView.shieldCollider.enabled = true;
-                        playerCmp.view.shieldView.shieldSpriteRenderer.sortingOrder = 2;
+                            playerCmp.view.movementView.shieldView.shieldCollider.enabled = true;
+                        playerCmp.view.movementView.shieldView.shieldSpriteRenderer.sortingOrder = 2;
                     }
                 }
 
@@ -593,7 +593,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             globalTimeCmp.nightLightIntensity = this.gameData.currentNightLightIntensity;
             globalTimeCmp.goToLightNight = this.gameData.goToLightNight;
             globalTimeCmp.levelsToRain = this.gameData.roundsToWeaterChange;
-            globalTimeCmp.changedToRain = this.gameData.changeToRain;
+            globalTimeCmp.currentWeatherType = this.gameData.weaterType;
             globalTimeCmp.currentDay = this.gameData.currentDay;
             globalTimeCmp.currentDayTime = this.gameData.currentDayTime;
 
@@ -614,7 +614,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         playerView.movementView.weaponSprite.localScale = new Vector3(1, -1, 1) * playerMeleeCmp.weaponInfo.spriteScaleMultiplayer;
         playerView.movementView.weaponSprite.localEulerAngles = new Vector3(0, 0, playerMeleeCmp.weaponInfo.spriteRotation);
 
-        playerView.shieldView._entity = shieldItemCell;
+        playerView.movementView.shieldView._entity = shieldItemCell;
 
         _sceneData.Value.dropedItemsUIView.gunMagazineUI.gameObject.SetActive(false);
         _sceneData.Value.ammoInfoText.text = "";
@@ -671,9 +671,9 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             playerCmp.currentAudibility = helmetItemInfo.audibilityMultiplayer;
             if (helmetItemInfo.dropTransparentMultiplayer != 0)
             {
-                int curDurability = Mathf.FloorToInt(_flashLightInInventoryComponentsPool.Value.Get(_sceneData.Value.helmetCellView._entity).currentDurability / (helmetItemInfo.armorDurability / 4));
-                Debug.Log(curDurability + " cur dur index of helmet");
-                if (curDurability != 3 && _sceneData.Value.dropedItemsUIView.crackedGlassHelmetUI.sprite != _sceneData.Value.dropedItemsUIView.crackedGlassSprites[curDurability])
+                int curDurability = Mathf.FloorToInt((_flashLightInInventoryComponentsPool.Value.Get(_sceneData.Value.helmetCellView._entity).currentDurability / helmetItemInfo.armorDurability) * 4);
+                Debug.Log(curDurability + " cur dur index of helmet" + (_flashLightInInventoryComponentsPool.Value.Get(_sceneData.Value.helmetCellView._entity).currentDurability / helmetItemInfo.armorDurability));
+                if (curDurability < 3 && _sceneData.Value.dropedItemsUIView.crackedGlassHelmetUI.sprite != _sceneData.Value.dropedItemsUIView.crackedGlassSprites[curDurability])
                 {
                     _sceneData.Value.dropedItemsUIView.crackedGlassHelmetUI.sprite = _sceneData.Value.dropedItemsUIView.crackedGlassSprites[curDurability];
                     _sceneData.Value.dropedItemsUIView.crackedGlassHelmetUI.gameObject.SetActive(true);
@@ -733,7 +733,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         this.gameData.currentNightLightIntensity = globalTimeCmp.nightLightIntensity;
         this.gameData.goToLightNight = globalTimeCmp.goToLightNight;
         this.gameData.roundsToWeaterChange = globalTimeCmp.levelsToRain;
-        this.gameData.changeToRain = globalTimeCmp.changedToRain;
+        this.gameData.weaterType = globalTimeCmp.currentWeatherType;
 
         gameData.generatorElectricity = _solarPanelElectricGeneratorComponentsPool.Value.Get(playerEntity).currentElectricityEnergy;
         gameData.craftingTableLevel = _craftingTableComponentsPool.Value.Get(_sceneData.Value.playerEntity).craftingTableLevel;
@@ -799,7 +799,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         else if (savePriority == SavePriority.startLocationSave)
         {
             this.gameData.moneyInInventory = 0;
-            gameData.playerHunger = (int)_playerMoveComponentsPool.Value.Get(_sceneData.Value.playerEntity).maxHungerPoints/2;
+            gameData.playerHunger = (int)_playerMoveComponentsPool.Value.Get(_sceneData.Value.playerEntity).maxHungerPoints / 2;
             gameData.playerHP = _healthComponentsPool.Value.Get(playerEntity).maxHealthPoint / 2;
             gameData.invCellsCount = 4;
 
@@ -823,9 +823,6 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         this.gameData.moneyInStorage = _inventoryComponent.Value.Get(_sceneData.Value.storageEntity).moneyCount;
         //сохранение инвентаря
         List<ItemInfoForSaveData> items = new List<ItemInfoForSaveData>();
-
-
-
 
         ref var cellsInventory = ref _cellsListComponentsPool.Value.Get(playerEntity).cells;
 
@@ -881,7 +878,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     durabilityItemsForSaveData.Add(new NumAndIdForSafeData(i, (int)_flashLightInInventoryComponentsPool.Value.Get(cellsInventory[i]._entity).currentDurability));//возможно когда то поправить этот незначительный недочёт
                     if (invItemCmp.itemInfo.type == ItemInfo.itemType.helmet && invItemCmp.itemInfo.helmetInfo.addedLightIntancity != 0)
-                        durabilityItemsForSaveData.Add(new NumAndIdForSafeData(i, (int)_shieldComponentsPool.Value.Get(cellsInventory[i]._entity).currentDurability));
+                        laserPointerRemainingTimeForSaveData.Add(new NumAndIdForSafeData(i, (int)_shieldComponentsPool.Value.Get(cellsInventory[i]._entity).currentDurability));
                 }
                 else if (invItemCmp.itemInfo.type == ItemInfo.itemType.sheild)
                     durabilityItemsForSaveData.Add(new NumAndIdForSafeData(i, (int)_shieldComponentsPool.Value.Get(cellsInventory[i]._entity).currentDurability));
@@ -890,7 +887,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                 else if (invItemCmp.itemInfo.itemId == 62)//айди дэф китов
                     _playerComponentsPool.Value.Get(playerEntity).hasForestGuide = true;
             }
-          
+
         }
         this.gameData.itemsCellinfo = new ItemInfoForSaveData[items.Count];
         for (int i = 0; i < items.Count; i++)

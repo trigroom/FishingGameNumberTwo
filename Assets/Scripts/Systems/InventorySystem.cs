@@ -278,46 +278,56 @@ public class InventorySystem : IEcsRunSystem
         foreach (var divideEventCell in _divideItemEventsFilter.Value)
         {
             ref var currentItem = ref _inventoryItemComponentsPool.Value.Get(divideEventCell);
-            if (!_storageCellTagsPool.Value.Has(divideEventCell))
-                foreach (var cellEntity in _inventoryCellsFilter.Value)
+            //   if (!_storageCellTagsPool.Value.Has(divideEventCell))
+            //   {
+            bool isDevide = false;
+            var needCellFilter = !_storageCellTagsPool.Value.Has(divideEventCell) ? _inventoryCellsFilter.Value : _storageCellsFilter.Value;
+            foreach (var cellEntity in needCellFilter)
+            {
+                ref var cellCmp = ref _inventoryCellsComponents.Value.Get(cellEntity);
+                if (cellCmp.isEmpty)
                 {
-                    ref var cellCmp = ref _inventoryCellsComponents.Value.Get(cellEntity);
-                    if (cellCmp.isEmpty)
-                    {
-                        ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cellEntity);
-                        ref var oldItemCmp = ref _inventoryItemComponentsPool.Value.Get(divideEventCell);
-                        itemCmp.itemInfo = oldItemCmp.itemInfo;
-                        ref var oldCellCmp = ref _inventoryCellsComponents.Value.Get(cellEntity);
-                        int neededItemCount = (int)_sceneData.Value.dropedItemsUIView.generalSlider.value;
-                        //Debug.Log(neededItemCount + "needed items count");
+                    ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cellEntity);
+                    ref var oldItemCmp = ref _inventoryItemComponentsPool.Value.Get(divideEventCell);
+                    itemCmp.itemInfo = oldItemCmp.itemInfo;
+                    ref var oldCellCmp = ref _inventoryCellsComponents.Value.Get(cellEntity);
+                    int neededItemCount = (int)_sceneData.Value.dropedItemsUIView.generalSlider.value;
+                    //Debug.Log(neededItemCount + "needed items count");
 
-                        CopySpecialComponents(divideEventCell, cellEntity, oldItemCmp.itemInfo);
+                    CopySpecialComponents(divideEventCell, cellEntity, oldItemCmp.itemInfo);
 
-                        AddItem(ref cellCmp, ref itemCmp, neededItemCount, cellEntity);
-                        _deleteItemEventsPool.Value.Add(divideEventCell).count = neededItemCount;
-                        break;
-                    }
+                    AddItem(ref cellCmp, ref itemCmp, neededItemCount, cellEntity);
+                    _deleteItemEventsPool.Value.Add(divideEventCell).count = neededItemCount;
+                    isDevide = true;
+                    break;
                 }
-            else
-                foreach (var cellEntity in _storageCellsFilter.Value)
-                {
-                    ref var cellCmp = ref _inventoryCellsComponents.Value.Get(cellEntity);
-                    if (cellCmp.isEmpty)
-                    {
-                        ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cellEntity);
-                        ref var oldItemCmp = ref _inventoryItemComponentsPool.Value.Get(divideEventCell);
-                        itemCmp.itemInfo = oldItemCmp.itemInfo;
-                        ref var oldCellCmp = ref _inventoryCellsComponents.Value.Get(cellEntity);
-                        int neededItemCount = (int)_sceneData.Value.dropedItemsUIView.generalSlider.value;
-                        //  Debug.Log(neededItemCount + "needed items count");
+            }
+            if (!isDevide)
+                _sceneData.Value.ShowWarningText("there are no free cells to move the " + currentItem.itemInfo.itemName);
 
-                        CopySpecialComponents(divideEventCell, cellEntity, oldItemCmp.itemInfo);
+            //  }
+            /*   else
+               {
+                   foreach (var cellEntity in _storageCellsFilter.Value)
+                   {
+                       ref var cellCmp = ref _inventoryCellsComponents.Value.Get(cellEntity);
+                       if (cellCmp.isEmpty)
+                       {
+                           ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cellEntity);
+                           ref var oldItemCmp = ref _inventoryItemComponentsPool.Value.Get(divideEventCell);
+                           itemCmp.itemInfo = oldItemCmp.itemInfo;
+                           ref var oldCellCmp = ref _inventoryCellsComponents.Value.Get(cellEntity);
+                           int neededItemCount = (int)_sceneData.Value.dropedItemsUIView.generalSlider.value;
+                           //  Debug.Log(neededItemCount + "needed items count");
 
-                        AddItem(ref cellCmp, ref itemCmp, neededItemCount, cellEntity);
-                        _deleteItemEventsPool.Value.Add(divideEventCell).count = neededItemCount;
-                        break;
-                    }
-                }
+                           CopySpecialComponents(divideEventCell, cellEntity, oldItemCmp.itemInfo);
+
+                           AddItem(ref cellCmp, ref itemCmp, neededItemCount, cellEntity);
+                           _deleteItemEventsPool.Value.Add(divideEventCell).count = neededItemCount;
+                           break;
+                       }
+                   }
+               }*/
         }
         foreach (var deleteItem in _deleteItemEventsFilter.Value)
         {
@@ -409,7 +419,11 @@ public class InventorySystem : IEcsRunSystem
             {
                 var reward = questNPC.questNode[questNPCCmp.currentQuest].rewards[i];
                 if (reward.rewardItemId == 0)
-                    _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity).moneyCount += reward.rewardItemsCount;
+                {
+                    ref var invCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity);
+                    invCmp.moneyCount += reward.rewardItemsCount;
+                    _sceneData.Value.moneyText.text = invCmp.moneyCount + " $";
+                }
                 else
                 {
                     var itemInfo = _sceneData.Value.idItemslist.items[reward.rewardItemId];
@@ -438,7 +452,6 @@ public class InventorySystem : IEcsRunSystem
                 questNPCCmp.questIsGiven = false;
             _questComponentsPool.Value.Del(checkQuest);
             questNPCCmp.currentQuest++;
-            //Debug.Log("QuestComplited");
         }
 
         foreach (var playerDeath in _playerDeathEventsFilter.Value)
@@ -479,10 +492,10 @@ public class InventorySystem : IEcsRunSystem
             ref var playerCmp = ref _playerComponentsPool.Value.Get(playerDeath);
             if (_inventoryItemComponentsPool.Value.Has(_sceneData.Value.shieldCellView._entity))
             {
-                playerCmp.view.shieldView.shieldObject.SetParent(playerCmp.view.shieldView.shieldContainer);
-                playerCmp.view.shieldView.shieldObject.localPosition = Vector3.zero;
-                playerCmp.view.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, 0);
-                playerCmp.view.shieldView.shieldObject.gameObject.SetActive(false);
+                playerCmp.view.movementView.shieldView.shieldObject.SetParent(playerCmp.view.movementView.shieldView.shieldContainer);
+                playerCmp.view.movementView.shieldView.shieldObject.localPosition = Vector3.zero;
+                playerCmp.view.movementView.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, 0);
+                playerCmp.view.movementView.shieldView.shieldObject.gameObject.SetActive(false);
             }
             if (_inventoryItemComponentsPool.Value.Has(_sceneData.Value.bodyArmorCellView._entity))
                 playerCmp.view.movementView.bodyArmorSpriteRenderer.sprite = _sceneData.Value.transparentSprite;
@@ -500,11 +513,11 @@ public class InventorySystem : IEcsRunSystem
                     else
                         _sceneData.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity;
                     if (globalTimeCmp.currentDayTime >= 15)
-                        _sceneData.Value.gloabalLight.color = _sceneData.Value.nightLightColor.Evaluate(1f);
+                        _sceneData.Value.gloabalLight.color = _sceneData.Value.globalLightColors[2];
                     else if (globalTimeCmp.currentDayTime == 12 || globalTimeCmp.currentDayTime == 0)
-                        _sceneData.Value.gloabalLight.color = _sceneData.Value.nightLightColor.Evaluate(0.5f);
+                        _sceneData.Value.gloabalLight.color = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? _sceneData.Value.globalLightColors[1] : _sceneData.Value.globalLightColors[4];
                     else
-                        _sceneData.Value.gloabalLight.color = _sceneData.Value.nightLightColor.Evaluate(0);
+                        _sceneData.Value.gloabalLight.color = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? _sceneData.Value.globalLightColors[0] : _sceneData.Value.globalLightColors[3];
                     _sceneData.Value.bloomMainBg.intensity.value = 0;
 
                     if (_sceneData.Value.gloabalLight.intensity < 0)
@@ -545,9 +558,10 @@ public class InventorySystem : IEcsRunSystem
                     droppedItemComponent.itemInfo = invItemCmp.itemInfo;
 
                     droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(randomItemPosition, invItemCmp.itemInfo, droppedItem);
-
+                    _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItem).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.transform.GetChild(0) };
+                    if (invItemCmp.itemInfo.type == ItemInfo.itemType.gun)
+                        _gunInventoryCellComponentsPool.Value.Get(specialItemInventoryCell).isEquipedWeapon = false;
                     CopySpecialComponents(specialItemInventoryCell, droppedItem, invItemCmp.itemInfo);
-
                     DeleteItem(ref invItemCmp, ref invCellCmp, invItemCmp.currentItemsCount, specialItemInventoryCell);
                 }
             }
@@ -753,7 +767,7 @@ public class InventorySystem : IEcsRunSystem
                     }
 
                     if (usedItemEntity == _sceneData.Value.shieldCellView._entity && sheildCmp.currentDurability == 0)
-                        _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.shieldView.shieldCollider.enabled = true;
+                        _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.movementView.shieldView.shieldCollider.enabled = true;
 
                     inventoryCmp.moneyCount -= itemCmp.itemInfo.sheildInfo.sheildRecoveryCost;
                     sheildCmp.currentDurability = itemCmp.itemInfo.sheildInfo.sheildDurability;
@@ -847,7 +861,7 @@ public class InventorySystem : IEcsRunSystem
             _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell = 0;
             var playerAttackCmp = _attackComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             if (_currentHealingItemComponentsPool.Value.Get(_sceneData.Value.playerEntity).isHealing || playerAttackCmp.weaponIsChanged)
-                return;
+                break;
             if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.gun)
             {
                 ref var playerWeaponsInInvCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
@@ -858,18 +872,18 @@ public class InventorySystem : IEcsRunSystem
                     if (gunInvCmp.gunDurability == oldInvItemCmp.itemInfo.gunInfo.maxDurabilityPoints)
                     {
                         _sceneData.Value.ShowWarningText("gun durability is full");
-                        return;
+                        break;
                     }
                     if (invCmp.moneyCount < oldInvItemCmp.itemInfo.gunInfo.durabilityRecoveryCost)
                     {
                         _sceneData.Value.ShowWarningText("need another " + (oldInvItemCmp.itemInfo.gunInfo.durabilityRecoveryCost - invCmp.moneyCount) + "$ to recovery helmet");
-                        return;
+                        break;
                     }
                     invCmp.moneyCount -= oldInvItemCmp.itemInfo.gunInfo.durabilityRecoveryCost;
                     gunInvCmp.gunDurability = oldInvItemCmp.itemInfo.gunInfo.maxDurabilityPoints;
                     _sceneData.Value.moneyText.text = invCmp.moneyCount + "$";
                     _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
-                    return;
+                    break;
                 }
 
                 else if (gunInvCmp.isEquipedWeapon && _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity).currentCellCount > _inventoryItemsFilter.Value.GetEntitiesCount() && playerWeaponsInInvCmp.curEquipedWeaponsCount != 1)
@@ -913,52 +927,77 @@ public class InventorySystem : IEcsRunSystem
                 else if (!gunInvCmp.isEquipedWeapon && playerWeaponsInInvCmp.curEquipedWeaponsCount < 3)
                 {
                     playerWeaponsInInvCmp.curEquipedWeaponsCount++;
-                    if (_inventoryCellsComponents.Value.Get(_sceneData.Value.firstGunCellView._entity).isEmpty)
-                    {
-                        int firstGunCellEntity = _sceneData.Value.firstGunCellView._entity;
 
-                        _inventoryItemComponentsPool.Value.Copy(movedToFastCellWeapon, firstGunCellEntity);
-                        _gunInventoryCellComponentsPool.Value.Copy(movedToFastCellWeapon, firstGunCellEntity);
-                        if (_laserPointerForGunComponentsPool.Value.Has(movedToFastCellWeapon))
-                            _laserPointerForGunComponentsPool.Value.Copy(movedToFastCellWeapon, firstGunCellEntity);
+                    /*  if (_inventoryCellsComponents.Value.Get(_sceneData.Value.firstGunCellView._entity).isEmpty)
+                      {
+                          int firstGunCellEntity = _sceneData.Value.firstGunCellView._entity;
 
-                        ref var gunCellCmp = ref _inventoryCellsComponents.Value.Get(firstGunCellEntity);
-                        gunCellCmp.isEmpty = false;
+                          _inventoryItemComponentsPool.Value.Copy(movedToFastCellWeapon, firstGunCellEntity);
+                          _gunInventoryCellComponentsPool.Value.Copy(movedToFastCellWeapon, firstGunCellEntity);
+                          if (_laserPointerForGunComponentsPool.Value.Has(movedToFastCellWeapon))
+                              _laserPointerForGunComponentsPool.Value.Copy(movedToFastCellWeapon, firstGunCellEntity);
 
-                        ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(firstGunCellEntity);
+                          ref var gunCellCmp = ref _inventoryCellsComponents.Value.Get(firstGunCellEntity);
+                          gunCellCmp.isEmpty = false;
 
-                        gunInInvCmp.isEquipedWeapon = true;
+                          ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(firstGunCellEntity);
 
-                        ref var curInvCell = ref _inventoryItemComponentsPool.Value.Get(firstGunCellEntity);
-                        var curCellView = _sceneData.Value.firstGunCellView;
+                          gunInInvCmp.isEquipedWeapon = true;
 
-                        curCellView.ChangeCellItemSprite(curInvCell.itemInfo.itemSprite);
-                        curCellView.ChangeCellItemCount(curInvCell.currentItemsCount);
-                        _changeWeaponFromInventoryEventsPool.Value.Add(firstGunCellEntity).SetValues(false, 0);
-                    }
-                    else if (_inventoryCellsComponents.Value.Get(_sceneData.Value.secondGunCellView._entity).isEmpty)
-                    {
-                        int secondGunCellEntity = _sceneData.Value.secondGunCellView._entity;
+                          ref var curInvCell = ref _inventoryItemComponentsPool.Value.Get(firstGunCellEntity);
+                          var curCellView = _sceneData.Value.firstGunCellView;
 
-                        _inventoryItemComponentsPool.Value.Copy(movedToFastCellWeapon, secondGunCellEntity);
-                        _gunInventoryCellComponentsPool.Value.Copy(movedToFastCellWeapon, secondGunCellEntity);
-                        if (_laserPointerForGunComponentsPool.Value.Has(movedToFastCellWeapon))
-                            _laserPointerForGunComponentsPool.Value.Copy(movedToFastCellWeapon, secondGunCellEntity);
+                          curCellView.ChangeCellItemSprite(curInvCell.itemInfo.itemSprite);
+                          curCellView.ChangeCellItemCount(curInvCell.currentItemsCount);
+                          _changeWeaponFromInventoryEventsPool.Value.Add(firstGunCellEntity).SetValues(false, 0);
+                      }
+                      else if (_inventoryCellsComponents.Value.Get(_sceneData.Value.secondGunCellView._entity).isEmpty)
+                      {
+                          int secondGunCellEntity = _sceneData.Value.secondGunCellView._entity;
 
-                        ref var gunCellCmp = ref _inventoryCellsComponents.Value.Get(secondGunCellEntity);
-                        gunCellCmp.isEmpty = false;
+                          _inventoryItemComponentsPool.Value.Copy(movedToFastCellWeapon, secondGunCellEntity);
+                          _gunInventoryCellComponentsPool.Value.Copy(movedToFastCellWeapon, secondGunCellEntity);
+                          if (_laserPointerForGunComponentsPool.Value.Has(movedToFastCellWeapon))
+                              _laserPointerForGunComponentsPool.Value.Copy(movedToFastCellWeapon, secondGunCellEntity);
 
-                        ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(secondGunCellEntity);
+                          ref var gunCellCmp = ref _inventoryCellsComponents.Value.Get(secondGunCellEntity);
+                          gunCellCmp.isEmpty = false;
 
-                        gunInInvCmp.isEquipedWeapon = true;
+                          ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(secondGunCellEntity);
 
-                        ref var curInvCell = ref _inventoryItemComponentsPool.Value.Get(secondGunCellEntity);
-                        var curCellView = _sceneData.Value.secondGunCellView;
+                          gunInInvCmp.isEquipedWeapon = true;
 
-                        curCellView.ChangeCellItemSprite(curInvCell.itemInfo.itemSprite);
-                        curCellView.ChangeCellItemCount(curInvCell.currentItemsCount);
-                        _changeWeaponFromInventoryEventsPool.Value.Add(secondGunCellEntity).SetValues(false, 1);
-                    }
+                          ref var curInvCell = ref _inventoryItemComponentsPool.Value.Get(secondGunCellEntity);
+                          var curCellView = _sceneData.Value.secondGunCellView;
+
+                          curCellView.ChangeCellItemSprite(curInvCell.itemInfo.itemSprite);
+                          curCellView.ChangeCellItemCount(curInvCell.currentItemsCount);
+                          _changeWeaponFromInventoryEventsPool.Value.Add(secondGunCellEntity).SetValues(false, 1);
+                      }*/
+
+                    int needCellNum = _inventoryCellsComponents.Value.Get(_sceneData.Value.firstGunCellView._entity).isEmpty ? 0 : 1;
+                    var needCellView = needCellNum == 0 ? _sceneData.Value.firstGunCellView : _sceneData.Value.secondGunCellView;
+                    int gunCellEntity = needCellView._entity;
+
+                    _inventoryItemComponentsPool.Value.Copy(movedToFastCellWeapon, gunCellEntity);
+                    _gunInventoryCellComponentsPool.Value.Copy(movedToFastCellWeapon, gunCellEntity);
+                    if (_laserPointerForGunComponentsPool.Value.Has(movedToFastCellWeapon))
+                        _laserPointerForGunComponentsPool.Value.Copy(movedToFastCellWeapon, gunCellEntity);
+
+                    ref var gunCellCmp = ref _inventoryCellsComponents.Value.Get(gunCellEntity);
+                    gunCellCmp.isEmpty = false;
+
+                    ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(gunCellEntity);
+
+                    gunInInvCmp.isEquipedWeapon = true;
+
+                    ref var curInvCell = ref _inventoryItemComponentsPool.Value.Get(gunCellEntity);
+
+                    needCellView.ChangeCellItemSprite(curInvCell.itemInfo.itemSprite);
+                    needCellView.ChangeCellItemCount(curInvCell.currentItemsCount);
+                    _changeWeaponFromInventoryEventsPool.Value.Add(gunCellEntity).SetValues(false, needCellNum);
+
+
                     _gunInventoryCellComponentsPool.Value.Del(movedToFastCellWeapon);
                     _laserPointerForGunComponentsPool.Value.Del(movedToFastCellWeapon);
                     _inventoryItemComponentsPool.Value.Del(movedToFastCellWeapon);
@@ -967,13 +1006,13 @@ public class InventorySystem : IEcsRunSystem
                     _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
                 }
                 else
-                    return;
+                    break;
 
             }
             else if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.meleeWeapon)
             {
                 if (_currentHealingItemComponentsPool.Value.Get(_sceneData.Value.playerEntity).isHealing)
-                    return;
+                    break;
                 int meleeCellEntity = _sceneData.Value.meleeWeaponCellView._entity;
 
                 SwapCellItems(meleeCellEntity, movedToFastCellWeapon);
@@ -1065,10 +1104,10 @@ public class InventorySystem : IEcsRunSystem
                 else if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.sheild)
                 {
                     specialItemCellEntity = _sceneData.Value.shieldCellView._entity;
-                    playerCmp.view.shieldView.shieldObject.SetParent(playerCmp.view.shieldView.shieldContainer);
-                    playerCmp.view.shieldView.shieldObject.localPosition = Vector3.zero;
-                    playerCmp.view.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, 0);
-                    playerCmp.view.shieldView.shieldObject.gameObject.SetActive(false);
+                    playerCmp.view.movementView.shieldView.shieldObject.SetParent(playerCmp.view.movementView.shieldView.shieldContainer);
+                    playerCmp.view.movementView.shieldView.shieldObject.localPosition = Vector3.zero;
+                    playerCmp.view.movementView.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, 0);
+                    playerCmp.view.movementView.shieldView.shieldObject.gameObject.SetActive(false);
                 }
                 else if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.bodyArmor)
                 {
@@ -1081,25 +1120,22 @@ public class InventorySystem : IEcsRunSystem
                     playerCmp.view.movementView.hairSpriteRenderer.sprite = _sceneData.Value.johnHairsSprites[0].sprites[1];
                     playerCmp.view.movementView.helmetSpriteRenderer.sprite = _sceneData.Value.transparentSprite;
                     _sceneData.Value.dropedItemsUIView.crackedGlassHelmetUI.gameObject.SetActive(false);
-                    if (playerCmp.nvgIsUsed)
-                    {
-                        playerCmp.nvgIsUsed = false;
-                        ref var globalTimeCmp = ref _globalTimeComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-                        if (_buildingCheckerComponentsPool.Value.Get(_sceneData.Value.playerEntity).isHideRoof)
-                            _sceneData.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity - 0.35f;
-                        else
-                            _sceneData.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity;
-                        if (globalTimeCmp.currentDayTime >= 15)
-                            _sceneData.Value.gloabalLight.color = _sceneData.Value.nightLightColor.Evaluate(1f);
-                        else if (globalTimeCmp.currentDayTime == 12 || globalTimeCmp.currentDayTime == 0)
-                            _sceneData.Value.gloabalLight.color = _sceneData.Value.nightLightColor.Evaluate(0.5f);
-                        else
-                            _sceneData.Value.gloabalLight.color = _sceneData.Value.nightLightColor.Evaluate(0);
-                        _sceneData.Value.bloomMainBg.intensity.value = 0;
+                    playerCmp.nvgIsUsed = false;
+                    ref var globalTimeCmp = ref _globalTimeComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+                    if (_buildingCheckerComponentsPool.Value.Get(_sceneData.Value.playerEntity).isHideRoof)
+                        _sceneData.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity - 0.35f;
+                    else
+                        _sceneData.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity;
+                    if (globalTimeCmp.currentDayTime >= 15)
+                        _sceneData.Value.gloabalLight.color = _sceneData.Value.globalLightColors[2];
+                    else if (globalTimeCmp.currentDayTime == 12 || globalTimeCmp.currentDayTime == 0)
+                        _sceneData.Value.gloabalLight.color = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? _sceneData.Value.globalLightColors[1] : _sceneData.Value.globalLightColors[4];
+                    else
+                        _sceneData.Value.gloabalLight.color = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? _sceneData.Value.globalLightColors[0] : _sceneData.Value.globalLightColors[3];
+                    _sceneData.Value.bloomMainBg.intensity.value = 0;
 
-                        if (_sceneData.Value.gloabalLight.intensity < 0)
-                            _sceneData.Value.gloabalLight.intensity = 0f;
-                    }
+                    if (_sceneData.Value.gloabalLight.intensity < 0)
+                        _sceneData.Value.gloabalLight.intensity = 0f;
                 }
                 if (movedToFastCellWeapon == specialItemCellEntity && _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity).currentCellCount > _inventoryItemsFilter.Value.GetEntitiesCount())
                 {
@@ -1139,7 +1175,6 @@ public class InventorySystem : IEcsRunSystem
                 }
                 else if (movedToFastCellWeapon != specialItemCellEntity)
                 {
-
                     ref var curInvCellCmp = ref _inventoryCellsComponents.Value.Get(specialItemCellEntity);
 
                     if (_inventoryCellsComponents.Value.Get(specialItemCellEntity).isEmpty)
@@ -1178,16 +1213,16 @@ public class InventorySystem : IEcsRunSystem
                     }
                     else if (itemCmp.itemInfo.type == ItemInfo.itemType.sheild)
                     {
-                        playerCmp.view.shieldView.shieldObject.gameObject.SetActive(true);
-                        playerCmp.view.shieldView.shieldSpriteRenderer.sprite = itemCmp.itemInfo.sheildInfo.sheildSprite;
-                        playerCmp.view.shieldView.shieldCollider.size = itemCmp.itemInfo.sheildInfo.sheildColliderScale;
-                        playerCmp.view.shieldView.shieldCollider.offset = itemCmp.itemInfo.sheildInfo.sheildColliderPositionOffset;
-                        playerCmp.view.shieldView.shieldCollider.gameObject.transform.SetParent(playerCmp.view.shieldView.shieldContainer);
-                        if (playerCmp.view.shieldView.shieldObject.localScale.x > 0)
-                            playerCmp.view.shieldView.shieldObject.localScale = new Vector3(playerCmp.view.shieldView.shieldObject.localScale.x * -1, playerCmp.view.shieldView.shieldObject.localScale.y, playerCmp.view.shieldView.shieldObject.localScale.z);
-                        playerCmp.view.shieldView.shieldObject.localPosition = Vector2.zero;
+                        playerCmp.view.movementView.shieldView.shieldObject.gameObject.SetActive(true);
+                        playerCmp.view.movementView.shieldView.shieldSpriteRenderer.sprite = itemCmp.itemInfo.sheildInfo.sheildSprite;
+                        playerCmp.view.movementView.shieldView.shieldCollider.size = itemCmp.itemInfo.sheildInfo.sheildColliderScale;
+                        playerCmp.view.movementView.shieldView.shieldCollider.offset = itemCmp.itemInfo.sheildInfo.sheildColliderPositionOffset;
+                        playerCmp.view.movementView.shieldView.shieldCollider.gameObject.transform.SetParent(playerCmp.view.movementView.shieldView.shieldContainer);
+                        if (playerCmp.view.movementView.shieldView.shieldObject.localScale.x > 0)
+                            playerCmp.view.movementView.shieldView.shieldObject.localScale = new Vector3(playerCmp.view.movementView.shieldView.shieldObject.localScale.x * -1, playerCmp.view.movementView.shieldView.shieldObject.localScale.y, playerCmp.view.movementView.shieldView.shieldObject.localScale.z);
+                        playerCmp.view.movementView.shieldView.shieldObject.localPosition = Vector2.zero;
                         if (_shieldComponentsPool.Value.Get(specialItemCellEntity).currentDurability > 0)
-                            playerCmp.view.shieldView.shieldCollider.enabled = true;
+                            playerCmp.view.movementView.shieldView.shieldCollider.enabled = true;
                     }
                     else if (itemCmp.itemInfo.type == ItemInfo.itemType.bodyArmor)
                     {
@@ -1431,7 +1466,7 @@ public class InventorySystem : IEcsRunSystem
 
                 }
             }
-                SetMoveSpeedFromWeight();
+            SetMoveSpeedFromWeight();
             if (_inventoryItemComponentsPool.Value.Has(addedItem))
                 _sceneData.Value.dropedItemsUIView.SetSliderParametrs(deletedInvItemCmp.currentItemsCount, addedItem);
             else
@@ -1489,7 +1524,7 @@ public class InventorySystem : IEcsRunSystem
                 }
 
             }
-                SetMoveSpeedFromWeight();
+            SetMoveSpeedFromWeight();
             if (_inventoryItemComponentsPool.Value.Has(addedItem))
                 _sceneData.Value.dropedItemsUIView.SetSliderParametrs(deletedItemFromStorage.currentItemsCount, addedItem);
             else
@@ -1622,10 +1657,10 @@ public class InventorySystem : IEcsRunSystem
             invCmp.moneyCount -= shopCellCmp.itemCost;
             _sceneData.Value.moneyText.text = invCmp.moneyCount + "$";
             ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-            if(menuStatesCmp.lastMarkedCell != 0)
+            if (menuStatesCmp.lastMarkedCell != 0)
             {
-            _inventoryCellsComponents.Value.Get(menuStatesCmp.lastMarkedCell).cellView.inventoryCellAnimator.SetBool("buttonIsActive", false);
-            menuStatesCmp.lastMarkedCell = 0;
+                _inventoryCellsComponents.Value.Get(menuStatesCmp.lastMarkedCell).cellView.inventoryCellAnimator.SetBool("buttonIsActive", false);
+                menuStatesCmp.lastMarkedCell = 0;
             }
             _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
             SetMoveSpeedFromWeight();

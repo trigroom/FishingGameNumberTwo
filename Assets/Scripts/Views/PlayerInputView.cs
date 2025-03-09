@@ -96,7 +96,7 @@ public class PlayerInputView : MonoBehaviour
         }
         else if (collision.gameObject.layer == 12)
         {
-            _world.GetPool<ChangeInBuildingStateEvent>().Add(_world.NewEntity()) = new ChangeInBuildingStateEvent(true, collision.gameObject.GetComponent<SpriteGroupView>());//поменять чтоб не только один объеккт перекрашивало в полупрозрачный
+            _world.GetPool<ChangeInBuildingStateEvent>().Add(_world.NewEntity()) = new ChangeInBuildingStateEvent(true, collision.gameObject.GetComponent<TilemapsGroup>());//поменять чтоб не только один объеккт перекрашивало в полупрозрачный
         }
         else if (collision.gameObject.layer == 14)
         {
@@ -143,19 +143,8 @@ public class PlayerInputView : MonoBehaviour
             _world.GetPool<ExitSpawnZoneEvent>().Add(_entity).zoneView = collision.gameObject.GetComponent<SpawnZoneView>();
         }
         else if (collision.gameObject.layer == 12)
-        {
-            _world.GetPool<ChangeInBuildingStateEvent>().Add(_world.NewEntity()) = new ChangeInBuildingStateEvent(false, collision.gameObject.GetComponent<SpriteGroupView>());
-            //менять освещение
-        }
+            _world.GetPool<ChangeInBuildingStateEvent>().Add(_world.NewEntity()) = new ChangeInBuildingStateEvent(false, collision.gameObject.GetComponent<TilemapsGroup>());
 
     }
-
-  /*  private void SetInfoDroppedItemsText(string neededText)
-    {
-        if (!isNPCNowIsUsed && itemInfoText.text != neededText)
-            itemInfoText.text = neededText;
-        else if (isNPCNowIsUsed && itemInfoText.text != "")
-            itemInfoText.text = "";
-    }*/
 
 }

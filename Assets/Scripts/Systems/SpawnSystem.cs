@@ -47,12 +47,8 @@ public class SpawnSystem : IEcsRunSystem
             curLocationCmp.currentEnemySpawns.RemoveAt(needEnemySpawnPositionIndex);
             CreatureSpawn(creatureEntity, ref creatureAiStatesCmp);
         }
-        foreach (var spawnCmpEntity in _activeSpawnComponentsFilter.Value)
-        {
 
-        }
-
-        foreach (var entryZoneEvent in _entrySpawnZoneEventsFilter.Value)
+    /*    foreach (var entryZoneEvent in _entrySpawnZoneEventsFilter.Value)
         {
             var currentTimeCmp = _globalTimeComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             ref var zone = ref _entrySpawnZoneEventsPool.Value.Get(entryZoneEvent).zoneView;
@@ -84,7 +80,7 @@ public class SpawnSystem : IEcsRunSystem
             ref var zone = ref _exitCollisionWithSpawnZoneEventsPool.Value.Get(exitZoneEvent).zoneView;
 
             _activeSpawnComponentsPool.Value.Del(zone._entity);
-        }
+        }*/
     }
     private void CreatureSpawn(int creatureEntity, ref CreatureAIComponent creatureAiStatesCmp)
     {
@@ -110,13 +106,9 @@ public class SpawnSystem : IEcsRunSystem
         if (curLevel.chanceToOneWeapon > Random.value)
         {
             if (curLevel.chanceToMeleeWeapon > Random.value)
-            {
                 creatureInventoryCmp.meleeWeaponItem = curLevel.meleeWeaponsInfo[Random.Range(0, curLevel.meleeWeaponsInfo.Length)];
-            }
             else
-            {
                 creatureInventoryCmp.gunItem = curLevel.gunsInfo[Random.Range(0, curLevel.gunsInfo.Length)];
-            }
         }
         else
         {
@@ -125,19 +117,15 @@ public class SpawnSystem : IEcsRunSystem
             creatureInventoryCmp.gunItem = curLevel.gunsInfo[Random.Range(0, curLevel.gunsInfo.Length)];
         }
         if (curLevel.chanceToHealingItem > Random.value)
-        {
             creatureInventoryCmp.healingItem = curLevel.healingItemsInfo[Random.Range(0, curLevel.healingItemsInfo.Length)];
-        }
         if (curLevel.chanceToHelmetItem > Random.value)
-        {
             creatureInventoryCmp.helmetItem = curLevel.helmetsInfo[Random.Range(0, curLevel.helmetsInfo.Length)];
-        }
         if (curLevel.chanceToBodyArmorItem > Random.value)
-        {
             creatureInventoryCmp.bodyArmorItem = curLevel.bodyArmorsInfo[Random.Range(0, curLevel.bodyArmorsInfo.Length)];
-        }
+        if (curLevel.chanceToShieldItem > Random.value)
+            creatureInventoryCmp.shieldItem = curLevel.shieldItemsInfo[Random.Range(0, curLevel.shieldItemsInfo.Length)];
 
-        var gloabalTimeCmp = _globalTimeComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+        var globalTimeCmp = _globalTimeComponentsPool.Value.Get(_sceneData.Value.playerEntity);
         ref var creatureHealthCmp = ref _healthComponentsPool.Value.Add(creatureEntity);
         _creatureTagsPool.Value.Add(creatureEntity);
         creatureAiStatesCmp.reachedLastTarget = true;
@@ -145,8 +133,8 @@ public class SpawnSystem : IEcsRunSystem
         float visionZoneMultiplayer = 1;
         if (creatureInventoryCmp.helmetItem != null && creatureInventoryCmp.helmetItem.addedLightIntancity != 0)
             visionZoneMultiplayer = 0.85f;
-        else if (gloabalTimeCmp.isNight)
-            visionZoneMultiplayer = 0.4f + gloabalTimeCmp.currentGlobalLightIntensity;
+        else if (globalTimeCmp.isNight)
+            visionZoneMultiplayer = 0.4f + globalTimeCmp.currentGlobalLightIntensity;
 
         visionZoneMultiplayer *= creatureInventoryCmp.enemyClassSettingInfo.visionLenghtMultiplayer;
         _hidedObjectOutsideFOVComponentsPool.Value.Add(creatureEntity).hidedObjects = creatureAiStatesCmp.creatureView.gameObject.GetComponent<HidedOutsidePlayerFovView>().objectsToHide/*поменять если где то ещё понадобится этот спрайт рэндэр*/  ;
@@ -197,7 +185,12 @@ public class SpawnSystem : IEcsRunSystem
         //добавить уравнение всяких оффсетов
         moveCmp.canMove = true;
 
-
+        if(creatureInventoryCmp.shieldItem != null)
+        {
+            moveCmp.movementView.shieldView.shieldSpriteRenderer.sprite = creatureInventoryCmp.shieldItem.sheildSprite;
+            moveCmp.movementView.shieldView.shieldCollider.size = creatureInventoryCmp.shieldItem.sheildColliderScale;
+            moveCmp.movementView.shieldView.shieldCollider.enabled = true;
+        }
 
         if (creatureInventoryCmp.healingItem != null)
         {
@@ -244,7 +237,7 @@ public class SpawnSystem : IEcsRunSystem
         {
             creatureAiStatesCmp.creatureView.meleeWeaponColliderView.Construct(_world.Value, creatureEntity);
             /*ref var meleeCmp = ref */
-            _meleeWeaponComponentsPool.Value.Add(creatureEntity);
+            _meleeWeaponComponentsPool.Value.Add(creatureEntity).isWideAttack = Random.value > 0.5f;
 
             if (creatureInventoryCmp.gunItem == null)
             {

@@ -22,6 +22,7 @@ public class MovementView : MonoBehaviour
     [field: SerializeField] public SpriteRenderer helmetSpriteRenderer { get; private set; }
     [field: SerializeField] public SpriteRenderer hairSpriteRenderer { get; private set; }
     [field: SerializeField] public BoxCollider2D weaponCollider { get; private set; }
+    [field: SerializeField] public ShieldView shieldView { get; private set; }
 
     public void MoveUnit(Vector2 direction)
     {

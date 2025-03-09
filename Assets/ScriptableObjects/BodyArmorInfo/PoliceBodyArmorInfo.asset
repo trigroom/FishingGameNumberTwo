@@ -15,6 +15,6 @@ MonoBehaviour:
   bodyArmorSprite: {fileID: 21300000, guid: 0fcc231c1df948646a6626aa586f8287, type: 3}
   armorDurability: 800
   defenceMultiplayer: 0.25
-  inGamePositionOnPlayer: {x: 0, y: -0.045}
+  inGamePositionOnPlayer: {x: 0, y: -0.05}
   bleedingResistance: 0
   recoveryCost: 50
