@@ -309,7 +309,7 @@ public class AttackSystem : IEcsRunSystem
             ref var attackCmp = ref _attackComponentsPool.Value.Get(aiCreature);
             var moveCmp = _movementComponentsPool.Value.Get(aiCreature);
 
-            if (creatureAi.currentState == CreatureAIComponent.CreatureStates.shootingToTarget || creatureAi.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget)
+            if (creatureAi.currentState != CreatureAIComponent.CreatureStates.idle /*|| creatureAi.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget*/)
                 attackCmp.currentAttackCouldown += Time.deltaTime;
 
             if (moveCmp.isStunned /*|| creatureAi.colliders == null && !creatureAi.isPeaceful*/) continue;
@@ -319,7 +319,8 @@ public class AttackSystem : IEcsRunSystem
                 // Debug.Log((_creatureInventoryComponentsPool.Value.Get(aiCreature).isSecondWeaponUsed) + "sec used weapon");
                 ref var gunCmp = ref _gunComponentsPool.Value.Get(aiCreature);
 
-                if (creatureAi.currentState == CreatureAIComponent.CreatureStates.shootingToTarget || (creatureAi.isAttackWhenRetreat && creatureAi.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget))
+                //if (creatureAi.currentState == CreatureAIComponent.CreatureStates.shootingToTarget || (creatureAi.isAttackWhenRetreat && creatureAi.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget))
+                if (creatureAi.currentState != CreatureAIComponent.CreatureStates.idle)
                 {
                     if (!gunCmp.isReloading && attackCmp.currentAttackCouldown >= attackCmp.attackCouldown && gunCmp.currentMagazineCapacity > 0 && attackCmp.canAttack && creatureAi.sightOnTarget && (creatureAi.needSightOnTargetTime + (Vector2.Distance(creatureAi.currentTarget.position, creatureAi.creatureView.transform.position) * 0.1f)) < creatureAi.sightOnTargetTime)
                     {

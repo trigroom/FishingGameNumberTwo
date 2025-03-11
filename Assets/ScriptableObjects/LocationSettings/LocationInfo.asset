@@ -15,5 +15,5 @@ MonoBehaviour:
   levels:
   - {fileID: 11400000, guid: 02bfe4fd3f9b09348b8d2458cf6d6f58, type: 2}
   locationName: Village
-  shoppers: 04000000
+  shoppers: 0400000000000000
   nightShoppers: 02000000

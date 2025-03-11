@@ -124,7 +124,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                     globalTimeCmp.currentGlobalLightIntensity = globalTimeCmp.nightLightIntensity;
                 }
 
-                globalTimeCmp.currentWeatherType = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? (GlobalTimeComponent.WeatherType)Random.Range(1, 2) : GlobalTimeComponent.WeatherType.none;
+                globalTimeCmp.currentWeatherType = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? (GlobalTimeComponent.WeatherType)Random.Range(1, 3) : GlobalTimeComponent.WeatherType.none;
 
                 if (globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none)
                 {

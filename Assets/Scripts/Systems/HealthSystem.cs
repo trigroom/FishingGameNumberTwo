@@ -81,7 +81,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 //  int delEntity = 0;
                 foreach (var checkedEffectEntity in _effectComponentsFilter.Value)
                 {
-                    if (checkedEffectEntity != effectEntity /*|| !_effectComponentsPool.Value.Has(checkedEffectEntity)*/)
+                    if (checkedEffectEntity != effectEntity && effectCmp.effectEntity == _effectComponentsPool.Value.Get(checkedEffectEntity).effectEntity/*|| !_effectComponentsPool.Value.Has(checkedEffectEntity)*/)
                     {
                         Debug.Log("checked effect entity" + checkedEffectEntity);
                         ref var checkedEffectCmp = ref _effectComponentsPool.Value.Get(checkedEffectEntity);//
