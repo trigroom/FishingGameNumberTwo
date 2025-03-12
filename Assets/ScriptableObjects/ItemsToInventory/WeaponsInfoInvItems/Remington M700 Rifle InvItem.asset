@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac357f814689b0342b6a7c6efddf2e3d, type: 3}
   m_Name: Remington M700 Rifle InvItem
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: 21300000, guid: bd99accb13b200441a9cc5f6a6484c4a, type: 3}
+  itemSprite: {fileID: 21300000, guid: f179304d2651e7d4faf986d36276d2ad, type: 3}
   type: 0
   maxCount: 1
-  itemWeight: 1
+  itemWeight: 3.3
   itemId: 19
   itemName: Remington M700 Rifle
   itemDescription: 
   itemCost: 0
-  gunInfo: {fileID: 0}
+  gunInfo: {fileID: 11400000, guid: 6d41a3afa1e88ad41bebf81e0f22ff69, type: 2}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}
   healInfo: {fileID: 0}
@@ -29,3 +29,6 @@ MonoBehaviour:
   gunPartInfo: {fileID: 0}
   expAddedInfo: {fileID: 0}
   sheildInfo: {fileID: 0}
+  helmetInfo: {fileID: 0}
+  bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

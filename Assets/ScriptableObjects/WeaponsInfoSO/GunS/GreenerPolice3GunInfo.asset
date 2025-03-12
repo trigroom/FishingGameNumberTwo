@@ -10,39 +10,39 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7718247f6aa85b84f813578fb0d5b327, type: 3}
-  m_Name: Mossberg500Info
+  m_Name: GreenerPolice3GunInfo
   m_EditorClassIdentifier: 
   gunType: 1
-  attackLenght: 13
-  shotSoundDistance: 40
-  reloadDuration: 1
-  magazineCapacity: 5
-  damage: 12
-  attackCouldown: 0.8
-  maxSpread: 15
-  minSpread: 5
-  addedSpread: 2
-  weaponChangeSpeed: 1
+  attackLenght: 15
+  shotSoundDistance: 30
+  reloadDuration: 1.5
+  magazineCapacity: 1
+  damage: 15
+  attackCouldown: 0.5
+  maxSpread: 30
+  minSpread: 2
+  addedSpread: 8
+  weaponChangeSpeed: 1.7
   isAuto: 0
   bulletTypeId: 3
-  bulletCount: 5
+  bulletCount: 6
   isOneBulletReloaded: 1
-  maxDurabilityPoints: 650
+  maxDurabilityPoints: 350
   bulletShellIndex: 0
-  firepointPosition: {x: 0.23, y: 0.05}
-  bulletShellPointPosition: {x: 0, y: 0.05}
-  bulletShellSpawnOnShot: 1
+  firepointPosition: {x: 0.22, y: 0.025}
+  bulletShellPointPosition: {x: -0.05, y: 0.03}
+  bulletShellSpawnOnShot: 0
   durabilityRecoveryCost: 10
   isOneHandedGun: 0
   laserPointer:
-    laserMaxLenght: 30
-    laserPosition: {x: -0.0391, y: 1}
-    laserLightTime: 10
-    energyToCharge: 5
+    laserMaxLenght: 0
+    laserPosition: {x: 0, y: 0}
+    laserLightTime: 0
+    energyToCharge: 0
     laserColor:
       serializedVersion: 2
-      key0: {r: 1, g: 0.2028302, b: 0.2028302, a: 0.39215687}
-      key1: {r: 1, g: 0.20392159, b: 0.20392159, a: 0.39215687}
+      key0: {r: 1, g: 1, b: 1, a: 1}
+      key1: {r: 1, g: 1, b: 1, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -71,27 +71,23 @@ MonoBehaviour:
       m_NumAlphaKeys: 2
   spriteScaleMultiplayer: 2.5
   spriteRotation: 90
-  weaponSprite: {fileID: 21300000, guid: 1bdf5565f7109124fa431ffc4845eb28, type: 3}
+  weaponSprite: {fileID: 21300000, guid: 9a69260787927724aab30675d57bf8df, type: 3}
   shotFlashDistance: 3
   shotFlashIntance: 10
-  shotFlashAngle: 70
+  shotFlashAngle: 50
   bulletsUIPositions:
-  - {x: -41.41, y: 0}
-  - {x: -19.81, y: 0}
-  - {x: 1.55, y: 0}
-  - {x: 23.07, y: 0}
-  - {x: 44.55, y: 0}
-  bulletUISprite: {fileID: 21300000, guid: 8efff307bcffccb43b454df0c72b2409, type: 3}
-  magUISprite: {fileID: 21300000, guid: fd494e9f9ef5a3241ba7418230438661, type: 3}
-  magUISize: {x: 115, y: 14}
-  magUIPosition: {x: -20.4, y: 0}
-  bulletUISize: {x: 20, y: 9}
+  - {x: 0, y: 0}
+  bulletUISprite: {fileID: 21300000, guid: 76dded18b3f1faf449cbb67a700fa60f, type: 3}
+  magUISprite: {fileID: 21300000, guid: 9dbdc28b523dca449b8db245924ebe47, type: 3}
+  magUISize: {x: 46.3, y: 46.3}
+  magUIPosition: {x: -10, y: 0}
+  bulletUISize: {x: 31, y: 31}
   scopeMultiplicity: 1
   blackBGSize: 0
   centreCrossSprite: {fileID: 0}
-  shotSound: {fileID: 8300000, guid: 1400d56a1f9d56e43bac8a812a9c0334, type: 3}
+  shotSound: {fileID: 8300000, guid: 9fff401a335a4d547bf8044d3c7035e9, type: 3}
   reloadSound: {fileID: 8300000, guid: d9def0d3917c33c48a1f52e67ecdf7e3, type: 3}
   upgradeCost: 0
   upgradedGunId: 0
   neededGunsmithLevelToUpgrade: 0
-  gunParts: 10
+  gunParts: 0

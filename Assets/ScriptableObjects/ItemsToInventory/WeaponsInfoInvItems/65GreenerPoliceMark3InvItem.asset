@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac357f814689b0342b6a7c6efddf2e3d, type: 3}
-  m_Name: Remington 870 InvItem
+  m_Name: 65GreenerPoliceMark3InvItem
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: 21300000, guid: bd99accb13b200441a9cc5f6a6484c4a, type: 3}
+  itemSprite: {fileID: 21300000, guid: 77bf4d2b9072c9e499ebd14b42893c29, type: 3}
   type: 0
   maxCount: 1
   itemWeight: 3.6
-  itemId: 14
-  itemName: Remington 870
+  itemId: 65
+  itemName: Greener police mark III
   itemDescription: 
   itemCost: 0
-  gunInfo: {fileID: 11400000, guid: 32a92dd57a3609143a17e214eb3efa2c, type: 2}
+  gunInfo: {fileID: 11400000, guid: f07330a6465879a40a3cf109c382296a, type: 2}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}
   healInfo: {fileID: 0}

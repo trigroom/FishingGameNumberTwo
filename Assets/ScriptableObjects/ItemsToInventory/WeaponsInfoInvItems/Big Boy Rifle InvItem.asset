@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac357f814689b0342b6a7c6efddf2e3d, type: 3}
   m_Name: Big Boy Rifle InvItem
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: 21300000, guid: 93b7c4d840ca522409d1abe5b8f6db4b, type: 3}
+  itemSprite: {fileID: 21300000, guid: eede2e4df5e99fb4aaeb93caff10a20d, type: 3}
   type: 0
   maxCount: 1
-  itemWeight: 1
+  itemWeight: 3.9
   itemId: 12
   itemName: Big Boy Rifle
   itemDescription: 
   itemCost: 25
-  gunInfo: {fileID: 0}
+  gunInfo: {fileID: 11400000, guid: d82f94ba63ca07747a2cce1a448e1c4f, type: 2}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}
   healInfo: {fileID: 0}
@@ -29,3 +29,6 @@ MonoBehaviour:
   gunPartInfo: {fileID: 0}
   expAddedInfo: {fileID: 0}
   sheildInfo: {fileID: 0}
+  helmetInfo: {fileID: 0}
+  bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

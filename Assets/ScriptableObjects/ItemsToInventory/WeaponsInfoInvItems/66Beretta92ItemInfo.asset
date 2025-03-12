@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac357f814689b0342b6a7c6efddf2e3d, type: 3}
-  m_Name: 34safeBlueberryItemInfo 1
+  m_Name: 66Beretta92ItemInfo
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: 21300000, guid: 20a442b4c69ee5d4197871016e7f14f5, type: 3}
-  type: 2
-  maxCount: 10
-  itemWeight: 0.15
-  itemId: 34
-  itemName: safe blueberry
+  itemSprite: {fileID: 21300000, guid: 86f88b5ac1f30b841883ac119b2e2193, type: 3}
+  type: 0
+  maxCount: 1
+  itemWeight: 0.95
+  itemId: 66
+  itemName: Beretta92
   itemDescription: 
-  itemCost: 4
-  gunInfo: {fileID: 0}
+  itemCost: 20
+  gunInfo: {fileID: 11400000, guid: b0cd311666c7f7f4c8f0c25a26b5e7fd, type: 2}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}
-  healInfo: {fileID: 11400000, guid: db8b0a2fb3a1e064a9332243c3871294, type: 2}
+  healInfo: {fileID: 0}
   flashlightInfo: {fileID: 0}
   backpackInfo: {fileID: 0}
   gunPartInfo: {fileID: 0}
@@ -31,3 +31,4 @@ MonoBehaviour:
   sheildInfo: {fileID: 0}
   helmetInfo: {fileID: 0}
   bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

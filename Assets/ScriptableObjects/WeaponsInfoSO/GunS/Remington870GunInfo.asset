@@ -10,27 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7718247f6aa85b84f813578fb0d5b327, type: 3}
-  m_Name: Mossberg500Info
+  m_Name: Remington870GunInfo
   m_EditorClassIdentifier: 
   gunType: 1
   attackLenght: 13
   shotSoundDistance: 40
   reloadDuration: 1
-  magazineCapacity: 5
+  magazineCapacity: 4
   damage: 12
-  attackCouldown: 0.8
-  maxSpread: 15
-  minSpread: 5
-  addedSpread: 2
-  weaponChangeSpeed: 1
+  attackCouldown: 0.7
+  maxSpread: 30
+  minSpread: 3
+  addedSpread: 2.5
+  weaponChangeSpeed: 2
   isAuto: 0
   bulletTypeId: 3
   bulletCount: 5
   isOneBulletReloaded: 1
-  maxDurabilityPoints: 650
+  maxDurabilityPoints: 700
   bulletShellIndex: 0
-  firepointPosition: {x: 0.23, y: 0.05}
-  bulletShellPointPosition: {x: 0, y: 0.05}
+  firepointPosition: {x: 0.22, y: 0.03}
+  bulletShellPointPosition: {x: -0.02, y: 0.03}
   bulletShellSpawnOnShot: 1
   durabilityRecoveryCost: 10
   isOneHandedGun: 0
@@ -71,20 +71,19 @@ MonoBehaviour:
       m_NumAlphaKeys: 2
   spriteScaleMultiplayer: 2.5
   spriteRotation: 90
-  weaponSprite: {fileID: 21300000, guid: 1bdf5565f7109124fa431ffc4845eb28, type: 3}
+  weaponSprite: {fileID: 21300000, guid: f1fee9c7639fba74db7af82e644800a4, type: 3}
   shotFlashDistance: 3
   shotFlashIntance: 10
   shotFlashAngle: 70
   bulletsUIPositions:
-  - {x: -41.41, y: 0}
-  - {x: -19.81, y: 0}
-  - {x: 1.55, y: 0}
-  - {x: 23.07, y: 0}
-  - {x: 44.55, y: 0}
+  - {x: -32.6, y: 0}
+  - {x: -10.2, y: 0}
+  - {x: 12.1, y: 0}
+  - {x: 34.5, y: 0}
   bulletUISprite: {fileID: 21300000, guid: 8efff307bcffccb43b454df0c72b2409, type: 3}
   magUISprite: {fileID: 21300000, guid: fd494e9f9ef5a3241ba7418230438661, type: 3}
-  magUISize: {x: 115, y: 14}
-  magUIPosition: {x: -20.4, y: 0}
+  magUISize: {x: 96, y: 14}
+  magUIPosition: {x: -30, y: 0}
   bulletUISize: {x: 20, y: 9}
   scopeMultiplicity: 1
   blackBGSize: 0
@@ -94,4 +93,4 @@ MonoBehaviour:
   upgradeCost: 0
   upgradedGunId: 0
   neededGunsmithLevelToUpgrade: 0
-  gunParts: 10
+  gunParts: 0

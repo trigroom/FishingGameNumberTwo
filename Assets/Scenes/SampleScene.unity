@@ -32406,40 +32406,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shopItems:
+  - {fileID: 11400000, guid: 516c9568b17bd5f408f58c881758ae87, type: 2}
   - {fileID: 11400000, guid: 870395c6f87200d4aab114a3beb5a6ac, type: 2}
+  - {fileID: 11400000, guid: ae69a8b12d3ead342ad215a1cf8c9150, type: 2}
+  - {fileID: 11400000, guid: 257e866b939ed0b40a48b33859450c0f, type: 2}
   - {fileID: 11400000, guid: 0bc62970d1acaeb4dad4759481e37cb2, type: 2}
   - {fileID: 11400000, guid: a1f4e1f822855234b9479bae80a46190, type: 2}
-  - {fileID: 11400000, guid: f303db4739b6d904ea314e854ece99c2, type: 2}
   - {fileID: 11400000, guid: 5efee26af2b609745aead8659e1e2bfd, type: 2}
-  - {fileID: 11400000, guid: 4bc04877edc7b6047a761677ceae233a, type: 2}
-  - {fileID: 11400000, guid: 7bda9046e4d6ec84ba1fb93494c95540, type: 2}
-  - {fileID: 11400000, guid: ee31be303729c0f4eb5f7d5ffa2dc8b3, type: 2}
-  - {fileID: 11400000, guid: 24f92d59c5f01b4429dbd02369efe789, type: 2}
-  - {fileID: 11400000, guid: 3c33fcc81aff5bd4a909e1ceac21fdcf, type: 2}
   - {fileID: 11400000, guid: b60d843a2710e9e4999328f0abc689c4, type: 2}
-  - {fileID: 11400000, guid: 537c18f6845e0f240927b6bec832d2f2, type: 2}
-  - {fileID: 11400000, guid: 7f36955c56bee32408606ce290c44728, type: 2}
-  - {fileID: 11400000, guid: f00a2d76a65df1841b72c7c4c1876b0d, type: 2}
   - {fileID: 11400000, guid: 023e0ce7b65a7034f8ec70ff85f59a8d, type: 2}
-  - {fileID: 11400000, guid: a1df20397ea6db148b5d91f688c1c7e0, type: 2}
   - {fileID: 11400000, guid: 78dd2f61bd0e4c548b19271cb2a195e7, type: 2}
   - {fileID: 11400000, guid: 22076db283f7e294ca9c2657de83ab19, type: 2}
-  - {fileID: 11400000, guid: 01df9ab4d6753514e83f1c87871b9af1, type: 2}
   - {fileID: 11400000, guid: badf9b7a713c79a489d64a6f26089c6b, type: 2}
   - {fileID: 11400000, guid: 75deb8bb0261b5e4f9f1f4a640630b39, type: 2}
-  - {fileID: 11400000, guid: 516c9568b17bd5f408f58c881758ae87, type: 2}
   - {fileID: 11400000, guid: b629d099990bcf24ca9081d0b40013d9, type: 2}
-  - {fileID: 11400000, guid: 4fefbc52db069f6479d410f70e863064, type: 2}
-  - {fileID: 11400000, guid: 8bb9c285d0ea4914dae8a2100542a5c9, type: 2}
-  - {fileID: 11400000, guid: 397887dd1c4c1304aa6b81511b86299a, type: 2}
-  - {fileID: 11400000, guid: a66aad5b0905ccf4fb1987fafb12d9e4, type: 2}
-  - {fileID: 11400000, guid: 257e866b939ed0b40a48b33859450c0f, type: 2}
   - {fileID: 11400000, guid: 71f7c44f8a352c04faef8a8b5c1e0d7a, type: 2}
-  - {fileID: 11400000, guid: fa851453bc2391f4b83fca7e16a13646, type: 2}
   - {fileID: 11400000, guid: ce60a0035a736cc4c8a62de565a19a22, type: 2}
-  - {fileID: 11400000, guid: a3ff83d487fc3544aaf28028fadcf851, type: 2}
-  - {fileID: 11400000, guid: a34171a3158e1d14080756ceb2fbc387, type: 2}
   - {fileID: 11400000, guid: 13ddce48b81d4df4e916db0e78051297, type: 2}
+  - {fileID: 11400000, guid: 7a910e3d8b259bd44addb6c5f9f48013, type: 2}
+  - {fileID: 11400000, guid: a34171a3158e1d14080756ceb2fbc387, type: 2}
   shopperTable: {fileID: 21300000, guid: f80331e9ee7eca24980110bd462859d3, type: 3}
   startMoneyToBuy: 50
 --- !u!4 &802434304
@@ -48767,8 +48752,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 13.3
-  m_fontSizeBase: 13.3
+  m_fontSize: 10
+  m_fontSizeBase: 10
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

@@ -10,27 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7718247f6aa85b84f813578fb0d5b327, type: 3}
-  m_Name: Mossberg500Info
+  m_Name: BigBoyRifleInfo
   m_EditorClassIdentifier: 
-  gunType: 1
-  attackLenght: 13
-  shotSoundDistance: 40
+  gunType: 2
+  attackLenght: 30
+  shotSoundDistance: 35
   reloadDuration: 1
-  magazineCapacity: 5
-  damage: 12
+  magazineCapacity: 10
+  damage: 50
   attackCouldown: 0.8
-  maxSpread: 15
-  minSpread: 5
-  addedSpread: 2
-  weaponChangeSpeed: 1
+  maxSpread: 20
+  minSpread: 1
+  addedSpread: 6
+  weaponChangeSpeed: 2
   isAuto: 0
-  bulletTypeId: 3
-  bulletCount: 5
+  bulletTypeId: 1
+  bulletCount: 1
   isOneBulletReloaded: 1
   maxDurabilityPoints: 650
-  bulletShellIndex: 0
-  firepointPosition: {x: 0.23, y: 0.05}
-  bulletShellPointPosition: {x: 0, y: 0.05}
+  bulletShellIndex: 4
+  firepointPosition: {x: 0.24, y: 0.04}
+  bulletShellPointPosition: {x: -0.01, y: 0.03}
   bulletShellSpawnOnShot: 1
   durabilityRecoveryCost: 10
   isOneHandedGun: 0
@@ -71,21 +71,26 @@ MonoBehaviour:
       m_NumAlphaKeys: 2
   spriteScaleMultiplayer: 2.5
   spriteRotation: 90
-  weaponSprite: {fileID: 21300000, guid: 1bdf5565f7109124fa431ffc4845eb28, type: 3}
+  weaponSprite: {fileID: 21300000, guid: 93b7c4d840ca522409d1abe5b8f6db4b, type: 3}
   shotFlashDistance: 3
   shotFlashIntance: 10
   shotFlashAngle: 70
   bulletsUIPositions:
-  - {x: -41.41, y: 0}
-  - {x: -19.81, y: 0}
-  - {x: 1.55, y: 0}
-  - {x: 23.07, y: 0}
-  - {x: 44.55, y: 0}
-  bulletUISprite: {fileID: 21300000, guid: 8efff307bcffccb43b454df0c72b2409, type: 3}
+  - {x: -88, y: 0}
+  - {x: -67.5, y: 0}
+  - {x: -47, y: 0}
+  - {x: -26.5, y: 0}
+  - {x: -6, y: 0}
+  - {x: 14.5, y: 0}
+  - {x: 35, y: 0}
+  - {x: 55.5, y: 0}
+  - {x: 76, y: 0}
+  - {x: 96.5, y: 0}
+  bulletUISprite: {fileID: 21300000, guid: 8f590e30d223a35469ada80612442863, type: 3}
   magUISprite: {fileID: 21300000, guid: fd494e9f9ef5a3241ba7418230438661, type: 3}
-  magUISize: {x: 115, y: 14}
-  magUIPosition: {x: -20.4, y: 0}
-  bulletUISize: {x: 20, y: 9}
+  magUISize: {x: 217.46, y: 13.885}
+  magUIPosition: {x: -72.3, y: 0}
+  bulletUISize: {x: 18, y: 6}
   scopeMultiplicity: 1
   blackBGSize: 0
   centreCrossSprite: {fileID: 0}
