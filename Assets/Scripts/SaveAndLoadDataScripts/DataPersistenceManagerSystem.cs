@@ -129,13 +129,13 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             _storageCellTagsPool.Value.Add(cellEntity);
             storageCellsCmp.isEmpty = true;
             storageCellsCmp.cellView = _sceneData.Value.GetItemCell(_sceneData.Value.storageCellsContainer);
-            storageCellsCmp.cellView.Construct(cellEntity, _world.Value);
+            storageCellsCmp.cellView.Construct(cellEntity, _world.Value, _sceneData.Value.mainCanvasForCells);
             cells.Add(storageCellsCmp.cellView);
         }
 
         #region -special cells setup-
         int firstCell = _world.Value.NewEntity();
-        _sceneData.Value.firstGunCellView.Construct(firstCell, _world.Value);
+        _sceneData.Value.firstGunCellView.Construct(firstCell, _world.Value, _sceneData.Value.mainCanvasForCells);
         ref var invCellCmpFirstWeapon = ref _inventoryCellsComponentsPool.Value.Add(firstCell);
         invCellCmpFirstWeapon.isEmpty = true;
         invCellCmpFirstWeapon.cellView = _sceneData.Value.firstGunCellView;
@@ -144,7 +144,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         cells.Add(invCellCmpFirstWeapon.cellView);
 
         int secondCell = _world.Value.NewEntity();
-        _sceneData.Value.secondGunCellView.Construct(secondCell, _world.Value);
+        _sceneData.Value.secondGunCellView.Construct(secondCell, _world.Value, _sceneData.Value.mainCanvasForCells);
         ref var invCellCmpSecondWeapon = ref _inventoryCellsComponentsPool.Value.Add(secondCell);
         invCellCmpSecondWeapon.isEmpty = true;
         invCellCmpSecondWeapon.cellView = _sceneData.Value.secondGunCellView;
@@ -153,7 +153,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         cells.Add(invCellCmpSecondWeapon.cellView);
 
         int meleeCell = _world.Value.NewEntity();
-        _sceneData.Value.meleeWeaponCellView.Construct(meleeCell, _world.Value);
+        _sceneData.Value.meleeWeaponCellView.Construct(meleeCell, _world.Value, _sceneData.Value.mainCanvasForCells);
         ref var invCellCmpMeleeWeapon = ref _inventoryCellsComponentsPool.Value.Add(meleeCell);
         invCellCmpMeleeWeapon.isEmpty = true;
         invCellCmpMeleeWeapon.cellView = _sceneData.Value.meleeWeaponCellView;
@@ -164,7 +164,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         //_nowUsedWeaponTagsPool.Value.Add(meleeCell);
 
         int healingItemCell = _world.Value.NewEntity();
-        _sceneData.Value.healingItemCellView.Construct(healingItemCell, _world.Value);
+        _sceneData.Value.healingItemCellView.Construct(healingItemCell, _world.Value, _sceneData.Value.mainCanvasForCells);
         ref var invCellCmpHealingItem = ref _inventoryCellsComponentsPool.Value.Add(healingItemCell);
         invCellCmpHealingItem.isEmpty = true;
         invCellCmpHealingItem.cellView = _sceneData.Value.healingItemCellView;
@@ -173,7 +173,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         cells.Add(invCellCmpHealingItem.cellView);
 
         int flashlightItemCell = _world.Value.NewEntity();
-        _sceneData.Value.flashlightItemCellView.Construct(flashlightItemCell, _world.Value);
+        _sceneData.Value.flashlightItemCellView.Construct(flashlightItemCell, _world.Value, _sceneData.Value.mainCanvasForCells);
         ref var invCellCmpFlashlightItem = ref _inventoryCellsComponentsPool.Value.Add(flashlightItemCell);
         invCellCmpFlashlightItem.isEmpty = true;
         invCellCmpFlashlightItem.cellView = _sceneData.Value.flashlightItemCellView;
@@ -181,7 +181,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         cells.Add(invCellCmpFlashlightItem.cellView);
 
         int grenadeItemCell = _world.Value.NewEntity();
-        _sceneData.Value.grenadeCellView.Construct(grenadeItemCell, _world.Value);
+        _sceneData.Value.grenadeCellView.Construct(grenadeItemCell, _world.Value, _sceneData.Value.mainCanvasForCells);
         ref var invCellCmpGrenadeItem = ref _inventoryCellsComponentsPool.Value.Add(grenadeItemCell);
         invCellCmpGrenadeItem.isEmpty = true;
         invCellCmpGrenadeItem.cellView = _sceneData.Value.grenadeCellView;
@@ -189,7 +189,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         cells.Add(invCellCmpGrenadeItem.cellView);
 
         int backpackItemCell = _world.Value.NewEntity();
-        _sceneData.Value.backpackCellView.Construct(backpackItemCell, _world.Value);
+        _sceneData.Value.backpackCellView.Construct(backpackItemCell, _world.Value, _sceneData.Value.mainCanvasForCells);
         ref var invCellCmpBackpackItem = ref _inventoryCellsComponentsPool.Value.Add(backpackItemCell);
         invCellCmpBackpackItem.isEmpty = true;
         invCellCmpBackpackItem.cellView = _sceneData.Value.backpackCellView;
@@ -197,7 +197,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         cells.Add(invCellCmpBackpackItem.cellView);
 
         int shieldItemCell = _world.Value.NewEntity();
-        _sceneData.Value.shieldCellView.Construct(shieldItemCell, _world.Value);
+        _sceneData.Value.shieldCellView.Construct(shieldItemCell, _world.Value, _sceneData.Value.mainCanvasForCells);
         ref var invCellCmpShieldItem = ref _inventoryCellsComponentsPool.Value.Add(shieldItemCell);
         invCellCmpShieldItem.isEmpty = true;
         invCellCmpShieldItem.cellView = _sceneData.Value.shieldCellView;
@@ -205,7 +205,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         cells.Add(invCellCmpShieldItem.cellView);
 
         int bodyArmorItemCell = _world.Value.NewEntity();
-        _sceneData.Value.bodyArmorCellView.Construct(bodyArmorItemCell, _world.Value);
+        _sceneData.Value.bodyArmorCellView.Construct(bodyArmorItemCell, _world.Value, _sceneData.Value.mainCanvasForCells);
         ref var invCellCmpBodyArmorItem = ref _inventoryCellsComponentsPool.Value.Add(bodyArmorItemCell);
         invCellCmpBodyArmorItem.isEmpty = true;
         invCellCmpBodyArmorItem.cellView = _sceneData.Value.bodyArmorCellView;
@@ -213,7 +213,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         cells.Add(invCellCmpBodyArmorItem.cellView);
 
         int helmetItemCell = _world.Value.NewEntity();
-        _sceneData.Value.helmetCellView.Construct(helmetItemCell, _world.Value);
+        _sceneData.Value.helmetCellView.Construct(helmetItemCell, _world.Value, _sceneData.Value.mainCanvasForCells);
         ref var invCellCmpHelmetItem = ref _inventoryCellsComponentsPool.Value.Add(helmetItemCell);
         invCellCmpHelmetItem.isEmpty = true;
         invCellCmpHelmetItem.cellView = _sceneData.Value.helmetCellView;
@@ -367,7 +367,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             {
                 ref var inventoryCellsCmp = ref _inventoryCellsComponentsPool.Value.Add(cellEntity);
                 inventoryCellsCmp.cellView = _sceneData.Value.GetInventoryCell(i);
-                inventoryCellsCmp.cellView.Construct(cellEntity, _world.Value);
+                inventoryCellsCmp.cellView.Construct(cellEntity, _world.Value, _sceneData.Value.mainCanvasForCells);
                 inventoryCellsCmp.isEmpty = true;
                 cells.Add(inventoryCellsCmp.cellView);
             }

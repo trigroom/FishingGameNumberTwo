@@ -94,10 +94,7 @@ public class MovementSystem : IEcsRunSystem
                     {
                         moveCmp.movementView.MoveUnit(moveCmp.moveSpeed * moveCmp.moveInput * Time.deltaTime * moveCmp.movementView.runSpeedMultiplayer * (1 - moveCmp.speedMultiplayer));
                         if (!isPlayer)
-                        {
                             moveCmp.currentRunTime -= Time.deltaTime;
-                            Debug.Log("Enemy is running");
-                        }
                     }
                     else
                         moveCmp.movementView.MoveUnit(moveCmp.moveSpeed * moveCmp.moveInput * Time.deltaTime * (1 - moveCmp.speedMultiplayer));
@@ -177,9 +174,9 @@ public class MovementSystem : IEcsRunSystem
 
                 moveCmp.movementView.RotateNonWeaponCentre(needRotation);
             }
-             if (direction.x < 0 && rotY == 0)
+             if (direction.x < 0 && rotateZ < -95 || rotateZ > 95)
                  moveCmp.movementView.characterSpriteTransform.localRotation = Quaternion.Euler(0, -180, 0);
-             else if (direction.x > 0 && rotY != 0)
+             else if (direction.x > 0 && rotateZ > -85 && rotateZ < 85)
                  moveCmp.movementView.characterSpriteTransform.localRotation = Quaternion.Euler(0, 0, 0);
 
           //  if ((direction.x < 0 && moveCmp.movementView.characterSpriteTransform.localScale.x > 0) ||(direction.x > 0 && moveCmp.movementView.characterSpriteTransform.localScale.x < 0) )

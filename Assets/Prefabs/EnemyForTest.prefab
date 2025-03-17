@@ -1072,6 +1072,7 @@ GameObject:
   m_Component:
   - component: {fileID: 749606310624965755}
   - component: {fileID: 1661247970289738743}
+  - component: {fileID: 3186097343957028267}
   m_Layer: 0
   m_Name: EnemySpriteContainer
   m_TagString: Untagged
@@ -1120,6 +1121,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!210 &3186097343957028267
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6539477602156699234}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 1
+  m_SortAtRoot: 0
 --- !u!1 &6706233299948100729
 GameObject:
   m_ObjectHideFlags: 0

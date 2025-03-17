@@ -17,7 +17,7 @@ MonoBehaviour:
   maxCount: 1
   itemWeight: 1.5
   itemId: 26
-  itemName: constructionHelmet
+  itemName: construction Helmet
   itemDescription: the best protection against bricks and bullets
   itemCost: 40
   gunInfo: {fileID: 0}
@@ -31,3 +31,4 @@ MonoBehaviour:
   sheildInfo: {fileID: 0}
   helmetInfo: {fileID: 11400000, guid: 9b900556f6ff9674f86c7ab638ee63f9, type: 2}
   bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

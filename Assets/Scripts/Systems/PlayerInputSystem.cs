@@ -754,13 +754,16 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     if (playerWeaponsInInvCmp.curWeapon == 2 && itemCmp.itemInfo.meleeWeaponInfo.isOneHandedWeapon || playerWeaponsInInvCmp.curWeapon < 2 && (itemCmp.itemInfo.gunInfo.isOneHandedGun || (!itemCmp.itemInfo.gunInfo.isOneHandedGun && _playerUpgradedStatsPool.Value.Get(_playerEntity).weaponsExp[itemCmp.itemInfo.itemId].weaponExpLevel >= 8)))//поменять уровень на 6
                     {
                         ref var shieldCmp = ref _shieldComponentsPool.Value.Get(_sceneService.Value.shieldCellView._entity);
-
+                        //playerCmp.view.movementView.weaponSpriteRenderer.transform.localRotation
+                       // playerCmp.view.movementView.shieldView.shieldObject.localRotation = new Vector3(playerCmp.view.movementView.shieldView.shieldObject.localScale.x * -1, playerCmp.view.movementView.shieldView.shieldObject.localScale.y, playerCmp.view.movementView.shieldView.shieldObject.localScale.z);
+                          
+                       
                         if (playerCmp.view.movementView.shieldView.shieldObject.localPosition != Vector3.zero)
                         {
-                            playerCmp.view.movementView.shieldView.shieldObject.SetParent(playerCmp.view.movementView.shieldView.shieldContainer);
+                            playerCmp.view.movementView.shieldView.shieldObject.localScale = Vector3.one;
+                            playerCmp.view.movementView.shieldView.shieldObject.SetParent(playerCmp.view.movementView.shieldView.shieldContainer, false);
                             playerCmp.view.movementView.shieldView.shieldObject.localPosition = Vector3.zero;
-                            playerCmp.view.movementView.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, 0);
-                            playerCmp.view.movementView.shieldView.shieldObject.localScale = new Vector3(playerCmp.view.movementView.shieldView.shieldObject.localScale.x * -1, playerCmp.view.movementView.shieldView.shieldObject.localScale.y, playerCmp.view.movementView.shieldView.shieldObject.localScale.z);
+                            playerCmp.view.movementView.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 180, 0);
                             playerCmp.view.movementView.shieldView.shieldSpriteRenderer.sortingOrder = 2;
                             if (_playerWeaponsInInventoryComponentsPool.Value.Get(_sceneService.Value.playerEntity).curWeapon == 2)
                             {
@@ -770,9 +773,10 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                         }
                         else
                         {
-                            playerCmp.view.movementView.shieldView.shieldObject.localScale = new Vector3(playerCmp.view.movementView.shieldView.shieldObject.localScale.x * -1, playerCmp.view.movementView.shieldView.shieldObject.localScale.y, playerCmp.view.movementView.shieldView.shieldObject.localScale.z);
-                            playerCmp.view.movementView.shieldView.shieldObject.SetParent(playerCmp.view.movementView.nonWeaponContainer);
-                            playerCmp.view.movementView.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, -90);
+                            playerCmp.view.movementView.shieldView.shieldObject.localScale = Vector3.one * 6;
+                            //playerCmp.view.movementView.shieldView.shieldObject.localScale = new Vector3(playerCmp.view.movementView.shieldView.shieldObject.localScale.x * -1, playerCmp.view.movementView.shieldView.shieldObject.localScale.y, playerCmp.view.movementView.shieldView.shieldObject.localScale.z);
+                            playerCmp.view.movementView.shieldView.shieldObject.SetParent(playerCmp.view.movementView.nonWeaponContainer,false);
+                            playerCmp.view.movementView.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 180, 90);
                             playerCmp.view.movementView.shieldView.shieldObject.localPosition = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.shieldCellView._entity).itemInfo.sheildInfo.sheildInHandsPosition;
                             playerCmp.view.movementView.shieldView.shieldSpriteRenderer.sortingOrder = 6;
                             if (_playerWeaponsInInventoryComponentsPool.Value.Get(_sceneService.Value.playerEntity).curWeapon == 2)

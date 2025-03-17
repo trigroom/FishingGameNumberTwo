@@ -17,6 +17,7 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public Animator healthAnimator { get; private set; }
     [field: SerializeField] public Transform startLocationLightsContainer { get; private set; }
     [field: SerializeField] public RectTransform mainCanvas { get; private set; }
+    [field: SerializeField] public Canvas mainCanvasForCells { get; private set; }
     [field: SerializeField] public Animator warningInfoTextAnimator { get; private set; }
     [field: SerializeField] public TMP_Text warningInfoText { get; private set; }
     [field: SerializeField] public AudioSource uiAudioSourse { get; private set; }
@@ -82,7 +83,7 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public Transform storageCellsContainer { get; private set; }
     [field: SerializeField] public Transform effectsIconsContainer { get; private set; }
     [field: SerializeField] public Transform shopCellsContainer { get; private set; }
-    [field: SerializeField] public InventoryCellView inventoryCell { get; private set; }
+    [field: SerializeField] public GameObject inventoryCell { get; private set; }
     [field: SerializeField] public int storageCellsCount { get; private set; }
     [field: SerializeField] public TMP_Text moneyText { get; private set; }
     [field: SerializeField] public TMP_Text statsInventoryText { get; private set; }
@@ -172,7 +173,7 @@ public class SceneService : MonoBehaviour
         _oneShotSoundsPool = new ObjectPool<AudioSource>(() => Instantiate(soundFXObject));
         _particlesOnScreenImagesPool = new ObjectPool<Image>(() => Instantiate(bloodParticleOnScreen, particlesOnScreenContainer));
         _bulletsForMagUIImagesPool = new ObjectPool<Image>(() => Instantiate(bulletForMagUI, dropedItemsUIView.gunMagazineUI.transform));
-        _inventoryCellViewsPool = new ObjectPool<InventoryCellView>(() => Instantiate(inventoryCell));//пока так
+        _inventoryCellViewsPool = new ObjectPool<InventoryCellView>(() => Instantiate(inventoryCell).GetComponentInChildren<InventoryCellView>());//пока так
         mainCamera = Camera.main;
     }
     public Transform InstantiateLevel(Transform level)
@@ -339,15 +340,15 @@ public class SceneService : MonoBehaviour
     public InventoryCellView GetItemCell(Transform cellsContainer)
     {
         var invCell = _inventoryCellViewsPool.Get();
-        invCell.gameObject.SetActive(true);
-        invCell.gameObject.transform.SetParent(cellsContainer);
+        invCell.transform.parent.gameObject.SetActive(true);
+        invCell.transform.parent.gameObject.transform.SetParent(cellsContainer);
         return invCell;
     }
 
     public InventoryCellView GetInventoryCell(int cellId)
     {
         var invCell = _inventoryCellsViewsPool[cellId];
-        invCell.gameObject.SetActive(true);
+        invCell.transform.parent.gameObject.SetActive(true);
         return invCell;
     }
 

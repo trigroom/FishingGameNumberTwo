@@ -84,6 +84,8 @@ public class AttackSystem : IEcsRunSystem
     }
     public void Run(IEcsSystems systems)
     {
+        int playerEntity = _sceneData.Value.playerEntity;
+        ref var playerGunCmp = ref _playerGunComponentsPool.Value.Get(playerEntity);
         foreach (var bulletShell in _bulletShellComponentsFilter.Value)
         {
             ref var bulletShellCmp = ref _bulletShellComponentsPool.Value.Get(bulletShell);
@@ -287,19 +289,27 @@ public class AttackSystem : IEcsRunSystem
                 gunCmp.timeFromLastShot = 0;
                 gunCmp.lightFromGunShot.intensity = 0;
             }
+
+            bool playerInScope = gunCmpEntity == playerEntity && playerGunCmp.inScope;
+            float needMinSpriteRecoil = playerInScope ? 0.5f : 0.8f;
             if (!_attackComponentsPool.Value.Get(gunCmpEntity).weaponIsChanged)
-                gunCmp.gunSpritePositionRecoil += gunCmp.spreadRecoverySpeed * 0.005f;
-            if (gunCmp.gunSpritePositionRecoil < 0.8f)
-                _movementComponentsPool.Value.Get(gunCmpEntity).movementView.weaponSprite.transform.localPosition = new Vector2(0, gunCmp.gunSpritePositionRecoil);
-            else if (gunCmp.gunSpritePositionRecoil > 0.8f)
             {
-                gunCmp.gunSpritePositionRecoil = 0.8f;
-                _movementComponentsPool.Value.Get(gunCmpEntity).movementView.weaponSprite.transform.localPosition = new Vector2(0, gunCmp.gunSpritePositionRecoil);
+                if (gunCmp.gunSpritePositionRecoil < needMinSpriteRecoil)
+                    gunCmp.gunSpritePositionRecoil += gunCmp.spreadRecoverySpeed * 0.003f;
+                if (gunCmp.gunSpritePositionRecoil > needMinSpriteRecoil)
+                {
+                    if (playerGunCmp.changedInScopeState && playerInScope)
+                        gunCmp.gunSpritePositionRecoil -= needMinSpriteRecoil * 0.005f;
+                    else
+                        gunCmp.gunSpritePositionRecoil = needMinSpriteRecoil;
+                }
             }
 
+            _movementComponentsPool.Value.Get(gunCmpEntity).movementView.weaponSprite.transform.localPosition = new Vector2(0, gunCmp.gunSpritePositionRecoil);
+
         }
-        var playerPosition = _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform.position;
-        ref var playerCmp = ref _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+        var playerPosition = _movementComponentsPool.Value.Get(playerEntity).entityTransform.position;
+        ref var playerCmp = ref _playerComponentsPool.Value.Get(playerEntity);
         foreach (var aiCreature in _gunCreatureAiComponentsFilter.Value)
         {
             ref var creatureAi = ref _creatureAIComponentsPool.Value.Get(aiCreature);
@@ -504,9 +514,9 @@ public class AttackSystem : IEcsRunSystem
                 }
                 if (changeWeaponFromInvCmp.isDeleteWeapon)
                 {
-                    if (0 != changeWeaponFromInvCmp.weaponCellNumberToChange && !_inventoryCellComponentsPool.Value.Get(_sceneData.Value.firstGunCellView._entity).isEmpty)
+                    if (_inventoryItemComponentsPool.Value.Has(_sceneData.Value.firstGunCellView._entity))
                         ChangeWeapon(0);
-                    else if (1 != changeWeaponFromInvCmp.weaponCellNumberToChange && !_inventoryCellComponentsPool.Value.Get(_sceneData.Value.secondGunCellView._entity).isEmpty)
+                    else if (_inventoryItemComponentsPool.Value.Has(_sceneData.Value.secondGunCellView._entity))
                         ChangeWeapon(1);
                     else
                         ChangeWeapon(2);
@@ -521,7 +531,17 @@ public class AttackSystem : IEcsRunSystem
                 ref var plyerMeleeCmp = ref _playerMeleeWeaponComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                 ref var meleeCmp = ref _meleeWeaponComponentsPool.Value.Get(_sceneData.Value.playerEntity);
 
-                ChangeWeapon(2);
+                if (changeWeaponFromInvCmp.isDeleteWeapon)
+                {
+                    if (_inventoryItemComponentsPool.Value.Has(_sceneData.Value.firstGunCellView._entity))
+                        ChangeWeapon(0);
+                    else if (_inventoryItemComponentsPool.Value.Has(_sceneData.Value.secondGunCellView._entity))
+                        ChangeWeapon(1);
+                    else
+                        ChangeWeapon(2);
+                }
+                else
+                    ChangeWeapon(2);
                 //если милишка
             }
 
@@ -529,22 +549,22 @@ public class AttackSystem : IEcsRunSystem
         }
 
 
-        foreach (var playerEntity in _playerComponentFilter.Value)
+        foreach (var entity in _playerComponentFilter.Value)
         {
             var inventoryGunsCmp = _playerWeaponsInInventoryComponentsPool.Value.Get(playerEntity);
 
+            ref var playerAttackCmp = ref _attackComponentsPool.Value.Get(playerEntity);
 
-            ref var attackCmp = ref _attackComponentsPool.Value.Get(playerEntity);
             ref var curHealCmp = ref _currentHealingItemComponentsPool.Value.Get(playerEntity);
 
-            ref var playerGunCmp = ref _playerGunComponentsPool.Value.Get(playerEntity);
 
-            ref var cameraCmp = ref _cameraComponentsPool.Value.Get(_sceneData.Value.playerEntity);
 
-            if (attackCmp.grenadeThrowCouldown > 0)
-                attackCmp.grenadeThrowCouldown -= Time.deltaTime;
-            else if (attackCmp.grenadeThrowCouldown < 0)
-                attackCmp.grenadeThrowCouldown = 0;
+            ref var cameraCmp = ref _cameraComponentsPool.Value.Get(playerEntity);
+
+            if (playerAttackCmp.grenadeThrowCouldown > 0)
+                playerAttackCmp.grenadeThrowCouldown -= Time.deltaTime;
+            else if (playerAttackCmp.grenadeThrowCouldown < 0)
+                playerAttackCmp.grenadeThrowCouldown = 0;
 
             if (!playerGunCmp.changedInScopeState)//отдача камеры 
             {
@@ -617,7 +637,7 @@ public class AttackSystem : IEcsRunSystem
             }
             ref var playerMoveCmp = ref _playerMoveComponentsPool.Value.Get(playerEntity);
             ref var moveCmp = ref _movementComponentsPool.Value.Get(playerEntity);
-            attackCmp.currentAttackCouldown += Time.deltaTime;//
+            playerAttackCmp.currentAttackCouldown += Time.deltaTime;//
             ref var gunCmp = ref _gunComponentsPool.Value.Get(playerEntity);
 
             foreach (var item in _calculateRecoilEventsFilter.Value)
@@ -631,7 +651,7 @@ public class AttackSystem : IEcsRunSystem
                 playerView.leftRecoilTracker.localRotation = Quaternion.Euler(0, 0, gunCmp.currentSpread);
                 playerView.rightRecoilTracker.localRotation = Quaternion.Euler(0, 0, -gunCmp.currentSpread);
 
-                if (_laserPointerForGunComponentsPool.Value.Has(inventoryGunsCmp.curEquipedWeaponCellEntity) && !attackCmp.weaponIsChanged)
+                if (_laserPointerForGunComponentsPool.Value.Has(inventoryGunsCmp.curEquipedWeaponCellEntity) && !playerAttackCmp.weaponIsChanged)
                 {
                     ref var laserPointerCmp = ref _laserPointerForGunComponentsPool.Value.Get(inventoryGunsCmp.curEquipedWeaponCellEntity);
                     ref var laserInfo = ref _sceneData.Value.idItemslist.items[gunInInvCmp.gunPartsId[2]].gunPartInfo;
@@ -743,8 +763,8 @@ public class AttackSystem : IEcsRunSystem
                 }
                 // стрельба
                 ref var itemInfo = ref _inventoryItemComponentsPool.Value.Get(_playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity).curEquipedWeaponCellEntity);
-                if (((playerGunCmp.isAuto && Input.GetMouseButton(0)) || (!playerGunCmp.isAuto && Input.GetMouseButtonDown(0))) && !gunCmp.isReloading && gunInInvCmp.currentAmmo > 0 && attackCmp.currentAttackCouldown >= attackCmp.attackCouldown && !attackCmp.weaponIsChanged
-                    && attackCmp.canAttack && !curHealCmp.isHealing && gunInInvCmp.gunDurability != 0 && (playerGunCmp.gunInfo.isOneHandedGun || (!playerGunCmp.gunInfo.isOneHandedGun && (playerView.movementView.shieldView.shieldObject.localPosition == Vector3.zero
+                if (((playerGunCmp.isAuto && Input.GetMouseButton(0)) || (!playerGunCmp.isAuto && Input.GetMouseButtonDown(0))) && !gunCmp.isReloading && gunInInvCmp.currentAmmo > 0 && playerAttackCmp.currentAttackCouldown >= playerAttackCmp.attackCouldown && !playerAttackCmp.weaponIsChanged
+                    && playerAttackCmp.canAttack && !curHealCmp.isHealing && gunInInvCmp.gunDurability != 0 && (playerGunCmp.gunInfo.isOneHandedGun || (!playerGunCmp.gunInfo.isOneHandedGun && (playerView.movementView.shieldView.shieldObject.localPosition == Vector3.zero
                     || playerView.movementView.shieldView.shieldObject.localPosition != Vector3.zero && _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[itemInfo.itemInfo.itemId].weaponExpLevel <= 8//change to 8
                      && moveCmp.currentRunTime >= playerGunCmp.gunInfo.attackCouldown * gunInInvCmp.currentGunWeight * 2f))))
                 {
@@ -772,9 +792,8 @@ public class AttackSystem : IEcsRunSystem
 
                     if ((playerGunCmp.misfirePercent > 0 && Random.Range(0, 101) > playerGunCmp.misfirePercent) || playerGunCmp.misfirePercent == 0)
                     {
-                        float needVolume = 0.7f;
-                        if (_buildingCheckerComponentsPool.Value.Get(_sceneData.Value.playerEntity).isHideRoof)
-                            needVolume = 1f;
+                        float needVolume = _buildingCheckerComponentsPool.Value.Get(_sceneData.Value.playerEntity).isHideRoof ? 1f : 0.7f;
+                        needVolume *= playerGunCmp.inScope ? 1f : 0.7f;
                         ref var oneShotSoundCmp = ref _oneShotSoundComponentsPool.Value.Add(_world.Value.NewEntity());
                         oneShotSoundCmp.audioSource = _sceneData.Value.PlaySoundFXClip(playerGunCmp.gunInfo.shotSound, moveCmp.entityTransform.position, needVolume);
                         oneShotSoundCmp.time = playerGunCmp.gunInfo.shotSound.length;
@@ -823,10 +842,10 @@ public class AttackSystem : IEcsRunSystem
                             _sceneData.Value.mainCamera.orthographicSize -= (addCamSpread + addCamSpread * playerGunCmp.sumAddedCameraSpreadMultiplayer) * playerGunCmp.currentScopeMultiplicity * (1 - ((_sceneData.Value.mainCamera.orthographicSize / playerGunCmp.currentScopeMultiplicity - 5f)) / (cameraCmp.currentMaxCameraSpread - 5f));
                         }
                     }
-                    attackCmp.currentAttackCouldown = 0;
+                    playerAttackCmp.currentAttackCouldown = 0;
 
                     ref var playerStats = ref _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity);
-                    playerStats.currentStatsExp[1] += attackCmp.damage * playerGunCmp.gunInfo.bulletCount * Mathf.Pow(0.95f, playerGunCmp.gunInfo.bulletCount) * 0.05f;
+                    playerStats.currentStatsExp[1] += playerAttackCmp.damage * playerGunCmp.gunInfo.bulletCount * Mathf.Pow(0.95f, playerGunCmp.gunInfo.bulletCount) * 0.05f;
                     if (playerStats.currentStatsExp[0] >= _sceneData.Value.levelExpCounts[playerStats.statLevels[0]])//0 потому что стат sili
                     {
                         playerStats.statLevels[0]++;
@@ -866,7 +885,7 @@ public class AttackSystem : IEcsRunSystem
 
                     //изменять визуал от повреждения оружия
                 }
-                else if (Input.GetMouseButtonDown(1) && playerGunCmp.currentScopeMultiplicity != 1 && !gunCmp.isReloading && !attackCmp.weaponIsChanged && attackCmp.canAttack && !curHealCmp.isHealing && !playerGunCmp.changedInScopeState)
+                else if (Input.GetMouseButtonDown(1) && playerGunCmp.currentScopeMultiplicity != 1 && !gunCmp.isReloading && !playerAttackCmp.weaponIsChanged && playerAttackCmp.canAttack && !curHealCmp.isHealing && !playerGunCmp.changedInScopeState)
                     ChangeScopeMultiplicity();
 
                 else if (gunCmp.isReloading)
@@ -886,7 +905,7 @@ public class AttackSystem : IEcsRunSystem
                                     playerGunCmp.bulletUIObjects[i].gameObject.SetActive(true);
                         }
                         ref var upgradeStatsCmp = ref _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity);
-                        upgradeStatsCmp.currentStatsExp[1] += playerGunCmp.bulletCountToReload * gunCmp.bulletInShotCount * attackCmp.damage * 0.1f;
+                        upgradeStatsCmp.currentStatsExp[1] += playerGunCmp.bulletCountToReload * gunCmp.bulletInShotCount * playerAttackCmp.damage * 0.1f;
                         if (upgradeStatsCmp.currentStatsExp[1] >= _sceneData.Value.levelExpCounts[upgradeStatsCmp.statLevels[1]] && !_upgradePlayerStatEventsPool.Value.Has(_sceneData.Value.playerEntity))
                             _upgradePlayerStatEventsPool.Value.Add(_sceneData.Value.playerEntity).statIndex = 1;
 
@@ -901,7 +920,7 @@ public class AttackSystem : IEcsRunSystem
                 }
 
                 if (Input.GetKeyDown(KeyCode.R) && gunInInvCmp.currentAmmo != gunCmp.magazineCapacity && (!playerGunCmp.inScope || (playerGunCmp.inScope && _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[itemInfo.itemInfo.itemId].weaponExpLevel >= 6))
-                    && !curHealCmp.isHealing && playerView.movementView.shieldView.shieldObject.localPosition == Vector3.zero)
+                    && !curHealCmp.isHealing && playerView.movementView.shieldView.shieldObject.localPosition == Vector3.zero && !playerAttackCmp.weaponIsChanged)
                 {
                     if (!gunCmp.isReloading)
                     {
@@ -941,14 +960,14 @@ public class AttackSystem : IEcsRunSystem
                 ref var playerMeleeAttackCmp = ref _playerMeleeWeaponComponentsPool.Value.Get(playerEntity);
 
                 if ((playerMeleeAttackCmp.weaponInfo.isAuto && (Input.GetMouseButton(0) || Input.GetMouseButton(1)) || (!playerMeleeAttackCmp.weaponInfo.isAuto && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))))
-                    && attackCmp.currentAttackCouldown >= attackCmp.attackCouldown && !attackCmp.weaponIsChanged && attackCmp.canAttack
+                    && playerAttackCmp.currentAttackCouldown >= playerAttackCmp.attackCouldown && !playerAttackCmp.weaponIsChanged && playerAttackCmp.canAttack
                     && !curHealCmp.isHealing && !meleeAttackCmp.isHitting && moveCmp.currentRunTime > 0)
                 {
                     Vector2 direction = (moveCmp.pointToRotateInput - (Vector2)moveCmp.entityTransform.position).normalized;
                     if (Physics2D.Raycast(playerCmp.view.playerTransform.position, direction, 1f, LayerMask.GetMask("Obstacle"))) continue;
 
                     ref var playerStats = ref _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity);
-                    playerStats.currentStatsExp[0] += attackCmp.damage * 0.3f;
+                    playerStats.currentStatsExp[0] += playerAttackCmp.damage * 0.3f;
                     if (playerStats.currentStatsExp[0] >= _sceneData.Value.levelExpCounts[playerStats.statLevels[0]])
                         playerStats.statLevels[0]++;
 
@@ -986,7 +1005,7 @@ public class AttackSystem : IEcsRunSystem
                     else
                         meleeAttackCmp.startRotation = _playerComponentsPool.Value.Get(playerEntity).view.movementView.weaponContainer.transform.eulerAngles.z;
 
-                    attackCmp.currentAttackCouldown = 0;
+                    playerAttackCmp.currentAttackCouldown = 0;
                     meleeAttackCmp.isHitting = true;
                     meleeAttackCmp.moveInAttackSide = true;
                 }
@@ -1043,21 +1062,21 @@ public class AttackSystem : IEcsRunSystem
                     }
                 }
             }
-            if (attackCmp.weaponIsChanged)
+            if (playerAttackCmp.weaponIsChanged)
             {
                 //  ref var moveCmp = ref _movementComponentsPool.Value.Get(playerEntity);
-                attackCmp.currentChangeWeaponTime += Time.deltaTime;
-                if (attackCmp.currentChangeWeaponTime <= attackCmp.changeWeaponTime / 2)
+                playerAttackCmp.currentChangeWeaponTime += Time.deltaTime;
+                if (playerAttackCmp.currentChangeWeaponTime <= playerAttackCmp.changeWeaponTime / 2)
                 {
                     if (gunCmp.gunSpritePositionRecoil > 0)
-                        gunCmp.gunSpritePositionRecoil -= Time.deltaTime * (0.8f / attackCmp.changeWeaponTime);
+                        gunCmp.gunSpritePositionRecoil -= Time.deltaTime * (0.8f / playerAttackCmp.changeWeaponTime);
                 }
                 else
                 {
-                    gunCmp.gunSpritePositionRecoil += Time.deltaTime * (0.8f / attackCmp.changeWeaponTime);
-                    if (!attackCmp.weaponSpriteIsChanged)
+                    gunCmp.gunSpritePositionRecoil += Time.deltaTime * (0.8f / playerAttackCmp.changeWeaponTime);
+                    if (!playerAttackCmp.weaponSpriteIsChanged)
                     {
-                        attackCmp.weaponSpriteIsChanged = true;
+                        playerAttackCmp.weaponSpriteIsChanged = true;
                         var weaponInfo = _inventoryItemComponentsPool.Value.Get(_playerWeaponsInInventoryComponentsPool.Value.Get(playerEntity).curEquipedWeaponCellEntity).itemInfo;
                         if (weaponInfo.type == ItemInfo.itemType.gun)
                         {
@@ -1073,11 +1092,11 @@ public class AttackSystem : IEcsRunSystem
                         }
                     }
                 }
-                if (attackCmp.currentChangeWeaponTime >= attackCmp.changeWeaponTime)
+                if (playerAttackCmp.currentChangeWeaponTime >= playerAttackCmp.changeWeaponTime)
                 {
-                    attackCmp.weaponSpriteIsChanged = false;
-                    attackCmp.currentChangeWeaponTime = 0;
-                    attackCmp.weaponIsChanged = false;
+                    playerAttackCmp.weaponSpriteIsChanged = false;
+                    playerAttackCmp.currentChangeWeaponTime = 0;
+                    playerAttackCmp.weaponIsChanged = false;
                     _sceneData.Value.ammoInfoText.text = "";
                 }
             }
@@ -1452,7 +1471,7 @@ public class AttackSystem : IEcsRunSystem
         {
             playerView.movementView.shieldView.shieldObject.SetParent(playerView.movementView.shieldView.shieldContainer);
             playerView.movementView.shieldView.shieldObject.localPosition = Vector3.zero;
-            playerView.movementView.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, 0);
+            playerView.movementView.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 180, 0);
             playerView.movementView.shieldView.shieldSpriteRenderer.sortingOrder = 2;
         }
 
@@ -1675,7 +1694,7 @@ public class AttackSystem : IEcsRunSystem
         {
             playerView.movementView.shieldView.shieldObject.SetParent(playerView.movementView.shieldView.shieldContainer);
             playerView.movementView.shieldView.shieldObject.localPosition = Vector3.zero;
-            playerView.movementView.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, 0);
+            playerView.movementView.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 180, 0);
             playerView.movementView.shieldView.shieldSpriteRenderer.sortingOrder = 2;
         }
         curAttackCmp.weaponRotateSpeed = 10f / gunInInvCmp.currentGunWeight;

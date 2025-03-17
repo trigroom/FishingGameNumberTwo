@@ -40,7 +40,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<ChangeWeaponFromInventoryEvent> _changeWeaponFromInventoryEventsPool;
     // private EcsPoolInject<WeaponLevelComponent> _weaponLevelComponentsPool;
     private EcsPoolInject<SecondDurabilityComponent> _shieldComponentsPool;
-    private EcsPoolInject<TryCraftItemEvent> _tryCraftItemEventsPool ;
+    private EcsPoolInject<TryCraftItemEvent> _tryCraftItemEventsPool;
     private EcsPoolInject<TransportMoneyEvent> _transportMoneyEventsPool;
     private EcsPoolInject<CraftingTableComponent> _craftingTableComponentsPool;
     private EcsPoolInject<LoadGameEvent> _loadGameEventsPool;
@@ -50,7 +50,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     private EcsFilterInject<Inc<StorageOpenEvent>> _storageOpenEventsFilter;
     private EcsFilterInject<Inc<ShopOpenEvent>> _shopOpenEventsFilter;
     private EcsFilterInject<Inc<OpenCraftingTableEvent>> _openCraftingTableEventsFilter;
-    private EcsFilterInject<Inc<DeathEvent, PlayerComponent>> _playerDeathEventsFilter{ get; set; }
+    private EcsFilterInject<Inc<DeathEvent, PlayerComponent>> _playerDeathEventsFilter { get; set; }
     private EcsFilterInject<Inc<RevivePlayerEvent>> _revivePlayerEventsFilter;
     private EcsFilterInject<Inc<GunWorkshopOpenEvent>> _gunWorkshopOpenEventsFilter;
     private EcsFilterInject<Inc<TryEquipGunPartEvent>> _tryEquipGunPartEventsFilter;
@@ -256,9 +256,9 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             else
             {
                 int gunEntity = _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell;
-               // Debug.Log("changed gun desc" + gunEntity + " gp desc " + (_gunInventoryCellComponentsPool.Value.Get(_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell).gunPartsId[(int)gunPartCellView.cellGunPartType]));
+                // Debug.Log("changed gun desc" + gunEntity + " gp desc " + (_gunInventoryCellComponentsPool.Value.Get(_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell).gunPartsId[(int)gunPartCellView.cellGunPartType]));
                 var gunItem = _inventoryItemComponentPool.Value.Get(gunEntity).itemInfo;
-              //  Debug.Log(gunItem.itemName);
+                //  Debug.Log(gunItem.itemName);
                 _sceneData.Value.dropedItemsUIView.itemDescriptionText.text = "<b>" + gunItem.itemName + "</b>" + "\n" + "Type: " + gunItem.type + "\n" + "Weight: " + _gunInventoryCellComponentsPool.Value.Get(_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell).currentGunWeight + "\n";
                 ChangeGunDescription(gunItem, _gunInventoryCellComponentsPool.Value.Get(gunEntity), _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[gunItem.itemId]);
             }
@@ -339,38 +339,42 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             {
                 ref var tryEquipGunCmp = ref _equipGunPartEventsPool.Value.Get(tryEquipGunPartEntity);
                 int curWeaponLevel = _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[_inventoryItemComponentPool.Value.Get(menuStatesCmp.lastMarkedCell).itemInfo.itemId].weaponExpLevel;
-
-                if (_inventoryItemComponentPool.Value.Has(menuStatesCmp.lastMarkedCell) && item.itemInfo.type == ItemInfo.itemType.gunPart && item.itemInfo.gunPartInfo.gunPartType == tryEquipGunCmp.cellGunPartType && curWeaponLevel >= item.itemInfo.gunPartInfo.neededLevelToEquip)
+                if (item.itemInfo.type == ItemInfo.itemType.gunPart)
                 {
-                    ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(menuStatesCmp.lastMarkedCell);
-                    int needIndex = (int)item.itemInfo.gunPartInfo.gunPartType;
-
-                    gunInInvCmp.gunPartsId[needIndex] = item.itemInfo.itemId;
-                    if (item.itemInfo.gunPartInfo.energyToCharge != 0)
-                        _laserPointerForGunComponentsPool.Value.Add(menuStatesCmp.lastMarkedCell).remainingLaserPointerTime = item.itemInfo.gunPartInfo.laserLightTime;
-
-                    _sceneData.Value.dropedItemsUIView.gunPartCells[needIndex].gunPartImage.sprite = item.itemInfo.itemSprite;
-                    _sceneData.Value.dropedItemsUIView.gunPartCells[needIndex].isUsed = true;
-
-                    if (menuStatesCmp.lastMarkedCell == _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity).curEquipedWeaponCellEntity)
+                    if (_inventoryItemComponentPool.Value.Has(menuStatesCmp.lastMarkedCell) && item.itemInfo.gunPartInfo.gunPartType == tryEquipGunCmp.cellGunPartType && curWeaponLevel >= item.itemInfo.gunPartInfo.neededLevelToEquip)
                     {
-                        if (menuStatesCmp.lastMarkedCell == _sceneData.Value.firstGunCellView._entity)//смена первого гана если он сейчас экипирован чтобы применить все новые компоненты
-                            _changeWeaponFromInventoryEventsPool.Value.Add(menuStatesCmp.lastMarkedCell).SetValues(false, 0);
-                        else
-                            _changeWeaponFromInventoryEventsPool.Value.Add(menuStatesCmp.lastMarkedCell).SetValues(false, 1);
+                        ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(menuStatesCmp.lastMarkedCell);
+                        int needIndex = (int)item.itemInfo.gunPartInfo.gunPartType;
+
+                        gunInInvCmp.gunPartsId[needIndex] = item.itemInfo.itemId;
+                        if (item.itemInfo.gunPartInfo.energyToCharge != 0)
+                            _laserPointerForGunComponentsPool.Value.Add(menuStatesCmp.lastMarkedCell).remainingLaserPointerTime = item.itemInfo.gunPartInfo.laserLightTime;
+
+                        _sceneData.Value.dropedItemsUIView.gunPartCells[needIndex].gunPartImage.sprite = item.itemInfo.itemSprite;
+                        _sceneData.Value.dropedItemsUIView.gunPartCells[needIndex].isUsed = true;
+
+                        if (menuStatesCmp.lastMarkedCell == _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity).curEquipedWeaponCellEntity)
+                        {
+                            if (menuStatesCmp.lastMarkedCell == _sceneData.Value.firstGunCellView._entity)//смена первого гана если он сейчас экипирован чтобы применить все новые компоненты
+                                _changeWeaponFromInventoryEventsPool.Value.Add(menuStatesCmp.lastMarkedCell).SetValues(false, 0);
+                            else
+                                _changeWeaponFromInventoryEventsPool.Value.Add(menuStatesCmp.lastMarkedCell).SetValues(false, 1);
+                        }
+
+                        gunInInvCmp.currentGunWeight += item.itemInfo.itemWeight;
+                        _inventoryComponentsPool.Value.Get(_sceneData.Value.inventoryEntity).weight += item.itemInfo.itemWeight;
+
+                        _deleteItemEventsPool.Value.Add(desription).count = 1;//т.к. обвесы только по одному стакаются
+
+                        //return;
                     }
-
-                    gunInInvCmp.currentGunWeight += item.itemInfo.itemWeight;
-                    _inventoryComponentsPool.Value.Get(_sceneData.Value.inventoryEntity).weight += item.itemInfo.itemWeight;
-
-                    _deleteItemEventsPool.Value.Add(desription).count = 1;//т.к. обвесы только по одному стакаются
-
-                    //return;
+                    else if (item.itemInfo.gunPartInfo.gunPartType != tryEquipGunCmp.cellGunPartType)
+                        _sceneData.Value.ShowWarningText("now you choose " + tryEquipGunCmp.cellGunPartType + ", but not " + item.itemInfo.gunPartInfo.gunPartType);
+                    else if (curWeaponLevel < item.itemInfo.gunPartInfo.neededLevelToEquip)
+                        _sceneData.Value.ShowWarningText("you need " + item.itemInfo.gunPartInfo.neededLevelToEquip + " gun level to equip " + item.itemInfo.itemName);
                 }
-                else if (item.itemInfo.type == ItemInfo.itemType.gunPart && item.itemInfo.gunPartInfo.gunPartType != tryEquipGunCmp.cellGunPartType)
-                    _sceneData.Value.ShowWarningText("now you choose " + tryEquipGunCmp.cellGunPartType + ", but not " + item.itemInfo.gunPartInfo.gunPartType);
-                else if(curWeaponLevel < item.itemInfo.gunPartInfo.neededLevelToEquip)
-                    _sceneData.Value.ShowWarningText("you need " + item.itemInfo.gunPartInfo.neededLevelToEquip + " gun level to equip "+ item.itemInfo.itemName);
+                else
+                    _sceneData.Value.ShowWarningText("you need gun part to equip");
                 _equipGunPartEventsPool.Value.Del(tryEquipGunPartEntity);
             }
 
@@ -575,7 +579,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                         _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "divide on safe and poisons";
                 }
             }
-         
+
             else if (item.itemInfo.type == ItemInfo.itemType.gunPart)
             {
                 ChangeGunPartDescription(item.itemInfo);
@@ -966,7 +970,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
         if (!menusStatesCmp.inInventoryState)
         {
-           
+
             _offInScopeStateEventsPool.Value.Add(_sceneData.Value.playerEntity);
             var inventoryCmp = _inventoryComponentsPool.Value.Get(_sceneData.Value.inventoryEntity);
             _sceneData.Value.statsInventoryText.text = inventoryCmp.weight.ToString("0.0") + "kg/ " + inventoryCmp.currentMaxWeight + "kg \n max cells " + inventoryCmp.currentCellCount;
@@ -999,7 +1003,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     {
         menusStatesCmp.inQuestHelperState = !menusStatesCmp.inQuestHelperState;
         _sceneData.Value.questMenuView.ChangeMenuState(menusStatesCmp.inQuestHelperState);
-        
+
     }
     private void ChangeShopMenuState(ref MenuStatesComponent menusStatesCmp)
     {

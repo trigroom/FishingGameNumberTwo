@@ -73,6 +73,8 @@ public class EcsStartUp : MonoBehaviour
         .DelHere<TryCraftItemEvent>()
         .DelHere<ShowCraftItemRecipeEvent>()
         .DelHere<ThrowGrenadeEvent>()
+         .DelHere<StartDragItemEvent>()
+         .DelHere<EndItemDragEvent>()
          .DelHere<CreatureChangeWeaponEvent>()
          //  .DelHere<ChangeWeaponFromInventoryEvent>()
 

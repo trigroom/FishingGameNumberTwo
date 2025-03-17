@@ -13,6 +13,7 @@ public struct MenuStatesComponent
     public bool inCraftingTableState;
 
     public int lastMarkedCell;
+    public int lastDraggedCell;
     public int currentGuidePage;
 
     public CurrentItemShowedInfoState currentItemShowedInfo;

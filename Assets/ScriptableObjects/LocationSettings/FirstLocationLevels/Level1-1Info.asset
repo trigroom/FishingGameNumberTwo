@@ -12,42 +12,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6b285b2a2ffa55439c6ba71729a99b2, type: 3}
   m_Name: Level1-1Info
   m_EditorClassIdentifier: 
-  levelPrefab: {fileID: 5195996429766387655, guid: 07daa73b349cf8b4a97ec205e914ba06, type: 3}
+  levelPrefab: {fileID: 5195996429766387655, guid: 47575729a443418499b01a798088cb8b, type: 3}
   levelTarget: 0
   bodyArmorsInfo:
-  - {fileID: 11400000, guid: fef85cc6d2cdc254fbde69b69d9c717d, type: 2}
+  - {fileID: 11400000, guid: 5a8e7c5e167a90046885f9c34151bab0, type: 2}
   - {fileID: 11400000, guid: 112a1832a1b54c44ba5ca310ecc77bef, type: 2}
-  - {fileID: 11400000, guid: 0c18f079815ed724cb34ccb19c6dfadc, type: 2}
   helmetsInfo:
-  - {fileID: 11400000, guid: 9b900556f6ff9674f86c7ab638ee63f9, type: 2}
-  - {fileID: 11400000, guid: c31fb8702dac6c247b81676e57e6e9d0, type: 2}
+  - {fileID: 11400000, guid: bb1276bf4f5764446aa4957d401c5c22, type: 2}
   - {fileID: 11400000, guid: 0bb71919b8640854a853d186be3d5963, type: 2}
-  - {fileID: 11400000, guid: acc2743793ebdc641b361c802ad71abe, type: 2}
-  - {fileID: 11400000, guid: fdc3876781465cd41bc35c76b37c8e69, type: 2}
+  - {fileID: 11400000, guid: 65d48d3ed43d8594e92e539d943e9b2d, type: 2}
   gunsInfo:
   - {fileID: 11400000, guid: c080ffd64eec54447ac3d7fffb5537a3, type: 2}
-  - {fileID: 11400000, guid: e2a60f8ec9cb8234a818f07d511641a2, type: 2}
-  - {fileID: 11400000, guid: 31c9fd8f2dd24f2488e73d4db83d7f1e, type: 2}
-  - {fileID: 11400000, guid: 1caa0e845891fda44979b08b1ca08746, type: 2}
-  - {fileID: 11400000, guid: 7e7d05839fe75a64db284fb06342c1de, type: 2}
+  - {fileID: 11400000, guid: f2e5bf04f94baac4cbd2847b8efeae82, type: 2}
+  - {fileID: 11400000, guid: 4d1d3c2b92a53bf4eb97bf6159e4d381, type: 2}
   meleeWeaponsInfo:
   - {fileID: 11400000, guid: 9819755fad816fd4a8895c08b0aa8d2d, type: 2}
+  - {fileID: 11400000, guid: a7aa763e0d7b1a047977dbd1112248b4, type: 2}
+  - {fileID: 11400000, guid: c0e5a68ee9817314e8dcc68186c7ae2f, type: 2}
   healingItemsInfo:
-  - {fileID: 11400000, guid: 9090315e38632c644a229aab74a5f49e, type: 2}
+  - {fileID: 11400000, guid: 22be77d7ecdf17947837b88b6976cc99, type: 2}
   - {fileID: 11400000, guid: 3545025227e525c46bbda80f3fd8e2c8, type: 2}
   - {fileID: 11400000, guid: 4503430dbb8e5b447acaa6917f266114, type: 2}
   shieldItemsInfo:
-  - {fileID: 11400000, guid: eedc27cdc67953f4785b57cb67cb4eb1, type: 2}
   - {fileID: 11400000, guid: fa2ef5157d194b447b4af9a46168e2a2, type: 2}
-  chanceToOneWeapon: 0.5
-  chanceToMeleeWeapon: 0.5
-  chanceToHealingItem: 0.5
-  chanceToBodyArmorItem: 0.5
-  chanceToHelmetItem: 0.5
-  chanceToShieldItem: 0.5
+  chanceToOneWeapon: 0.7
+  chanceToMeleeWeapon: 1
+  chanceToHealingItem: 0.3
+  chanceToBodyArmorItem: 0.2
+  chanceToHelmetItem: 0.7
+  chanceToShieldItem: 0
   traps:
   - {fileID: 8286993370284143180, guid: ef5d2909425f3d24d88c94afbd3c0bc0, type: 3}
-  enemiesCount: 10
+  enemiesCount: 5
   trapsCount: 3
   shoppersCount: 1
   hasStartLocationEntry: 1

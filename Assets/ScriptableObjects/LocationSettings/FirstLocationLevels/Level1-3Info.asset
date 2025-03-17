@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6b285b2a2ffa55439c6ba71729a99b2, type: 3}
+  m_Name: Level1-3Info
+  m_EditorClassIdentifier: 
+  levelPrefab: {fileID: 5195996429766387655, guid: 07daa73b349cf8b4a97ec205e914ba06, type: 3}
+  levelTarget: 0
+  bodyArmorsInfo:
+  - {fileID: 11400000, guid: fef85cc6d2cdc254fbde69b69d9c717d, type: 2}
+  - {fileID: 11400000, guid: 112a1832a1b54c44ba5ca310ecc77bef, type: 2}
+  - {fileID: 11400000, guid: 0c18f079815ed724cb34ccb19c6dfadc, type: 2}
+  helmetsInfo:
+  - {fileID: 11400000, guid: 9b900556f6ff9674f86c7ab638ee63f9, type: 2}
+  - {fileID: 11400000, guid: c31fb8702dac6c247b81676e57e6e9d0, type: 2}
+  - {fileID: 11400000, guid: 0bb71919b8640854a853d186be3d5963, type: 2}
+  - {fileID: 11400000, guid: acc2743793ebdc641b361c802ad71abe, type: 2}
+  - {fileID: 11400000, guid: fdc3876781465cd41bc35c76b37c8e69, type: 2}
+  gunsInfo:
+  - {fileID: 11400000, guid: c080ffd64eec54447ac3d7fffb5537a3, type: 2}
+  - {fileID: 11400000, guid: e2a60f8ec9cb8234a818f07d511641a2, type: 2}
+  - {fileID: 11400000, guid: 31c9fd8f2dd24f2488e73d4db83d7f1e, type: 2}
+  - {fileID: 11400000, guid: 1caa0e845891fda44979b08b1ca08746, type: 2}
+  - {fileID: 11400000, guid: 7e7d05839fe75a64db284fb06342c1de, type: 2}
+  meleeWeaponsInfo:
+  - {fileID: 11400000, guid: 9819755fad816fd4a8895c08b0aa8d2d, type: 2}
+  healingItemsInfo:
+  - {fileID: 11400000, guid: 9090315e38632c644a229aab74a5f49e, type: 2}
+  - {fileID: 11400000, guid: 3545025227e525c46bbda80f3fd8e2c8, type: 2}
+  - {fileID: 11400000, guid: 4503430dbb8e5b447acaa6917f266114, type: 2}
+  shieldItemsInfo:
+  - {fileID: 11400000, guid: eedc27cdc67953f4785b57cb67cb4eb1, type: 2}
+  - {fileID: 11400000, guid: fa2ef5157d194b447b4af9a46168e2a2, type: 2}
+  chanceToOneWeapon: 0.5
+  chanceToMeleeWeapon: 0.5
+  chanceToHealingItem: 0.5
+  chanceToBodyArmorItem: 0.5
+  chanceToHelmetItem: 0.5
+  chanceToShieldItem: 0.5
+  traps:
+  - {fileID: 8286993370284143180, guid: ef5d2909425f3d24d88c94afbd3c0bc0, type: 3}
+  enemiesCount: 10
+  trapsCount: 3
+  shoppersCount: 1
+  hasStartLocationEntry: 1
+  chancesToEnemyClass:
+  - 0.3
+  - 1
+  enemyClassSettingsInfo:
+  - {fileID: 11400000, guid: 6dc09f2b46fe568498ec325d45ebb338, type: 2}
+  - {fileID: 11400000, guid: 0bb5c293973f6ba4a9c114ee1c537e87, type: 2}
+  droopedItems:
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 10425413546f68949af655c03ea9e4ef, type: 2}
+    <itemsCountMax>k__BackingField: 5
+    <itemsCountMin>k__BackingField: 2
+    <dropPercent>k__BackingField: 30
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 61b81eecae6f38947a729145a4447523, type: 2}
+    <itemsCountMax>k__BackingField: 3
+    <itemsCountMin>k__BackingField: 2
+    <dropPercent>k__BackingField: 50
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 5402d794d5d58ee42ab6d888b8d5f9ae, type: 2}
+    <itemsCountMax>k__BackingField: 3
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 20
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: aa410608678aeb74f8a1d48a75e17f28, type: 2}
+    <itemsCountMax>k__BackingField: 3
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 20
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: b0c3f35d7f13d8a44912bbc101cc450f, type: 2}
+    <itemsCountMax>k__BackingField: 3
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 20
