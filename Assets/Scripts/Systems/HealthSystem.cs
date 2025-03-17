@@ -325,7 +325,9 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             if (curLocationCmp.levelNum != 0)
             {
                 curLocationCmp.levelNum = curLocationCmp.currentLocation.levels.Length;
-                _entryInNewLocationEventsPool.Value.Add(_sceneData.Value.playerEntity);
+                curLocationCmp.currentLocation = null;
+               // curLocationCmp.levelNum =0;
+                _entryInNewLocationEventsPool.Value.Add(_world.Value.NewEntity());
             }
             else
                 moveCmp.movementView.gameObject.transform.position = Vector2.zero;

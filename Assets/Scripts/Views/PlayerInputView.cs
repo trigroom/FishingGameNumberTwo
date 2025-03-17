@@ -91,7 +91,6 @@ public class PlayerInputView : MonoBehaviour
     {
         if (collision.gameObject.layer == 9)
         {
-            Debug.Log("in zone");
             _world.GetPool<EntrySpawnZoneEvent>().Add(_entity).zoneView = collision.gameObject.GetComponent<SpawnZoneView>();
         }
         else if (collision.gameObject.layer == 12)
@@ -101,7 +100,7 @@ public class PlayerInputView : MonoBehaviour
         else if (collision.gameObject.layer == 14)
         {
             _world.GetPool<EntryInNewLocationEvent>().Add(_world.NewEntity()).location = collision.gameObject.GetComponent<LocationEntryView>().locationSettings;//поменять чтоб не только один объеккт перекрашивало в полупрозрачный
-            Debug.Log("collider loacation is entry");
+            Debug.Log("collider loacation is entry" + collision.gameObject.GetComponent<LocationEntryView>().locationSettings);
         }
         else if (collision.gameObject.layer == 15)
         {
@@ -112,7 +111,6 @@ public class PlayerInputView : MonoBehaviour
             {
                 ref var effCmp = ref _world.GetPool<EffectComponent>().Add(_world.NewEntity());
                 effCmp.effectEntity = _entity;
-
                 effCmp.effectLevel = effect.effectLevel;
                 effCmp.isFirstEffectCheck = true;
                 effCmp.effectIconSprite = effect.effectIconSprite;
@@ -129,7 +127,6 @@ public class PlayerInputView : MonoBehaviour
             {
                 _world.GetPool<MineExplodeEvent>().Add(_world.NewEntity()) = new MineExplodeEvent(trapView.mineInfo, trapView.gameObject.transform.position);
                 Destroy(trapView.gameObject, 1f);
-                Debug.Log("mine is activated");
             }
             _world.DelEntity( trapView.entity);
         }
