@@ -77,13 +77,13 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 effectCmp.isFirstEffectCheck = false;
                 bool isAddEffect = true;
                 bool isNewEffect = true;
-                Debug.Log("try add effect entity" + effectEntity);
+                //Debug.Log("try add effect entity" + effectEntity);
                 //  int delEntity = 0;
                 foreach (var checkedEffectEntity in _effectComponentsFilter.Value)
                 {
                     if (checkedEffectEntity != effectEntity && effectCmp.effectEntity == _effectComponentsPool.Value.Get(checkedEffectEntity).effectEntity/*|| !_effectComponentsPool.Value.Has(checkedEffectEntity)*/)
                     {
-                        Debug.Log("checked effect entity" + checkedEffectEntity);
+                  //      Debug.Log("checked effect entity" + checkedEffectEntity);
                         ref var checkedEffectCmp = ref _effectComponentsPool.Value.Get(checkedEffectEntity);//
                         if (checkedEffectCmp.isFirstEffectCheck) continue;
                         if (checkedEffectCmp.effectType == effectCmp.effectType)
@@ -115,7 +115,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                             {
                                 // _world.Value.DelEntity(effectEntity);
                                 _destroyComponentInNextFrameTagsPool.Value.Add(effectEntity);
-                                Debug.Log("destroy effect entity" + effectEntity);
+                              //  Debug.Log("destroy effect entity" + effectEntity);
 
                             }
                             else
@@ -123,7 +123,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                                 // delEntity = checkedEffectEntity;
                                 //_world.Value.DelEntity(checkedEffectEntity);
                                 _destroyComponentInNextFrameTagsPool.Value.Add(checkedEffectEntity);
-                                Debug.Log("destroy effect entity" + checkedEffectEntity);
+                            //    Debug.Log("destroy effect entity" + checkedEffectEntity);
                             }
                             break;
                         }
@@ -134,14 +134,14 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 //     _world.Value.DelEntity(delEntity);
                 if (!isAddEffect)
                 {
-                    Debug.Log(isPlayer + "dont dd" + "is new "+isNewEffect);
+                    //Debug.Log(isPlayer + "dont dd" + "is new "+isNewEffect);
                     if (isNewEffect)
                         effectCmp.effectDuration -= Time.deltaTime;
                     continue;
                 }
                 else
                 {
-                        Debug.Log(isPlayer + "ad effect icon");
+                     //   Debug.Log(isPlayer + "ad effect icon");
                     if (isPlayer)
                     {
                         effectCmp.effectIconView = _sceneData.Value.GetEffectIconView();
@@ -248,9 +248,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                         _sceneData.Value.ammoInfoText.text = "escape from a trap...";
                     }
                     else //if(_sceneData.Value.ammoInfoText.text != "")
-                    {
                         _sceneData.Value.ammoInfoText.text = "hold F to free yourself";//мб где нибудь ещё текст для предупреждений сделать и туда это стаить
-                    }
                 }
                 continue;
             }
@@ -325,7 +323,6 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             if (curLocationCmp.levelNum != 0)
             {
                 curLocationCmp.levelNum = curLocationCmp.currentLocation.levels.Length;
-                curLocationCmp.currentLocation = null;
                // curLocationCmp.levelNum =0;
                 _entryInNewLocationEventsPool.Value.Add(_world.Value.NewEntity());
             }
@@ -615,7 +612,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                     }
                 }
             }
-            Debug.Log(changedHealthCount + " damage taken " + isHeadshot + " isHead");
+         //   Debug.Log(changedHealthCount + " damage taken " + isHeadshot + " isHead");
             ChangeHealth(hpEvent, changedHealthCount, isHeadshot);
         }
 

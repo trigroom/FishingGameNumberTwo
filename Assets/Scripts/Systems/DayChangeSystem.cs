@@ -359,6 +359,8 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
             else if (entryEvt.timeSinceEntry >= 1f && !entryEvt.isFadeScreenEntry)
             {
                 entryEvt.isFadeScreenEntry = true;
+                if(entryEvt.location == null)
+                    _currentLocationComponentsPool.Value.Get(_sceneService.Value.playerEntity).currentLocation = null;
                 ChangeLevelPrefab(entryEvt.location);
                 Time.timeScale = 1;
             }

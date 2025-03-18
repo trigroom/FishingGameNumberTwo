@@ -134,7 +134,7 @@ public class ShopCellsSystem : IEcsInitSystem, IEcsRunSystem
             else
             {
                 shopCellCmp.cellView.gameObject.SetActive(false);
-                Debug.Log("Hide shop cell" + shopperCmp.items.Length);
+              //  Debug.Log("Hide shop cell" + shopperCmp.items.Length);
             }
         }
 
