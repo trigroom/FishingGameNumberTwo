@@ -326,7 +326,6 @@ public class AttackSystem : IEcsRunSystem
 
             if (creatureAiInventory.meleeWeaponItem == null || creatureAiInventory.gunItem != null && !_creatureInventoryComponentsPool.Value.Get(aiCreature).isSecondWeaponUsed)
             {
-                // Debug.Log((_creatureInventoryComponentsPool.Value.Get(aiCreature).isSecondWeaponUsed) + "sec used weapon");
                 ref var gunCmp = ref _gunComponentsPool.Value.Get(aiCreature);
 
                 //if (creatureAi.currentState == CreatureAIComponent.CreatureStates.shootingToTarget || (creatureAi.isAttackWhenRetreat && creatureAi.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget))
@@ -693,7 +692,7 @@ public class AttackSystem : IEcsRunSystem
                                 playerView.laserPointerLineRenderer.SetPosition(1, raySecond.origin + (raySecond.direction * laserInfo.laserMaxLenght));
                             }
                             playerView.laserPointerLineRenderer.SetPosition(0, laserPointerContainer.position);
-                            Debug.DrawRay(laserPointerContainer.position, laserPointerContainer.up);
+                           // Debug.DrawRay(laserPointerContainer.position, laserPointerContainer.up);
                         }
                         else if (laserPointerCmp.remainingLaserPointerTime < 0)
                         {

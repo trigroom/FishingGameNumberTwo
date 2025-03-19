@@ -76,18 +76,18 @@ MonoBehaviour:
   shotFlashIntance: 10
   shotFlashAngle: 50
   bulletsUIPositions:
-  - {x: 0, y: 54.63}
-  - {x: 0, y: 36.5}
-  - {x: 0, y: 18.4}
-  - {x: 0, y: 0.1}
-  - {x: 0, y: -18.1}
-  - {x: 0, y: -36.6}
-  - {x: 0, y: -55}
-  - {x: 0, y: -73.5}
+  - {x: -3.9, y: 41.5}
+  - {x: 7.5, y: 27.2}
+  - {x: -8.1, y: 17.8}
+  - {x: 7.5, y: 8.6}
+  - {x: -8.1, y: -0.5}
+  - {x: 7.5, y: -9.6}
+  - {x: -8.1, y: -19}
+  - {x: 7.5, y: -27.8}
   bulletUISprite: {fileID: 21300000, guid: 76dded18b3f1faf449cbb67a700fa60f, type: 3}
   magUISprite: {fileID: 21300000, guid: 898988cd0f301e54bb18c0e3c96d4668, type: 3}
-  magUISize: {x: 23, y: 166.5}
-  magUIPosition: {x: 20.8, y: 39.5}
+  magUISize: {x: 36, y: 77}
+  magUIPosition: {x: 14, y: -6}
   bulletUISize: {x: 17, y: 17}
   scopeMultiplicity: 1
   blackBGSize: 0
