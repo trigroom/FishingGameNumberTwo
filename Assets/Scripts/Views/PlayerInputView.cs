@@ -93,10 +93,7 @@ public class PlayerInputView : MonoBehaviour
         {
             _world.GetPool<EntrySpawnZoneEvent>().Add(_entity).zoneView = collision.gameObject.GetComponent<SpawnZoneView>();
         }
-        else if (collision.gameObject.layer == 12)
-        {
-            _world.GetPool<ChangeInBuildingStateEvent>().Add(_world.NewEntity()) = new ChangeInBuildingStateEvent(true, collision.gameObject.GetComponent<TilemapsGroup>());//поменять чтоб не только один объеккт перекрашивало в полупрозрачный
-        }
+    
         else if (collision.gameObject.layer == 14)
         {
             _world.GetPool<EntryInNewLocationEvent>().Add(_world.NewEntity()).location = collision.gameObject.GetComponent<LocationEntryView>().locationSettings;//поменять чтоб не только один объеккт перекрашивало в полупрозрачный
@@ -130,6 +127,8 @@ public class PlayerInputView : MonoBehaviour
             }
             _world.DelEntity( trapView.entity);
         }
+        else if (collision.gameObject.layer == 19)
+            _world.GetPool<ChangeUnderNightLightPlayerStateEvent>().Add(_world.NewEntity()).playerCheckColliderRadius = collision.GetComponent<CircleCollider2D>().radius;
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -141,6 +140,8 @@ public class PlayerInputView : MonoBehaviour
         }
         else if (collision.gameObject.layer == 12)
             _world.GetPool<ChangeInBuildingStateEvent>().Add(_world.NewEntity()) = new ChangeInBuildingStateEvent(false, collision.gameObject.GetComponent<TilemapsGroup>());
+        else if (collision.gameObject.layer == 19)
+            _world.GetPool<ChangeUnderNightLightPlayerStateEvent>().Add(_world.NewEntity());
 
     }
 

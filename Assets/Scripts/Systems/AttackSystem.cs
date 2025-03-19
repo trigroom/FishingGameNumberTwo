@@ -557,8 +557,6 @@ public class AttackSystem : IEcsRunSystem
 
             ref var curHealCmp = ref _currentHealingItemComponentsPool.Value.Get(playerEntity);
 
-
-
             ref var cameraCmp = ref _cameraComponentsPool.Value.Get(playerEntity);
 
             if (playerAttackCmp.grenadeThrowCouldown > 0)

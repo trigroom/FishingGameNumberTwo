@@ -280,6 +280,18 @@ public class InventorySystem : IEcsRunSystem
                                 continue;
                             }
                         }
+                        else if (needItem.itemInfo.type == ItemInfo.itemType.backpack)
+                        {
+                            if (_sceneData.Value.backpackCellView._entity == needCellEntity)
+                            {
+
+                            }
+                            else
+                            {
+                                _sceneData.Value.ShowWarningText(needItem.itemInfo.itemName + " can be equip only in backpack slot");
+                                continue;
+                            }
+                        }
                         else
                         {
                             _sceneData.Value.ShowWarningText(needItem.itemInfo.itemName + " can't be equip in any special slot");
@@ -593,6 +605,12 @@ public class InventorySystem : IEcsRunSystem
                         ChangeShieldItemInSpecialSlot();
                     else if (_sceneData.Value.bodyArmorCellView._entity == curCheckedCell)
                         ChangeBodyArmorItemInSpecialSlot();
+                    else if (_sceneData.Value.backpackCellView._entity == curCheckedCell)
+                    {
+                        var needCellCount = _inventoryItemComponentsPool.Value.Has(_sceneData.Value.backpackCellView._entity) ? _inventoryItemComponentsPool.Value.Get(_sceneData.Value.backpackCellView._entity).itemInfo.backpackInfo.cellsCount - _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity).currentCellCount
+                            : _sceneData.Value.dropedItemsUIView.startBackpackInfo.cellsCount - _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity).currentCellCount;
+                       _setInventoryCellsToNewValueEventsPool.Value.Add(_sceneData.Value.playerEntity).changedCount = needCellCount;
+                    }
                 }
                 menuStatesCmp.lastDraggedCell = 0;
             }
@@ -1549,18 +1567,9 @@ public class InventorySystem : IEcsRunSystem
                     }
                 }
                 else if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.sheild)
-                {
                     specialItemCellEntity = _sceneData.Value.shieldCellView._entity;
-                    /*   playerCmp.view.movementView.shieldView.shieldObject.SetParent(playerCmp.view.movementView.shieldView.shieldContainer);
-                       playerCmp.view.movementView.shieldView.shieldObject.localPosition = Vector3.zero;
-                       playerCmp.view.movementView.shieldView.shieldObject.localRotation = Quaternion.Euler(0, 0, 0);
-                       playerCmp.view.movementView.shieldView.shieldObject.gameObject.SetActive(false);*/
-                }
                 else if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.bodyArmor)
-                {
                     specialItemCellEntity = _sceneData.Value.bodyArmorCellView._entity;
-                    //    playerCmp.view.movementView.bodyArmorSpriteRenderer.sprite = _sceneData.Value.transparentSprite;
-                }
                 else if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.helmet)
                     specialItemCellEntity = _sceneData.Value.helmetCellView._entity;
 
@@ -1589,14 +1598,12 @@ public class InventorySystem : IEcsRunSystem
 
                             if (itemCmp.itemInfo.type == ItemInfo.itemType.backpack)
                                 _setInventoryCellsToNewValueEventsPool.Value.Add(_sceneData.Value.playerEntity).changedCount = _sceneData.Value.dropedItemsUIView.startBackpackInfo.cellsCount - invCmp.currentCellCount;
-                            //  else if (itemCmp.itemInfo.type == ItemInfo.itemType.helmet)
-                            //      ChangeHelmetItemInSpecialSlot();
-                            /*  else if (itemCmp.itemInfo.type == ItemInfo.itemType.helmet)
-                              {
-                                  ref var fOVCmp = ref _fieldOfViewComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-                                  fOVCmp.fieldOfView = playerCmp.view.defaultFOV;
-                                  fOVCmp.viewDistance = playerCmp.view.viewDistance;
-                              }*/
+                            else if (itemCmp.itemInfo.type == ItemInfo.itemType.sheild)
+                                ChangeShieldItemInSpecialSlot();
+                            else if (itemCmp.itemInfo.type == ItemInfo.itemType.bodyArmor)
+                                ChangeBodyArmorItemInSpecialSlot();
+                            else if (itemCmp.itemInfo.type == ItemInfo.itemType.helmet)
+                                ChangeHelmetItemInSpecialSlot();
                             break;
                         }
 
@@ -1642,11 +1649,7 @@ public class InventorySystem : IEcsRunSystem
                     else if (itemCmp.itemInfo.type == ItemInfo.itemType.sheild)
                         ChangeShieldItemInSpecialSlot();
                     else if (itemCmp.itemInfo.type == ItemInfo.itemType.bodyArmor)
-                    {
                         ChangeBodyArmorItemInSpecialSlot();
-                        /* playerCmp.view.movementView.bodyArmorSpriteRenderer.sprite = itemCmp.itemInfo.bodyArmorInfo.bodyArmorSprite;
-                         playerCmp.view.movementView.bodyArmorSpriteRenderer.transform.localPosition = itemCmp.itemInfo.bodyArmorInfo.inGamePositionOnPlayer;*/
-                    }
                     else if (itemCmp.itemInfo.type == ItemInfo.itemType.helmet)
                         ChangeHelmetItemInSpecialSlot();
                     else
@@ -2344,7 +2347,6 @@ public class InventorySystem : IEcsRunSystem
         }
         else
         {
-            int startAddCell = cellsListCmp.cells.Count;
             for (int i = 0; i < changedCellCount; i++)
             {
                 var cellView = _sceneData.Value.GetInventoryCell(_inventoryCellsFilter.Value.GetEntitiesCount());
@@ -2381,7 +2383,6 @@ public class InventorySystem : IEcsRunSystem
         }
         else
         {
-
             var invBackground = _sceneData.Value.dropedItemsUIView.inventoryBackground;
             invBackground.sprite = _sceneData.Value.dropedItemsUIView.startBackpackInfo.backgroundSprite;
             invBackground.rectTransform.anchoredPosition = new Vector2(invBackground.rectTransform.anchoredPosition.x, _sceneData.Value.dropedItemsUIView.startBackpackInfo.yPosition);

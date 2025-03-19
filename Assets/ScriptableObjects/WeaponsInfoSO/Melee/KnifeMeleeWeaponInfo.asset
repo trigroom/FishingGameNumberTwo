@@ -14,17 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackLenght: 0.7
   damage: 15
-  attackCouldown: 2
+  attackCouldown: 0.8
   weaponChangeSpeed: 0.7
   isWideHit: 0
   isAuto: 1
-  attackSpeed: 3
+  attackSpeed: 6
   colliderSize: {x: 0.1, y: 0.25}
-  wideAttackSpeed: 10
+  wideAttackSpeed: 25
   wideAttackLenght: 50
-  knockbackSpeed: 3
+  knockbackSpeed: 2
   stunTime: 0.5
-  staminaUsage: 1.5
+  staminaUsage: 2
   isOneHandedWeapon: 1
   wideAttackDamageMultiplayer: 1
   spriteScaleMultiplayer: 2.5

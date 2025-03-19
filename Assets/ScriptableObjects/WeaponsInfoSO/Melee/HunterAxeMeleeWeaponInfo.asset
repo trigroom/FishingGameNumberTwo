@@ -12,19 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1165650e88487624db5f6a5e4760df72, type: 3}
   m_Name: HunterAxeMeleeWeaponInfo
   m_EditorClassIdentifier: 
-  attackLenght: 0.7
+  attackLenght: 0.6
   damage: 15
-  attackCouldown: 2
-  weaponChangeSpeed: 0.7
+  attackCouldown: 1
+  weaponChangeSpeed: 0.6
   isWideHit: 0
   isAuto: 1
-  attackSpeed: 3
+  attackSpeed: 4
   colliderSize: {x: 0.1, y: 0.25}
-  wideAttackSpeed: 10
-  wideAttackLenght: 50
+  wideAttackSpeed: 30
+  wideAttackLenght: 60
   knockbackSpeed: 3
   stunTime: 0.5
-  staminaUsage: 1.5
+  staminaUsage: 2.2
   isOneHandedWeapon: 1
   wideAttackDamageMultiplayer: 1
   spriteScaleMultiplayer: 2.5

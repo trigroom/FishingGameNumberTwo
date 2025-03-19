@@ -11,6 +11,8 @@ public struct PlayerComponent
     public bool nvgIsUsed { get;set; }
     public int levelOfPainkillers;
     public float currentAudibility;
+    public float underNightLightTime;
+    public float underNightLightRadius;
     // public SpriteRenderer visionZoneMask;
     //public PolygonCollider2D visionZoneCollider;
 }

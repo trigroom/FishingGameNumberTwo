@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7718247f6aa85b84f813578fb0d5b327, type: 3}
+  m_Name: M1GarandGunInfo
+  m_EditorClassIdentifier: 
+  gunType: 2
+  attackLenght: 35
+  shotSoundDistance: 40
+  reloadDuration: 0.6
+  magazineCapacity: 8
+  damage: 50
+  attackCouldown: 0.25
+  maxSpread: 23
+  minSpread: 1
+  addedSpread: 5
+  weaponChangeSpeed: 2.8
+  isAuto: 0
+  bulletTypeId: 7
+  bulletCount: 1
+  isOneBulletReloaded: 1
+  maxDurabilityPoints: 500
+  bulletShellIndex: 1
+  firepointPosition: {x: 0.22, y: 0.035}
+  bulletShellPointPosition: {x: 0, y: 0.03}
+  bulletShellSpawnOnShot: 1
+  durabilityRecoveryCost: 10
+  isOneHandedGun: 0
+  laserPointer:
+    laserMaxLenght: 0
+    laserPosition: {x: 0, y: 0}
+    laserLightTime: 0
+    energyToCharge: 0
+    laserColor:
+      serializedVersion: 2
+      key0: {r: 1, g: 1, b: 1, a: 1}
+      key1: {r: 1, g: 1, b: 1, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 0}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 65535
+      ctime2: 0
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 65535
+      atime2: 0
+      atime3: 0
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_ColorSpace: -1
+      m_NumColorKeys: 2
+      m_NumAlphaKeys: 2
+  spriteScaleMultiplayer: 2.5
+  spriteRotation: 90
+  weaponSprite: {fileID: 21300000, guid: d3a16b619f25957479f7d9d538fe53c1, type: 3}
+  shotFlashDistance: 3
+  shotFlashIntance: 10
+  shotFlashAngle: 50
+  bulletsUIPositions:
+  - {x: 0, y: 54.63}
+  - {x: 0, y: 36.5}
+  - {x: 0, y: 18.4}
+  - {x: 0, y: 0.1}
+  - {x: 0, y: -18.1}
+  - {x: 0, y: -36.6}
+  - {x: 0, y: -55}
+  - {x: 0, y: -73.5}
+  bulletUISprite: {fileID: 21300000, guid: 76dded18b3f1faf449cbb67a700fa60f, type: 3}
+  magUISprite: {fileID: 21300000, guid: 898988cd0f301e54bb18c0e3c96d4668, type: 3}
+  magUISize: {x: 23, y: 166.5}
+  magUIPosition: {x: 20.8, y: 39.5}
+  bulletUISize: {x: 17, y: 17}
+  scopeMultiplicity: 1
+  blackBGSize: 0
+  centreCrossSprite: {fileID: 0}
+  shotSound: {fileID: 8300000, guid: 9fff401a335a4d547bf8044d3c7035e9, type: 3}
+  reloadSound: {fileID: 8300000, guid: d9def0d3917c33c48a1f52e67ecdf7e3, type: 3}
+  upgradeCost: 0
+  upgradedGunId: 0
+  neededGunsmithLevelToUpgrade: 0
+  gunParts: 8
