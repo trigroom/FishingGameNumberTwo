@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: b92b4f4c976c02b4cbff8566f90f97ef
+guid: d7c9f04d4fce1d84784937eb6897a146
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3215664779986316183
-    second: gunLever_0
+      213: -274312658852459358
+    second: goldenRingIcon_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,12 +113,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: gunLever_0
+      name: goldenRingIcon_0
       rect:
         serializedVersion: 2
-        x: 3
+        x: 1
         y: 0
-        width: 18
+        width: 22
         height: 24
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 79ba1df741650ac20800000000000000
-      internalID: 3215664779986316183
+      spriteID: 2acc4b31712713cf0800000000000000
+      internalID: -274312658852459358
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      gunLever_0: 3215664779986316183
+      goldenRingIcon_0: -274312658852459358
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
