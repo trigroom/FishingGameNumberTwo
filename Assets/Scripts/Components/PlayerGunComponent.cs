@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.UI;
 
 public struct PlayerGunComponent
@@ -21,10 +20,10 @@ public struct PlayerGunComponent
     public float currentCameraSpreadDifference; //а нужна ли?
 
     public float currentScopeMultiplicity;
-    public bool changedInScopeState;
+    public bool changedInScopeState { get; set; }
     public float timeAfterChangedInScopeState;
     public float cameraOrtograficalSizeDifference;
-    public bool inScope { get; set; }
+    public bool inScope;
 
     public List<Image> bulletUIObjects;
 
@@ -33,5 +32,5 @@ public struct PlayerGunComponent
     public float sumAddedWeaponChangeSpeedMultiplayer;
     public float sumAddedAttackLenghtMultiplayer;
     public float currentShotSoundLenght;
-    public float sumAddedReloadSpeedMultiplayer{ get; set; }
+    public float sumAddedReloadSpeedMultiplayer { get; set; }
 }

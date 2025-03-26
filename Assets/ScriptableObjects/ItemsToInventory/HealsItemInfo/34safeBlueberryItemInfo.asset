@@ -23,7 +23,7 @@ MonoBehaviour:
   gunInfo: {fileID: 0}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}
-  healInfo: {fileID: 11400000, guid: db8b0a2fb3a1e064a9332243c3871294, type: 2}
+  healInfo: {fileID: 11400000, guid: 50e454670f544394199a9dc10add3fd4, type: 2}
   flashlightInfo: {fileID: 0}
   backpackInfo: {fileID: 0}
   gunPartInfo: {fileID: 0}
@@ -31,3 +31,4 @@ MonoBehaviour:
   sheildInfo: {fileID: 0}
   helmetInfo: {fileID: 0}
   bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

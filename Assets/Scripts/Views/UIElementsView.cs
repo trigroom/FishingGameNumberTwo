@@ -17,7 +17,6 @@ public class UIElementsView : MonoBehaviour
     [field: SerializeField] public TMP_Text itemDescriptionText { get; private set; }
     [field: SerializeField] public TMP_Text secondButtonActionText { get; private set; }
     [field: SerializeField] public Image markInventoryCellBorder { get; private set; }
-    //добавить картинку пересылки из инвентаря
     [field: SerializeField] public Sprite transportStorageIcon { get; private set; }
     [field: SerializeField] public Sprite transportInventoryIcon { get; private set; }
     [field: SerializeField] public Transform itemUIVerticalLayout { get; set; }
@@ -100,16 +99,12 @@ public class UIElementsView : MonoBehaviour
     [field: SerializeField] public Button closeSettingsButton { get; set; }
     [field: SerializeField] public Slider uiScalerSlider { get; set; }
 
-    //[field: SerializeField] public bool isEquipWeapon { get; set; }
-
     public int curCell { get; private set; }
 
     private EcsWorld _world;
 
     public int curInventorySliderValue { get; private set; }
-    //public int curStorageSliderValue { get; private set; }
-
-
+    
     private void Start()
     {
         curInventorySliderValue = 1;
@@ -122,7 +117,6 @@ public class UIElementsView : MonoBehaviour
         divideButton.onClick.AddListener(DivideItems);
         storageButton.onClick.AddListener(TransportItemsBetweenInventoryAndStorage);
         generalSlider.onValueChanged.AddListener(delegate { OnInventorySliderChange(); });
-        // storageTransportSlider.onValueChanged.AddListener(delegate { OnStorageSliderChange(); });
         itemInfoContainer.gameObject.SetActive(false);
         storageUIContainer.gameObject.SetActive(false);
     }
@@ -161,12 +155,6 @@ public class UIElementsView : MonoBehaviour
         currentItemsCountToDrop.text = curInventorySliderValue + "/" + generalSlider.maxValue;
     }
 
-    /* private void OnStorageSliderChange()
-     {
-         curStorageSliderValue = (int)storageTransportSlider.value;
-         storageTransportCountText.text = curStorageSliderValue + "/" + storageTransportSlider.maxValue;
-     }*/
-
     public void ChangeActiveStateEquipButton(bool isActive)
     {
         weaponEquipButton.gameObject.SetActive(isActive);
@@ -179,7 +167,7 @@ public class UIElementsView : MonoBehaviour
     public void EquipSomething() => _world.GetPool<MoveSpecialItemToInventoryEvent>().Add(curCell);
     public void DropItems()
     {
-        _world.GetPool<DropItemsIvent>().Add(curCell)/*.itemsCountToDrop = curInventorySliderValue*/;
+        _world.GetPool<DropItemsIvent>().Add(curCell);
     }
 
     public void DivideItems()
@@ -197,6 +185,5 @@ public class UIElementsView : MonoBehaviour
     public void TransportItemsBetweenInventoryAndStorage()
     {
         _world.GetPool<AddItemFromCellEvent>().Add(curCell);
-       // itemInfoContainer.gameObject.SetActive(false);
     }
 }

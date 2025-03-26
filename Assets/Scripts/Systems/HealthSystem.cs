@@ -368,7 +368,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     curHealthCmp.currentHealingTime = 0;
                     curHealthCmp.isHealing = false;
-                    if (!isPlayer || (isPlayer && (!_menuStatesComponentsPool.Value.Get(curHealingItem).inInventoryState && !_menuStatesComponentsPool.Value.Get(curHealingItem).inMainMenuState)))
+                    if (!isPlayer || (isPlayer && (!_menuStatesComponentsPool.Value.Get(curHealingItem).inInventoryState && _menuStatesComponentsPool.Value.Get(curHealingItem).mainMenuState == MenuStatesComponent.MainMenuState.none)))
                         _attackComponentsPool.Value.Get(curHealingItem).canAttack = true;
                     foreach (var effect in _effectComponentsFilter.Value)
                     {

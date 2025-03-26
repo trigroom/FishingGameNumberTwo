@@ -9,7 +9,7 @@ public struct MenuStatesComponent
     public bool inStorageState;
     public bool inGunWorkshopState;
     public bool inQuestHelperState;
-    public bool inMainMenuState;
+    public MainMenuState mainMenuState;
     public bool inCraftingTableState;
 
     public int lastMarkedCell;
@@ -30,6 +30,14 @@ public struct MenuStatesComponent
         quests,
         guides
     }
+
+    public enum MainMenuState 
+    { 
+        none,
+        mainMenu,
+        settings
+    }
+
     public bool inMoneyTransportState;
     public bool transportMoneyToInventory;
 

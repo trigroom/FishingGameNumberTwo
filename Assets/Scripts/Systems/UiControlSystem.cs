@@ -230,7 +230,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         foreach (var openCraftingTable in _openCraftingTableEventsFilter.Value)
         {
             ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-            if (menusStatesCmp.inMainMenuState) return;
+            if (menusStatesCmp.mainMenuState != MenuStatesComponent.MainMenuState.none) return;
             _currentDialogeComponentsPool.Value.Get(_sceneData.Value.playerEntity).currentDialogeNumber = openCraftingTable;
             ChangeCraftingMenuState(ref menusStatesCmp);
             ChangeInventoryMenuState(ref menusStatesCmp);
@@ -239,7 +239,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         foreach (var gunWorkshopOpen in _gunWorkshopOpenEventsFilter.Value)
         {
             ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-            if (menusStatesCmp.inMainMenuState) return;
+            if (menusStatesCmp.mainMenuState != MenuStatesComponent.MainMenuState.none) return;
             _currentDialogeComponentsPool.Value.Get(_sceneData.Value.playerEntity).currentDialogeNumber = gunWorkshopOpen;
             ChangeGunWorkshopMenuState(ref menusStatesCmp);
             ChangeInventoryMenuState(ref menusStatesCmp);
@@ -282,12 +282,11 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             mainMenuView.buttons[0].GetComponentInChildren<TMP_Text>().text = "revive";
             mainMenuView.buttons[1].gameObject.SetActive(false);
 
-            //maybe make curLevel != 0;
             _inventoryComponentsPool.Value.Get(_sceneData.Value.inventoryEntity).moneyCount = 0;
             _sceneData.Value.moneyText.text = "0$";
 
             ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-            ChangeMainMenuState(ref menuStatesCmp);
+            ChangeMainMenuState(ref menuStatesCmp, false);
             if (menuStatesCmp.inInventoryState)
                 ChangeInventoryMenuState(ref menuStatesCmp);
             var playerInputView = _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view.playerInputView;
@@ -306,14 +305,14 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         foreach (var playerRevive in _revivePlayerEventsFilter.Value)
         {
             var mainMenuView = _sceneData.Value.mainMenuView;
-            _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inMainMenuState = false;
+            _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).mainMenuState = MenuStatesComponent.MainMenuState.none;
             mainMenuView.buttons[0].GetComponentInChildren<TMP_Text>().text = "continue";
             mainMenuView.buttons[1].gameObject.SetActive(true);
         }
         foreach (var storageOpen in _storageOpenEventsFilter.Value)
         {
             ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-            if (menusStatesCmp.inMainMenuState) return;
+            if (menusStatesCmp.mainMenuState != MenuStatesComponent.MainMenuState.none) return;
             ChangeStorageMenuState(ref menusStatesCmp);
             ChangeInventoryMenuState(ref menusStatesCmp);
         }
@@ -321,7 +320,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         {
             ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
 
-            if (menusStatesCmp.inMainMenuState) return;
+            if (menusStatesCmp.mainMenuState != MenuStatesComponent.MainMenuState.none) return;
             _sceneData.Value.dropedItemsUIView.shopperMoneyToBuy.text = "shopper money " + _shopCharacterComponentsPool.Value.Get(_currentInteractedCharactersComponentsPool.Value.Get(_sceneData.Value.playerEntity).interactCharacterView._entity).remainedMoneyToBuy + "$";
             _sceneData.Value.dropedItemsUIView.storageButtonImage.sprite = _sceneData.Value.dropedItemsUIView.sellItemInventoryIcon;
             ChangeShopMenuState(ref menusStatesCmp);
@@ -708,9 +707,9 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         {
             if ((Input.GetKeyDown(KeyCode.I) || (Input.GetKeyDown(KeyCode.Escape)) && _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inInventoryState))
             {
-                Debug.Log("open inv");
+               // Debug.Log("open inv");
                 ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-                if (menusStatesCmp.inMainMenuState) return;
+                if (menusStatesCmp.mainMenuState != MenuStatesComponent.MainMenuState.none) return;
                 _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
 
                 ChangeInventoryMenuState(ref menusStatesCmp);
@@ -740,7 +739,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             else if (Input.GetKeyDown(KeyCode.J) && !_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inInventoryState)
             {
                 ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-                if (menusStatesCmp.inMainMenuState) return;
+                if (menusStatesCmp.mainMenuState != MenuStatesComponent.MainMenuState.none) return;
 
                 ChangeQuestHelperState(ref menusStatesCmp);
                 ChangeInventoryMenuState(ref menusStatesCmp);
@@ -749,7 +748,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             }
             else if (Input.GetKeyDown(KeyCode.Escape) && !_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inInventoryState)
             {
-                ChangeMainMenuState(ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity));
+                ChangeMainMenuState(ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity), false);
             }
         }
     }
@@ -826,7 +825,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             else
             {
                 _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Melee weapon info\nDamage: " + Mathf.CeilToInt((float)item.itemInfo.meleeWeaponInfo.damage * (1 + (weaponLevelCmp.weaponExpLevel * 0.02f))) + "\nAttack couldown: " + item.itemInfo.meleeWeaponInfo.attackCouldown /*+ "\nHit lenght: " + item.itemInfo.meleeWeaponInfo.attackLenght + "\n" + "Hit speed: " + item.itemInfo.meleeWeaponInfo.attackSpeed + "\n"*/
-                    + "\nwide hit damage x" + item.itemInfo.meleeWeaponInfo.wideAttackDamageMultiplayer+ "\nstamina usage " + item.itemInfo.meleeWeaponInfo.staminaUsage + "\n";
+                    + "\nwide hit damage x" + item.itemInfo.meleeWeaponInfo.wideAttackDamageMultiplayer + "\nstamina usage " + item.itemInfo.meleeWeaponInfo.staminaUsage + "\n";
 
                 if (item.itemInfo.meleeWeaponInfo.isAuto)
                     _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "is Auto" + "\n";
@@ -1026,13 +1025,30 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         _sceneData.Value.craftingMenuView.ChangeMenuState(menusStatesCmp.inCraftingTableState);
     }
 
-    private void ChangeMainMenuState(ref MenuStatesComponent menusStatesCmp)
+    private void ChangeMainMenuState(ref MenuStatesComponent menusStatesCmp, bool exitFromMenu)
     {
-        menusStatesCmp.inMainMenuState = !menusStatesCmp.inMainMenuState;
-        Cursor.visible = menusStatesCmp.inMainMenuState;
-        _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).canMove = !menusStatesCmp.inMainMenuState;
-        _currentAttackComponentsPool.Value.Get(_sceneData.Value.playerEntity).canAttack = !menusStatesCmp.inMainMenuState;
-        _sceneData.Value.mainMenuView.ChangeMenuState(menusStatesCmp.inMainMenuState);
+
+        var inMenu = menusStatesCmp.mainMenuState != MenuStatesComponent.MainMenuState.none;
+        if (!exitFromMenu)
+        {
+            if (inMenu && menusStatesCmp.mainMenuState == MenuStatesComponent.MainMenuState.settings)
+                CloseSettings();
+            else
+            {
+                menusStatesCmp.mainMenuState = inMenu ? MenuStatesComponent.MainMenuState.none : MenuStatesComponent.MainMenuState.mainMenu;
+                _sceneData.Value.mainMenuView.ChangeMenuState(!inMenu);
+            }
+        }
+        else
+        {
+            menusStatesCmp.mainMenuState = inMenu ? MenuStatesComponent.MainMenuState.none : MenuStatesComponent.MainMenuState.mainMenu;
+            _sceneData.Value.mainMenuView.ChangeMenuState(inMenu);
+        }
+
+        _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).canMove = inMenu;
+        _currentAttackComponentsPool.Value.Get(_sceneData.Value.playerEntity).canAttack = inMenu;
+        Cursor.visible = !inMenu;
+        //  Debug.Log(menusStatesCmp.mainMenuState + "cu menu state" + Cursor.visible);
     }
 
     private void ChangeGunWorkshopMenuState(ref MenuStatesComponent menusStatesCmp)
@@ -1048,10 +1064,17 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         _sceneData.Value.gunWorkshopMenuView.ChangeMenuState(menusStatesCmp.inGunWorkshopState);
     }
 
-    private void OpenSettings() => _sceneData.Value.dropedItemsUIView.settingsContainer.gameObject.SetActive(true);
+    private void OpenSettings()
+    {
+        _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).mainMenuState = MenuStatesComponent.MainMenuState.settings;
+        _sceneData.Value.dropedItemsUIView.settingsContainer.gameObject.SetActive(true);
+        _sceneData.Value.mainMenuView.transform.GetChild(1).gameObject.SetActive(false);
+    }
     private void CloseSettings()
     {
+        _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).mainMenuState = MenuStatesComponent.MainMenuState.mainMenu;
         _sceneData.Value.dropedItemsUIView.settingsContainer.gameObject.SetActive(false);
+        _sceneData.Value.mainMenuView.transform.GetChild(1).gameObject.SetActive(true);//menu container
         float needScale = _sceneData.Value.dropedItemsUIView.uiScalerSlider.value;
         for (int i = 2; i < _sceneData.Value.mainMenuView.uiMenusToScale.Length; i++)
         {
@@ -1067,7 +1090,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     {
         if (_healthComponentsPool.Value.Get(_sceneData.Value.playerEntity).isDeath)
             _revivePlayerEventsPool.Value.Add(_sceneData.Value.playerEntity);
-        ChangeMainMenuState(ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity));
+        ChangeMainMenuState(ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity), true);
         //_sceneData.Value.mainMenuView.ChangeMenuState(false);
     }
 
