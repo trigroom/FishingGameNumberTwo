@@ -26,7 +26,7 @@ MonoBehaviour:
   stunTime: 0.5
   staminaUsage: 2
   isOneHandedWeapon: 1
-  wideAttackDamageMultiplayer: 1
+  wideAttackDamageMultiplayer: 1.2
   spriteScaleMultiplayer: 2.5
   spriteRotation: 180
   weaponSprite: {fileID: 21300000, guid: e2ef4e19d19e2fb49a49c7340aadcabe, type: 3}

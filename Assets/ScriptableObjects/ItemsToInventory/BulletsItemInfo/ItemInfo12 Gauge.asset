@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemSprite: {fileID: 21300000, guid: 080db6d71e4a0a541b37dc8f66abd8cc, type: 3}
   type: 6
-  maxCount: 15
+  maxCount: 30
   itemWeight: 0.07
   itemId: 3
   itemName: '12 Gauge '
   itemDescription: shotgun Bullet
-  itemCost: 0
+  itemCost: 1
   gunInfo: {fileID: 0}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}

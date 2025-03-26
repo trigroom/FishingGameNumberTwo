@@ -95,4 +95,4 @@ MonoBehaviour:
   upgradeCost: 0
   upgradedGunId: 0
   neededGunsmithLevelToUpgrade: 0
-  gunParts: 9
+  gunParts: 11

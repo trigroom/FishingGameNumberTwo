@@ -17,12 +17,12 @@ MonoBehaviour:
   bodyArmorsInfo:
   - {fileID: 11400000, guid: 5a8e7c5e167a90046885f9c34151bab0, type: 2}
   - {fileID: 11400000, guid: 112a1832a1b54c44ba5ca310ecc77bef, type: 2}
+  - {fileID: 11400000, guid: 87bfc7433f40226448c5393d9927319b, type: 2}
   helmetsInfo:
   - {fileID: 11400000, guid: bb1276bf4f5764446aa4957d401c5c22, type: 2}
   - {fileID: 11400000, guid: 0bb71919b8640854a853d186be3d5963, type: 2}
   - {fileID: 11400000, guid: 65d48d3ed43d8594e92e539d943e9b2d, type: 2}
   gunsInfo:
-  - {fileID: 11400000, guid: c080ffd64eec54447ac3d7fffb5537a3, type: 2}
   - {fileID: 11400000, guid: f2e5bf04f94baac4cbd2847b8efeae82, type: 2}
   - {fileID: 11400000, guid: 4d1d3c2b92a53bf4eb97bf6159e4d381, type: 2}
   meleeWeaponsInfo:
@@ -33,8 +33,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 22be77d7ecdf17947837b88b6976cc99, type: 2}
   - {fileID: 11400000, guid: 3545025227e525c46bbda80f3fd8e2c8, type: 2}
   - {fileID: 11400000, guid: 4503430dbb8e5b447acaa6917f266114, type: 2}
-  shieldItemsInfo:
-  - {fileID: 11400000, guid: fa2ef5157d194b447b4af9a46168e2a2, type: 2}
+  - {fileID: 11400000, guid: 50e454670f544394199a9dc10add3fd4, type: 2}
+  shieldItemsInfo: []
   chanceToOneWeapon: 0.7
   chanceToMeleeWeapon: 1
   chanceToHealingItem: 0.3

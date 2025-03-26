@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemSprite: {fileID: 21300000, guid: 34ad0c2c1a822f543875a42961129812, type: 3}
   type: 6
-  maxCount: 30
+  maxCount: 75
   itemWeight: 0.04
   itemId: 5
   itemName: 5.56 bullet
   itemDescription: 
-  itemCost: 0
+  itemCost: 1
   gunInfo: {fileID: 0}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}

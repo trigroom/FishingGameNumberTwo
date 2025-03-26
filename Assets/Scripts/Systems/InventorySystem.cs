@@ -687,7 +687,6 @@ public class InventorySystem : IEcsRunSystem
                         else if (itemType == ItemInfo.itemType.helmet)
                             _durabilityInInventoryComponentsPool.Value.Add(droppedItemEntity).currentDurability = idListItems[craftingTableCmp.currentCraftingInfo.craftedItemId].helmetInfo.armorDurability;
                     }
-
                     ref var droppedItemComponent = ref _droppedItemComponents.Value.Add(droppedItemEntity);
 
                     droppedItemComponent.currentItemsCount = craftingTableCmp.currentCraftingInfo.craftedItemsCount;
@@ -695,6 +694,7 @@ public class InventorySystem : IEcsRunSystem
                     droppedItemComponent.itemInfo = idListItems[craftingTableCmp.currentCraftingInfo.craftedItemId];
 
                     droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(_movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform.position, idListItems[craftingTableCmp.currentCraftingInfo.craftedItemId], droppedItemEntity);
+                    _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItemEntity).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.transform.GetChild(0).gameObject.transform };
                 }
             }
 

@@ -61,9 +61,9 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
         _sceneService.Value.dropedItemsUIView.bookmarkViews[0].GetComponent<Button>().onClick.AddListener(ChangeBookmarkToQuest);
         _sceneService.Value.dropedItemsUIView.bookmarkViews[1].GetComponent<Button>().onClick.AddListener(ChangeBookmarkToGuide);
 
-       // _sceneService.Value.questMenuView.transform.GetChild(0).gameObject.SetActive(true);
+        // _sceneService.Value.questMenuView.transform.GetChild(0).gameObject.SetActive(true);
         _sceneService.Value.dropedItemsUIView.bookmarkViews[0].animator.SetBool("BookmarkIsActive", true);
-       // _sceneService.Value.questMenuView.transform.GetChild(0).gameObject.SetActive(false);
+        // _sceneService.Value.questMenuView.transform.GetChild(0).gameObject.SetActive(false);
     }
 
     public void Run(IEcsSystems systems)
@@ -151,23 +151,32 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
             var menuStatesCmp = _menuStatesComponentsPool.Value.Get(_sceneService.Value.playerEntity);
             if (menuStatesCmp.currentBookShowState == MenuStatesComponent.CurrentBookShowState.quests)
             {
-                
-                //  curDialogPlayerCmp.currentPageNumber = 0;
                 if (_questComponentsFilter.Value.GetEntitiesCount() <= 3)
+                {
                     _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(false);
-                else
-                    _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(true);
-                if (curDialogPlayerCmp.currentPageNumber == 0)
                     _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(false);
+                }
                 else
+                {
+                    _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(true);
                     _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(true);
+                }
+                //  curDialogPlayerCmp.currentPageNumber = 0;
+                /* if (_questComponentsFilter.Value.GetEntitiesCount() <= 3)
+                     _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(false);
+                 else
+                     _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(true);
+                 if (curDialogPlayerCmp.currentPageNumber == 0)
+                     _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(false);
+                 else
+                     _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(true);*/
 
                 UpdateQuestHelperPage(curDialogPlayerCmp.currentPageNumber);
             }
             else
             {
             }
-        //    Debug.Log(_sceneService.Value.dropedItemsUIView.bookmarkViews[(int)menuStatesCmp.currentBookShowState].gameObject.activeInHierarchy + " BookmarkIsActive");
+            //    Debug.Log(_sceneService.Value.dropedItemsUIView.bookmarkViews[(int)menuStatesCmp.currentBookShowState].gameObject.activeInHierarchy + " BookmarkIsActive");
             //    _sceneService.Value.dropedItemsUIView.bookmarkViews[(int)menuStatesCmp.currentBookShowState].animator.SetBool("BookmarkIsActive", true);
         }
         //прогонять через фильтр смертей все квесты
@@ -210,14 +219,25 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
         _sceneService.Value.dropedItemsUIView.bookmarkViews[(int)menuStatesCmp.currentBookShowState].animator.SetBool("BookmarkIsActive", true);
 
         int pageNumber = _currentDialogeComponentsPool.Value.Get(_sceneService.Value.playerEntity).currentPageNumber;
+
         if (_questComponentsFilter.Value.GetEntitiesCount() <= 3)
+        {
             _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(false);
-        else
-            _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(true);
-        if (pageNumber == 0)
             _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(false);
+        }
         else
+        {
+            _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(true);
             _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(true);
+        }
+        //   if (_questComponentsFilter.Value.GetEntitiesCount() <= 3)
+        //       _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(false);
+        //  else
+        //      _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(true);
+        //  if (pageNumber == 0)
+        //       _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(false);
+        //   else
+        //      _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(true);
 
         _sceneService.Value.questDescription[1].gameObject.SetActive(true);
         _sceneService.Value.questDescription[2].gameObject.SetActive(true);
@@ -250,10 +270,13 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
         {
             ref var curDialogPlayerCmp = ref _currentDialogeComponentsPool.Value.Get(_sceneService.Value.playerEntity);
             curDialogPlayerCmp.currentPageNumber++;
-            if (_questComponentsFilter.Value.GetEntitiesCount() <= (curDialogPlayerCmp.currentPageNumber + 1) * 3)
-                _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(false);
-            if (!_sceneService.Value.dropedItemsUIView.questDescriptionLastButton.IsActive())
-                _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(true);
+
+            if (_questComponentsFilter.Value.GetEntitiesCount() / 3 + 1 == curDialogPlayerCmp.currentPageNumber)
+                curDialogPlayerCmp.currentPageNumber = 0;
+            // if (_questComponentsFilter.Value.GetEntitiesCount() <= (curDialogPlayerCmp.currentPageNumber + 1) * 3)
+            //      _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(false);
+            // if (!_sceneService.Value.dropedItemsUIView.questDescriptionLastButton.IsActive())
+            //     _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(true);
             UpdateQuestHelperPage(curDialogPlayerCmp.currentPageNumber);
         }
         else
@@ -272,12 +295,15 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
         {
             ref var curDialogPlayerCmp = ref _currentDialogeComponentsPool.Value.Get(_sceneService.Value.playerEntity);
             curDialogPlayerCmp.currentPageNumber--;
-            if (curDialogPlayerCmp.currentPageNumber == 0)
-                _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(false);
-            else
-                _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(true);
-            if (!_sceneService.Value.dropedItemsUIView.questDescriptionNextButton.IsActive())
-                _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(true);
+
+            if (curDialogPlayerCmp.currentPageNumber <= -1)
+                curDialogPlayerCmp.currentPageNumber = _questComponentsFilter.Value.GetEntitiesCount() / 3;
+            //    if (curDialogPlayerCmp.currentPageNumber == 0)
+            ///       _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(false);
+            //   else
+            //      _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(true);
+            //   if (!_sceneService.Value.dropedItemsUIView.questDescriptionNextButton.IsActive())
+            //    _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(true);
             UpdateQuestHelperPage(curDialogPlayerCmp.currentPageNumber);
         }
         else

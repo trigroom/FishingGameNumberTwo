@@ -117,6 +117,8 @@ public class AttackSystem : IEcsRunSystem
             grenadeCmp.grenadeView.grenadeCollider.enabled = false;
             grenadeCmp.grenadeInfo = grenadeInfo;
             grenadeCmp.currentTimeToExplode = 0.5f;
+
+            _mineExplodeEventsPool.Value.Del(mineExplodeEntity);
         }
 
         foreach (var grenadeExplodeEntity in _grenadeExplodeComponentsFilter.Value)
@@ -627,7 +629,7 @@ public class AttackSystem : IEcsRunSystem
 
             foreach (var offInScopeEvent in _offInScopeStateEventsFilter.Value)
             {
-                Debug.Log("off scope " + playerGunCmp.inScope);
+               // Debug.Log("off scope " + playerGunCmp.inScope);
                 if (playerGunCmp.inScope)
                     ChangeScopeMultiplicity();
                 _offInScopeStateEventsPool.Value.Del(offInScopeEvent);
@@ -1141,7 +1143,7 @@ public class AttackSystem : IEcsRunSystem
                 needDamage *= 2;
 
             int needPaticleNum = 0;
-            if (isShield)
+            if (isShield || !_movementComponentsPool.Value.Has(attackedEntity))
                 needPaticleNum = 1;
             var particles = CreateParticles(needPaticleNum);
             particles.gameObject.transform.position = contactPosition;
@@ -1533,7 +1535,7 @@ public class AttackSystem : IEcsRunSystem
             _sceneData.Value.dropedItemsUIView.scopeCrossCentreImage.gameObject.SetActive(false);
         }
 
-        playerGunCmp.sumAddedAttackLenght = 0;
+        playerGunCmp.sumAddedAttackLenghtMultiplayer = 0;
         playerGunCmp.sumAddedCameraSpreadMultiplayer = 0;
         playerGunCmp.sumAddedReloadSpeedMultiplayer = 0;
         playerGunCmp.sumAddedSpreadMultiplayer = 0;
@@ -1548,7 +1550,7 @@ public class AttackSystem : IEcsRunSystem
 
                 if (gunPartInfo.shotSoundLenghtMultiplayer != 0)
                     playerGunCmp.currentShotSoundLenght *= gunPartInfo.shotSoundLenghtMultiplayer;
-                playerGunCmp.sumAddedAttackLenght += gunPartInfo.attackLenght;
+                playerGunCmp.sumAddedAttackLenghtMultiplayer += gunPartInfo.attackLenght;
                 playerGunCmp.sumAddedCameraSpreadMultiplayer += gunPartInfo.cameraSpreadMultiplayer;
                 playerGunCmp.sumAddedReloadSpeedMultiplayer += gunPartInfo.reloadSpeedMultiplayer;
                 playerGunCmp.sumAddedSpreadMultiplayer += gunPartInfo.spreadMultiplayer;
@@ -1556,7 +1558,7 @@ public class AttackSystem : IEcsRunSystem
             }
         }
 
-        gunCmp.attackLeght = gunInfo.attackLenght + playerGunCmp.sumAddedAttackLenght;
+        gunCmp.attackLeght = gunInfo.attackLenght * (1+ playerGunCmp.sumAddedAttackLenghtMultiplayer);
         curAttackCmp.changeWeaponTime = gunInfo.weaponChangeSpeed + gunInfo.weaponChangeSpeed * playerGunCmp.sumAddedWeaponChangeSpeedMultiplayer - playerStatsCmp.statLevels[1] * gunInfo.reloadDuration * 0.02f;//по 2% за уровень ловкости
         gunCmp.reloadDuration = gunInfo.reloadDuration + gunInfo.reloadDuration * playerGunCmp.sumAddedReloadSpeedMultiplayer - playerStatsCmp.statLevels[1] * gunInfo.reloadDuration * 0.015f - weaponLevel * 0.015f;//по 1.5% за уровень ловкости
         curAttackCmp.attackCouldown = gunInfo.attackCouldown;
@@ -1898,7 +1900,7 @@ public class AttackSystem : IEcsRunSystem
                         tracer.SetPosition(0, gunCmp.firePoint.position);
                         tracer.SetPosition(1, target.point);
 
-                        var particles = CreateParticles(0);
+                        var particles = target.collider.gameObject.layer != 17 ? CreateParticles(0) : CreateParticles(1);
                         particles.gameObject.transform.position = target.point;
                         return;
                     }

@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemSprite: {fileID: 21300000, guid: c0dc6c30a8c57224889888b95d99fd52, type: 3}
   type: 6
-  maxCount: 35
+  maxCount: 100
   itemWeight: 0.03
   itemId: 2
   itemName: .357 Magnum Round
   itemDescription: 
-  itemCost: 0
+  itemCost: 1
   gunInfo: {fileID: 0}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}

@@ -138,6 +138,21 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 _sceneService.Value.backgroundAudioSource.clip = _sceneService.Value.weatherEmbient[(int)globalTimeCmp.currentWeatherType];
                 _sceneService.Value.backgroundAudioSource.Play();
                 _sceneService.Value.rainEffectContainer.gameObject.SetActive(globalTimeCmp.currentWeatherType != GlobalTimeComponent.WeatherType.none);
+
+
+                Color curNeedColor = new Color();
+                if (globalTimeCmp.currentDayTime == 0 || globalTimeCmp.currentDayTime == 12)
+                    curNeedColor = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? _sceneService.Value.globalLightColors[1] : _sceneService.Value.globalLightColors[4];
+                else if (globalTimeCmp.currentDayTime > 12)
+                    curNeedColor = _sceneService.Value.globalLightColors[2];
+                else
+                    curNeedColor = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? _sceneService.Value.globalLightColors[0] : _sceneService.Value.globalLightColors[3];
+                foreach (var houseLight in curLevelView.lightsInHouses)
+                {
+                    houseLight.intensity = globalTimeCmp.currentGlobalLightIntensity * 3;
+                    houseLight.color = curNeedColor;
+                }
+                _sceneService.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity;
             }
 
             if (globalTimeCmp.currentDayTime == 24)
@@ -265,7 +280,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                         interestObjectView.dropItemView.SetParametersToItem(itemEntity);
                     }
 
-                    else if (interestObjectView.objectType == InterestObjectOnLocationView.InterestObjectType.brocked)
+                    else if (interestObjectView.objectType == InterestObjectOnLocationView.InterestObjectType.brocked || interestObjectView.objectType == InterestObjectOnLocationView.InterestObjectType.explode)
                     {
                         ref var healthCmp = ref _healthComponentsPool.Value.Add(itemEntity);
                         healthCmp.healthView = interestObjectView.gameObject.GetComponent<HealthView>();

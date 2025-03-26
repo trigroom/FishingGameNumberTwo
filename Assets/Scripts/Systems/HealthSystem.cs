@@ -1,7 +1,6 @@
 using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class HealthSystem : IEcsRunSystem, IEcsInitSystem
 {
@@ -38,6 +37,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<UpgradePlayerStatEvent> _upgradePlayerStatEventsPool;
     private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
     private EcsPoolInject<PlayerComponent> _playerComponentsPool;
+    private EcsPoolInject<MineExplodeEvent> _mineExplodeEventsPool;
     private EcsPoolInject<MenuStatesComponent> _menuStatesComponentsPool;
     private EcsPoolInject<DestroyComponentInNextFrameTag> _destroyComponentInNextFrameTagsPool;
     private EcsPoolInject<HidedObjectOutsideFOVComponent> _hidedObjectOutsideFOVComponentsPool;
@@ -60,7 +60,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
     }
     public void Run(IEcsSystems systems)
     {
-        if(Input.GetKeyDown(KeyCode.P)) 
+        if (Input.GetKeyDown(KeyCode.P))
         {
             ref var ch = ref _changeHealthEventsPool.Value.Add(_sceneData.Value.playerEntity);
             ch.changedHealth = 100;
@@ -83,7 +83,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     if (checkedEffectEntity != effectEntity && effectCmp.effectEntity == _effectComponentsPool.Value.Get(checkedEffectEntity).effectEntity/*|| !_effectComponentsPool.Value.Has(checkedEffectEntity)*/)
                     {
-                  //      Debug.Log("checked effect entity" + checkedEffectEntity);
+                        //      Debug.Log("checked effect entity" + checkedEffectEntity);
                         ref var checkedEffectCmp = ref _effectComponentsPool.Value.Get(checkedEffectEntity);//
                         if (checkedEffectCmp.isFirstEffectCheck) continue;
                         if (checkedEffectCmp.effectType == effectCmp.effectType)
@@ -115,7 +115,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                             {
                                 // _world.Value.DelEntity(effectEntity);
                                 _destroyComponentInNextFrameTagsPool.Value.Add(effectEntity);
-                              //  Debug.Log("destroy effect entity" + effectEntity);
+                                //  Debug.Log("destroy effect entity" + effectEntity);
 
                             }
                             else
@@ -123,7 +123,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                                 // delEntity = checkedEffectEntity;
                                 //_world.Value.DelEntity(checkedEffectEntity);
                                 _destroyComponentInNextFrameTagsPool.Value.Add(checkedEffectEntity);
-                            //    Debug.Log("destroy effect entity" + checkedEffectEntity);
+                                //    Debug.Log("destroy effect entity" + checkedEffectEntity);
                             }
                             break;
                         }
@@ -141,7 +141,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 }
                 else
                 {
-                     //   Debug.Log(isPlayer + "ad effect icon");
+                    //   Debug.Log(isPlayer + "ad effect icon");
                     if (isPlayer)
                     {
                         effectCmp.effectIconView = _sceneData.Value.GetEffectIconView();
@@ -281,7 +281,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             _gunComponentsPool.Value.Get(revivePlayer).isReloading = false;
             _attackComponentsPool.Value.Get(revivePlayer).weaponIsChanged = false;
             Time.timeScale = 1;
-            
+
             foreach (var effectEntity in _effectComponentsFilter.Value)
             {
                 ref var effectCmp = ref _effectComponentsPool.Value.Get(effectEntity);
@@ -323,7 +323,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             if (curLocationCmp.levelNum != 0)
             {
                 curLocationCmp.levelNum = curLocationCmp.currentLocation.levels.Length;
-               // curLocationCmp.levelNum =0;
+                // curLocationCmp.levelNum =0;
                 _entryInNewLocationEventsPool.Value.Add(_world.Value.NewEntity());
             }
             else
@@ -335,7 +335,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 _bloodParticleOnScreenComponentsPool.Value.Del(screenParticle);
             }
             //удаление текущей арены на которой был игрок
-            
+
             healthCmp.isDeath = false;
             ChangeHealthBarInfo(healthCmp);
             _sceneData.Value.ammoInfoText.text = "";
@@ -612,7 +612,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                     }
                 }
             }
-         //   Debug.Log(changedHealthCount + " damage taken " + isHeadshot + " isHead");
+            //   Debug.Log(changedHealthCount + " damage taken " + isHeadshot + " isHead");
             ChangeHealth(hpEvent, changedHealthCount, isHeadshot);
         }
 
@@ -790,26 +790,30 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 if (healthCmp.healthView.interestObjectView != null)
                 {
                     var dropItemsView = healthCmp.healthView.interestObjectView;
-                    for (int i = 0; i < dropItemsView.dropElements.Length; i++)
+                    if (dropItemsView.objectType == InterestObjectOnLocationView.InterestObjectType.brocked)
                     {
-                        if (percentDrop <= dropItemsView.dropElements[i].dropPercent)
+                        for (int i = 0; i < dropItemsView.dropElements.Length; i++)
                         {
-                            int droopedCount = Random.Range(dropItemsView.dropElements[i].itemsCountMin, dropItemsView.dropElements[i].itemsCountMax + 1);
-                            percentDrop = Random.Range(0, 101);
-                            int droppedItemEntity = _world.Value.NewEntity();
-                            curItems++;
-                            ref var droppedItemComponent = ref _droppedItemComponentsPool.Value.Add(droppedItemEntity);
-                            droppedItemComponent.currentItemsCount = droopedCount;
+                            if (percentDrop <= dropItemsView.dropElements[i].dropPercent)
+                            {
+                                int droopedCount = Random.Range(dropItemsView.dropElements[i].itemsCountMin, dropItemsView.dropElements[i].itemsCountMax + 1);
+                                percentDrop = Random.Range(0, 101);
+                                int droppedItemEntity = _world.Value.NewEntity();
+                                curItems++;
+                                ref var droppedItemComponent = ref _droppedItemComponentsPool.Value.Add(droppedItemEntity);
+                                droppedItemComponent.currentItemsCount = droopedCount;
 
-                            Vector2 deathPos = healthCmp.healthView.gameObject.transform.position;
-                            //если будет ган то ещё и ган инв комп добавлять с почти убитым оружием и парочкой патронов
-                            droppedItemComponent.itemInfo = dropItemsView.dropElements[i].droopedItem;
-                            droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(deathPos, dropItemsView.dropElements[i].droopedItem, droppedItemEntity);
-                            _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItemEntity).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.transform.GetChild(0) };
-                            if (curItems >= dropItemsView.maxDroppedItemsCount)
-                                break;
+                                Vector2 deathPos = healthCmp.healthView.gameObject.transform.position;
+                                droppedItemComponent.itemInfo = dropItemsView.dropElements[i].droopedItem;
+                                droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(deathPos, dropItemsView.dropElements[i].droopedItem, droppedItemEntity);
+                                _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItemEntity).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.transform.GetChild(0) };
+                                if (curItems >= dropItemsView.maxDroppedItemsCount)
+                                    break;
+                            }
                         }
                     }
+                    else if (dropItemsView.objectType == InterestObjectOnLocationView.InterestObjectType.explode)
+                        _mineExplodeEventsPool.Value.Add(_world.Value.NewEntity()) = new MineExplodeEvent(healthCmp.healthView.gameObject.GetComponent<ExplodeMapObjectView>().grenadeInfo, healthCmp.healthView.gameObject.transform.position);
                 }
                 healthCmp.healthView.Death();
                 _destroyComponentInNextFrameTagsPool.Value.Add(hpEvent);

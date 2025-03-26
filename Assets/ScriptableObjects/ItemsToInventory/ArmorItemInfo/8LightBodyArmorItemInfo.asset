@@ -15,7 +15,7 @@ MonoBehaviour:
   itemSprite: {fileID: 21300000, guid: 288fc63768521c7489122f096c86f15a, type: 3}
   type: 12
   maxCount: 1
-  itemWeight: 2
+  itemWeight: 3
   itemId: 8
   itemName: light body armor
   itemDescription: 
@@ -31,3 +31,4 @@ MonoBehaviour:
   sheildInfo: {fileID: 0}
   helmetInfo: {fileID: 0}
   bodyArmorInfo: {fileID: 11400000, guid: fef85cc6d2cdc254fbde69b69d9c717d, type: 2}
+  randomHealInfo: {fileID: 0}

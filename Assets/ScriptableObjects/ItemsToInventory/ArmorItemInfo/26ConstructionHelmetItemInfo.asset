@@ -19,7 +19,7 @@ MonoBehaviour:
   itemId: 26
   itemName: construction Helmet
   itemDescription: the best protection against bricks and bullets
-  itemCost: 40
+  itemCost: 25
   gunInfo: {fileID: 0}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}

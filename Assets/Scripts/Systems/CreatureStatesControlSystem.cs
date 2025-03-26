@@ -211,9 +211,9 @@ public class CreatureStatesControlSystem : IEcsRunSystem
             }
         }
 
-        if (aiCmp.isTwoWeapon)
+        if (aiCmp.isTwoWeapon )
         {
-            if ((aiCmp.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget && !_creatureInventoryComponentsPool.Value.Get(aiEntity).isSecondWeaponUsed && aiCmp.teammatesCount > 1) || (aiCmp.currentState == CreatureAIComponent.CreatureStates.shootingToTarget && _creatureInventoryComponentsPool.Value.Get(aiEntity).isSecondWeaponUsed))
+            if (((aiCmp.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget && !_creatureInventoryComponentsPool.Value.Get(aiEntity).isSecondWeaponUsed && aiCmp.teammatesCount > 1) || (aiCmp.currentState == CreatureAIComponent.CreatureStates.shootingToTarget && _creatureInventoryComponentsPool.Value.Get(aiEntity).isSecondWeaponUsed)) && !_creatureChangeWeaponEventsPool.Value.Has(aiEntity) && !isHealing)
             {
                 _creatureChangeWeaponEventsPool.Value.Add(aiEntity);
                 Debug.Log("creature change weapon");

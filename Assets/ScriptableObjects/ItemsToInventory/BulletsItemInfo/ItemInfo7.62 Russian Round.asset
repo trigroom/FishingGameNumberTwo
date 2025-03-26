@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemSprite: {fileID: 21300000, guid: e254939421104cf43be81c8fcf65f369, type: 3}
   type: 6
-  maxCount: 25
+  maxCount: 70
   itemWeight: 0.05
   itemId: 6
   itemName: 7.62 Russian Round
   itemDescription: 
-  itemCost: 0
+  itemCost: 1
   gunInfo: {fileID: 0}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}

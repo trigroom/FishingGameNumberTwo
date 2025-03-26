@@ -19,7 +19,7 @@ MonoBehaviour:
   itemId: 27
   itemName: welding mask
   itemDescription: 
-  itemCost: 50
+  itemCost: 20
   gunInfo: {fileID: 0}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}
@@ -31,3 +31,4 @@ MonoBehaviour:
   sheildInfo: {fileID: 0}
   helmetInfo: {fileID: 11400000, guid: c31fb8702dac6c247b81676e57e6e9d0, type: 2}
   bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

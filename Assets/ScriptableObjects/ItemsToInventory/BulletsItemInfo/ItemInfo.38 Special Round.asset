@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemSprite: {fileID: 21300000, guid: 71453f993862d9a428bb7b23b1f33130, type: 3}
   type: 6
-  maxCount: 20
+  maxCount: 100
   itemWeight: 0.05
   itemId: 1
   itemName: .38 Special Round
   itemDescription: 
-  itemCost: 5
+  itemCost: 1
   gunInfo: {fileID: 0}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}
@@ -31,3 +31,4 @@ MonoBehaviour:
   sheildInfo: {fileID: 0}
   helmetInfo: {fileID: 0}
   bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

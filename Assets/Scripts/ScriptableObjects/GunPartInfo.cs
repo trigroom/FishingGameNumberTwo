@@ -11,7 +11,7 @@ public class GunPartInfo : ScriptableObject
     public float spreadMultiplayer;
     public float cameraSpreadMultiplayer;
     public float weaponChangeSpeedMultiplayer;
-    public float attackLenght { get;set; }
+    public float attackLenght;
     public float shotSoundLenghtMultiplayer;
     public float reloadSpeedMultiplayer;
     public int neededLevelToEquip;

@@ -825,12 +825,8 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
             else
             {
-                _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Melee weapon info\nDamage: " + Mathf.CeilToInt((float)item.itemInfo.meleeWeaponInfo.damage * (1 + (weaponLevelCmp.weaponExpLevel * 0.02f))) + "\nAttack couldown: " + item.itemInfo.meleeWeaponInfo.attackCouldown + "\nHit lenght: " + item.itemInfo.meleeWeaponInfo.attackLenght + "\n" + "Hit speed: " + item.itemInfo.meleeWeaponInfo.attackSpeed + "\n";
-
-                if (item.itemInfo.meleeWeaponInfo.isWideHit)
-                    _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Hit type: wide hit \n";
-                else
-                    _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Hit type: thrust hit \n";
+                _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Melee weapon info\nDamage: " + Mathf.CeilToInt((float)item.itemInfo.meleeWeaponInfo.damage * (1 + (weaponLevelCmp.weaponExpLevel * 0.02f))) + "\nAttack couldown: " + item.itemInfo.meleeWeaponInfo.attackCouldown /*+ "\nHit lenght: " + item.itemInfo.meleeWeaponInfo.attackLenght + "\n" + "Hit speed: " + item.itemInfo.meleeWeaponInfo.attackSpeed + "\n"*/
+                    + "\nwide hit damage x" + item.itemInfo.meleeWeaponInfo.wideAttackDamageMultiplayer+ "\nstamina usage " + item.itemInfo.meleeWeaponInfo.staminaUsage + "\n";
 
                 if (item.itemInfo.meleeWeaponInfo.isAuto)
                     _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "is Auto" + "\n";

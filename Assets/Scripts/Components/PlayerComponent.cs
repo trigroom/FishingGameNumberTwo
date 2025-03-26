@@ -5,10 +5,10 @@ using UnityEngine;
 public struct PlayerComponent 
 {
     public PlayerView view;
-    public bool useFlashlight;
+    public bool useFlashlight{ get;set; }
     public bool canDeffuseMines;
     public bool hasForestGuide;
-    public bool nvgIsUsed { get;set; }
+    public bool nvgIsUsed ;
     public int levelOfPainkillers;
     public float currentAudibility;
     public float underNightLightTime;

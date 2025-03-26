@@ -122,17 +122,17 @@ public class MovementSystem : IEcsRunSystem
                         {
                             var playerPosition = _movementComponentPool.Value.Get(_sceneService.Value.playerEntity).entityTransform.position;
                             float distanceToPlayer = Vector2.Distance(moveCmp.entityTransform.position, (Vector2)playerPosition);
-                            if (distanceToPlayer <= playerCmp.currentAudibility * 6)
+                            if (distanceToPlayer <= playerCmp.currentAudibility * 10)
                             {
                                 Vector2 directionToPlayer = (_movementComponentPool.Value.Get(_sceneService.Value.playerEntity).entityTransform.position - moveCmp.entityTransform.position).normalized;
                                 RaycastHit2D hit = Physics2D.Raycast(moveCmp.entityTransform.position, directionToPlayer, 20f, LayerMask.GetMask("Obstacle", "Player"));
 
                                 if (hit.collider != null && (LayerMask.GetMask("Player") & (1 << hit.collider.gameObject.layer)) != 0)
-                                    moveCmp.movementView.weaponAudioSource.volume = playerCmp.currentAudibility * 6 / distanceToPlayer;
+                                    moveCmp.movementView.weaponAudioSource.volume = playerCmp.currentAudibility * 10f / distanceToPlayer;
                                 else
-                                    moveCmp.movementView.weaponAudioSource.volume = playerCmp.currentAudibility * 6 / distanceToPlayer * 0.7f;
+                                    moveCmp.movementView.weaponAudioSource.volume = playerCmp.currentAudibility * 10f / distanceToPlayer * 0.7f;
 
-                                moveCmp.movementView.weaponAudioSource.panStereo = (moveCmp.entityTransform.position.x - playerPosition.x) / 6f;
+                                moveCmp.movementView.weaponAudioSource.panStereo = (moveCmp.entityTransform.position.x - playerPosition.x) / 10f;
                                 moveCmp.movementView.weaponAudioSource.PlayOneShot(_sceneService.Value.stepsOnGrassSounds[Random.Range(0, _sceneService.Value.stepsOnGrassSounds.Length)]);
                             }
                         }

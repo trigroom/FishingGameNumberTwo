@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemSprite: {fileID: 21300000, guid: d4491cb7588b1514fa39e48d8f00da4b, type: 3}
   type: 6
-  maxCount: 50
+  maxCount: 100
   itemWeight: 0.04
   itemId: 4
   itemName: 9x19 bullet
   itemDescription: 
-  itemCost: 0
+  itemCost: 1
   gunInfo: {fileID: 0}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}
@@ -31,3 +31,4 @@ MonoBehaviour:
   sheildInfo: {fileID: 0}
   helmetInfo: {fileID: 0}
   bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

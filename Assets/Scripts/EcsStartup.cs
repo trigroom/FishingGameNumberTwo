@@ -41,7 +41,6 @@ public class EcsStartUp : MonoBehaviour
         .DelHere<ReloadEvent>()
         .DelHere<AddItemEvent>()
         .DelHere<SetupShoppersOnNewLocationEvent>()
-        .DelHere<MineExplodeEvent>()
         .DelHere<TrapIsNeutralizedEvent>()
         .DelHere<EnemySpawnEvent>()
         .DelHere<BreakNeutralizeTrapEvent>()

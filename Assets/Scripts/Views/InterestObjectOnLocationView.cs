@@ -7,7 +7,8 @@ public class InterestObjectOnLocationView : MonoBehaviour
     public enum InterestObjectType
     {
         brocked,
-        collecting
+        collecting,
+        explode
     }
 
     public CreatureDropElement[] dropElements;

@@ -1055,7 +1055,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 angle += angleIncrease;
             }
 
-            if (playerCmp.useFlashlight && _globalTimeComponentsPool.Value.Get(_playerEntity).isNight)
+         /*   if (playerCmp.useFlashlight && _globalTimeComponentsPool.Value.Get(_playerEntity).isNight)
             {
                 var flashlightInfo = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity).itemInfo.flashlightInfo;
                 origin = playerCmp.view.movementView.nonWeaponContainer.transform.position;
@@ -1109,7 +1109,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     }
                     angle += angleIncrease;
                 }
-            }
+            }*/
         }
     }
 

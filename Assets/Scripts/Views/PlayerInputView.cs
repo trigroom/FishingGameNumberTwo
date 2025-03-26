@@ -127,6 +127,8 @@ public class PlayerInputView : MonoBehaviour
             }
             _world.DelEntity( trapView.entity);
         }
+        else if (collision.gameObject.layer == 12)
+            _world.GetPool<ChangeInBuildingStateEvent>().Add(_world.NewEntity()) = new ChangeInBuildingStateEvent(true, collision.gameObject.GetComponent<TilemapsGroup>());
         else if (collision.gameObject.layer == 19)
             _world.GetPool<ChangeUnderNightLightPlayerStateEvent>().Add(_world.NewEntity()).playerCheckColliderRadius = collision.GetComponent<CircleCollider2D>().radius;
     }

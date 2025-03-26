@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b67cec3f1863a8418b73fa05fbbdb5b, type: 3}
+  m_Name: RandomShroomInfo
+  m_EditorClassIdentifier: 
+  safeItemInfo: {fileID: 11400000, guid: 6d7d04f4294adbf4ca4f3e617c9c876d, type: 2}
+  poisonItemInfo: {fileID: 11400000, guid: f38d478fe183324448471bff7f295783, type: 2}
+  chanceToSafe: 0.35

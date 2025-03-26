@@ -16,4 +16,4 @@ MonoBehaviour:
   neededId: 50000000
   craftedItemId: 58
   craftedItemsCount: 1
-  needCraftingTableLevel: 0
+  needCraftingTableLevel: 1
