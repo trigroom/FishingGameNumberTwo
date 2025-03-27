@@ -305,7 +305,8 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         foreach (var playerRevive in _revivePlayerEventsFilter.Value)
         {
             var mainMenuView = _sceneData.Value.mainMenuView;
-            _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).mainMenuState = MenuStatesComponent.MainMenuState.none;
+            ChangeMainMenuState(ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity), true);
+          //  _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).mainMenuState = MenuStatesComponent.MainMenuState.none;
             mainMenuView.buttons[0].GetComponentInChildren<TMP_Text>().text = "continue";
             mainMenuView.buttons[1].gameObject.SetActive(true);
         }
@@ -1041,13 +1042,13 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         }
         else
         {
-            menusStatesCmp.mainMenuState = inMenu ? MenuStatesComponent.MainMenuState.none : MenuStatesComponent.MainMenuState.mainMenu;
+            menusStatesCmp.mainMenuState = MenuStatesComponent.MainMenuState.none;
             _sceneData.Value.mainMenuView.ChangeMenuState(inMenu);
         }
-
-        _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).canMove = inMenu;
-        _currentAttackComponentsPool.Value.Get(_sceneData.Value.playerEntity).canAttack = inMenu;
-        Cursor.visible = !inMenu;
+        inMenu = menusStatesCmp.mainMenuState != MenuStatesComponent.MainMenuState.none;
+        _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).canMove = !inMenu;
+        _currentAttackComponentsPool.Value.Get(_sceneData.Value.playerEntity).canAttack = !inMenu;
+        Cursor.visible = inMenu;
         //  Debug.Log(menusStatesCmp.mainMenuState + "cu menu state" + Cursor.visible);
     }
 

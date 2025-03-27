@@ -15,15 +15,14 @@ MonoBehaviour:
   levelPrefab: {fileID: 5195996429766387655, guid: 07daa73b349cf8b4a97ec205e914ba06, type: 3}
   levelTarget: 0
   bodyArmorsInfo:
-  - {fileID: 11400000, guid: fef85cc6d2cdc254fbde69b69d9c717d, type: 2}
+  - {fileID: 11400000, guid: 87bfc7433f40226448c5393d9927319b, type: 2}
   - {fileID: 11400000, guid: 112a1832a1b54c44ba5ca310ecc77bef, type: 2}
-  - {fileID: 11400000, guid: 0c18f079815ed724cb34ccb19c6dfadc, type: 2}
+  - {fileID: 11400000, guid: 4545112227209874ab9030e448948f8d, type: 2}
   helmetsInfo:
-  - {fileID: 11400000, guid: 9b900556f6ff9674f86c7ab638ee63f9, type: 2}
+  - {fileID: 11400000, guid: 0bb71919b8640854a853d186be3d5963, type: 2}
   - {fileID: 11400000, guid: c31fb8702dac6c247b81676e57e6e9d0, type: 2}
   - {fileID: 11400000, guid: 0bb71919b8640854a853d186be3d5963, type: 2}
-  - {fileID: 11400000, guid: acc2743793ebdc641b361c802ad71abe, type: 2}
-  - {fileID: 11400000, guid: fdc3876781465cd41bc35c76b37c8e69, type: 2}
+  - {fileID: 11400000, guid: 65d48d3ed43d8594e92e539d943e9b2d, type: 2}
   gunsInfo:
   - {fileID: 11400000, guid: c080ffd64eec54447ac3d7fffb5537a3, type: 2}
   - {fileID: 11400000, guid: e2a60f8ec9cb8234a818f07d511641a2, type: 2}
@@ -32,6 +31,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7e7d05839fe75a64db284fb06342c1de, type: 2}
   meleeWeaponsInfo:
   - {fileID: 11400000, guid: 9819755fad816fd4a8895c08b0aa8d2d, type: 2}
+  - {fileID: 11400000, guid: a7aa763e0d7b1a047977dbd1112248b4, type: 2}
+  - {fileID: 11400000, guid: c0e5a68ee9817314e8dcc68186c7ae2f, type: 2}
   healingItemsInfo:
   - {fileID: 11400000, guid: 9090315e38632c644a229aab74a5f49e, type: 2}
   - {fileID: 11400000, guid: 3545025227e525c46bbda80f3fd8e2c8, type: 2}
@@ -50,7 +51,7 @@ MonoBehaviour:
   enemiesCount: 10
   trapsCount: 3
   shoppersCount: 1
-  hasStartLocationEntry: 1
+  hasStartLocationEntry: 0
   chancesToEnemyClass:
   - 0.3
   - 1
@@ -78,3 +79,7 @@ MonoBehaviour:
     <itemsCountMax>k__BackingField: 3
     <itemsCountMin>k__BackingField: 1
     <dropPercent>k__BackingField: 20
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 04a0f907499fbd04d98f51eaa45823ed, type: 2}
+    <itemsCountMax>k__BackingField: 1
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 15

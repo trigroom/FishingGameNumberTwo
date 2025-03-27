@@ -46,7 +46,7 @@ MonoBehaviour:
   enemiesCount: 5
   trapsCount: 1
   shoppersCount: 1
-  hasStartLocationEntry: 1
+  hasStartLocationEntry: 0
   chancesToEnemyClass:
   - 0.3
   - 1
