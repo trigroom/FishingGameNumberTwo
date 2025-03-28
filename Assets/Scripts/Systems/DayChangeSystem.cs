@@ -20,8 +20,11 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<SetupShoppersOnNewLocationEvent> _setupShoppersOnNewLocationEventsPool;
     private EcsPoolInject<PlayerComponent> _playerComponentsPool;
     private EcsPoolInject<SaveGameEvent> _saveGameEventsPool;
+    private EcsPoolInject<SecondDurabilityComponent> _shieldComponentsPool;
+    private EcsPoolInject<DurabilityInInventoryComponent> _durabilityInInventoryComponentsPool;
     private EcsPoolInject<HidedObjectOutsideFOVComponent> _hidedObjectOutsideFOVComponentsPool;
     private EcsPoolInject<SolarPanelElectricGeneratorComponent> _solarPanelElectricGeneratorComponentsPool;
+    private EcsPoolInject<GunInventoryCellComponent> _gunInventoryCellComponentsPool;
 
     private EcsFilterInject<Inc<DroppedItemComponent>> _droppedItemComponentsFilter;
     private EcsFilterInject<Inc<SlowTextInstanceEvent>> _slowTextInstanceEventsFilter;
@@ -278,6 +281,30 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
 
                         droppedItemComponent.droppedItemView = interestObjectView.dropItemView;
                         interestObjectView.dropItemView.SetParametersToItem(itemEntity);
+
+
+                        if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.gun)
+                        {
+                            ref var gunInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(itemEntity);
+                            gunInvCmp.currentGunWeight = droppedItemComponent.itemInfo.itemWeight;
+                            gunInvCmp.gunDurability = droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints;
+                            gunInvCmp.gunPartsId = new int[4];
+                            gunInvCmp.isEquipedWeapon = false;
+                        }
+                        else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.flashlight || droppedItemComponent.itemInfo.type == ItemInfo.itemType.bodyArmor || droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet)
+                        {
+                            if(droppedItemComponent.itemInfo.type == ItemInfo.itemType.flashlight)
+                            _durabilityInInventoryComponentsPool.Value.Add(itemEntity).currentDurability = droppedItemComponent.itemInfo.flashlightInfo.maxChargedTime;
+                            else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.bodyArmor)
+                                _durabilityInInventoryComponentsPool.Value.Add(itemEntity).currentDurability = droppedItemComponent.itemInfo.bodyArmorInfo.armorDurability;
+                            else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet)
+                                _durabilityInInventoryComponentsPool.Value.Add(itemEntity).currentDurability = droppedItemComponent.itemInfo.helmetInfo.armorDurability;
+                            if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet && droppedItemComponent.itemInfo.helmetInfo.addedLightIntancity != 0)
+                                _shieldComponentsPool.Value.Add(itemEntity);
+                        }
+                        else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.sheild)
+                            _shieldComponentsPool.Value.Add(itemEntity);
+
                     }
 
                     else if (interestObjectView.objectType == InterestObjectOnLocationView.InterestObjectType.brocked || interestObjectView.objectType == InterestObjectOnLocationView.InterestObjectType.explode)
