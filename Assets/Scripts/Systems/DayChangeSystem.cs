@@ -150,11 +150,11 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                     curNeedColor = _sceneService.Value.globalLightColors[2];
                 else
                     curNeedColor = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? _sceneService.Value.globalLightColors[0] : _sceneService.Value.globalLightColors[3];
-                foreach (var houseLight in curLevelView.lightsInHouses)
+            /*    foreach (var houseLight in curLevelView.lightsInHouses)
                 {
                     houseLight.intensity = globalTimeCmp.currentGlobalLightIntensity * 3;
                     houseLight.color = curNeedColor;
-                }
+                }*/
                 _sceneService.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity;
             }
 
@@ -214,11 +214,11 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 needColor = _sceneService.Value.globalLightColors[2];
             else
                 needColor = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? _sceneService.Value.globalLightColors[0] : _sceneService.Value.globalLightColors[3];
-            foreach (var houseLight in curLevelView.lightsInHouses)
+          /*  foreach (var houseLight in curLevelView.lightsInHouses)
             {
                 houseLight.intensity = globalTimeCmp.currentGlobalLightIntensity * 3;
                 houseLight.color = needColor;
-            }
+            }*/
 
             _sceneService.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity;
 
@@ -274,10 +274,10 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                     if (interestObjectView.objectType == InterestObjectOnLocationView.InterestObjectType.collecting)
                     {
                         ref var droppedItemComponent = ref _droppedItemComponentsPool.Value.Add(itemEntity);
+                        var droppedItemInfo = interestObjectView.GetComponent<DroppedItemsListView>();
+                        droppedItemComponent.currentItemsCount = droppedItemInfo.dropElements[0].itemsCountMin;
 
-                        droppedItemComponent.currentItemsCount = interestObjectView.dropElements[0].itemsCountMin;
-
-                        droppedItemComponent.itemInfo = interestObjectView.dropElements[0].droopedItem;
+                        droppedItemComponent.itemInfo = droppedItemInfo.dropElements[0].droopedItem;
 
                         droppedItemComponent.droppedItemView = interestObjectView.dropItemView;
                         interestObjectView.dropItemView.SetParametersToItem(itemEntity);
@@ -287,23 +287,23 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                         {
                             ref var gunInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(itemEntity);
                             gunInvCmp.currentGunWeight = droppedItemComponent.itemInfo.itemWeight;
-                            gunInvCmp.gunDurability = droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints;
+                            gunInvCmp.gunDurability = (int)Random.Range(droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints * 0.3f, droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints);
                             gunInvCmp.gunPartsId = new int[4];
                             gunInvCmp.isEquipedWeapon = false;
                         }
                         else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.flashlight || droppedItemComponent.itemInfo.type == ItemInfo.itemType.bodyArmor || droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet)
                         {
-                            if(droppedItemComponent.itemInfo.type == ItemInfo.itemType.flashlight)
-                            _durabilityInInventoryComponentsPool.Value.Add(itemEntity).currentDurability = droppedItemComponent.itemInfo.flashlightInfo.maxChargedTime;
+                            if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.flashlight)
+                                _durabilityInInventoryComponentsPool.Value.Add(itemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.flashlightInfo.maxChargedTime * 0.3f, droppedItemComponent.itemInfo.flashlightInfo.maxChargedTime);
                             else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.bodyArmor)
-                                _durabilityInInventoryComponentsPool.Value.Add(itemEntity).currentDurability = droppedItemComponent.itemInfo.bodyArmorInfo.armorDurability;
+                                _durabilityInInventoryComponentsPool.Value.Add(itemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.bodyArmorInfo.armorDurability * 0.3f, droppedItemComponent.itemInfo.bodyArmorInfo.armorDurability);
                             else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet)
-                                _durabilityInInventoryComponentsPool.Value.Add(itemEntity).currentDurability = droppedItemComponent.itemInfo.helmetInfo.armorDurability;
+                                _durabilityInInventoryComponentsPool.Value.Add(itemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.helmetInfo.armorDurability * 0.3f, droppedItemComponent.itemInfo.helmetInfo.armorDurability);
                             if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet && droppedItemComponent.itemInfo.helmetInfo.addedLightIntancity != 0)
-                                _shieldComponentsPool.Value.Add(itemEntity);
+                                _shieldComponentsPool.Value.Add(itemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.helmetInfo.nightTimeModeDuration * 0.3f, droppedItemComponent.itemInfo.helmetInfo.nightTimeModeDuration);
                         }
                         else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.sheild)
-                            _shieldComponentsPool.Value.Add(itemEntity);
+                            _shieldComponentsPool.Value.Add(itemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.sheildInfo.sheildDurability * 0.3f, droppedItemComponent.itemInfo.sheildInfo.sheildDurability);
 
                     }
 
@@ -315,11 +315,9 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                         healthCmp.maxHealthPoint = healthCmp.healthView.maxHealth;
                         healthCmp.healthPoint = healthCmp.maxHealthPoint;
                     }
-                  //  Debug.Log("hided obj view name " + interestObjectView.gameObject.name);
-                    // _hidedObjectOutsideFOVComponentsPool.Value.Add(itemEntity).hidedObjects = new Transform[] { interestObjectView.GetComponent<HidedOutsidePlayerFovView>().objectsToHide[0] };
+                    else if (interestObjectView.objectType == InterestObjectOnLocationView.InterestObjectType.none)
+                        interestObjectView.gameObject.GetComponent<InteractCharacterView>().Construct(_world.Value, itemEntity);
                     _hidedObjectOutsideFOVComponentsPool.Value.Add(itemEntity).hidedObjects = new Transform[] { interestObjectView.transform.GetChild(0) };
-                   // Debug.Log("hided obj view count " + interestObjectView.GetComponent<HidedOutsidePlayerFovView>().objectsToHide.Length);
-                   // Debug.Log("hided obj count " + _hidedObjectOutsideFOVComponentsPool.Value.Get(itemEntity).hidedObjects.Length);
                 }
             }
 

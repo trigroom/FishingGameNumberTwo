@@ -33,6 +33,8 @@ public class PlayerView : MonoBehaviour
     [field: SerializeField] public LineRenderer laserPointerLineRenderer { get; private set; }
     [field: SerializeField] public Transform rightRecoilTracker { get; private set; }
     [field: SerializeField] public Transform leftRecoilTracker { get; private set; }
+    [field: SerializeField] public Transform rightFOVTracker { get; private set; }
+    [field: SerializeField] public Transform leftFOVTracker { get; private set; }
     [field: SerializeField] public float gunRecoverySpreadSpeed { get; private set; }
     [field: SerializeField] public float maxHungerPoints { get; private set; }
     [field: SerializeField] public float defaultHealthRecoverySpeed { get; private set; }

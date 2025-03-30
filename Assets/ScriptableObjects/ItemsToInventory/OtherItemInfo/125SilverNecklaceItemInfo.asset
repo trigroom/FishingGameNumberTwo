@@ -16,7 +16,7 @@ MonoBehaviour:
   type: 6
   maxCount: 2
   itemWeight: 0.4
-  itemId: 124
+  itemId: 125
   itemName: silver necklace
   itemDescription: 
   itemCost: 200

@@ -10,21 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac357f814689b0342b6a7c6efddf2e3d, type: 3}
-  m_Name: 24ArmyMedkitItemInfo 2
+  m_Name: 134MasterkeyItemInfo
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: 3673977541324745974, guid: 84820276c33f64e4da24de4a5ad61098, type: 3}
-  type: 2
-  maxCount: 3
-  itemWeight: 0.5
-  itemId: 24
-  itemName: Army Medkit
+  itemSprite: {fileID: 21300000, guid: c1ea927f10c6a5940804309d8b597ce0, type: 3}
+  type: 6
+  maxCount: 20
+  itemWeight: 0.9
+  itemId: 134
+  itemName: masterkey
   itemDescription: 
-  itemCost: 5
+  itemCost: 3
   gunInfo: {fileID: 0}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}
-  healInfo: {fileID: 11400000, guid: 9090315e38632c644a229aab74a5f49e, type: 2}
+  healInfo: {fileID: 0}
   flashlightInfo: {fileID: 0}
-  cellsCount: 0
+  backpackInfo: {fileID: 0}
   gunPartInfo: {fileID: 0}
   expAddedInfo: {fileID: 0}
+  sheildInfo: {fileID: 0}
+  helmetInfo: {fileID: 0}
+  bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

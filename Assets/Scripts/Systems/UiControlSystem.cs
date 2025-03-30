@@ -63,7 +63,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     {
         Debug.Log("Check fast load");
         _sceneData.Value.dropedItemsUIView.Construct(_world.Value);
-        _sceneData.Value.mainMenuView.buttons[0].onClick.AddListener(ContinueBottonAction);
+        _sceneData.Value.mainMenuView.buttons[0].onClick.AddListener(ContinueButtonAction);
         _sceneData.Value.mainMenuView.buttons[1].onClick.AddListener(OpenSettings);
         _sceneData.Value.dropedItemsUIView.showItemDescriptionButton.onClick.AddListener(ShowItemDescription);
         _sceneData.Value.dropedItemsUIView.showItemInfoButton.onClick.AddListener(ShowItemInfo);
@@ -1043,13 +1043,13 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         else
         {
             menusStatesCmp.mainMenuState = MenuStatesComponent.MainMenuState.none;
-            _sceneData.Value.mainMenuView.ChangeMenuState(inMenu);
+            _sceneData.Value.mainMenuView.ChangeMenuState(false);
         }
+         Debug.Log(menusStatesCmp.mainMenuState + " menustate");
         inMenu = menusStatesCmp.mainMenuState != MenuStatesComponent.MainMenuState.none;
         _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).canMove = !inMenu;
         _currentAttackComponentsPool.Value.Get(_sceneData.Value.playerEntity).canAttack = !inMenu;
         Cursor.visible = inMenu;
-        //  Debug.Log(menusStatesCmp.mainMenuState + "cu menu state" + Cursor.visible);
     }
 
     private void ChangeGunWorkshopMenuState(ref MenuStatesComponent menusStatesCmp)
@@ -1087,7 +1087,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         _sceneData.Value.mainMenuView.uiMenusToScale[0].localScale = Vector3.one * _sceneData.Value.dropedItemsUIView.uiScalerSlider.value;
         _sceneData.Value.mainMenuView.uiMenusToScale[1].localScale = Vector3.one * _sceneData.Value.dropedItemsUIView.uiScalerSlider.value;
     }
-    private void ContinueBottonAction()
+    private void ContinueButtonAction()
     {
         if (_healthComponentsPool.Value.Get(_sceneData.Value.playerEntity).isDeath)
             _revivePlayerEventsPool.Value.Add(_sceneData.Value.playerEntity);

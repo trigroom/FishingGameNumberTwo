@@ -982,46 +982,65 @@ public class AttackSystem : IEcsRunSystem
                     if (meleeAttackCmp.isWideAttack)
                         needStaminaUsage *= playerMeleeAttackCmp.weaponInfo.wideAttackDamageMultiplayer;
                     moveCmp.currentRunTime -= needStaminaUsage - (playerStats.statLevels[2] * needStaminaUsage * 0.02f);//1 lvl - 2% stamia use
-                    if (!meleeAttackCmp.isWideAttack)
+                    if (meleeAttackCmp.isWideAttack)
                     {
                         var ray = new Ray2D(weaponContainerTransform.localPosition, weaponContainerTransform.up);
                         meleeAttackCmp.endHitPoint = ray.origin + (ray.direction * playerMeleeAttackCmp.weaponInfo.attackLenght * meleeAttackCmp.curAttackLenghtMultiplayer);
                     }
                     else
                         meleeAttackCmp.startRotation = _playerComponentsPool.Value.Get(playerEntity).view.movementView.weaponContainer.transform.eulerAngles.z;
-
+                    Debug.Log(meleeAttackCmp.startRotation + " needAngle");
                     playerAttackCmp.currentAttackCouldown = 0;
                     meleeAttackCmp.isHitting = true;
                     meleeAttackCmp.moveInAttackSide = true;
+                    meleeAttackCmp.attackState = 1;
                 }
 
                 if (meleeAttackCmp.isHitting)
                 {
                     var weaponContainerTransform = _playerComponentsPool.Value.Get(playerEntity).view.movementView.weaponContainer.transform;
-                    if (meleeAttackCmp.isWideAttack)
+                    if (!meleeAttackCmp.isWideAttack)
                     {
-                        if (meleeAttackCmp.moveInAttackSide)
+                        if (meleeAttackCmp.attackState == 2)
                         {
                             float neededAngle = meleeAttackCmp.startRotation + playerMeleeAttackCmp.weaponInfo.wideAttackLenght * meleeAttackCmp.curAttackLenghtMultiplayer;
 
                             if (neededAngle > 360)
                                 neededAngle -= 360;
-                            weaponContainerTransform.transform.rotation = Quaternion.Slerp(weaponContainerTransform.transform.rotation, Quaternion.Euler(0, 0, neededAngle + 1), playerMeleeAttackCmp.weaponInfo.wideAttackSpeed * Time.deltaTime);//вращение на поред угол                                                                                                                                                                                                   //weaponContainerTransform.transform.Rotate(0, 0, -playerMeleeAttackCmp.weaponInfo.attackSpeed * Time.deltaTime);
+                            weaponContainerTransform.transform.rotation = Quaternion.Slerp(weaponContainerTransform.transform.rotation, Quaternion.Euler(0, 0, neededAngle), playerMeleeAttackCmp.weaponInfo.wideAttackSpeed * Time.deltaTime);//вращение на поред угол                                                                                                                                                                                                   //weaponContainerTransform.transform.Rotate(0, 0, -playerMeleeAttackCmp.weaponInfo.attackSpeed * Time.deltaTime);
 
-                            if ((int)weaponContainerTransform.transform.eulerAngles.z == (int)neededAngle)
-                                meleeAttackCmp.moveInAttackSide = false;
+                            if ((int)weaponContainerTransform.transform.eulerAngles.z == Mathf.CeilToInt( neededAngle) || (int)weaponContainerTransform.transform.eulerAngles.z == Mathf.FloorToInt(neededAngle))
+                                meleeAttackCmp.attackState = 3;
+
+                            Debug.Log((int)neededAngle + " needAngle" + Mathf.CeilToInt(neededAngle) + "max" + Mathf.FloorToInt(neededAngle));
                         }
-                        else
+                        else if(meleeAttackCmp.attackState == 1)
                         {
                             float neededAngle = meleeAttackCmp.startRotation - playerMeleeAttackCmp.weaponInfo.wideAttackLenght * meleeAttackCmp.curAttackLenghtMultiplayer;
                             if (neededAngle < 0)
                                 neededAngle += 360;
-                            weaponContainerTransform.transform.rotation = Quaternion.Lerp(weaponContainerTransform.transform.rotation, Quaternion.Euler(0, 0, neededAngle - 1), playerMeleeAttackCmp.weaponInfo.wideAttackSpeed * Time.deltaTime);
-                            if ((int)weaponContainerTransform.transform.eulerAngles.z == (int)neededAngle)
+                            weaponContainerTransform.transform.rotation = Quaternion.Slerp(weaponContainerTransform.transform.rotation, Quaternion.Euler(0, 0, neededAngle), playerMeleeAttackCmp.weaponInfo.wideAttackSpeed * Time.deltaTime);
+                            if ((int)weaponContainerTransform.transform.eulerAngles.z == meleeAttackCmp.startRotation)
                             {
                                 meleeAttackCmp.isHitting = false;
                                 _playerComponentsPool.Value.Get(playerEntity).view.movementView.weaponCollider.enabled = false;
                             }
+                            if ((int)weaponContainerTransform.transform.eulerAngles.z == Mathf.CeilToInt(neededAngle) || (int)weaponContainerTransform.transform.eulerAngles.z == Mathf.FloorToInt(neededAngle))
+                                meleeAttackCmp.attackState = 2;
+                            Debug.Log((int)neededAngle + " needAngle" + Mathf.CeilToInt(neededAngle) + "max" + Mathf.FloorToInt(neededAngle));
+                        }
+                        else if(meleeAttackCmp.attackState == 3)
+                        {
+                            float neededAngle = meleeAttackCmp.startRotation - playerMeleeAttackCmp.weaponInfo.wideAttackLenght * meleeAttackCmp.curAttackLenghtMultiplayer;
+                            if (neededAngle < 0)
+                                neededAngle += 360;
+                            weaponContainerTransform.transform.rotation = Quaternion.Slerp(weaponContainerTransform.transform.rotation, Quaternion.Euler(0, 0, meleeAttackCmp.startRotation), playerMeleeAttackCmp.weaponInfo.wideAttackSpeed * Time.deltaTime);
+                            if ((int)weaponContainerTransform.transform.eulerAngles.z == Mathf.CeilToInt(meleeAttackCmp.startRotation) || (int)weaponContainerTransform.transform.eulerAngles.z == Mathf.FloorToInt(meleeAttackCmp.startRotation))
+                            {
+                                meleeAttackCmp.isHitting = false;
+                                _playerComponentsPool.Value.Get(playerEntity).view.movementView.weaponCollider.enabled = false;
+                            }
+                            Debug.Log((int)neededAngle + " needAngle" + Mathf.CeilToInt(meleeAttackCmp.startRotation) + "max" + Mathf.FloorToInt(meleeAttackCmp.startRotation));
                         }
                         //доделать
                     }

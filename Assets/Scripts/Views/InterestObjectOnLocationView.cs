@@ -8,11 +8,10 @@ public class InterestObjectOnLocationView : MonoBehaviour
     {
         brocked,
         collecting,
-        explode
+        explode,
+        none
     }
-
-    public CreatureDropElement[] dropElements;
-    public int maxDroppedItemsCount;
     public DroppedItemView dropItemView;
+    public NeededMasterKeyInfo neededMasterKey;
     //public int durabilityPoints;
 }

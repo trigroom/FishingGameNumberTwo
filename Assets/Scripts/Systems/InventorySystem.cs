@@ -908,7 +908,6 @@ public class InventorySystem : IEcsRunSystem
                         droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(_movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform.position, itemInfo, droppedItem);
                         _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItem).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.gameObject.transform.GetChild(0) };
 
-
                         TryAddSpecialItemComponent(itemInfo, droppedItem);
                     }
                 }

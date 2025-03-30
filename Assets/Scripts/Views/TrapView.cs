@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TrapView : MonoBehaviour
@@ -14,9 +12,11 @@ public class TrapView : MonoBehaviour
     public int entity;
 
     public GrenadeInfo mineInfo;
-   public enum TrapType
+    public enum TrapType
     {
         mantrap,
         mine
     }
+
+
 }

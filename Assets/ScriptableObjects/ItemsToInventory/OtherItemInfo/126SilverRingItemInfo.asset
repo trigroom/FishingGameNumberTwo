@@ -16,7 +16,7 @@ MonoBehaviour:
   type: 6
   maxCount: 10
   itemWeight: 0.12
-  itemId: 124
+  itemId: 126
   itemName: silver ring
   itemDescription: 
   itemCost: 100

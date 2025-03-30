@@ -99,6 +99,9 @@ public class CreatureStatesControlSystem : IEcsRunSystem
 
                     interest[aiCmp.randomMoveDirectionIndex] = 1;
 
+                    Ray2D ray = new Ray2D(moveCmp.entityTransform.position, _sceneData.Value.eightDirections[aiCmp.randomMoveDirectionIndex]);//
+                    moveCmp.pointToRotateInput = ray.origin + (ray.direction * 20);
+
                 }
             }
             if (aiCmp.randomMoveTime <= 0)

@@ -6,6 +6,10 @@ using UnityEngine.UI;
 public class UIElementsView : MonoBehaviour
 {
     [Header("General Item Info UI")]
+    [field: SerializeField] public Animator masterkeyAnimator { get; set; }
+    [field: SerializeField] public Transform masterkeyMinigameContainer { get; set; }
+    [field: SerializeField] public Transform lockerCellsContainer { get; set; }
+    [field: SerializeField] public LockCellView[] lockerCellViews { get; set; }
     [field: SerializeField] public Image guideImage { get; private set; }
     [field: SerializeField] public BookmarkView[] bookmarkViews { get; set; }
     [field: SerializeField] public Transform divideItemsUI { get; set; }
@@ -104,7 +108,7 @@ public class UIElementsView : MonoBehaviour
     private EcsWorld _world;
 
     public int curInventorySliderValue { get; private set; }
-    
+
     private void Start()
     {
         curInventorySliderValue = 1;

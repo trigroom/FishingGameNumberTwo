@@ -40,6 +40,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<MineExplodeEvent> _mineExplodeEventsPool;
     private EcsPoolInject<MenuStatesComponent> _menuStatesComponentsPool;
     private EcsPoolInject<DestroyComponentInNextFrameTag> _destroyComponentInNextFrameTagsPool;
+    private EcsPoolInject<SecondDurabilityComponent> _shieldComponentsPool;
     private EcsPoolInject<HidedObjectOutsideFOVComponent> _hidedObjectOutsideFOVComponentsPool;
 
     private EcsFilterInject<Inc<DestroyComponentInNextFrameTag>> _destroyComponentInNextFrameTagsFilter;
@@ -785,18 +786,19 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             }
             else
             {
-                int curItems = 0;
-                int percentDrop = Random.Range(0, 101);
                 if (healthCmp.healthView.interestObjectView != null)
                 {
                     var dropItemsView = healthCmp.healthView.interestObjectView;
                     if (dropItemsView.objectType == InterestObjectOnLocationView.InterestObjectType.brocked)
                     {
-                        for (int i = 0; i < dropItemsView.dropElements.Length; i++)
+                int curItems = 0;
+                int percentDrop = Random.Range(0, 101);
+                        var droppedItemInfo = dropItemsView.GetComponent<DroppedItemsListView>();
+                        for (int i = 0; i < droppedItemInfo.dropElements.Length; i++)
                         {
-                            if (percentDrop <= dropItemsView.dropElements[i].dropPercent)
+                            if (percentDrop <= droppedItemInfo.dropElements[i].dropPercent)
                             {
-                                int droopedCount = Random.Range(dropItemsView.dropElements[i].itemsCountMin, dropItemsView.dropElements[i].itemsCountMax + 1);
+                                int droopedCount = Random.Range(droppedItemInfo.dropElements[i].itemsCountMin, droppedItemInfo.dropElements[i].itemsCountMax + 1);
                                 percentDrop = Random.Range(0, 101);
                                 int droppedItemEntity = _world.Value.NewEntity();
                                 curItems++;
@@ -804,10 +806,33 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                                 droppedItemComponent.currentItemsCount = droopedCount;
 
                                 Vector2 deathPos = healthCmp.healthView.gameObject.transform.position;
-                                droppedItemComponent.itemInfo = dropItemsView.dropElements[i].droopedItem;
-                                droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(deathPos, dropItemsView.dropElements[i].droopedItem, droppedItemEntity);
+                                droppedItemComponent.itemInfo = droppedItemInfo.dropElements[i].droopedItem;
+                                droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(deathPos, droppedItemInfo.dropElements[i].droopedItem, droppedItemEntity);
                                 _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItemEntity).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.transform.GetChild(0) };
-                                if (curItems >= dropItemsView.maxDroppedItemsCount)
+
+                                if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.gun)
+                                {
+                                    ref var gunInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(droppedItemEntity);
+                                    gunInvCmp.currentGunWeight = droppedItemComponent.itemInfo.itemWeight;
+                                    gunInvCmp.gunDurability = (int)Random.Range(droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints * 0.3f, droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints);
+                                    gunInvCmp.gunPartsId = new int[4];
+                                    gunInvCmp.isEquipedWeapon = false;
+                                }
+                                else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.flashlight || droppedItemComponent.itemInfo.type == ItemInfo.itemType.bodyArmor || droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet)
+                                {
+                                    if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.flashlight)
+                                        _durabilityInInventoryComponentsPool.Value.Add(droppedItemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.flashlightInfo.maxChargedTime * 0.3f, droppedItemComponent.itemInfo.flashlightInfo.maxChargedTime);
+                                    else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.bodyArmor)
+                                        _durabilityInInventoryComponentsPool.Value.Add(droppedItemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.bodyArmorInfo.armorDurability * 0.3f, droppedItemComponent.itemInfo.bodyArmorInfo.armorDurability);
+                                    else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet)
+                                        _durabilityInInventoryComponentsPool.Value.Add(droppedItemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.helmetInfo.armorDurability * 0.3f, droppedItemComponent.itemInfo.helmetInfo.armorDurability);
+                                    if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet && droppedItemComponent.itemInfo.helmetInfo.addedLightIntancity != 0)
+                                        _shieldComponentsPool.Value.Add(droppedItemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.helmetInfo.nightTimeModeDuration * 0.3f, droppedItemComponent.itemInfo.helmetInfo.nightTimeModeDuration);
+                                }
+                                else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.sheild)
+                                    _shieldComponentsPool.Value.Add(droppedItemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.sheildInfo.sheildDurability * 0.3f, droppedItemComponent.itemInfo.sheildInfo.sheildDurability);
+
+                                if (curItems >= droppedItemInfo.maxDroppedItemsCount)
                                     break;
                             }
                         }

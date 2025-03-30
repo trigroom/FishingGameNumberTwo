@@ -13,7 +13,8 @@ public class InteractCharacterView : MonoBehaviour
         storage,
         gunsmith,
         craftingTable,
-        openedDoor
+        openedDoor,
+        openedContainer
     }
 
     public int _entity;

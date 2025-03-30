@@ -8,7 +8,8 @@ public struct MeleeWeaponComponent
     public Vector2 endHitPoint;
     public Vector2 startHitPoint;//задавать вначале спавна сущности
     public bool moveInAttackSide;
-    public float startRotation;
+    public float startRotation{ get; set; }
     public bool isWideAttack;
-    public float curAttackLenghtMultiplayer { get; set; }
+    public int attackState;
+    public float curAttackLenghtMultiplayer ;
 }

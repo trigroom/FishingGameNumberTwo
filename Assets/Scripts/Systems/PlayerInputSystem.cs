@@ -64,6 +64,10 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<AddItemEvent> _addItemEventsPool;
     private EcsPoolInject<EmbientHelperComponent> _embientHelperComponentsPool;
     private EcsPoolInject<OneShotSoundComponent> _oneShotSoundComponentsPool;
+    private EcsPoolInject<DeleteItemEvent> _deleteItemEventsPool;
+    private EcsPoolInject<DurabilityInInventoryComponent> _durabilityInInventoryComponentsPool;
+    private EcsPoolInject<GunInventoryCellComponent> _gunInventoryCellComponentsPool;
+    private EcsPoolInject<LockerMinigameCompnent> _lockerMinigameCompnentsPool;
     private EcsPoolInject<ChangeUnderNightLightPlayerStateEvent> _changeUnderNightLightPlayerStateEventsPool;
 
     private EcsFilterInject<Inc<LoadGameEvent>> loadGameEventsFilter;
@@ -90,7 +94,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
         _playerGunComponentsPool.Value.Add(_playerEntity).bulletUIObjects = new List<Image>();
 
-
+        _lockerMinigameCompnentsPool.Value.Add(_playerEntity);
         _solarPanelElectricGeneratorComponentsPool.Value.Add(_playerEntity);
         ref var playerCmp = ref _playerComponentsPool.Value.Add(_playerEntity);
         playerCmp.view = _sceneService.Value.SpawnPlayer(_world.Value, _playerEntity);
@@ -144,6 +148,10 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
     {
         if (Input.GetKeyDown(KeyCode.Z))
             _inventoryComponentsPool.Value.Get(_sceneService.Value.inventoryEntity).moneyCount += 50;
+
+
+        //  if (Input.GetKeyDown(KeyCode.X))
+        //   StartLockMinigame(2);
         //del in full game
 
 
@@ -188,12 +196,35 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                     }
                     else if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.openedDoor)
                     {
+                        if (_lockerMinigameCompnentsPool.Value.Get(_playerEntity).inGame) return;
                         var openedDoorView = curInteactedObjectsCmp.interactCharacterView.gameObject.GetComponent<OpenedDoorView>();
-                        if (_sceneService.Value.dropedItemsUIView.charactersInteractText.text == "(press F to open door)")
+                        int needItemIdToOpen = openedDoorView.needItemIdToOpen;
+
+                        NeededMasterKeyInfo masterKeyInfo;
+                        if (FindItemCountInInventory(needItemIdToOpen, false) != 0)
                         {
                             openedDoorView.doorCollider.enabled = false;
                             openedDoorView.gameObject.GetComponent<SpriteRenderer>().sprite = openedDoorView.openDoorSprite;
                             return;
+                        }
+                        else if (curInteactedObjectsCmp.interactCharacterView.gameObject.TryGetComponent(out masterKeyInfo) && FindItemCountInInventory(134, true) != 0)
+                        {
+                            _lockerMinigameCompnentsPool.Value.Get(_playerEntity).interactCharacter = curInteactedObjectsCmp.interactCharacterView;
+                            StartLockMinigame(masterKeyInfo.lockerCellsCount, masterKeyInfo.masterkeySpeed);
+                            if (FindItemCountInInventory(134, false) == 1)
+                                _sceneService.Value.dropedItemsUIView.charactersInteractText.text = "";
+                        }
+                    }
+                    else if(curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.openedContainer)
+                    {
+                        if (_lockerMinigameCompnentsPool.Value.Get(_playerEntity).inGame) return;
+                        NeededMasterKeyInfo masterKeyInfo;
+                        if (curInteactedObjectsCmp.interactCharacterView.gameObject.TryGetComponent(out masterKeyInfo) && FindItemCountInInventory(134, true) != 0)
+                        {
+                            _lockerMinigameCompnentsPool.Value.Get(_playerEntity).interactCharacter = curInteactedObjectsCmp.interactCharacterView;
+                            StartLockMinigame(masterKeyInfo.lockerCellsCount, masterKeyInfo.masterkeySpeed);
+                            if (FindItemCountInInventory(134, false) == 1)
+                                _sceneService.Value.dropedItemsUIView.charactersInteractText.text = "";
                         }
                     }
                 }
@@ -260,7 +291,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                                 if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.shopAndDialogeNpc)
                                     interactText.text = " (нажми F чтобы зайти в магазин\nAll " + currentQuestCharacter.characterName + " quests is complete)";
                                 else
-                                    interactText.text = " (нажми F чтобы зайти в  gun workshop\nAll " + currentQuestCharacter.characterName + " quests is complete)";
+                                    interactText.text = " (нажми F чтобы зайти в мастескую\nAll " + currentQuestCharacter.characterName + " quests is complete)";
 
                             }
                             else if (!questNPCCmp.questIsGiven)
@@ -268,7 +299,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                                 if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.shopAndDialogeNpc)
                                     interactText.text = " (нажми F чтобы зайти в магазин\nPress T to speak with " + currentQuestCharacter.characterName + ")";
                                 else
-                                    interactText.text = " (нажми F чтобы зайти в gun workshop\nPress T to speak with " + currentQuestCharacter.characterName + ")";
+                                    interactText.text = " (нажми F чтобы зайти в мастескую\nPress T to speak with " + currentQuestCharacter.characterName + ")";
 
                             }
                             else
@@ -276,30 +307,48 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                                 if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.shopAndDialogeNpc)
                                     interactText.text = " (нажми F чтобы зайти в магазин\nPress T to give quest " + currentQuestCharacter.characterName + ")";
                                 else
-                                    interactText.text = " (нажми F чтобы зайти в gun workshop\nPress T to give quest " + currentQuestCharacter.characterName + ")";
+                                    interactText.text = " (нажми F чтобы зайти в мастескую\nPress T to give quest " + currentQuestCharacter.characterName + ")";
                             }
                         }
                     }
                     else if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.storage)
                     {
-                        interactText.text = " (press F to entry in storage)";
+                        interactText.text = " (нажми F чтобы открыть хранилище)";
                     }
                     else if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.craftingTable)
                     {
-                        interactText.text = " (press F to entry in crafting table)";
+                        interactText.text = " (нажми F чтобы войти в верстак)";
                     }
                     else if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.openedDoor)
                     {
                         var openedDoorView = curInteactedObjectsCmp.interactCharacterView.gameObject.GetComponent<OpenedDoorView>();
                         int needItemIdToOpen = openedDoorView.needItemIdToOpen;
-                        foreach (var invItemEntity in _inventoryItemsFilter.Value)
-                            if (_inventoryItemComponentsPool.Value.Get(invItemEntity).itemInfo.itemId == needItemIdToOpen)
-                            {
-                                interactText.text = "(press F to open door)";
-                                _checkInteractedObjectsEventsPool.Value.Del(interactCheck);
-                                return;
-                            }
-                        interactText.text = " (need " + _sceneService.Value.idItemslist.items[needItemIdToOpen].itemName + " to open door)";
+                        NeededMasterKeyInfo masterKeyInfo;
+
+                        if (FindItemCountInInventory(needItemIdToOpen, false) != 0)
+                        {
+                            interactText.text = "(нажми F для того чтобы открыть дверь)";
+                            _checkInteractedObjectsEventsPool.Value.Del(interactCheck);
+                            return;
+                        }
+
+                        else if (curInteactedObjectsCmp.interactCharacterView.gameObject.TryGetComponent(out masterKeyInfo) && FindItemCountInInventory(134, false) != 0)
+                            interactText.text = " (нажми F чтобы открыть дверь с помощью отмычки или найди " + _sceneService.Value.idItemslist.items[needItemIdToOpen].itemName + " для открытия)";
+
+                        else if (masterKeyInfo == null)
+                        {
+                            interactText.text = " (нужен " + _sceneService.Value.idItemslist.items[needItemIdToOpen].itemName + " для открытия двери)";
+
+                        }
+                        else
+                            interactText.text = " (нужен " + _sceneService.Value.idItemslist.items[needItemIdToOpen].itemName + " или отмычка для открытия двери)";
+                    }
+                    else if (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.openedContainer)
+                    {
+                        if (FindItemCountInInventory(134, true) != 0)
+                            interactText.text = "Нажми F для использования отмычки и открытия контейнера";
+                        else
+                            interactText.text = "Нужны отмычки для открытия контейнера";
                     }
                 }
                 else if (checkInteractCmp.interactionType == InteractionType.trap)
@@ -307,9 +356,11 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
                     curInteactedObjectsCmp.trapView = checkInteractCmp.currentTrap;
                     if (curInteactedObjectsCmp.trapView.type != TrapView.TrapType.mine)
-                        interactText.text = "(press F to neutralize trap)";
+                        interactText.text = "(нажми F чтобы обезвредить капкан)";
                     else if (_playerComponentsPool.Value.Get(_playerEntity).canDeffuseMines)
-                        interactText.text = "(press F to neutralize mine)";
+                        interactText.text = "(нажми F чтобы обезвредить мину)";
+                    else
+                        interactText.text = "(нужен набор сапёра чтобы обезвредить мину)";
                 }
             }
 
@@ -375,6 +426,15 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         ref var buildChecker = ref _buildingCheckerComponentsPool.Value.Get(_playerEntity);
         ref var gloabalTimeCmp = ref _globalTimeComponentsPool.Value.Get(_playerEntity);
         ref var playerCmp = ref _playerComponentsPool.Value.Get(_playerEntity);
+
+        float fov = _fieldOfViewComponentsPool.Value.Get(_playerEntity).fieldOfView / 2 - 180;
+        if (playerCmp.view.leftFOVTracker.localEulerAngles.z != fov)
+        {
+            // Debug.Log("change fov to" + fov);
+            var playerView = playerCmp.view;
+            playerView.leftFOVTracker.localRotation = Quaternion.Euler(0, 0, fov);
+            playerView.rightFOVTracker.localRotation = Quaternion.Euler(0, 0, -fov);
+        }
         if (gloabalTimeCmp.currentWeatherType != GlobalTimeComponent.WeatherType.none)
         {
             if (!buildChecker.isHideRoof)
@@ -865,6 +925,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         {
             playerCmp.underNightLightRadius = _changeUnderNightLightPlayerStateEventsPool.Value.Get(changeUnderNightLightPlayerStateEventEntity).playerCheckColliderRadius;
         }
+
         FieldOfViewCheck();
         if (gloabalTimeCmp.isNight && (playerCmp.useFlashlight || playerCmp.underNightLightRadius != 0))
         {
@@ -897,6 +958,53 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
             }
         }
+
+        ref var lockerMinigameCmp = ref _lockerMinigameCompnentsPool.Value.Get(_playerEntity);
+
+        if (lockerMinigameCmp.inGame)
+        {
+            lockerMinigameCmp.curSpeed = 50;
+            var masterKeyContainerTransform = _sceneService.Value.dropedItemsUIView.lockerCellsContainer.transform;
+            if (lockerMinigameCmp.stopedTime > 0)
+                lockerMinigameCmp.stopedTime -= Time.deltaTime;
+            else
+            {
+                // Debug.Log("WinGame" + masterKeyContainerTransform.transform.localPosition.x);
+                if (!lockerMinigameCmp.inLeft)
+                    masterKeyContainerTransform.transform.localPosition = Vector2.MoveTowards(masterKeyContainerTransform.transform.localPosition, new Vector2(55, masterKeyContainerTransform.transform.localPosition.y), lockerMinigameCmp.curSpeed * Time.deltaTime);
+                else
+                    masterKeyContainerTransform.transform.localPosition = Vector2.MoveTowards(masterKeyContainerTransform.transform.localPosition, new Vector2(-51, masterKeyContainerTransform.transform.localPosition.y), lockerMinigameCmp.curSpeed * Time.deltaTime);
+
+                if (masterKeyContainerTransform.transform.localPosition.x > 54)
+                    lockerMinigameCmp.inLeft = true;
+                else if (masterKeyContainerTransform.transform.localPosition.x < -50)
+                    lockerMinigameCmp.inLeft = false;
+
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    lockerMinigameCmp.stopedTime = 1f;
+                    _sceneService.Value.dropedItemsUIView.masterkeyAnimator.SetTrigger("UseMasterkey");
+                    bool isLose = true;
+                    var masterKeyContainerRectTransform = masterKeyContainerTransform.GetComponent<RectTransform>();
+                    for (int i = 0; i < lockerMinigameCmp.lockerCells.Count; i++)
+                    {
+                        var curCell = lockerMinigameCmp.lockerCells[i];
+                        var curCellRect = curCell.GetComponent<RectTransform>();
+                        if (masterKeyContainerRectTransform.localPosition.x < curCellRect.localPosition.x + 3.2f && masterKeyContainerRectTransform.localPosition.x > curCellRect.localPosition.x - 3.2f)
+                        {
+                            lockerMinigameCmp.needCount--;
+                            curCell.LockActivate(true);
+                            lockerMinigameCmp.lockerCells.RemoveAt(i);
+                            isLose = false;
+                            break;
+                        }
+                    }
+                    if (isLose || lockerMinigameCmp.needCount == 0)
+                        EndLockMinigame();
+                }
+
+            }
+        }
     }
 
     private void ChangeAlfaAllSpriteInGroup(float needAlpfa, Tilemap[] spriteRenderers)
@@ -907,6 +1015,104 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             color.a = needAlpfa;
             spriteRenderer.color = color;
         }
+    }
+
+    private void StartLockMinigame(int needCount, float masterkeySpeed)
+    {
+        ref var lockerMinigameCmp = ref _lockerMinigameCompnentsPool.Value.Get(_playerEntity);
+        lockerMinigameCmp.curSpeed = masterkeySpeed;
+        lockerMinigameCmp.stopedTime = 1f;
+        _sceneService.Value.dropedItemsUIView.masterkeyMinigameContainer.gameObject.SetActive(true);
+        _sceneService.Value.dropedItemsUIView.lockerCellsContainer.transform.localPosition = new Vector2(-47, _sceneService.Value.dropedItemsUIView.lockerCellsContainer.transform.localPosition.y);
+        lockerMinigameCmp.needCount = needCount;
+        lockerMinigameCmp.lockerCells = new List<LockCellView>();
+        for (int i = 0; i < needCount; i++)
+        {
+            lockerMinigameCmp.lockerCells.Add(_sceneService.Value.dropedItemsUIView.lockerCellViews[i]);
+            lockerMinigameCmp.lockerCells[i].gameObject.transform.localPosition = new Vector2(Random.Range(96 / needCount * i + 2, 96 / needCount * (i + 1) - 2) - 46, lockerMinigameCmp.lockerCells[i].gameObject.transform.localPosition.y);
+            lockerMinigameCmp.lockerCells[i].gameObject.SetActive(true);
+            lockerMinigameCmp.lockerCells[i].LockActivate(false);
+        }
+        lockerMinigameCmp.inGame = true;
+    }
+
+    private void EndLockMinigame()
+    {
+        ref var lockerMinigameCmp = ref _lockerMinigameCompnentsPool.Value.Get(_playerEntity);
+        if (lockerMinigameCmp.needCount == 0)
+        {
+            if (lockerMinigameCmp.interactCharacter._characterType == InteractNPCType.openedDoor)
+            {
+                var openedDoorView = _currentInteractedCharactersComponentsPool.Value.Get(_playerEntity).interactCharacterView.gameObject.GetComponent<OpenedDoorView>();
+                openedDoorView.doorCollider.enabled = false;
+                openedDoorView.gameObject.GetComponent<SpriteRenderer>().sprite = openedDoorView.openDoorSprite;
+            }
+            else if(lockerMinigameCmp.interactCharacter._characterType == InteractNPCType.openedContainer)
+            {
+                var dropView = _currentInteractedCharactersComponentsPool.Value.Get(_playerEntity).interactCharacterView.gameObject.GetComponent<DroppedItemsListView>();
+                //dropView.gameObject.transform.GetChild(0).gameObject.SetActive(false);
+                dropView.gameObject.GetComponent<Collider2D>().enabled = false;
+                //
+                int curItems = 0;
+                int percentDrop = Random.Range(0, 101);
+
+                for (int i = 0; i < dropView.dropElements.Length; i++)
+                {
+                    if (percentDrop <= dropView.dropElements[i].dropPercent)
+                    {
+                        int droopedCount = Random.Range(dropView.dropElements[i].itemsCountMin, dropView.dropElements[i].itemsCountMax + 1);
+                        percentDrop = Random.Range(0, 101);
+                        int droppedItemEntity = _world.Value.NewEntity();
+                        curItems++;
+                        ref var droppedItemComponent = ref _droppedItemComponentsPool.Value.Add(droppedItemEntity);
+                        droppedItemComponent.currentItemsCount = droopedCount;
+
+                        Vector2 deathPos = dropView.gameObject.transform.position;
+                        droppedItemComponent.itemInfo = dropView.dropElements[i].droopedItem;
+                        droppedItemComponent.droppedItemView = _sceneService.Value.SpawnDroppedItem(deathPos, dropView.dropElements[i].droopedItem, droppedItemEntity);
+                        _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItemEntity).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.transform.GetChild(0) };
+
+                        if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.gun)
+                        {
+                            ref var gunInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(droppedItemEntity);
+                            gunInvCmp.currentGunWeight = droppedItemComponent.itemInfo.itemWeight;
+                            gunInvCmp.gunDurability = (int)Random.Range(droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints * 0.3f, droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints);
+                            gunInvCmp.gunPartsId = new int[4];
+                            gunInvCmp.isEquipedWeapon = false;
+                        }
+                        else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.flashlight || droppedItemComponent.itemInfo.type == ItemInfo.itemType.bodyArmor || droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet)
+                        {
+                            if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.flashlight)
+                                _durabilityInInventoryComponentsPool.Value.Add(droppedItemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.flashlightInfo.maxChargedTime * 0.3f, droppedItemComponent.itemInfo.flashlightInfo.maxChargedTime);
+                            else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.bodyArmor)
+                                _durabilityInInventoryComponentsPool.Value.Add(droppedItemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.bodyArmorInfo.armorDurability * 0.3f, droppedItemComponent.itemInfo.bodyArmorInfo.armorDurability);
+                            else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet)
+                                _durabilityInInventoryComponentsPool.Value.Add(droppedItemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.helmetInfo.armorDurability * 0.3f, droppedItemComponent.itemInfo.helmetInfo.armorDurability);
+                            if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet && droppedItemComponent.itemInfo.helmetInfo.addedLightIntancity != 0)
+                                _shieldComponentsPool.Value.Add(droppedItemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.helmetInfo.nightTimeModeDuration * 0.3f, droppedItemComponent.itemInfo.helmetInfo.nightTimeModeDuration);
+                        }
+                        else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.sheild)
+                            _shieldComponentsPool.Value.Add(droppedItemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.sheildInfo.sheildDurability * 0.3f, droppedItemComponent.itemInfo.sheildInfo.sheildDurability);
+
+                        if (curItems >= dropView.maxDroppedItemsCount)
+                            break;
+                    }
+                }
+
+
+
+
+            }
+            Debug.Log("WinGame");
+        }
+        else
+            Debug.Log("LoseGame");
+        for (int i = 0; i < _sceneService.Value.dropedItemsUIView.lockerCellViews.Length; i++)
+        {
+            _sceneService.Value.dropedItemsUIView.lockerCellViews[i].gameObject.SetActive(false);
+        }
+        lockerMinigameCmp.inGame = false;
+        _sceneService.Value.dropedItemsUIView.masterkeyMinigameContainer.gameObject.SetActive(false);
     }
     private void FieldOfViewCheck()
     {
@@ -1055,61 +1261,61 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 angle += angleIncrease;
             }
 
-         /*   if (playerCmp.useFlashlight && _globalTimeComponentsPool.Value.Get(_playerEntity).isNight)
-            {
-                var flashlightInfo = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity).itemInfo.flashlightInfo;
-                origin = playerCmp.view.movementView.nonWeaponContainer.transform.position;
-                var ray = Physics2D.Raycast(origin, playerCmp.view.movementView.nonWeaponContainer.up, flashlightInfo.lightRange * 2, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy"));
-                if (ray.collider != null && ray.collider.gameObject.layer == 7)
-                {
-                    int enemyEntity = ray.transform.gameObject.GetComponent<HealthView>()._entity;
-                    ref var aiCmpEnemy = ref _creatureAIComponentsPool.Value.Get(enemyEntity);
-                    var enemySpriteTransform = aiCmpEnemy.creatureView.movementView.characterSpriteTransform;
+            /*   if (playerCmp.useFlashlight && _globalTimeComponentsPool.Value.Get(_playerEntity).isNight)
+               {
+                   var flashlightInfo = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity).itemInfo.flashlightInfo;
+                   origin = playerCmp.view.movementView.nonWeaponContainer.transform.position;
+                   var ray = Physics2D.Raycast(origin, playerCmp.view.movementView.nonWeaponContainer.up, flashlightInfo.lightRange * 2, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy"));
+                   if (ray.collider != null && ray.collider.gameObject.layer == 7)
+                   {
+                       int enemyEntity = ray.transform.gameObject.GetComponent<HealthView>()._entity;
+                       ref var aiCmpEnemy = ref _creatureAIComponentsPool.Value.Get(enemyEntity);
+                       var enemySpriteTransform = aiCmpEnemy.creatureView.movementView.characterSpriteTransform;
 
-                    if ((enemySpriteTransform.localScale.x > 0 && playerCmp.view.movementView.transform.position.x > enemySpriteTransform.position.x) || (enemySpriteTransform.localScale.x < 0 && playerCmp.view.movementView.transform.position.x < enemySpriteTransform.position.x))//see the player
-                    {
-                        aiCmpEnemy.targetPositionCached = playerCmp.view.transform.position;
-                        aiCmpEnemy.reachedLastTarget = false;
-                        if (aiCmpEnemy.currentState == CreatureAIComponent.CreatureStates.idle)
-                        {
-                            aiCmpEnemy.timeFromLastTargetSeen = 0f;
-                            aiCmpEnemy.currentState = CreatureAIComponent.CreatureStates.follow;
-                        }
-                    }
-                }
-                rayCount = (int)(flashlightInfo.spotAngle / 7);
-                angleIncrease = flashlightInfo.spotAngle / (flashlightInfo.spotAngle / 7);
-                for (int i = 0; i < rayCount; i++)
-                {
-                    RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), flashlightInfo.lightRange, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy"));
-                    Debug.DrawRay(origin, GetVectorFromAngle(angle) * flashlightInfo.lightRange, Color.green);
-                    if (raycastHit2D.collider != null)
-                    {
-                        bool isHasThisCollider = false;
-                        foreach (var col in checkedColliders)
-                            if (col == raycastHit2D.collider)
-                                isHasThisCollider = true;
-                        if (!isHasThisCollider)
-                        {
-                            checkedColliders.Add(raycastHit2D.collider);
-                            if (raycastHit2D.collider.gameObject.layer == 7)
-                            {
-                                int enemyEntity = raycastHit2D.transform.gameObject.GetComponent<HealthView>()._entity;
-                                ref var aiCmpEnemy = ref _creatureAIComponentsPool.Value.Get(enemyEntity);
-                                aiCmpEnemy.targetPositionCached = playerCmp.view.transform.position;
-                                aiCmpEnemy.reachedLastTarget = false;
-                                if (aiCmpEnemy.currentState == CreatureAIComponent.CreatureStates.idle)
-                                {
-                                    aiCmpEnemy.timeFromLastTargetSeen = 0f;
-                                    aiCmpEnemy.currentState = CreatureAIComponent.CreatureStates.follow;
-                                }
+                       if ((enemySpriteTransform.localScale.x > 0 && playerCmp.view.movementView.transform.position.x > enemySpriteTransform.position.x) || (enemySpriteTransform.localScale.x < 0 && playerCmp.view.movementView.transform.position.x < enemySpriteTransform.position.x))//see the player
+                       {
+                           aiCmpEnemy.targetPositionCached = playerCmp.view.transform.position;
+                           aiCmpEnemy.reachedLastTarget = false;
+                           if (aiCmpEnemy.currentState == CreatureAIComponent.CreatureStates.idle)
+                           {
+                               aiCmpEnemy.timeFromLastTargetSeen = 0f;
+                               aiCmpEnemy.currentState = CreatureAIComponent.CreatureStates.follow;
+                           }
+                       }
+                   }
+                   rayCount = (int)(flashlightInfo.spotAngle / 7);
+                   angleIncrease = flashlightInfo.spotAngle / (flashlightInfo.spotAngle / 7);
+                   for (int i = 0; i < rayCount; i++)
+                   {
+                       RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), flashlightInfo.lightRange, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy"));
+                       Debug.DrawRay(origin, GetVectorFromAngle(angle) * flashlightInfo.lightRange, Color.green);
+                       if (raycastHit2D.collider != null)
+                       {
+                           bool isHasThisCollider = false;
+                           foreach (var col in checkedColliders)
+                               if (col == raycastHit2D.collider)
+                                   isHasThisCollider = true;
+                           if (!isHasThisCollider)
+                           {
+                               checkedColliders.Add(raycastHit2D.collider);
+                               if (raycastHit2D.collider.gameObject.layer == 7)
+                               {
+                                   int enemyEntity = raycastHit2D.transform.gameObject.GetComponent<HealthView>()._entity;
+                                   ref var aiCmpEnemy = ref _creatureAIComponentsPool.Value.Get(enemyEntity);
+                                   aiCmpEnemy.targetPositionCached = playerCmp.view.transform.position;
+                                   aiCmpEnemy.reachedLastTarget = false;
+                                   if (aiCmpEnemy.currentState == CreatureAIComponent.CreatureStates.idle)
+                                   {
+                                       aiCmpEnemy.timeFromLastTargetSeen = 0f;
+                                       aiCmpEnemy.currentState = CreatureAIComponent.CreatureStates.follow;
+                                   }
 
-                            }
-                        }
-                    }
-                    angle += angleIncrease;
-                }
-            }*/
+                               }
+                           }
+                       }
+                       angle += angleIncrease;
+                   }
+               }*/
         }
     }
 
@@ -1129,4 +1335,23 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
         return n;
     }
 
+    private int FindItemCountInInventory(int itemId, bool isDelete)
+    {
+        int findedItemsCount = 0;
+
+        foreach (var invItem in _inventoryItemsFilter.Value)
+        {
+            var invItemCmp = _inventoryItemComponentsPool.Value.Get(invItem);
+            if (invItemCmp.itemInfo.itemId == itemId)
+                findedItemsCount += invItemCmp.currentItemsCount;
+
+            if (isDelete)
+            {
+                isDelete = false;
+                _deleteItemEventsPool.Value.Add(invItem).count = 1;
+            }
+        }
+
+        return findedItemsCount;
+    }
 }

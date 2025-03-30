@@ -18,7 +18,7 @@ MonoBehaviour:
   inGamePositionOnPlayer: {x: 0.005, y: 0.05}
   hairSpriteIndex: 2
   audibilityMultiplayer: 0.85
-  fowAngleRemove: 0
+  fowAngleRemove: 10
   fowLenghtRemove: 0
   autoBloodCleaning: 1
   dropTransparentMultiplayer: 0
