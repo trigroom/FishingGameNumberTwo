@@ -12,5 +12,5 @@ public class LevelSceneView : MonoBehaviour
     public Transform[] interesPointsSpawn;
     public Transform lightsContainer;
     public Transform exitTransform;
-    public InterestObjectOnLocationView[] interestsObjectsViews;
+    public InterestObjectsSpawnView[] interestsObjectsViews;
 }

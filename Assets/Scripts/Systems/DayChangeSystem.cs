@@ -264,60 +264,66 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 foreach (var needShopper in curLocationCmp.currentLocation.nightShoppers)
                     remainngShoppers.Add(needShopper);
 
-            foreach (var interestObjectView in curLevelView.interestsObjectsViews)
+            foreach (var interestObjectSpawnView in curLevelView.interestsObjectsViews)
             {
-                if (interestObjectView.spawnChance < Random.value)
-                    interestObjectView.gameObject.SetActive(false);
-                else
+                float randomNum = Random.value;
+                for (int i = 0; i < interestObjectSpawnView.interestsObjects.Length; i++)
                 {
-                    int itemEntity = _world.Value.NewEntity();
-                    if (interestObjectView.objectType == InterestObjectOnLocationView.InterestObjectType.collecting)
+                    if (interestObjectSpawnView.spawnChances[i] >= randomNum)
                     {
-                        ref var droppedItemComponent = ref _droppedItemComponentsPool.Value.Add(itemEntity);
-                        var droppedItemInfo = interestObjectView.GetComponent<DroppedItemsListView>();
-                        droppedItemComponent.currentItemsCount = droppedItemInfo.dropElements[0].itemsCountMin;
-
-                        droppedItemComponent.itemInfo = droppedItemInfo.dropElements[0].droopedItem;
-
-                        droppedItemComponent.droppedItemView = interestObjectView.dropItemView;
-                        interestObjectView.dropItemView.SetParametersToItem(itemEntity);
-
-
-                        if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.gun)
+                        var iterestObjectPrefab = _sceneService.Value.InstantiateLevel(interestObjectSpawnView.interestsObjects[i].transform);
+                        iterestObjectPrefab.transform.position = interestObjectSpawnView.transform.position;
+                        var needInterestObject = iterestObjectPrefab.GetComponent<InterestObjectOnLocationView>();
+                        int itemEntity = _world.Value.NewEntity();
+                        if (needInterestObject.objectType == InterestObjectOnLocationView.InterestObjectType.collecting)
                         {
-                            ref var gunInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(itemEntity);
-                            gunInvCmp.currentGunWeight = droppedItemComponent.itemInfo.itemWeight;
-                            gunInvCmp.gunDurability = (int)Random.Range(droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints * 0.3f, droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints);
-                            gunInvCmp.gunPartsId = new int[4];
-                            gunInvCmp.isEquipedWeapon = false;
+                            ref var droppedItemComponent = ref _droppedItemComponentsPool.Value.Add(itemEntity);
+                            var droppedItemInfo = iterestObjectPrefab.GetComponent<DroppedItemsListView>();
+                            droppedItemComponent.currentItemsCount = droppedItemInfo.dropElements[0].itemsCountMin;
+
+                            droppedItemComponent.itemInfo = droppedItemInfo.dropElements[0].droopedItem;
+
+                            droppedItemComponent.droppedItemView = needInterestObject.dropItemView;
+                            needInterestObject.dropItemView.SetParametersToItem(itemEntity);
+
+
+                            if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.gun)
+                            {
+                                ref var gunInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(itemEntity);
+                                gunInvCmp.currentGunWeight = droppedItemComponent.itemInfo.itemWeight;
+                                gunInvCmp.gunDurability = (int)Random.Range(droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints * 0.3f, droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints);
+                                gunInvCmp.gunPartsId = new int[4];
+                                gunInvCmp.isEquipedWeapon = false;
+                            }
+                            else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.flashlight || droppedItemComponent.itemInfo.type == ItemInfo.itemType.bodyArmor || droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet)
+                            {
+                                if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.flashlight)
+                                    _durabilityInInventoryComponentsPool.Value.Add(itemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.flashlightInfo.maxChargedTime * 0.3f, droppedItemComponent.itemInfo.flashlightInfo.maxChargedTime);
+                                else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.bodyArmor)
+                                    _durabilityInInventoryComponentsPool.Value.Add(itemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.bodyArmorInfo.armorDurability * 0.3f, droppedItemComponent.itemInfo.bodyArmorInfo.armorDurability);
+                                else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet)
+                                    _durabilityInInventoryComponentsPool.Value.Add(itemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.helmetInfo.armorDurability * 0.3f, droppedItemComponent.itemInfo.helmetInfo.armorDurability);
+                                if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet && droppedItemComponent.itemInfo.helmetInfo.addedLightIntancity != 0)
+                                    _shieldComponentsPool.Value.Add(itemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.helmetInfo.nightTimeModeDuration * 0.3f, droppedItemComponent.itemInfo.helmetInfo.nightTimeModeDuration);
+                            }
+                            else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.sheild)
+                                _shieldComponentsPool.Value.Add(itemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.sheildInfo.sheildDurability * 0.3f, droppedItemComponent.itemInfo.sheildInfo.sheildDurability);
+
                         }
-                        else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.flashlight || droppedItemComponent.itemInfo.type == ItemInfo.itemType.bodyArmor || droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet)
+
+                        else if (needInterestObject.objectType == InterestObjectOnLocationView.InterestObjectType.brocked || needInterestObject.objectType == InterestObjectOnLocationView.InterestObjectType.explode)
                         {
-                            if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.flashlight)
-                                _durabilityInInventoryComponentsPool.Value.Add(itemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.flashlightInfo.maxChargedTime * 0.3f, droppedItemComponent.itemInfo.flashlightInfo.maxChargedTime);
-                            else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.bodyArmor)
-                                _durabilityInInventoryComponentsPool.Value.Add(itemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.bodyArmorInfo.armorDurability * 0.3f, droppedItemComponent.itemInfo.bodyArmorInfo.armorDurability);
-                            else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet)
-                                _durabilityInInventoryComponentsPool.Value.Add(itemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.helmetInfo.armorDurability * 0.3f, droppedItemComponent.itemInfo.helmetInfo.armorDurability);
-                            if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet && droppedItemComponent.itemInfo.helmetInfo.addedLightIntancity != 0)
-                                _shieldComponentsPool.Value.Add(itemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.helmetInfo.nightTimeModeDuration * 0.3f, droppedItemComponent.itemInfo.helmetInfo.nightTimeModeDuration);
+                            ref var healthCmp = ref _healthComponentsPool.Value.Add(itemEntity);
+                            healthCmp.healthView = iterestObjectPrefab.GetComponent<HealthView>();
+                            healthCmp.healthView.Construct(itemEntity);
+                            healthCmp.maxHealthPoint = healthCmp.healthView.maxHealth;
+                            healthCmp.healthPoint = healthCmp.maxHealthPoint;
                         }
-                        else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.sheild)
-                            _shieldComponentsPool.Value.Add(itemEntity).currentDurability = (int)Random.Range(droppedItemComponent.itemInfo.sheildInfo.sheildDurability * 0.3f, droppedItemComponent.itemInfo.sheildInfo.sheildDurability);
-
+                        else if (needInterestObject.objectType == InterestObjectOnLocationView.InterestObjectType.none)
+                            iterestObjectPrefab.GetComponent<InteractCharacterView>().Construct(_world.Value, itemEntity);
+                        _hidedObjectOutsideFOVComponentsPool.Value.Add(itemEntity).hidedObjects = new Transform[] { iterestObjectPrefab.transform.GetChild(0) };
+                        break;
                     }
-
-                    else if (interestObjectView.objectType == InterestObjectOnLocationView.InterestObjectType.brocked || interestObjectView.objectType == InterestObjectOnLocationView.InterestObjectType.explode)
-                    {
-                        ref var healthCmp = ref _healthComponentsPool.Value.Add(itemEntity);
-                        healthCmp.healthView = interestObjectView.gameObject.GetComponent<HealthView>();
-                        healthCmp.healthView.Construct(itemEntity);
-                        healthCmp.maxHealthPoint = healthCmp.healthView.maxHealth;
-                        healthCmp.healthPoint = healthCmp.maxHealthPoint;
-                    }
-                    else if (interestObjectView.objectType == InterestObjectOnLocationView.InterestObjectType.none)
-                        interestObjectView.gameObject.GetComponent<InteractCharacterView>().Construct(_world.Value, itemEntity);
-                    _hidedObjectOutsideFOVComponentsPool.Value.Add(itemEntity).hidedObjects = new Transform[] { interestObjectView.transform.GetChild(0) };
                 }
             }
 
