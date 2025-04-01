@@ -5,4 +5,5 @@ using UnityEngine;
 public struct PlayerMeleeWeaponComponent 
 {
     public MeleeWeaponInfo weaponInfo;
+    public bool isAuto;
 }

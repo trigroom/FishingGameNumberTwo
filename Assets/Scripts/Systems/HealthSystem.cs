@@ -791,8 +791,8 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                     var dropItemsView = healthCmp.healthView.interestObjectView;
                     if (dropItemsView.objectType == InterestObjectOnLocationView.InterestObjectType.brocked)
                     {
-                int curItems = 0;
-                int percentDrop = Random.Range(0, 101);
+                        int curItems = 0;
+                        int percentDrop = Random.Range(0, 101);
                         var droppedItemInfo = dropItemsView.GetComponent<DroppedItemsListView>();
                         for (int i = 0; i < droppedItemInfo.dropElements.Length; i++)
                         {

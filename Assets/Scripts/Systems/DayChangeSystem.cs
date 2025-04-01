@@ -263,7 +263,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
             if (globalTimeCmp.isNight)
                 foreach (var needShopper in curLocationCmp.currentLocation.nightShoppers)
                     remainngShoppers.Add(needShopper);
-
+          //  int spawnedCount = 0;
             foreach (var interestObjectSpawnView in curLevelView.interestsObjectsViews)
             {
                 float randomNum = Random.value;
@@ -271,8 +271,8 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     if (interestObjectSpawnView.spawnChances[i] >= randomNum)
                     {
-                        var iterestObjectPrefab = _sceneService.Value.InstantiateLevel(interestObjectSpawnView.interestsObjects[i].transform);
-                        iterestObjectPrefab.transform.position = interestObjectSpawnView.transform.position;
+                        var iterestObjectPrefab = _sceneService.Value.InstantiateObject(interestObjectSpawnView.interestsObjects[i].transform,interestObjectSpawnView.transform.position);
+                        iterestObjectPrefab.transform.SetParent(curLocationCmp.currentLevelPrefab);
                         var needInterestObject = iterestObjectPrefab.GetComponent<InterestObjectOnLocationView>();
                         int itemEntity = _world.Value.NewEntity();
                         if (needInterestObject.objectType == InterestObjectOnLocationView.InterestObjectType.collecting)
@@ -322,10 +322,15 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                         else if (needInterestObject.objectType == InterestObjectOnLocationView.InterestObjectType.none)
                             iterestObjectPrefab.GetComponent<InteractCharacterView>().Construct(_world.Value, itemEntity);
                         _hidedObjectOutsideFOVComponentsPool.Value.Add(itemEntity).hidedObjects = new Transform[] { iterestObjectPrefab.transform.GetChild(0) };
+
+
+                      //  spawnedCount++;
                         break;
                     }
                 }
             }
+
+         //   Debug.Log(" spawnedCount" + spawnedCount);
 
             var currentInterestsSpawns = new List<Vector2>();
 

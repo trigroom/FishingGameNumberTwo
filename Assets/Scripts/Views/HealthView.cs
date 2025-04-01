@@ -9,7 +9,7 @@ public class HealthView : MonoBehaviour
     [field: SerializeField] public InterestObjectOnLocationView interestObjectView { get; private set; }
     public bool isDeath { get; private set; }
 
-    public int _entity { get; private set; }
+    [field: SerializeField] public int _entity { get; private set; }
     //private EcsWorld _world;
     public void Construct(int entity/*, EcsWorld world*/)
     {

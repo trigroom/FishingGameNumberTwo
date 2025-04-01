@@ -1178,11 +1178,15 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                                 break;
 
                             case 17:
-                                ref var hidedObjCmp3 = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<HealthView>()._entity);
+                                HealthView healthView;
+                                if(raycastHit2D.collider.gameObject.TryGetComponent(out healthView))
+                                {
+                                ref var hidedObjCmp3 = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(healthView._entity);
                                 hidedObjCmp3.timeBeforeHide = 0.5f;
                                 Debug.Log(hidedObjCmp3.hidedObjects.Length + "Hide dropped item");
                                 foreach (var spriteRenderer in hidedObjCmp3.hidedObjects)
                                     spriteRenderer.gameObject.SetActive(true);
+                                }
                                 break;
                             case 15:
                                 ref var hidedObjCmp4 = ref _hidedObjectOutsideFOVComponentsPool.Value.Get(raycastHit2D.collider.gameObject.GetComponent<TrapView>().entity);

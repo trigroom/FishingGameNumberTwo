@@ -943,15 +943,15 @@ public class AttackSystem : IEcsRunSystem
             {
                 ref var meleeAttackCmp = ref _meleeWeaponComponentsPool.Value.Get(playerEntity);
                 ref var playerMeleeAttackCmp = ref _playerMeleeWeaponComponentsPool.Value.Get(playerEntity);
+                    ref var playerStats = ref _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity);
 
-                if ((playerMeleeAttackCmp.weaponInfo.isAuto && (Input.GetMouseButton(0) || Input.GetMouseButton(1)) || (!playerMeleeAttackCmp.weaponInfo.isAuto && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))))
+                if ((playerMeleeAttackCmp.isAuto && (Input.GetMouseButton(0) || Input.GetMouseButton(1)) || (!playerMeleeAttackCmp.isAuto && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))))
                     && playerAttackCmp.currentAttackCouldown >= playerAttackCmp.attackCouldown && !playerAttackCmp.weaponIsChanged && playerAttackCmp.canAttack
                     && !curHealCmp.isHealing && !meleeAttackCmp.isHitting && moveCmp.currentRunTime > 0)
                 {
                     Vector2 direction = (moveCmp.pointToRotateInput - (Vector2)moveCmp.entityTransform.position).normalized;
                     if (Physics2D.Raycast(playerCmp.view.playerTransform.position, direction, 1f, LayerMask.GetMask("Obstacle"))) continue;
 
-                    ref var playerStats = ref _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity);
                     playerStats.currentStatsExp[0] += playerAttackCmp.damage * 0.3f;
                     if (playerStats.currentStatsExp[0] >= _sceneData.Value.levelExpCounts[playerStats.statLevels[0]])
                         playerStats.statLevels[0]++;
@@ -1443,6 +1443,9 @@ public class AttackSystem : IEcsRunSystem
         ref var meleeWeaponCmp = ref _meleeWeaponComponentsPool.Value.Get(_sceneData.Value.playerEntity);
         curAttackCmp.attackCouldown = meleeWeaponInfo.attackCouldown;
         curAttackCmp.changeWeaponTime = meleeWeaponInfo.weaponChangeSpeed;
+
+        playerMeleeWeaponCmp.isAuto = _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[_inventoryItemComponentsPool.Value.Get(_sceneData.Value.meleeWeaponCellView._entity).itemInfo.itemId].weaponExpLevel >= 5;
+
         playerMeleeWeaponCmp.weaponInfo = meleeWeaponInfo;
         var playerView = _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view;
         if (playerView.laserPointerLineRenderer.gameObject.activeInHierarchy)

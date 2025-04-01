@@ -184,7 +184,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectType: 3
-  spawnChance: 1
   dropItemView: {fileID: 0}
   neededMasterKey: {fileID: 1422386039574625044}
 --- !u!114 &4544049589818746766
@@ -213,8 +212,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c22403494cc4c645ac20c8bf65ee71e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lockerCellsCount: 2
-  masterkeySpeed: 30
+  lockerCellsCount: 3
+  masterkeySpeed: 45
 --- !u!114 &6137179999834051988
 MonoBehaviour:
   m_ObjectHideFlags: 0
