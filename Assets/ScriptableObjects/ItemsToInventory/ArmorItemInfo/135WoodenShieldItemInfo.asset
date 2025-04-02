@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac357f814689b0342b6a7c6efddf2e3d, type: 3}
-  m_Name: 64Sch1MaskItemInfo 1
+  m_Name: 135WoodenShieldItemInfo
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: 21300000, guid: 914f1352d81fde7449e7685e8aaf7148, type: 3}
-  type: 11
+  itemSprite: {fileID: 21300000, guid: 85914eb8803f2f94bad04cbd5b677cd7, type: 3}
+  type: 10
   maxCount: 1
-  itemWeight: 1
-  itemId: 64
-  itemName: sch1 mask
+  itemWeight: 2
+  itemId: 135
+  itemName: wooden Shield
   itemDescription: 
-  itemCost: 60
+  itemCost: 10
   gunInfo: {fileID: 0}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}
@@ -28,7 +28,7 @@ MonoBehaviour:
   backpackInfo: {fileID: 0}
   gunPartInfo: {fileID: 0}
   expAddedInfo: {fileID: 0}
-  sheildInfo: {fileID: 0}
-  helmetInfo: {fileID: 11400000, guid: 0c291ca2f0416c443a02acf49c2c0ab9, type: 2}
+  sheildInfo: {fileID: 11400000, guid: 1a38b5f797822d84ca9a4e8e309f0900, type: 2}
+  helmetInfo: {fileID: 0}
   bodyArmorInfo: {fileID: 0}
   randomHealInfo: {fileID: 0}
