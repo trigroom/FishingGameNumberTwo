@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: WoodenShieldInfo
   m_EditorClassIdentifier: 
   sheildSprite: {fileID: 21300000, guid: 55030d9ce2a8f634193340a1323195c5, type: 3}
-  sheildColliderScale: {x: 0.04, y: 0.19}
+  sheildColliderScale: {x: 0.07, y: 0.12}
   sheildInHandsPosition: {x: -0.2, y: 0.6}
   sheildColliderPositionOffset: {x: 0, y: 0}
   sheildDurability: 200
   sheildRecoveryCost: 20
-  damagePercent: 0.5
-  recoilPercent: 0.4
+  damagePercent: 0.4
+  recoilPercent: 0.75

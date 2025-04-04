@@ -325,7 +325,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             }
         }
 
-        List<NumAndIdForSafeData> weaponsListCheck = new List<NumAndIdForSafeData>();
+      /*  List<NumAndIdForSafeData> weaponsListCheck = new List<NumAndIdForSafeData>();
         for (int i = 0; i < gameData.weaponsCurrentExpForSaveData.Length; i++)
             weaponsListCheck.Add(new NumAndIdForSafeData(gameData.weaponsCurrentExpForSaveData[i].cellId, gameData.weaponsCurrentExpForSaveData[i].num));
         int curWeaponsCount = 0;
@@ -342,7 +342,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
         gameData.weaponsCurrentExpForSaveData = new NumAndIdForSafeData[weaponsListCheck.Count];
         for (int i = 0; i < weaponsListCheck.Count; i++)
-            gameData.weaponsCurrentExpForSaveData[i] = weaponsListCheck[i];
+            gameData.weaponsCurrentExpForSaveData[i] = weaponsListCheck[i];*/
 
 
 

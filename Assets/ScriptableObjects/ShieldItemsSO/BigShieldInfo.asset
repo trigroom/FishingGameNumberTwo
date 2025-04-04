@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: BigShieldInfo
   m_EditorClassIdentifier: 
   sheildSprite: {fileID: 21300000, guid: 716eac311fc0ffc4a95410585ba1eeb2, type: 3}
-  sheildColliderScale: {x: 0.07, y: 0.19}
+  sheildColliderScale: {x: 0.07, y: 0.22}
   sheildInHandsPosition: {x: -0.2, y: 0.6}
   sheildColliderPositionOffset: {x: 0, y: 0}
-  sheildDurability: 200
-  sheildRecoveryCost: 20
-  damagePercent: 0.7
-  recoilPercent: 0.7
+  sheildDurability: 700
+  sheildRecoveryCost: 40
+  damagePercent: 0.85
+  recoilPercent: 0.65
