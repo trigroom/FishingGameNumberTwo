@@ -786,7 +786,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                 else
                 {
                     Debug.Log("SaveQuest");
-                    if (questNPCCmp.questIsGiven)
+                    if (questNPCCmp.questIsGiven || questNPCCmp.currentQuest < questNPC.gameObject.GetComponent<QuestCharacterView>().questNode.Length)
                         questsInfoForSafeData.Add(new QuestInfoForSafeData(questNPCCmp.characterId, questNPCCmp.currentQuest, _questComponentsPool.Value.Get(questNPC._entity).curerntCollectedItems));
                     else
                         questsInfoForSafeData.Add(new QuestInfoForSafeData(questNPCCmp.characterId, questNPCCmp.currentQuest, null));

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class UIElementsView : MonoBehaviour
 {
     [Header("General Item Info UI")]
+    [field: SerializeField] public TMP_Text shopperRepText { get; private set; }
     [field: SerializeField] public Animator masterkeyAnimator { get; set; }
     [field: SerializeField] public Transform masterkeyMinigameContainer { get; set; }
     [field: SerializeField] public Transform lockerCellsContainer { get; set; }

@@ -79,6 +79,7 @@ public class ShopCellsSystem : IEcsInitSystem, IEcsRunSystem
         {
             var shopCharacterCmp = _shopCharacterComponentsPool.Value.Get(shopOpenEvt);
             _sceneData.Value.dropedItemsUIView.shopTableImage.sprite = shopCharacterCmp.characterView.shopperTable;
+            _sceneData.Value.dropedItemsUIView.shopperRepText.text = _questNPCComponentsPool.Value.Get(_currentInteractedCharactersComponentsPool.Value.Get(_sceneData.Value.playerEntity).interactCharacterView._entity).currentQuest + " rep";
 
             SetShopPage(shopCharacterCmp.currentShopPage);
         }

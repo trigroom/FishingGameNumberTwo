@@ -5,6 +5,6 @@ using UnityEngine;
 public struct QuestNPCComponent 
 {
     public bool questIsGiven;
-    public int currentQuest;
+    public int currentQuest { get; set; }
     public int characterId;
 }

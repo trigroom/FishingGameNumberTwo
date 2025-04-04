@@ -203,7 +203,7 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
                 _currentInteractedCharactersComponentsPool.Value.Get(_sceneService.Value.playerEntity).isNPCNowIsUsed = false;
                 return;
             }
-
+            Debug.Log(questNPCCmp.currentQuest + " cur dialog num " + curDialogPlayerCmp.currentDialogeNumber);
             _sceneService.Value.dropedItemsUIView.dialogeText.text = curNPC.questNode[questNPCCmp.currentQuest].dialogeText[curDialogPlayerCmp.currentDialogeNumber];
         }
     }
