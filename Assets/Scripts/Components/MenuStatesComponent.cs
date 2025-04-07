@@ -11,6 +11,7 @@ public struct MenuStatesComponent
     public bool inQuestHelperState;
     public MainMenuState mainMenuState;
     public bool inCraftingTableState;
+    public RectTransform invCellRectTransform;
 
     public int lastMarkedCell;
     public int lastDraggedCell;

@@ -52,6 +52,7 @@ public class InventorySystem : IEcsRunSystem
     private EcsPoolInject<CameraComponent> _cameraComponentsPool;
     private EcsPoolInject<SpecialInventoryCellTag> _specialInventoryCellTagsPool;
     private EcsPoolInject<MeleeWeaponComponent> _meleeWeaponComponentsPool;
+    private EcsPoolInject<StartDragItemEvent> _startDragItemEventsPool;
 
     private EcsFilterInject<Inc<ReloadEvent>> _reloadEventsFilter;
     private EcsFilterInject<Inc<InventoryItemComponent>, Exc<StorageCellTag, SpecialInventoryCellTag>> _inventoryItemsFilter;
@@ -159,12 +160,16 @@ public class InventorySystem : IEcsRunSystem
             ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             if (startDrag != menuStatesCmp.lastMarkedCell && menuStatesCmp.lastMarkedCell != 0)
                 _inventoryCellsComponents.Value.Get(menuStatesCmp.lastMarkedCell).cellView.inventoryCellAnimator.SetBool("buttonIsActive", false);
+            Debug.Log(_startDragItemEventsPool.Value.Get(startDrag).invCellRectTransform + " celllll");
+            menuStatesCmp.invCellRectTransform = _startDragItemEventsPool.Value.Get(startDrag).invCellRectTransform;
             menuStatesCmp.lastMarkedCell = 0;
             menuStatesCmp.lastDraggedCell = startDrag;
+            _startDragItemEventsPool.Value.Del(startDrag);
         }
         foreach (var dropDrag in _endItemDragEventsFilter.Value)
         {
             ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+            menuStatesCmp.invCellRectTransform = null;
             if (menuStatesCmp.lastDraggedCell != dropDrag && !_gunComponentsPool.Value.Get(_sceneData.Value.playerEntity).isReloading && !_attackComponentsPool.Value.Get(_sceneData.Value.playerEntity).weaponIsChanged)
             {
                 ref var draggedInvCell = ref _inventoryCellsComponents.Value.Get(menuStatesCmp.lastDraggedCell);

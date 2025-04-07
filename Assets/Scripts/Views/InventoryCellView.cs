@@ -75,16 +75,16 @@ public class InventoryCellView : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (!inventoryCellButton.interactable) return;
+      //  if (!inventoryCellButton.interactable) return;
 
-        invCellRectTransform.anchoredPosition += eventData.delta / mainCanvas.scaleFactor * 1.438f;
+       // invCellRectTransform.anchoredPosition += eventData.delta / mainCanvas.scaleFactor;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!inventoryCellButton.interactable) return;
 
-        _world.GetPool<StartDragItemEvent>().Add(_entity);
+        _world.GetPool<StartDragItemEvent>().Add(_entity).invCellRectTransform = invCellRectTransform;
         cellCanvasGroup.blocksRaycasts = false;
     }
 

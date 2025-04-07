@@ -33,7 +33,7 @@ MonoBehaviour:
   bulletShellPointPosition: {x: 0, y: 0}
   bulletShellSpawnOnShot: 1
   durabilityRecoveryCost: 10
-  isOneHandedGun: 0
+  isOneHandedGun: 1
   laserPointer:
     laserMaxLenght: 0
     laserPosition: {x: 0, y: 0}

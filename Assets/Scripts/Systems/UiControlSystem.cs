@@ -2,6 +2,7 @@ using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
 using TMPro;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 
 public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
@@ -62,7 +63,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
     public void Init(IEcsSystems systems)
     {
-        Debug.Log("Check fast load");
+      //  Debug.Log("Check fast load");
         _sceneData.Value.dropedItemsUIView.Construct(_world.Value);
         _sceneData.Value.mainMenuView.buttons[0].onClick.AddListener(ContinueButtonAction);
         _sceneData.Value.mainMenuView.buttons[1].onClick.AddListener(OpenSettings);
@@ -753,6 +754,13 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 ChangeMainMenuState(ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity), false);
             }
         }
+        if(_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).invCellRectTransform != null)
+        {
+            var menuStatesCmp = _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+               var cellTransform = menuStatesCmp.invCellRectTransform;
+            cellTransform.anchoredPosition = new Vector2(Input.mousePosition.x - cellTransform.parent.gameObject.transform.position.x, Input.mousePosition.y - cellTransform.parent.gameObject.transform.position.y)*1.15f/ _sceneData.Value.mainMenuView.uiMenusToScale[0].localScale.x;
+            Debug.Log("moveCell" + _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).invCellRectTransform.anchoredPosition);
+        }
     }
     private void ShowItemDescription()
     {
@@ -1039,7 +1047,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             menusStatesCmp.mainMenuState = MenuStatesComponent.MainMenuState.none;
             _sceneData.Value.mainMenuView.ChangeMenuState(false);
         }
-         Debug.Log(menusStatesCmp.mainMenuState + " menustate");
+        // Debug.Log(menusStatesCmp.mainMenuState + " menustate");
         inMenu = menusStatesCmp.mainMenuState != MenuStatesComponent.MainMenuState.none;
         _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).canMove = !inMenu;
         _currentAttackComponentsPool.Value.Get(_sceneData.Value.playerEntity).canAttack = !inMenu;
