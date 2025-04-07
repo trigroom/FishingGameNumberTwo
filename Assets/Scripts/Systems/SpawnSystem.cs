@@ -131,7 +131,7 @@ public class SpawnSystem : IEcsRunSystem
         creatureAiStatesCmp.reachedLastTarget = true;
         creatureAiStatesCmp.creatureView.entity = creatureEntity;
         float visionZoneMultiplayer = 1;
-        if (creatureInventoryCmp.helmetItem != null && creatureInventoryCmp.helmetItem.addedLightIntancity != 0)
+        if (creatureInventoryCmp.helmetItem != null && creatureInventoryCmp.helmetItem.helmetInfo.addedLightIntancity != 0)
             visionZoneMultiplayer = 0.85f;
         else if (globalTimeCmp.isNight)
             visionZoneMultiplayer = 0.4f + globalTimeCmp.currentGlobalLightIntensity;
@@ -141,7 +141,7 @@ public class SpawnSystem : IEcsRunSystem
 
         if (creatureInventoryCmp.gunItem != null)
         {
-            creatureAiStatesCmp.safeDistance = (4+creatureInventoryCmp.gunItem.attackLenght / 8) * visionZoneMultiplayer;
+            creatureAiStatesCmp.safeDistance = (4+creatureInventoryCmp.gunItem.gunInfo.attackLenght / 8) * visionZoneMultiplayer;
             if (creatureInventoryCmp.meleeWeaponItem != null)
                 creatureAiStatesCmp.minSafeDistance = 1.8f;
             else
@@ -187,20 +187,20 @@ public class SpawnSystem : IEcsRunSystem
 
         if(creatureInventoryCmp.shieldItem != null)
         {
-            moveCmp.movementView.shieldView.shieldSpriteRenderer.sprite = creatureInventoryCmp.shieldItem.sheildSprite;
-            moveCmp.movementView.shieldView.shieldCollider.size = creatureInventoryCmp.shieldItem.sheildColliderScale;
+            moveCmp.movementView.shieldView.shieldSpriteRenderer.sprite = creatureInventoryCmp.shieldItem.sheildInfo.sheildSprite;
+            moveCmp.movementView.shieldView.shieldCollider.size = creatureInventoryCmp.shieldItem.sheildInfo.sheildColliderScale;
             moveCmp.movementView.shieldView.shieldCollider.enabled = true;
         }
 
         if (creatureInventoryCmp.healingItem != null)
         {
             ref var healItemCmp = ref _currentHealingItemComponentsPool.Value.Add(creatureEntity);
-            healItemCmp.healingItemInfo = creatureInventoryCmp.healingItem;
+            healItemCmp.healingItemInfo = creatureInventoryCmp.healingItem.healInfo;
         }
 
         if (creatureInventoryCmp.gunItem != null)
         {
-            var creatureGunInfo = creatureInventoryCmp.gunItem;
+            var creatureGunInfo = creatureInventoryCmp.gunItem.gunInfo;
             ref var gunCmp = ref _gunComponentsPool.Value.Add(creatureEntity);
             gunCmp.reloadDuration = creatureGunInfo.reloadDuration;
             gunCmp.isOneBulletReload = creatureGunInfo.isOneBulletReloaded;
@@ -218,7 +218,7 @@ public class SpawnSystem : IEcsRunSystem
             gunCmp.firePoint = moveCmp.movementView.firePoint;
             gunCmp.weaponContainer = moveCmp.movementView.weaponContainer;
             gunCmp.lightFromGunShot = creatureAiStatesCmp.creatureView.aiCreatureView.lightFromGunShot;
-            gunCmp.flashShotInstance = creatureInventoryCmp.gunItem.shotFlashIntance;
+            gunCmp.flashShotInstance = creatureInventoryCmp.gunItem.gunInfo.shotFlashIntance;
 
             attackCmp.attackCouldown = creatureGunInfo.attackCouldown;
             attackCmp.canAttack = true;
@@ -228,7 +228,7 @@ public class SpawnSystem : IEcsRunSystem
             creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localScale = new Vector3(1, -1, 1) * creatureGunInfo.spriteScaleMultiplayer;
             creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureGunInfo.spriteRotation);
 
-            attackCmp.weaponRotateSpeed = (30f / (attackCmp.damage * creatureInventoryCmp.gunItem.bulletCount) + 1.5f) * creatureInventoryCmp.enemyClassSettingInfo.weaponRotationSpeedMultiplayer;
+            attackCmp.weaponRotateSpeed = (30f / (attackCmp.damage * creatureInventoryCmp.gunItem.gunInfo.bulletCount) + 1.5f) * creatureInventoryCmp.enemyClassSettingInfo.weaponRotationSpeedMultiplayer;
 
            moveCmp.movementView.bulletShellSpawnPoint.localPosition = creatureGunInfo.bulletShellPointPosition;
         }
@@ -241,14 +241,15 @@ public class SpawnSystem : IEcsRunSystem
 
             if (creatureInventoryCmp.gunItem == null)
             {
+                var meleeWeapon = creatureInventoryCmp.meleeWeaponItem.meleeWeaponInfo;
                 attackCmp.canAttack = true;
-                attackCmp.damage = creatureInventoryCmp.meleeWeaponItem.damage;
-                attackCmp.attackCouldown = creatureInventoryCmp.meleeWeaponItem.attackCouldown;
+                attackCmp.damage = meleeWeapon.damage;
+                attackCmp.attackCouldown = meleeWeapon.attackCouldown;
 
-                creatureAiStatesCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureInventoryCmp.meleeWeaponItem.weaponSprite;
+                creatureAiStatesCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = meleeWeapon.weaponSprite;
 
-                creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localScale = new Vector3(1, -1, 1) * creatureInventoryCmp.meleeWeaponItem.spriteScaleMultiplayer;
-                creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureInventoryCmp.meleeWeaponItem.spriteRotation);
+                creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localScale = new Vector3(1, -1, 1) * meleeWeapon.spriteScaleMultiplayer;
+                creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, meleeWeapon.spriteRotation);
 
                 attackCmp.weaponRotateSpeed = (50f / attackCmp.damage+1) * creatureInventoryCmp.enemyClassSettingInfo.weaponRotationSpeedMultiplayer;
             }
@@ -261,14 +262,15 @@ public class SpawnSystem : IEcsRunSystem
 
         if (creatureInventoryCmp.bodyArmorItem != null)
         {
-            moveCmp.movementView.bodyArmorSpriteRenderer.transform.localPosition = creatureInventoryCmp.bodyArmorItem.inGamePositionOnPlayer;
-            moveCmp.movementView.bodyArmorSpriteRenderer.sprite = creatureInventoryCmp.bodyArmorItem.bodyArmorSprite;
+            moveCmp.movementView.bodyArmorSpriteRenderer.transform.localPosition = creatureInventoryCmp.bodyArmorItem.bodyArmorInfo.inGamePositionOnPlayer;
+            moveCmp.movementView.bodyArmorSpriteRenderer.sprite = creatureInventoryCmp.bodyArmorItem.bodyArmorInfo.bodyArmorSprite;
         }
         if (creatureInventoryCmp.helmetItem != null)
         {
-            moveCmp.movementView.helmetSpriteRenderer.transform.localPosition = creatureInventoryCmp.helmetItem.inGamePositionOnPlayer;
-            moveCmp.movementView.helmetSpriteRenderer.sprite = creatureInventoryCmp.helmetItem.helmetSprite;
-            moveCmp.movementView.hairSpriteRenderer.sprite = randomHair.sprites[creatureInventoryCmp.helmetItem.hairSpriteIndex];
+            var helmetItem = creatureInventoryCmp.helmetItem.helmetInfo;
+            moveCmp.movementView.helmetSpriteRenderer.transform.localPosition = helmetItem.inGamePositionOnPlayer;
+            moveCmp.movementView.helmetSpriteRenderer.sprite = helmetItem.helmetSprite;
+            moveCmp.movementView.hairSpriteRenderer.sprite = randomHair.sprites[helmetItem.hairSpriteIndex];
         }
         else
             moveCmp.movementView.hairSpriteRenderer.sprite = randomHair.sprites[1];

@@ -29,8 +29,8 @@ MonoBehaviour:
   isOneBulletReloaded: 1
   maxDurabilityPoints: 550
   bulletShellIndex: 4
-  firepointPosition: {x: 0.15, y: 0.07}
-  bulletShellPointPosition: {x: -0.15, y: 0}
+  firepointPosition: {x: 0.13, y: 0.055}
+  bulletShellPointPosition: {x: -0.02, y: 0.02}
   bulletShellSpawnOnShot: 0
   durabilityRecoveryCost: 10
   isOneHandedGun: 1
@@ -69,6 +69,7 @@ MonoBehaviour:
       m_ColorSpace: -1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
+  laserPointerPosition: {x: 0, y: 0}
   spriteScaleMultiplayer: 2.5
   spriteRotation: 90
   weaponSprite: {fileID: 21300000, guid: 2d236aae946c35f499938423cedbc160, type: 3}
@@ -90,9 +91,10 @@ MonoBehaviour:
   scopeMultiplicity: 1
   blackBGSize: 0
   centreCrossSprite: {fileID: 0}
-  shotSound: {fileID: 8300000, guid: 9fff401a335a4d547bf8044d3c7035e9, type: 3}
-  reloadSound: {fileID: 8300000, guid: d9def0d3917c33c48a1f52e67ecdf7e3, type: 3}
+  shotSound: {fileID: 8300000, guid: 38654f4852b5ec745b45f35dabec6c2a, type: 3}
+  startReloadSound: {fileID: 8300000, guid: a65ba32ba0094164a90be57b3afe8c29, type: 3}
+  endReloadSound: {fileID: 8300000, guid: ee9d5e36eaec97d48ae170d3f477e698, type: 3}
   upgradeCost: 0
   upgradedGunId: 0
-  neededGunsmithLevelToUpgrade: 0
+  neededGunLevelToUpgrade: 0
   gunParts: 9

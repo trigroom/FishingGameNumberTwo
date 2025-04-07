@@ -7,12 +7,12 @@ public class LevelSettingsInfo : ScriptableObject
     public LevelSceneView levelPrefab;
     public LevelTarget levelTarget;
    // public EnemyForSpawnInfoElement[] enemies;
-    public BodyArmorInfo[] bodyArmorsInfo;
-    public HelmetInfo[] helmetsInfo;
-    public GunInfo[] gunsInfo;
-    public MeleeWeaponInfo[] meleeWeaponsInfo;
-    public HealingItemInfo[] healingItemsInfo;
-    public SheildInfo[] shieldItemsInfo;
+    public ItemInfo[] bodyArmorsInfo;
+    public ItemInfo[] helmetsInfo;
+    public ItemInfo[] gunsInfo;
+    public ItemInfo[] meleeWeaponsInfo;
+    public ItemInfo[] healingItemsInfo;
+    public ItemInfo[] shieldItemsInfo;
     public float chanceToOneWeapon;
     public float chanceToMeleeWeapon;
     public float chanceToHealingItem;

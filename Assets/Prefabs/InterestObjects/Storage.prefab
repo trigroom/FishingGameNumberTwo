@@ -241,12 +241,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dropElements:
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: af604163e23188d4aa9276744628591d, type: 2}
+    <itemsCountMax>k__BackingField: 1
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 3
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: c291be3aef715cd47978afa291d00189, type: 2}
+    <itemsCountMax>k__BackingField: 1
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 6
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 02d857d690a27fa48b0752dd4325fbfc, type: 2}
+    <itemsCountMax>k__BackingField: 1
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 9
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: 5402d794d5d58ee42ab6d888b8d5f9ae, type: 2}
     <itemsCountMax>k__BackingField: 4
     <itemsCountMin>k__BackingField: 2
-    <dropPercent>k__BackingField: 80
+    <dropPercent>k__BackingField: 6
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: 19c4f819037671148a5908a9a163f099, type: 2}
     <itemsCountMax>k__BackingField: 1
     <itemsCountMin>k__BackingField: 1
     <dropPercent>k__BackingField: 80
-  maxDroppedItemsCount: 1
+  maxDroppedItemsCount: 2

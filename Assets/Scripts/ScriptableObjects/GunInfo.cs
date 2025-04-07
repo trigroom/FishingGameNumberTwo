@@ -36,7 +36,7 @@ public class GunInfo : ScriptableObject
     public bool isOneHandedGun;
 
     public LaserPointerForGunElement laserPointer ;
-    public Vector2 laserPointerPosition{ get; set; }
+    public Vector2 laserPointerPosition;
     [Header("Visual settings")]
     public float spriteScaleMultiplayer;
     public float spriteRotation;
@@ -58,12 +58,13 @@ public class GunInfo : ScriptableObject
 
     [Header("Audio settings")]
     public AudioClip shotSound;
-    public AudioClip reloadSound;
+    public AudioClip startReloadSound;
+    public AudioClip endReloadSound;
 
     [Header("Upgrade info")]
     public int upgradeCost;
     public int upgradedGunId;
-    public int neededGunsmithLevelToUpgrade;
+    public int neededGunLevelToUpgrade ;
     public GunParts gunParts;
 
     [Flags]

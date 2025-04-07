@@ -54,6 +54,7 @@ MonoBehaviour:
   <characterHeadCollaider>k__BackingField: {fileID: 0}
   <headColliderView>k__BackingField: {fileID: 0}
   <interestObjectView>k__BackingField: {fileID: 5620110509955194848}
+  <_entity>k__BackingField: 0
 --- !u!61 &8401887563914059714
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -113,7 +114,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectType: 0
-  spawnChance: 0.35
   dropItemView: {fileID: 0}
   neededMasterKey: {fileID: 0}
 --- !u!114 &1384705717821851405
@@ -143,26 +143,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dropElements:
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 45046b3af24ec3143bc4dc4e267d4ad6, type: 2}
+    <itemsCountMax>k__BackingField: 1
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 3
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 269e2f7c0a8cdf6448ba1abb3231dc2b, type: 2}
+    <itemsCountMax>k__BackingField: 1
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 6
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: f49b8f221b28bf740a4e6196aab5988f, type: 2}
+    <itemsCountMax>k__BackingField: 1
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 9
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 4b5120ed05311df478420a3ae24b541f, type: 2}
+    <itemsCountMax>k__BackingField: 1
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 13
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: a494b581149e9c0498bcf397bc65c979, type: 2}
     <itemsCountMax>k__BackingField: 1
     <itemsCountMin>k__BackingField: 1
-    <dropPercent>k__BackingField: 5
+    <dropPercent>k__BackingField: 20
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: d23d29680578569469b2cb75149cdc0f, type: 2}
     <itemsCountMax>k__BackingField: 1
     <itemsCountMin>k__BackingField: 1
-    <dropPercent>k__BackingField: 10
+    <dropPercent>k__BackingField: 27
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: d217d9e85e2fed24684b853f51629924, type: 2}
     <itemsCountMax>k__BackingField: 1
     <itemsCountMin>k__BackingField: 1
-    <dropPercent>k__BackingField: 15
+    <dropPercent>k__BackingField: 34
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: b91a1d4b3b377d843b3668d65eed1c70, type: 2}
     <itemsCountMax>k__BackingField: 1
     <itemsCountMin>k__BackingField: 1
-    <dropPercent>k__BackingField: 20
+    <dropPercent>k__BackingField: 41
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: 502f02bc6e8ae744b968fdbdf2930402, type: 2}
     <itemsCountMax>k__BackingField: 3
     <itemsCountMin>k__BackingField: 1
-    <dropPercent>k__BackingField: 30
+    <dropPercent>k__BackingField: 80
   maxDroppedItemsCount: 2
 --- !u!1 &7970463648793323132
 GameObject:

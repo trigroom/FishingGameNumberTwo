@@ -261,10 +261,6 @@ MonoBehaviour:
     <itemsCountMax>k__BackingField: 1
     <itemsCountMin>k__BackingField: 1
     <dropPercent>k__BackingField: 78
-  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 5c06df868b5f3ed409ac8607bf209b92, type: 2}
-    <itemsCountMax>k__BackingField: 1
-    <itemsCountMin>k__BackingField: 1
-    <dropPercent>k__BackingField: 50
   maxDroppedItemsCount: 1
 --- !u!114 &3138341111306993782
 MonoBehaviour:

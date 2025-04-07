@@ -326,7 +326,7 @@ public class AttackSystem : IEcsRunSystem
             if (creatureAiInventory.meleeWeaponItem == null || creatureAiInventory.gunItem != null && !_creatureInventoryComponentsPool.Value.Get(aiCreature).isSecondWeaponUsed)
             {
                 ref var gunCmp = ref _gunComponentsPool.Value.Get(aiCreature);
-
+                var gunItem = creatureAiInventory.gunItem.gunInfo;
                 if (creatureAi.currentState != CreatureAIComponent.CreatureStates.idle)
                 {
                     if (!gunCmp.isReloading && attackCmp.currentAttackCouldown >= attackCmp.attackCouldown && gunCmp.currentMagazineCapacity > 0 && attackCmp.canAttack && creatureAi.sightOnTarget && (creatureAi.needSightOnTargetTime + (Vector2.Distance(creatureAi.currentTarget.position, creatureAi.creatureView.transform.position) * 0.1f)) < creatureAi.sightOnTargetTime)
@@ -335,10 +335,10 @@ public class AttackSystem : IEcsRunSystem
 
                         attackCmp.currentAttackCouldown = 0;
                         if (!_buildingCheckerComponentsPool.Value.Get(_sceneData.Value.playerEntity).isHideRoof)
-                            creatureAi.creatureView.movementView.weaponAudioSource.volume = _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).currentAudibility * creatureAiInventory.gunItem.shotSoundDistance / distanceToPlayer * playerCmp.currentAudibility;
+                            creatureAi.creatureView.movementView.weaponAudioSource.volume = _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).currentAudibility * gunItem.shotSoundDistance / distanceToPlayer * playerCmp.currentAudibility;
                         else
-                            creatureAi.creatureView.movementView.weaponAudioSource.volume = _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).currentAudibility * creatureAiInventory.gunItem.shotSoundDistance / distanceToPlayer * 1.35f * playerCmp.currentAudibility;//если стрел€ет в помещении то в 1,35 раза громче
-                        creatureAi.creatureView.movementView.weaponAudioSource.clip = creatureAiInventory.gunItem.shotSound;
+                            creatureAi.creatureView.movementView.weaponAudioSource.volume = _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).currentAudibility * gunItem.shotSoundDistance / distanceToPlayer * 1.35f * playerCmp.currentAudibility;//если стрел€ет в помещении то в 1,35 раза громче
+                        creatureAi.creatureView.movementView.weaponAudioSource.clip = gunItem.shotSound;
                         creatureAi.creatureView.movementView.weaponAudioSource.panStereo = (moveCmp.entityTransform.position.x - playerPosition.x) / 6f;
                         creatureAi.creatureView.movementView.weaponAudioSource.Play();
                         for (int i = 0; i < gunCmp.bulletInShotCount; i++)
@@ -350,9 +350,9 @@ public class AttackSystem : IEcsRunSystem
                         attackCmp.currentAttackCouldown = 0;
                         gunCmp.currentMagazineCapacity--;
 
-                        if (creatureAiInventory.gunItem.bulletShellSpawnOnShot && _hidedObjectOutsideFOVComponentsPool.Value.Get(aiCreature).timeBeforeHide > 0)
-                            BulletShellSpawn(creatureAiInventory.gunItem.bulletShellIndex, moveCmp.movementView.bulletShellSpawnPoint.position, moveCmp.movementView.weaponContainer.localEulerAngles.z, moveCmp.movementView.characterSpriteTransform.localRotation.y == 0);
-                        else if (!creatureAiInventory.gunItem.bulletShellSpawnOnShot)
+                        if (gunItem.bulletShellSpawnOnShot && _hidedObjectOutsideFOVComponentsPool.Value.Get(aiCreature).timeBeforeHide > 0)
+                            BulletShellSpawn(gunItem.bulletShellIndex, moveCmp.movementView.bulletShellSpawnPoint.position, moveCmp.movementView.weaponContainer.localEulerAngles.z, moveCmp.movementView.characterSpriteTransform.localRotation.y == 0);
+                        else if (!gunItem.bulletShellSpawnOnShot)
                             creatureAi.bulletShellsToReload++;
 
                         if (gunCmp.currentMagazineCapacity == 0)
@@ -365,7 +365,8 @@ public class AttackSystem : IEcsRunSystem
                     float distanceToPlayer = Vector2.Distance(moveCmp.entityTransform.position, playerPosition);
                     if (6f * playerCmp.currentAudibility >= distanceToPlayer)
                     {
-                        creatureAi.creatureView.movementView.weaponAudioSource.clip = creatureAiInventory.gunItem.reloadSound;
+                        if(creatureAiInventory.gunItem.gunInfo.startReloadSound != null)
+                        creatureAi.creatureView.movementView.weaponAudioSource.clip = creatureAiInventory.gunItem.gunInfo.startReloadSound;
                         creatureAi.creatureView.movementView.weaponAudioSource.panStereo = (moveCmp.entityTransform.position.x - playerPosition.x) / 6f;
                         creatureAi.creatureView.movementView.weaponAudioSource.volume = 6f * playerCmp.currentAudibility / distanceToPlayer;
                         creatureAi.creatureView.movementView.weaponAudioSource.Play();
@@ -377,12 +378,12 @@ public class AttackSystem : IEcsRunSystem
                     gunCmp.currentReloadDuration += Time.deltaTime;
                     if (gunCmp.currentReloadDuration >= gunCmp.reloadDuration)
                     {
-                        if (!creatureAiInventory.gunItem.bulletShellSpawnOnShot && _hidedObjectOutsideFOVComponentsPool.Value.Get(aiCreature).timeBeforeHide > 0)
+                        if (!gunItem.bulletShellSpawnOnShot && _hidedObjectOutsideFOVComponentsPool.Value.Get(aiCreature).timeBeforeHide > 0)
                         {
                             Vector2 spawnPosition = moveCmp.movementView.bulletShellSpawnPoint.position;
                             for (int i = 0; i < creatureAi.bulletShellsToReload; i++)
                             {
-                                BulletShellSpawn(creatureAiInventory.gunItem.bulletShellIndex, spawnPosition, moveCmp.movementView.weaponContainer.localEulerAngles.z, moveCmp.movementView.characterSpriteTransform.localRotation.y == 0);
+                                BulletShellSpawn(gunItem.bulletShellIndex, spawnPosition, moveCmp.movementView.weaponContainer.localEulerAngles.z, moveCmp.movementView.characterSpriteTransform.localRotation.y == 0);
                                 if (i % 2 == 0)
                                     spawnPosition = new Vector2(spawnPosition.x, spawnPosition.y + 0.1f);
                             }
@@ -390,6 +391,8 @@ public class AttackSystem : IEcsRunSystem
                         }
                         gunCmp.currentReloadDuration = 0;
                         gunCmp.isReloading = false;
+                        if (creatureAiInventory.gunItem.gunInfo.endReloadSound)
+                        creatureAi.creatureView.movementView.weaponAudioSource.clip = creatureAiInventory.gunItem.gunInfo.endReloadSound;
                         if (gunCmp.isOneBulletReload)
                             gunCmp.currentMagazineCapacity++;
                         else
@@ -412,7 +415,7 @@ public class AttackSystem : IEcsRunSystem
                 {
                     if (attackCmp.currentAttackCouldown >= attackCmp.attackCouldown && attackCmp.canAttack && !meleeCmp.isHitting && creatureAi.sightOnTarget)
                     {
-                        ref var meleeItem = ref creatureAiInventory.meleeWeaponItem;
+                        ref var meleeItem = ref creatureAiInventory.meleeWeaponItem.meleeWeaponInfo;
                         creatureAi.creatureView.movementView.weaponCollider.enabled = true;
                         var weaponContainerTransform = creatureAi.creatureView.movementView.weaponContainer;
                         if (!meleeCmp.isWideAttack)
@@ -423,7 +426,7 @@ public class AttackSystem : IEcsRunSystem
                         else
                             meleeCmp.startRotation = creatureAi.creatureView.movementView.weaponContainer.transform.eulerAngles.z;
 
-                        creatureAi.creatureView.movementView.weaponAudioSource.clip = meleeItem.hitSound;
+                       // creatureAi.creatureView.movementView.weaponAudioSource.clip = meleeItem.hitSound;
                         creatureAi.creatureView.movementView.weaponAudioSource.panStereo = (moveCmp.entityTransform.position.x - playerPosition.x) / 5f;
                         creatureAi.creatureView.movementView.weaponAudioSource.volume = 5f / Vector2.Distance(moveCmp.entityTransform.position, playerPosition);
                         creatureAi.creatureView.movementView.weaponAudioSource.Play();
@@ -438,7 +441,7 @@ public class AttackSystem : IEcsRunSystem
 
                 if (meleeCmp.isHitting)
                 {
-                    ref var meleeItem = ref creatureAiInventory.meleeWeaponItem;
+                    ref var meleeItem = ref creatureAiInventory.meleeWeaponItem.meleeWeaponInfo;
                     var weaponContainerTransform = creatureAi.creatureView.movementView.weaponContainer;
                     if (!meleeCmp.isWideAttack)
                     {
@@ -718,7 +721,8 @@ public class AttackSystem : IEcsRunSystem
                 {
                     gunCmp.isReloading = true;
                     _sceneData.Value.ammoInfoText.text = "перезар€дка...";
-                    playerCmp.view.movementView.weaponAudioSource.clip = playerGunCmp.gunInfo.reloadSound;
+                    if(playerGunCmp.gunInfo.startReloadSound != null)
+                    playerCmp.view.movementView.weaponAudioSource.clip = playerGunCmp.gunInfo.startReloadSound;
                     playerCmp.view.movementView.weaponAudioSource.Play();
                     _endReloadEventsPool.Value.Del(reloadEvt);
                 }
@@ -895,12 +899,15 @@ public class AttackSystem : IEcsRunSystem
                         if (upgradeStatsCmp.currentStatsExp[1] >= _sceneData.Value.levelExpCounts[upgradeStatsCmp.statLevels[1]] && !_upgradePlayerStatEventsPool.Value.Has(_sceneData.Value.playerEntity))
                             _upgradePlayerStatEventsPool.Value.Add(_sceneData.Value.playerEntity).statIndex = 1;
 
+                        if(playerGunCmp.gunInfo.endReloadSound != null)
+                        playerCmp.view.movementView.weaponAudioSource.clip = playerGunCmp.gunInfo.endReloadSound;
                         if (gunCmp.isOneBulletReload && gunInInvCmp.currentAmmo != gunCmp.magazineCapacity && playerGunCmp.isContinueReload && upgradeStatsCmp.weaponsExp[itemInfo.itemInfo.itemId].weaponExpLevel >= 7)
                         {
                             _reloadEventsPool.Value.Add(playerEntity);
                             return;
                         }
                         gunCmp.isReloading = false;
+                        
                         _sceneData.Value.ammoInfoText.text = "";
                     }
                 }
@@ -956,7 +963,7 @@ public class AttackSystem : IEcsRunSystem
                     if (playerStats.currentStatsExp[0] >= _sceneData.Value.levelExpCounts[playerStats.statLevels[0]])
                         playerStats.statLevels[0]++;
 
-                    playerCmp.view.movementView.weaponAudioSource.clip = playerMeleeAttackCmp.weaponInfo.hitSound;
+                   // playerCmp.view.movementView.weaponAudioSource.clip = playerMeleeAttackCmp.weaponInfo.hitSound;
                     playerCmp.view.movementView.weaponAudioSource.Play();
 
                     _playerComponentsPool.Value.Get(playerEntity).view.movementView.weaponCollider.enabled = true;
@@ -1197,7 +1204,7 @@ public class AttackSystem : IEcsRunSystem
             else
             {
                 ref var creatureAiCmp = ref _creatureAIComponentsPool.Value.Get(meleeWeaponContact);
-                var meleeCmp = _creatureInventoryComponentsPool.Value.Get(meleeWeaponContact).meleeWeaponItem;
+                var meleeCmp = _creatureInventoryComponentsPool.Value.Get(meleeWeaponContact).meleeWeaponItem.meleeWeaponInfo;
                 if (meleeWeaponCmp.isWideAttack)
                     needDamage = Mathf.CeilToInt(needDamage * meleeCmp.wideAttackDamageMultiplayer);
                 if (!isShield)
@@ -1254,7 +1261,7 @@ public class AttackSystem : IEcsRunSystem
 
         if (_creatureInventoryComponentsPool.Value.Get(creatureEntity).isSecondWeaponUsed)//милишка
         {
-            var meleeWeaponView = creatureAiInvCmp.meleeWeaponItem;
+            var meleeWeaponView = creatureAiInvCmp.meleeWeaponItem.meleeWeaponInfo;
             if (creatureAiInvCmp.helmetItem == null || (creatureAiInvCmp.helmetItem != null && !_currentHealingItemComponentsPool.Value.Get(creatureEntity).isHealing))
             {
                 creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = meleeWeaponView.weaponSprite;
@@ -1271,16 +1278,17 @@ public class AttackSystem : IEcsRunSystem
         }
         else
         {
+            var gunItem = creatureAiInvCmp.gunItem.gunInfo;
             if (creatureAiInvCmp.helmetItem == null || (creatureAiInvCmp.helmetItem != null && !_currentHealingItemComponentsPool.Value.Get(creatureEntity).isHealing))
             {
-                creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureAiInvCmp.gunItem.weaponSprite;
+                creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = gunItem.weaponSprite;
 
-                creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = new Vector3(1, -1, 1) * creatureAiInvCmp.gunItem.spriteScaleMultiplayer;
-                creatureAiCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureAiInvCmp.gunItem.spriteRotation);
+                creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = new Vector3(1, -1, 1) * gunItem.spriteScaleMultiplayer;
+                creatureAiCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, gunItem.spriteRotation);
             }
-            attackCmp.attackCouldown = creatureAiInvCmp.gunItem.attackCouldown;
-            attackCmp.damage = creatureAiInvCmp.gunItem.damage;
-            attackCmp.weaponRotateSpeed = (30f / (attackCmp.damage * creatureAiInvCmp.gunItem.bulletCount) + 1.5f) * creatureAiInvCmp.enemyClassSettingInfo.weaponRotationSpeedMultiplayer;
+            attackCmp.attackCouldown = gunItem.attackCouldown;
+            attackCmp.damage = gunItem.damage;
+            attackCmp.weaponRotateSpeed = (30f / (attackCmp.damage * gunItem.bulletCount) + 1.5f) * creatureAiInvCmp.enemyClassSettingInfo.weaponRotationSpeedMultiplayer;
         }
     }
     private void CalculateRecoil(ref GunComponent gunCmp, PlayerGunComponent playerGunComponent, bool isScopeCalculate)

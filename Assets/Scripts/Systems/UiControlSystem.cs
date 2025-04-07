@@ -43,6 +43,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<TryCraftItemEvent> _tryCraftItemEventsPool;
     private EcsPoolInject<TransportMoneyEvent> _transportMoneyEventsPool;
     private EcsPoolInject<CraftingTableComponent> _craftingTableComponentsPool;
+
     private EcsPoolInject<LoadGameEvent> _loadGameEventsPool;
     private EcsPoolInject<CurrentInteractedCharactersComponent> _currentInteractedCharactersComponentsPool;
 
@@ -99,7 +100,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
     public void ChangeGunDescription(ItemInfo item, GunInventoryCellComponent gunInInvCellCmp, GunLevelInfoElement weaponLevelCmp)
     {
-        Debug.Log(Mathf.CeilToInt((float)item.gunInfo.damage * (1 + (weaponLevelCmp.weaponExpLevel * 0.02f))) + "+dam" + item.gunInfo.damage + "defdam");
+      //  Debug.Log(Mathf.CeilToInt((float)item.gunInfo.damage * (1 + (weaponLevelCmp.weaponExpLevel * 0.02f))) + "+dam" + item.gunInfo.damage + "defdam");
         _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Gun info" + "\n" + "Damage: " + Mathf.CeilToInt((float)item.gunInfo.damage * (1 + (weaponLevelCmp.weaponExpLevel * 0.02f))) + "\n" + "Shot couldown: " + item.gunInfo.attackCouldown + "\n" + "Max magazine capacity: " + item.gunInfo.magazineCapacity + "\n" + "Reload time: " + item.gunInfo.reloadDuration
                         + "\n" + "Spread: " + item.gunInfo.minSpread + "to" + item.gunInfo.maxSpread + "\n" + "Shot distance: " + item.gunInfo.attackLenght + "\n" + "Shot sound distance: " + item.gunInfo.shotSoundDistance + "\n" + "Bullet: " + _sceneData.Value.idItemslist.items[item.gunInfo.bulletTypeId].itemName + "\n";
 
@@ -115,7 +116,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "is one shoted" + "\n";
 
         if (item.gunInfo.upgradedGunId != 0)
-            _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "can be upgrade if gunsmith level more than " + item.gunInfo.neededGunsmithLevelToUpgrade + "\n";
+            _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "can be upgrade if gun level more than " + item.gunInfo.neededGunLevelToUpgrade + "\n";
 
         if (weaponLevelCmp.weaponExpLevel >= 2)
         {

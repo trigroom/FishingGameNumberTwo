@@ -914,7 +914,12 @@ public class InventorySystem : IEcsRunSystem
             }
 
             if (questNPCCmp.currentQuest < questNPC.questNode.Length - 1)
+            {
                 questNPCCmp.questIsGiven = false;
+                _sceneData.Value.dropedItemsUIView.charactersInteractText.text = " (нажми F чтобы зайти в магазин\nPress T to speak with " + questNPC.characterName + ")";
+            }
+            else
+                _sceneData.Value.dropedItemsUIView.charactersInteractText.text = " (нажми F чтобы зайти в магазин\nAll " + questNPC.characterName + " quests is complete)";
             _questComponentsPool.Value.Del(checkQuest);
             questNPCCmp.currentQuest++;
         }
@@ -1281,6 +1286,11 @@ public class InventorySystem : IEcsRunSystem
                     if (upgradedGun.itemWeight - _gunInventoryCellComponentsPool.Value.Get(usedItemEntity).currentGunWeight + invCmp.weight > invCmp.currentMaxWeight)
                     {
                         _sceneData.Value.ShowWarningText("the new gun is so heavy");
+                        return;
+                    }
+                    if (itemCmp.itemInfo.gunInfo.neededGunLevelToUpgrade > _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[itemCmp.itemInfo.itemId].weaponExpLevel)
+                    {
+                        _sceneData.Value.ShowWarningText(itemCmp.itemInfo.gunInfo.neededGunLevelToUpgrade + " or maor level nee to upgrade");
                         return;
                     }
                     invCmp.moneyCount -= itemCmp.itemInfo.gunInfo.upgradeCost;

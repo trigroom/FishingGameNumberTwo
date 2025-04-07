@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 974f596f3bda76e4d8773c16158a5efd, type: 3}
-  m_Name: GunStat1lvl
+  m_Name: StaminaAddExpHigh
   m_EditorClassIdentifier: 
-  statId: 1
-  addedExpCount: 30
+  statId: 2
+  addedExpCount: 500

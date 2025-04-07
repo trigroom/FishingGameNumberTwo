@@ -15,25 +15,23 @@ MonoBehaviour:
   levelPrefab: {fileID: 5195996429766387655, guid: 47575729a443418499b01a798088cb8b, type: 3}
   levelTarget: 0
   bodyArmorsInfo:
-  - {fileID: 11400000, guid: 5a8e7c5e167a90046885f9c34151bab0, type: 2}
-  - {fileID: 11400000, guid: 112a1832a1b54c44ba5ca310ecc77bef, type: 2}
-  - {fileID: 11400000, guid: 87bfc7433f40226448c5393d9927319b, type: 2}
+  - {fileID: 11400000, guid: 8d1ba21d03078c94ba5288eca26c92d2, type: 2}
+  - {fileID: 11400000, guid: aef16e052bf4a3542bc2a4a1667bafa0, type: 2}
+  - {fileID: 11400000, guid: 521709b68f5fd664f81f260d79c43a9d, type: 2}
   helmetsInfo:
-  - {fileID: 11400000, guid: bb1276bf4f5764446aa4957d401c5c22, type: 2}
-  - {fileID: 11400000, guid: 0bb71919b8640854a853d186be3d5963, type: 2}
-  - {fileID: 11400000, guid: 65d48d3ed43d8594e92e539d943e9b2d, type: 2}
+  - {fileID: 11400000, guid: ee978bb94e7a9d74491aa47974a2115a, type: 2}
   gunsInfo:
-  - {fileID: 11400000, guid: f2e5bf04f94baac4cbd2847b8efeae82, type: 2}
-  - {fileID: 11400000, guid: 4d1d3c2b92a53bf4eb97bf6159e4d381, type: 2}
+  - {fileID: 11400000, guid: f18c5d37fa947a74fb10f528e896795c, type: 2}
+  - {fileID: 11400000, guid: 4f3a5f55296bb5c41a82a83bf62619e3, type: 2}
   meleeWeaponsInfo:
-  - {fileID: 11400000, guid: 9819755fad816fd4a8895c08b0aa8d2d, type: 2}
-  - {fileID: 11400000, guid: a7aa763e0d7b1a047977dbd1112248b4, type: 2}
-  - {fileID: 11400000, guid: c0e5a68ee9817314e8dcc68186c7ae2f, type: 2}
+  - {fileID: 11400000, guid: d2b5610d0b3ebe848b27b296d902d41e, type: 2}
+  - {fileID: 11400000, guid: 2c3d42fc41a757a42bfebeb24c5f0578, type: 2}
+  - {fileID: 11400000, guid: 44b8c350f77a7fe4c9b09adf463455b1, type: 2}
   healingItemsInfo:
-  - {fileID: 11400000, guid: 22be77d7ecdf17947837b88b6976cc99, type: 2}
-  - {fileID: 11400000, guid: 3545025227e525c46bbda80f3fd8e2c8, type: 2}
-  - {fileID: 11400000, guid: 4503430dbb8e5b447acaa6917f266114, type: 2}
-  - {fileID: 11400000, guid: 50e454670f544394199a9dc10add3fd4, type: 2}
+  - {fileID: 11400000, guid: 6d7d04f4294adbf4ca4f3e617c9c876d, type: 2}
+  - {fileID: 11400000, guid: fb19a0189ef81e9429d3e2264ef0804c, type: 2}
+  - {fileID: 11400000, guid: 3b4bbf544b1652644ab63987d2b3d643, type: 2}
+  - {fileID: 11400000, guid: 38d2ccfad73a19f4284cc844624bca26, type: 2}
   shieldItemsInfo: []
   chanceToOneWeapon: 0.7
   chanceToMeleeWeapon: 1
@@ -54,14 +52,18 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6dc09f2b46fe568498ec325d45ebb338, type: 2}
   - {fileID: 11400000, guid: 0bb5c293973f6ba4a9c114ee1c537e87, type: 2}
   droopedItems:
-  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 10425413546f68949af655c03ea9e4ef, type: 2}
-    <itemsCountMax>k__BackingField: 5
-    <itemsCountMin>k__BackingField: 2
-    <dropPercent>k__BackingField: 30
-  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 61b81eecae6f38947a729145a4447523, type: 2}
-    <itemsCountMax>k__BackingField: 3
-    <itemsCountMin>k__BackingField: 2
-    <dropPercent>k__BackingField: 50
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: cbd7d944af9ab01479454b30f3791a12, type: 2}
+    <itemsCountMax>k__BackingField: 1
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 1
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: ae621f12bd08f03439649199edfea1a6, type: 2}
+    <itemsCountMax>k__BackingField: 1
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 2
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 4162f068a6a82e14db8832fdabf22930, type: 2}
+    <itemsCountMax>k__BackingField: 1
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 5
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: 5402d794d5d58ee42ab6d888b8d5f9ae, type: 2}
     <itemsCountMax>k__BackingField: 3
     <itemsCountMin>k__BackingField: 1
@@ -69,8 +71,8 @@ MonoBehaviour:
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: aa410608678aeb74f8a1d48a75e17f28, type: 2}
     <itemsCountMax>k__BackingField: 3
     <itemsCountMin>k__BackingField: 1
-    <dropPercent>k__BackingField: 20
+    <dropPercent>k__BackingField: 25
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: b0c3f35d7f13d8a44912bbc101cc450f, type: 2}
     <itemsCountMax>k__BackingField: 3
     <itemsCountMin>k__BackingField: 1
-    <dropPercent>k__BackingField: 20
+    <dropPercent>k__BackingField: 30

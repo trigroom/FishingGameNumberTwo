@@ -29,5 +29,5 @@ public class MeleeWeaponInfo : ScriptableObject
     public Sprite weaponSprite;
 
     [Header("Audio settings")]
-    public AudioClip hitSound;
+    public AudioClip hitSound { get; set; }
 }

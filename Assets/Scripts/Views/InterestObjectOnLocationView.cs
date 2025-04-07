@@ -11,6 +11,5 @@ public class InterestObjectOnLocationView : MonoBehaviour
         none
     }
     public DroppedItemView dropItemView;
-    public NeededMasterKeyInfo neededMasterKey;
     //public int durabilityPoints;
 }

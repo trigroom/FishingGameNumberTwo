@@ -61,9 +61,7 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
         _sceneService.Value.dropedItemsUIView.bookmarkViews[0].GetComponent<Button>().onClick.AddListener(ChangeBookmarkToQuest);
         _sceneService.Value.dropedItemsUIView.bookmarkViews[1].GetComponent<Button>().onClick.AddListener(ChangeBookmarkToGuide);
 
-        // _sceneService.Value.questMenuView.transform.GetChild(0).gameObject.SetActive(true);
         _sceneService.Value.dropedItemsUIView.bookmarkViews[0].animator.SetBool("BookmarkIsActive", true);
-        // _sceneService.Value.questMenuView.transform.GetChild(0).gameObject.SetActive(false);
     }
 
     public void Run(IEcsSystems systems)
@@ -100,7 +98,7 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
         }
         foreach (var enemyDeath in _creatureDeathEventsFilter.Value)
         {
-            Debug.Log("EnemyIsKilled");
+         //   Debug.Log("EnemyIsKilled");
             bool isHeadshot = _deathEventsPool.Value.Get(enemyDeath).isHeadshot;
             string curLocation = _currentLocationComponentsPool.Value.Get(_sceneService.Value.playerEntity).currentLocation.locationName;
             var creatureInventory = _creatureInventoryComponentsPool.Value.Get(enemyDeath);
@@ -117,7 +115,7 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
                 // if (questCmp.questComplited) continue;
                 var questNPCCmp = _questNPCComponentsPool.Value.Get(_sceneService.Value.interactCharacters[questCmp.questCharacterId]._entity);
                 var questNPC = _sceneService.Value.interactCharacters[questCmp.questCharacterId].GetComponent<QuestCharacterView>();
-                Debug.Log(questNPC.characterName + " cur npc quest checked");
+                //Debug.Log(questNPC.characterName + " cur npc quest checked");
                 for (int i = 0; i < questNPC.questNode[questNPCCmp.currentQuest].tasks.Length; i++)
                 {
                     if (questNPC.questNode[questNPCCmp.currentQuest].tasks[i].questType == QuestNodeElement.QuestType.killSomeone)
@@ -128,7 +126,7 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
                         if ((currentKillTask.playerGunType == 6 && playerWeapons.curWeapon != 2) || (currentKillTask.playerGunType < 6 && (playerWeapons.curWeapon == 2) || (playerWeapons.curWeapon != 2 && playerGunType != currentKillTask.playerGunType)))
                             continue;
                         if ((currentKillTask.enemyGunType == 6 && (creatureInventory.meleeWeaponItem == null || creatureInventory.gunItem != null && !creatureInventory.isSecondWeaponUsed)) || (currentKillTask.enemyGunType < 6 && (creatureInventory.gunItem == null || (creatureInventory.gunItem != null && (creatureInventory.isSecondWeaponUsed ||
-                            !creatureInventory.isSecondWeaponUsed && (int)creatureInventory.gunItem.gunType != currentKillTask.enemyGunType)))))
+                            !creatureInventory.isSecondWeaponUsed && (int)creatureInventory.gunItem.gunInfo.gunType != currentKillTask.enemyGunType)))))
                             continue;
                         if ((currentKillTask.minDistanceToKill != 0 && currentKillTask.minDistanceToKill > distanceToPlayer) || (currentKillTask.maxDistanceToKill != 0 && currentKillTask.minDistanceToKill < distanceToPlayer))
                             continue;
@@ -173,11 +171,6 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
 
                 UpdateQuestHelperPage(curDialogPlayerCmp.currentPageNumber);
             }
-            else
-            {
-            }
-            //    Debug.Log(_sceneService.Value.dropedItemsUIView.bookmarkViews[(int)menuStatesCmp.currentBookShowState].gameObject.activeInHierarchy + " BookmarkIsActive");
-            //    _sceneService.Value.dropedItemsUIView.bookmarkViews[(int)menuStatesCmp.currentBookShowState].animator.SetBool("BookmarkIsActive", true);
         }
         //прогонять через фильтр смертей все квесты
 
@@ -186,10 +179,10 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
             curDialogPlayerCmp.currentDialogeNumber++;
             var curNPC = _sceneService.Value.interactCharacters[curDialogPlayerCmp.npcId].GetComponent<QuestCharacterView>();
             ref var questNPCCmp = ref _questNPCComponentsPool.Value.Get(_currentInteractedCharactersComponentsPool.Value.Get(_sceneService.Value.playerEntity).interactCharacterView._entity);
-            if (curDialogPlayerCmp.currentDialogeNumber == curNPC.questNode[questNPCCmp.currentQuest].dialogeText.Length)
+            if (curDialogPlayerCmp.currentDialogeNumber >= curNPC.questNode[questNPCCmp.currentQuest].dialogeText.Length)
             {
                 //добавление квеста в список
-                Debug.Log("quest added");
+               // Debug.Log("quest added");
                 questNPCCmp.questIsGiven = true;
                 ref var questCmp = ref _questComponentsPool.Value.Add(curNPC.GetComponent<InteractCharacterView>()._entity);
                 questCmp.curerntCollectedItems = new int[curNPC.questNode[questNPCCmp.currentQuest].tasks.Length];
@@ -201,9 +194,11 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
                 _sceneService.Value.dropedItemsUIView.dialogeText.text = "";
                 _sceneService.Value.dropedItemsUIView.characterNameText.text = "";
                 _currentInteractedCharactersComponentsPool.Value.Get(_sceneService.Value.playerEntity).isNPCNowIsUsed = false;
+
+                _sceneService.Value.dropedItemsUIView.charactersInteractText.text = " (нажми F чтобы зайти в магазин\nPress T to give quest " + curNPC.characterName + ")";
                 return;
             }
-            Debug.Log(questNPCCmp.currentQuest + " cur dialog num " + curDialogPlayerCmp.currentDialogeNumber);
+            //Debug.Log(questNPCCmp.currentQuest + " cur dialog num " + curDialogPlayerCmp.currentDialogeNumber);
             _sceneService.Value.dropedItemsUIView.dialogeText.text = curNPC.questNode[questNPCCmp.currentQuest].dialogeText[curDialogPlayerCmp.currentDialogeNumber];
         }
     }
