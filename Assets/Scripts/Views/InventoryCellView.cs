@@ -88,19 +88,21 @@ public class InventoryCellView : MonoBehaviour, IPointerEnterHandler, IPointerEx
         cellCanvasGroup.blocksRaycasts = false;
     }
 
+    public void OnDrop(PointerEventData eventData)
+    {
+        //if (!inventoryCellButton.interactable) return;
+       // invCellRectTransform.anchoredPosition = Vector2.zero;
+        _world.GetPool<EndItemDragEvent>().Add(_entity);
+        Debug.Log("item drop in cell" + _entity);
+    }
     public void OnEndDrag(PointerEventData eventData)
     {
         if (!inventoryCellButton.interactable) return;
 
+        _world.GetPool<DropDraggedItemEvent>().Add(_entity);
         cellCanvasGroup.blocksRaycasts = true;
 
-        invCellRectTransform.anchoredPosition = Vector2.zero;
         inventoryCellAnimator.SetBool("buttonIsActive", false);
     }
 
-    public void OnDrop(PointerEventData eventData)
-    {
-        _world.GetPool<EndItemDragEvent>().Add(_entity);
-        Debug.Log("item drop in cell" + _entity);
-    }
 }

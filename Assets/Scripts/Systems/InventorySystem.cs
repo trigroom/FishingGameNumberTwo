@@ -64,6 +64,7 @@ public class InventorySystem : IEcsRunSystem
     private EcsFilterInject<Inc<AddItemFromCellEvent, StorageCellTag>> _addItemFromStorageEventsFilter;
     private EcsFilterInject<Inc<DeathEvent, PlayerComponent>> _playerDeathEventsFilter { get; set; }
     private EcsFilterInject<Inc<DropItemsIvent>> _dropItemEventsFilter;
+    private EcsFilterInject<Inc<DropDraggedItemEvent>> _dropDraggedItemEventsFilter;
     private EcsFilterInject<Inc<EndItemDragEvent>> _endItemDragEventsFilter;
     private EcsFilterInject<Inc<StartDragItemEvent>> _startDragItemEventsFilter;
     private EcsFilterInject<Inc<FindAndCellItemEvent>> _findAndCellItemEventsFilter;
@@ -156,8 +157,8 @@ public class InventorySystem : IEcsRunSystem
     {
         foreach (var startDrag in _startDragItemEventsFilter.Value)
         {
-            _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
             ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+            _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
             if (startDrag != menuStatesCmp.lastMarkedCell && menuStatesCmp.lastMarkedCell != 0)
                 _inventoryCellsComponents.Value.Get(menuStatesCmp.lastMarkedCell).cellView.inventoryCellAnimator.SetBool("buttonIsActive", false);
             Debug.Log(_startDragItemEventsPool.Value.Get(startDrag).invCellRectTransform + " celllll");
@@ -166,10 +167,11 @@ public class InventorySystem : IEcsRunSystem
             menuStatesCmp.lastDraggedCell = startDrag;
             _startDragItemEventsPool.Value.Del(startDrag);
         }
+
         foreach (var dropDrag in _endItemDragEventsFilter.Value)
         {
             ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-            menuStatesCmp.invCellRectTransform = null;
+            Debug.Log("dropDrag");
             if (menuStatesCmp.lastDraggedCell != dropDrag && !_gunComponentsPool.Value.Get(_sceneData.Value.playerEntity).isReloading && !_attackComponentsPool.Value.Get(_sceneData.Value.playerEntity).weaponIsChanged)
             {
                 ref var draggedInvCell = ref _inventoryCellsComponents.Value.Get(menuStatesCmp.lastDraggedCell);
@@ -614,11 +616,17 @@ public class InventorySystem : IEcsRunSystem
                     {
                         var needCellCount = _inventoryItemComponentsPool.Value.Has(_sceneData.Value.backpackCellView._entity) ? _inventoryItemComponentsPool.Value.Get(_sceneData.Value.backpackCellView._entity).itemInfo.backpackInfo.cellsCount - _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity).currentCellCount
                             : _sceneData.Value.dropedItemsUIView.startBackpackInfo.cellsCount - _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity).currentCellCount;
-                       _setInventoryCellsToNewValueEventsPool.Value.Add(_sceneData.Value.playerEntity).changedCount = needCellCount;
+                        _setInventoryCellsToNewValueEventsPool.Value.Add(_sceneData.Value.playerEntity).changedCount = needCellCount;
                     }
                 }
                 menuStatesCmp.lastDraggedCell = 0;
             }
+        }
+        foreach (var endDrag in _dropDraggedItemEventsFilter.Value)
+        {
+            ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+            menuStatesCmp.invCellRectTransform.localPosition = Vector2.zero;
+            menuStatesCmp.invCellRectTransform = null;
         }
         foreach (var tryCraftItem in _tryCraftItemEventsFilter.Value)
         {

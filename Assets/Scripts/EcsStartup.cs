@@ -63,6 +63,7 @@ public class EcsStartUp : MonoBehaviour
         .DelHere<MeleeWeaponContactEvent>()
         .DelHere<RevivePlayerEvent>()
         .DelHere<CheckComplitedQuestEvent>()
+        .DelHere<DropDraggedItemEvent>()
         .DelHere<NPCStartDialogeEvent>()
         .DelHere<OpenQuestHelperEvent>()
         .DelHere<GunWorkshopOpenEvent>()

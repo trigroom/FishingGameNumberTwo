@@ -240,7 +240,7 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
 
                 }
             }
-            else if (Input.GetKeyDown(KeyCode.T) && (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.shopAndDialogeNpc || curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.gunsmith) && !curInteactedObjectsCmp.isNPCNowIsUsed)
+            else if (Input.GetKeyDown(KeyCode.T) && curInteactedObjectsCmp.interactionType == InteractionType.interactedCharacter && (curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.shopAndDialogeNpc || curInteactedObjectsCmp.interactCharacterView._characterType == InteractNPCType.gunsmith) && !curInteactedObjectsCmp.isNPCNowIsUsed)
             {
                 var currentQuestCharacter = curInteactedObjectsCmp.interactCharacterView.gameObject.GetComponent<QuestCharacterView>();
                 var questNPCCmp = _questNPCComponentsPool.Value.Get(curInteactedObjectsCmp.interactCharacterView._entity);

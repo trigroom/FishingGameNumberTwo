@@ -758,7 +758,8 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         {
             var menuStatesCmp = _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                var cellTransform = menuStatesCmp.invCellRectTransform;
-            cellTransform.anchoredPosition = new Vector2(Input.mousePosition.x - cellTransform.parent.gameObject.transform.position.x, Input.mousePosition.y - cellTransform.parent.gameObject.transform.position.y)*1.15f/ _sceneData.Value.mainMenuView.uiMenusToScale[0].localScale.x;
+            // cellTransform.anchoredPosition = new Vector2(Input.mousePosition.x - cellTransform.parent.gameObject.transform.position.x, Input.mousePosition.y - cellTransform.parent.gameObject.transform.position.y)/ _sceneData.Value.mainMenuView.uiMenusToScale[0].localScale.y;
+            cellTransform.anchoredPosition = (Input.mousePosition - cellTransform.parent.gameObject.transform.position) / /*(cellTransform.anchoredPosition - */_sceneData.Value.mainCanvas.localScale.x / _sceneData.Value.mainMenuView.uiMenusToScale[0].localScale.x;
             Debug.Log("moveCell" + _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).invCellRectTransform.anchoredPosition);
         }
     }
