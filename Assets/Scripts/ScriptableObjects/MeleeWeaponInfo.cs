@@ -9,7 +9,6 @@ public class MeleeWeaponInfo : ScriptableObject
     public int damage;
     public float attackCouldown;
     public float weaponChangeSpeed = 2;//скорость смены на это оружие, а не с него
-    public bool isWideHit;
     public float attackSpeed;
     public Vector2 colliderSize;
     public float wideAttackSpeed;

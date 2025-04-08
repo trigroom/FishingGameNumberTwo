@@ -15,62 +15,63 @@ MonoBehaviour:
   levelPrefab: {fileID: 5195996429766387655, guid: 8c0fb7fbbccda5446af4947a6dc2ae2e, type: 3}
   levelTarget: 0
   bodyArmorsInfo:
-  - {fileID: 11400000, guid: 5a8e7c5e167a90046885f9c34151bab0, type: 2}
-  - {fileID: 11400000, guid: 112a1832a1b54c44ba5ca310ecc77bef, type: 2}
-  - {fileID: 11400000, guid: 87bfc7433f40226448c5393d9927319b, type: 2}
-  - {fileID: 11400000, guid: 1f2fb307e1f1a3b4db0838d0662a7aec, type: 2}
-  - {fileID: 11400000, guid: b1cf0387fab3fe34e9ca284965625f73, type: 2}
+  - {fileID: 11400000, guid: 8d1ba21d03078c94ba5288eca26c92d2, type: 2}
+  - {fileID: 11400000, guid: aef16e052bf4a3542bc2a4a1667bafa0, type: 2}
+  - {fileID: 11400000, guid: 521709b68f5fd664f81f260d79c43a9d, type: 2}
+  - {fileID: 11400000, guid: 757e2db7e13f16d49be971a55dc0d644, type: 2}
+  - {fileID: 11400000, guid: b37a3d013e7e8fb4aafb18b71ac685f5, type: 2}
   helmetsInfo:
-  - {fileID: 11400000, guid: bb1276bf4f5764446aa4957d401c5c22, type: 2}
-  - {fileID: 11400000, guid: 0bb71919b8640854a853d186be3d5963, type: 2}
-  - {fileID: 11400000, guid: 65d48d3ed43d8594e92e539d943e9b2d, type: 2}
-  - {fileID: 11400000, guid: 9b900556f6ff9674f86c7ab638ee63f9, type: 2}
-  - {fileID: 11400000, guid: c31fb8702dac6c247b81676e57e6e9d0, type: 2}
+  - {fileID: 11400000, guid: ee978bb94e7a9d74491aa47974a2115a, type: 2}
+  - {fileID: 11400000, guid: d217d9e85e2fed24684b853f51629924, type: 2}
+  - {fileID: 11400000, guid: d23d29680578569469b2cb75149cdc0f, type: 2}
+  - {fileID: 11400000, guid: 0e69d1f789a982e4098ce3f3c62ef1e9, type: 2}
+  - {fileID: 11400000, guid: c585362d8a143c6478367cb02af6052b, type: 2}
   gunsInfo:
-  - {fileID: 11400000, guid: f2e5bf04f94baac4cbd2847b8efeae82, type: 2}
-  - {fileID: 11400000, guid: 4d1d3c2b92a53bf4eb97bf6159e4d381, type: 2}
-  - {fileID: 11400000, guid: 7e7d05839fe75a64db284fb06342c1de, type: 2}
-  - {fileID: 11400000, guid: f07330a6465879a40a3cf109c382296a, type: 2}
-  - {fileID: 11400000, guid: c080ffd64eec54447ac3d7fffb5537a3, type: 2}
-  - {fileID: 11400000, guid: 1caa0e845891fda44979b08b1ca08746, type: 2}
+  - {fileID: 11400000, guid: f18c5d37fa947a74fb10f528e896795c, type: 2}
+  - {fileID: 11400000, guid: 4f3a5f55296bb5c41a82a83bf62619e3, type: 2}
+  - {fileID: 11400000, guid: c21a8554740886843853f934666f02f0, type: 2}
+  - {fileID: 11400000, guid: 1ddb678a391975646a66ffe7aaa07e09, type: 2}
+  - {fileID: 11400000, guid: 5c06df868b5f3ed409ac8607bf209b92, type: 2}
   meleeWeaponsInfo:
-  - {fileID: 11400000, guid: 9819755fad816fd4a8895c08b0aa8d2d, type: 2}
-  - {fileID: 11400000, guid: a7aa763e0d7b1a047977dbd1112248b4, type: 2}
-  - {fileID: 11400000, guid: c0e5a68ee9817314e8dcc68186c7ae2f, type: 2}
-  - {fileID: 11400000, guid: c95ff28115f611a4caf65a70210f8be9, type: 2}
+  - {fileID: 11400000, guid: 82f2b1b0dda1685438d95e3493d87547, type: 2}
+  - {fileID: 11400000, guid: 2c3d42fc41a757a42bfebeb24c5f0578, type: 2}
+  - {fileID: 11400000, guid: 44b8c350f77a7fe4c9b09adf463455b1, type: 2}
   healingItemsInfo:
-  - {fileID: 11400000, guid: 22be77d7ecdf17947837b88b6976cc99, type: 2}
-  - {fileID: 11400000, guid: 0b9db686d9e01ef4184f850b35c15754, type: 2}
-  - {fileID: 11400000, guid: 4503430dbb8e5b447acaa6917f266114, type: 2}
-  - {fileID: 11400000, guid: 72796910bb84e404086082b3ecb774df, type: 2}
+  - {fileID: 11400000, guid: 6d7d04f4294adbf4ca4f3e617c9c876d, type: 2}
+  - {fileID: 11400000, guid: fb19a0189ef81e9429d3e2264ef0804c, type: 2}
+  - {fileID: 11400000, guid: 4c618cdd51b7e034aaa52d14a1984273, type: 2}
+  - {fileID: 11400000, guid: 38d2ccfad73a19f4284cc844624bca26, type: 2}
   shieldItemsInfo: []
-  chanceToOneWeapon: 0.7
+  chanceToOneWeapon: 0.4
   chanceToMeleeWeapon: 1
-  chanceToHealingItem: 0.6
-  chanceToBodyArmorItem: 0.4
-  chanceToHelmetItem: 0.7
+  chanceToHealingItem: 0.7
+  chanceToBodyArmorItem: 0.7
+  chanceToHelmetItem: 0.9
   chanceToShieldItem: 0
   traps:
   - {fileID: 8286993370284143180, guid: ef5d2909425f3d24d88c94afbd3c0bc0, type: 3}
+  - {fileID: 6625067731973685522, guid: 5b8b3258d922e2f4097372cd5b792f19, type: 3}
   enemiesCount: 7
   trapsCount: 3
   shoppersCount: 1
   hasStartLocationEntry: 1
   chancesToEnemyClass:
-  - 0.5
+  - 0.25
+  - 0.65
   - 1
   enemyClassSettingsInfo:
+  - {fileID: 11400000, guid: 3d751aac169904841891f7496f2131b3, type: 2}
   - {fileID: 11400000, guid: 6dc09f2b46fe568498ec325d45ebb338, type: 2}
   - {fileID: 11400000, guid: 0bb5c293973f6ba4a9c114ee1c537e87, type: 2}
   droopedItems:
-  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 10425413546f68949af655c03ea9e4ef, type: 2}
-    <itemsCountMax>k__BackingField: 5
-    <itemsCountMin>k__BackingField: 2
-    <dropPercent>k__BackingField: 30
-  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 61b81eecae6f38947a729145a4447523, type: 2}
-    <itemsCountMax>k__BackingField: 3
-    <itemsCountMin>k__BackingField: 2
-    <dropPercent>k__BackingField: 50
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 94325c9a2c879b6458395bd6a778c06d, type: 2}
+    <itemsCountMax>k__BackingField: 1
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 4
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 04a0f907499fbd04d98f51eaa45823ed, type: 2}
+    <itemsCountMax>k__BackingField: 1
+    <itemsCountMin>k__BackingField: 1
+    <dropPercent>k__BackingField: 10
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: 5402d794d5d58ee42ab6d888b8d5f9ae, type: 2}
     <itemsCountMax>k__BackingField: 3
     <itemsCountMin>k__BackingField: 1
@@ -78,8 +79,8 @@ MonoBehaviour:
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: aa410608678aeb74f8a1d48a75e17f28, type: 2}
     <itemsCountMax>k__BackingField: 3
     <itemsCountMin>k__BackingField: 1
-    <dropPercent>k__BackingField: 20
+    <dropPercent>k__BackingField: 35
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: b0c3f35d7f13d8a44912bbc101cc450f, type: 2}
     <itemsCountMax>k__BackingField: 3
     <itemsCountMin>k__BackingField: 1
-    <dropPercent>k__BackingField: 20
+    <dropPercent>k__BackingField: 50

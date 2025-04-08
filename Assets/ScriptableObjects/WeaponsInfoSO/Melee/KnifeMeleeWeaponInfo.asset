@@ -13,11 +13,9 @@ MonoBehaviour:
   m_Name: KnifeMeleeWeaponInfo
   m_EditorClassIdentifier: 
   attackLenght: 0.7
-  damage: 15
+  damage: 10
   attackCouldown: 0.8
-  weaponChangeSpeed: 0.7
-  isWideHit: 0
-  isAuto: 1
+  weaponChangeSpeed: 0.55
   attackSpeed: 6
   colliderSize: {x: 0.1, y: 0.25}
   wideAttackSpeed: 20
@@ -30,4 +28,3 @@ MonoBehaviour:
   spriteScaleMultiplayer: 2.5
   spriteRotation: 180
   weaponSprite: {fileID: 21300000, guid: e2ef4e19d19e2fb49a49c7340aadcabe, type: 3}
-  hitSound: {fileID: 8300000, guid: ea5f7b4d5d08c584a898be20e0c5536d, type: 3}

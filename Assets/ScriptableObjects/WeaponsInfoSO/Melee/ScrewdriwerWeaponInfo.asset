@@ -13,11 +13,9 @@ MonoBehaviour:
   m_Name: ScrewdriwerWeaponInfo
   m_EditorClassIdentifier: 
   attackLenght: 0.9
-  damage: 20
+  damage: 17
   attackCouldown: 0.7
-  weaponChangeSpeed: 0.7
-  isWideHit: 0
-  isAuto: 1
+  weaponChangeSpeed: 0.55
   attackSpeed: 6
   colliderSize: {x: 0.05, y: 0.2}
   wideAttackSpeed: 25
@@ -30,4 +28,3 @@ MonoBehaviour:
   spriteScaleMultiplayer: 2.5
   spriteRotation: 180
   weaponSprite: {fileID: 21300000, guid: 3026b356c02824b40b1f0df5ccc251c0, type: 3}
-  hitSound: {fileID: 8300000, guid: ea5f7b4d5d08c584a898be20e0c5536d, type: 3}

@@ -14,20 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackLenght: 0.7
   damage: 15
-  attackCouldown: 2
-  weaponChangeSpeed: 0.7
-  isWideHit: 0
-  isAuto: 1
+  attackCouldown: 1.45
+  weaponChangeSpeed: 0.95
   attackSpeed: 3
   colliderSize: {x: 0.1, y: 0.25}
   wideAttackSpeed: 10
   wideAttackLenght: 50
   knockbackSpeed: 3
   stunTime: 0.5
-  staminaUsage: 1.5
+  staminaUsage: 2
   isOneHandedWeapon: 0
   wideAttackDamageMultiplayer: 1
   spriteScaleMultiplayer: 2.5
   spriteRotation: 180
   weaponSprite: {fileID: 21300000, guid: 4c722c38ecb6499418df6f517663391e, type: 3}
-  hitSound: {fileID: 8300000, guid: ea5f7b4d5d08c584a898be20e0c5536d, type: 3}

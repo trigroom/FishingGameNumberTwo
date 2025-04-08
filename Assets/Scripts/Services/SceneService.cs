@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public class SceneService : MonoBehaviour
 {
+    [field: SerializeField] public Transform firstEntryGuide { get; private set; }
     [field: SerializeField] public AudioClip[] randomEmbientSounds { get; private set; }
     [field: SerializeField] public AudioClip[] thunderSounds { get; private set; }
     [field: SerializeField] public AudioClip offOnDeviceSound { get; private set; }

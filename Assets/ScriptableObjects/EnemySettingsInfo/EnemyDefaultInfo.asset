@@ -15,9 +15,9 @@ MonoBehaviour:
   healthPoint: 90
   staminaCount: 6
   visionLenghtMultiplayer: 1.1
-  movementSpeed: 1
+  movementSpeed: 0.85
   dropPercentMultiplayer: 1.1
   recoverySpreadMultiplayer: 1.2
   needSightOnTargetTime: 0.4
   weaponRotationSpeedMultiplayer: 1.3
-  expPointsForKill: 10
+  expPointsForKill: 15

@@ -244,6 +244,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         if (this.gameData == null || this.gameData != null && this.gameData.lastGameVersion != Application.version)
         {
             NewGame();
+            _sceneData.Value.firstEntryGuide.gameObject.SetActive(true);
             this.gameData.lastGameVersion = Application.version;
             if (this.gameData.itemsCellinfo == null)
             {
@@ -508,7 +509,6 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                 ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cellEntity);
                 ref var invCellCmp = ref _inventoryCellsComponentsPool.Value.Get(cellEntity);
                 invCellCmp.isEmpty = false;
-
 
                 itemCmp.currentItemsCount = item.itemCount;
                 itemCmp.itemInfo = _sceneData.Value.idItemslist.items[item.itemId];

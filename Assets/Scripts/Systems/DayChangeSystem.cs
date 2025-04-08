@@ -53,6 +53,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
         //удалять все предметы с земли при переходе на некст локацию
         if (curLocationCmp.levelNum == 0 && curLocationCmp.currentLocation == null)
         {
+            _sceneService.Value.firstEntryGuide.gameObject.SetActive(false);
             _sceneService.Value.startLocation.gameObject.SetActive(false);
             curLocationCmp.currentLocation = needLocation;
         }

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d15cc0c722a71848bfd69b1c4699fc8, type: 3}
+  m_Name: EnemyRareInfo
+  m_EditorClassIdentifier: 
+  healthPoint: 100
+  staminaCount: 6.5
+  visionLenghtMultiplayer: 1.2
+  movementSpeed: 1
+  dropPercentMultiplayer: 1.25
+  recoverySpreadMultiplayer: 1.3
+  needSightOnTargetTime: 0.35
+  weaponRotationSpeedMultiplayer: 1.35
+  expPointsForKill: 25

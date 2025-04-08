@@ -979,7 +979,6 @@ public class AttackSystem : IEcsRunSystem
                         _sceneData.Value.playerArmorText.text = (int)playerMoveCmp.currentHungerPoints + " / " + (int)playerMoveCmp.maxHungerPoints;
                     }
                     var weaponContainerTransform = _playerComponentsPool.Value.Get(playerEntity).view.movementView.weaponContainer.transform;
-                    meleeAttackCmp.isWideAttack = playerMeleeAttackCmp.weaponInfo.isWideHit;
                     if (Input.GetMouseButton(0) || Input.GetMouseButtonDown(0))
                         meleeAttackCmp.isWideAttack = false;
                     else

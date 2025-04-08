@@ -12,22 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1165650e88487624db5f6a5e4760df72, type: 3}
   m_Name: SledgeHummerMeleeWeaponInfo
   m_EditorClassIdentifier: 
-  attackLenght: 0.7
-  damage: 15
-  attackCouldown: 2
-  weaponChangeSpeed: 0.7
-  isWideHit: 0
-  isAuto: 1
-  attackSpeed: 3
+  attackLenght: 0.55
+  damage: 13
+  attackCouldown: 1.6
+  weaponChangeSpeed: 1.2
+  attackSpeed: 4
   colliderSize: {x: 0.1, y: 0.25}
-  wideAttackSpeed: 10
-  wideAttackLenght: 50
+  wideAttackSpeed: 7
+  wideAttackLenght: 60
   knockbackSpeed: 3
-  stunTime: 0.5
-  staminaUsage: 1.5
+  stunTime: 0.8
+  staminaUsage: 2.2
   isOneHandedWeapon: 0
-  wideAttackDamageMultiplayer: 1
+  wideAttackDamageMultiplayer: 2.2
   spriteScaleMultiplayer: 2.5
   spriteRotation: 180
   weaponSprite: {fileID: 21300000, guid: 4e4a753b787cf98499980b6a5bbba8a8, type: 3}
-  hitSound: {fileID: 8300000, guid: ea5f7b4d5d08c584a898be20e0c5536d, type: 3}

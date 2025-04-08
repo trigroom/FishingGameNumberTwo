@@ -18,8 +18,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8d1ba21d03078c94ba5288eca26c92d2, type: 2}
   - {fileID: 11400000, guid: aef16e052bf4a3542bc2a4a1667bafa0, type: 2}
   - {fileID: 11400000, guid: 521709b68f5fd664f81f260d79c43a9d, type: 2}
+  - {fileID: 11400000, guid: 757e2db7e13f16d49be971a55dc0d644, type: 2}
   helmetsInfo:
   - {fileID: 11400000, guid: ee978bb94e7a9d74491aa47974a2115a, type: 2}
+  - {fileID: 11400000, guid: d217d9e85e2fed24684b853f51629924, type: 2}
   gunsInfo:
   - {fileID: 11400000, guid: f18c5d37fa947a74fb10f528e896795c, type: 2}
   - {fileID: 11400000, guid: 4f3a5f55296bb5c41a82a83bf62619e3, type: 2}
@@ -37,7 +39,7 @@ MonoBehaviour:
   chanceToMeleeWeapon: 1
   chanceToHealingItem: 0.3
   chanceToBodyArmorItem: 0.2
-  chanceToHelmetItem: 0.7
+  chanceToHelmetItem: 0.55
   chanceToShieldItem: 0
   traps:
   - {fileID: 8286993370284143180, guid: ef5d2909425f3d24d88c94afbd3c0bc0, type: 3}
@@ -46,24 +48,20 @@ MonoBehaviour:
   shoppersCount: 1
   hasStartLocationEntry: 0
   chancesToEnemyClass:
-  - 0.3
+  - 0.25
   - 1
   enemyClassSettingsInfo:
   - {fileID: 11400000, guid: 6dc09f2b46fe568498ec325d45ebb338, type: 2}
   - {fileID: 11400000, guid: 0bb5c293973f6ba4a9c114ee1c537e87, type: 2}
   droopedItems:
-  - <droopedItem>k__BackingField: {fileID: 11400000, guid: cbd7d944af9ab01479454b30f3791a12, type: 2}
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 94325c9a2c879b6458395bd6a778c06d, type: 2}
     <itemsCountMax>k__BackingField: 1
     <itemsCountMin>k__BackingField: 1
-    <dropPercent>k__BackingField: 1
-  - <droopedItem>k__BackingField: {fileID: 11400000, guid: ae621f12bd08f03439649199edfea1a6, type: 2}
+    <dropPercent>k__BackingField: 4
+  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 04a0f907499fbd04d98f51eaa45823ed, type: 2}
     <itemsCountMax>k__BackingField: 1
     <itemsCountMin>k__BackingField: 1
-    <dropPercent>k__BackingField: 2
-  - <droopedItem>k__BackingField: {fileID: 11400000, guid: 4162f068a6a82e14db8832fdabf22930, type: 2}
-    <itemsCountMax>k__BackingField: 1
-    <itemsCountMin>k__BackingField: 1
-    <dropPercent>k__BackingField: 5
+    <dropPercent>k__BackingField: 10
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: 5402d794d5d58ee42ab6d888b8d5f9ae, type: 2}
     <itemsCountMax>k__BackingField: 3
     <itemsCountMin>k__BackingField: 1
@@ -71,8 +69,8 @@ MonoBehaviour:
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: aa410608678aeb74f8a1d48a75e17f28, type: 2}
     <itemsCountMax>k__BackingField: 3
     <itemsCountMin>k__BackingField: 1
-    <dropPercent>k__BackingField: 25
+    <dropPercent>k__BackingField: 35
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: b0c3f35d7f13d8a44912bbc101cc450f, type: 2}
     <itemsCountMax>k__BackingField: 3
     <itemsCountMin>k__BackingField: 1
-    <dropPercent>k__BackingField: 30
+    <dropPercent>k__BackingField: 50
