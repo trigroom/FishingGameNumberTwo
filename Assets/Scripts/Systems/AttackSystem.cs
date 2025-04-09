@@ -1458,6 +1458,9 @@ public class AttackSystem : IEcsRunSystem
         if (playerView.laserPointerLineRenderer.gameObject.activeInHierarchy)
             playerView.laserPointerLineRenderer.gameObject.SetActive(false);
 
+        foreach(var gunPartSprite in playerView.gunPartsSprites)
+            gunPartSprite.sprite = _sceneData.Value.transparentSprite;
+
         playerView.leftRecoilTracker.gameObject.SetActive(false);
         playerView.rightRecoilTracker.gameObject.SetActive(false);
         if (playerView.movementView.shieldView.shieldObject.localPosition == Vector3.zero)
@@ -1496,7 +1499,6 @@ public class AttackSystem : IEcsRunSystem
         ref var playerGunCmp = ref _playerGunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
         ref var weaponsInInvCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
         ref var gunCmp = ref _gunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-
 
 
         if (curGun == 1)
@@ -1564,7 +1566,12 @@ public class AttackSystem : IEcsRunSystem
                 playerGunCmp.sumAddedReloadSpeedMultiplayer += gunPartInfo.reloadSpeedMultiplayer;
                 playerGunCmp.sumAddedSpreadMultiplayer += gunPartInfo.spreadMultiplayer;
                 playerGunCmp.sumAddedWeaponChangeSpeedMultiplayer += gunPartInfo.weaponChangeSpeedMultiplayer;
+                //change gp sprites\/
+                playerView.gunPartsSprites[i].sprite = gunPartInfo.spriteForAddOnGunModel;
+                playerView.gunPartsSprites[i].transform.localPosition = gunPartInfo.inGameOffset + gunInfo.gunPartsInGamePositions[i];
             }
+            else
+                playerView.gunPartsSprites[i].sprite = _sceneData.Value.transparentSprite;
         }
 
         gunCmp.attackLeght = gunInfo.attackLenght * (1 + playerGunCmp.sumAddedAttackLenghtMultiplayer);

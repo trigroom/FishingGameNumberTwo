@@ -69,6 +69,12 @@ MonoBehaviour:
       m_ColorSpace: -1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
+  laserPointerPosition: {x: 0, y: 0}
+  gunPartsInGamePositions:
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0.23, y: 0.015}
   spriteScaleMultiplayer: 2.5
   spriteRotation: 90
   weaponSprite: {fileID: 21300000, guid: 6c159ca25855ea541aa500943be3b832, type: 3}
@@ -89,8 +95,9 @@ MonoBehaviour:
   blackBGSize: 300
   centreCrossSprite: {fileID: 21300000, guid: e53eeaefae9a44349a898f6062bb5b4e, type: 3}
   shotSound: {fileID: 8300000, guid: 9fff401a335a4d547bf8044d3c7035e9, type: 3}
-  reloadSound: {fileID: 8300000, guid: d9def0d3917c33c48a1f52e67ecdf7e3, type: 3}
+  startReloadSound: {fileID: 0}
+  endReloadSound: {fileID: 0}
   upgradeCost: 0
   upgradedGunId: 0
-  neededGunsmithLevelToUpgrade: 0
-  gunParts: 0
+  neededGunLevelToUpgrade: 0
+  gunParts: 8

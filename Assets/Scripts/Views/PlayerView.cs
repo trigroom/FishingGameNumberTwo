@@ -5,7 +5,7 @@ using UnityEngine.Rendering.Universal;
 
 public class PlayerView : MonoBehaviour
 {
-    //[field: SerializeField] public Transform playerComponentsContainer { get; private set; }
+    [field: SerializeField] public SpriteRenderer[] gunPartsSprites { get; private set; }
     [field: SerializeField] public float maxCameraSpread { get; private set; }
     [field: SerializeField] public float recoveryCameraSpread { get; private set; }
     [field: SerializeField] public HealthView healthView { get; private set; }

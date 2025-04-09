@@ -20,7 +20,7 @@ MonoBehaviour:
   itemName: Double Barrel Shotgun
   itemDescription: 
   itemCost: 0
-  gunInfo: {fileID: 0}
+  gunInfo: {fileID: 11400000, guid: 2c747dd704b1d2d4384f9c55d7c51903, type: 2}
   meleeWeaponInfo: {fileID: 0}
   grenadeInfo: {fileID: 0}
   healInfo: {fileID: 0}
@@ -29,3 +29,6 @@ MonoBehaviour:
   gunPartInfo: {fileID: 0}
   expAddedInfo: {fileID: 0}
   sheildInfo: {fileID: 0}
+  helmetInfo: {fileID: 0}
+  bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

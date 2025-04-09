@@ -10,30 +10,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7718247f6aa85b84f813578fb0d5b327, type: 3}
-  m_Name: MosinNagantRifleObrezGunInfo
+  m_Name: DoubleBurrelShotgunGunInfo
   m_EditorClassIdentifier: 
-  gunType: 2
-  attackLenght: 35
-  shotSoundDistance: 45
-  reloadDuration: 1.7
-  magazineCapacity: 5
-  damage: 60
-  attackCouldown: 1.4
-  maxSpread: 60
-  minSpread: 5
-  addedSpread: 13
-  weaponChangeSpeed: 1.3
+  gunType: 1
+  attackLenght: 15
+  shotSoundDistance: 40
+  reloadDuration: 1.4
+  magazineCapacity: 2
+  damage: 8
+  attackCouldown: 0.8
+  maxSpread: 40
+  minSpread: 2
+  addedSpread: 6
+  weaponChangeSpeed: 1
   isAuto: 0
-  bulletTypeId: 6
-  bulletCount: 1
+  bulletTypeId: 3
+  bulletCount: 10
   isOneBulletReloaded: 1
   maxDurabilityPoints: 250
-  bulletShellIndex: 3
-  firepointPosition: {x: 0.16, y: 0.02}
-  bulletShellPointPosition: {x: -0.05, y: 0.02}
-  bulletShellSpawnOnShot: 1
+  bulletShellIndex: 0
+  firepointPosition: {x: 0.24, y: 0.03}
+  bulletShellPointPosition: {x: -0.04, y: 0.03}
+  bulletShellSpawnOnShot: 0
   durabilityRecoveryCost: 10
-  isOneHandedGun: 0
+  isOneHandedGun: 1
   laserPointer:
     laserMaxLenght: 0
     laserPosition: {x: 0, y: 0}
@@ -74,31 +74,28 @@ MonoBehaviour:
   - {x: 0, y: 0}
   - {x: 0, y: 0}
   - {x: 0, y: 0}
-  - {x: 0.16, y: 0.02}
+  - {x: 0, y: 0}
   spriteScaleMultiplayer: 2.5
   spriteRotation: 90
-  weaponSprite: {fileID: 21300000, guid: f7e3e030e3cf39d4eb46904943a98e6f, type: 3}
+  weaponSprite: {fileID: 21300000, guid: e278c9d475aac7645992dd032fa8bc66, type: 3}
   shotFlashDistance: 3
   shotFlashIntance: 10
   shotFlashAngle: 50
   bulletsUIPositions:
-  - {x: 0, y: 45.6}
-  - {x: 0, y: 27.4}
-  - {x: 0, y: 9.23}
-  - {x: 0, y: -8.9}
-  - {x: 0, y: -27}
+  - {x: -20.6, y: 0}
+  - {x: 20.4, y: 0}
   bulletUISprite: {fileID: 21300000, guid: 76dded18b3f1faf449cbb67a700fa60f, type: 3}
-  magUISprite: {fileID: 21300000, guid: 898988cd0f301e54bb18c0e3c96d4668, type: 3}
-  magUISize: {x: 23, y: 74}
-  magUIPosition: {x: 0, y: -11}
-  bulletUISize: {x: 17, y: 17}
+  magUISprite: {fileID: 21300000, guid: cc7f952d8b922084bb31d1c5bcec22f0, type: 3}
+  magUISize: {x: 87.5, y: 46.3}
+  magUIPosition: {x: -10, y: 0}
+  bulletUISize: {x: 31, y: 31}
   scopeMultiplicity: 1
   blackBGSize: 0
   centreCrossSprite: {fileID: 0}
-  shotSound: {fileID: 8300000, guid: aefd479d22ff15a4ba582e8fc214f127, type: 3}
+  shotSound: {fileID: 8300000, guid: 911d08ca3e47bc74081b072744210cf9, type: 3}
   startReloadSound: {fileID: 8300000, guid: f98f99850e2994a41a7a376120a11ff5, type: 3}
-  endReloadSound: {fileID: 8300000, guid: dfa2d673db2ee484fbcfbe947202b8da, type: 3}
+  endReloadSound: {fileID: 8300000, guid: c8eff6f5d4a5d0745965fc4f61cce013, type: 3}
   upgradeCost: 0
   upgradedGunId: 0
   neededGunLevelToUpgrade: 0
-  gunParts: 8
+  gunParts: 0

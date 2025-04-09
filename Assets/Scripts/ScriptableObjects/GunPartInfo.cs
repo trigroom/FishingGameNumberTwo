@@ -17,6 +17,7 @@ public class GunPartInfo : ScriptableObject
     public int neededLevelToEquip;
     [Header("Visual")]
     public Sprite spriteForAddOnGunModel;
+    public Vector2 inGameOffset;
     [Header("Scope")]
     public float scopeMultiplicity;
     public Sprite centreScopeSprite;

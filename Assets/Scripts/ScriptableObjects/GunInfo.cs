@@ -38,6 +38,7 @@ public class GunInfo : ScriptableObject
     public LaserPointerForGunElement laserPointer ;
     public Vector2 laserPointerPosition;
     [Header("Visual settings")]
+    public Vector2[] gunPartsInGamePositions = new Vector2[4];
     public float spriteScaleMultiplayer;
     public float spriteRotation;
     public Sprite weaponSprite;

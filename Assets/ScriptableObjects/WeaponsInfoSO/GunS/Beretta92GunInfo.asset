@@ -70,6 +70,11 @@ MonoBehaviour:
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
   laserPointerPosition: {x: 0, y: 0}
+  gunPartsInGamePositions:
+  - {x: -0.12, y: -0.07}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0.13, y: 0.07}
   spriteScaleMultiplayer: 2.5
   spriteRotation: 90
   weaponSprite: {fileID: 21300000, guid: 45c55d7c1a51d244786576ec0e85f735, type: 3}

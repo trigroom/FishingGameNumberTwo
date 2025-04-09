@@ -20,7 +20,8 @@ MonoBehaviour:
   shotSoundLenghtMultiplayer: 0
   reloadSpeedMultiplayer: 0
   neededLevelToEquip: 0
-  spriteForAddOnGunModel: {fileID: 0}
+  spriteForAddOnGunModel: {fileID: -1016917053169314106, guid: 0b0614f930917f94c9ebede7f399cc4b, type: 3}
+  inGameOffset: {x: 0.005, y: 0.015}
   scopeMultiplicity: 1.3
   centreScopeSprite: {fileID: 21300000, guid: 27d82131e2d2e9f4a9965db244d48676, type: 3}
   blackBGSize: 0
