@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d066b48019e341418c014e91807bc1b, type: 3}
   m_Name: 0ItemBuy
   m_EditorClassIdentifier: 
-  itemInfo: {fileID: 11400000, guid: e7c1d446dd483b94ca746acb5e25b522, type: 2}
+  itemInfo: {fileID: 11400000, guid: 6638c387f00a79742a2c4c304ef04a92, type: 2}
   count: 1
   price: 2
   needSkillLevelToUnlock: 0

@@ -8,8 +8,8 @@ public class GunPartCellView : MonoBehaviour
     public Button gunPartButton;
     public GunPartInfo.GunPartType cellGunPartType;
     public Sprite defaultGunPartSprite;
-    public bool isUsed;
-    public bool isSelected;
+    public bool isUsed { get; set; }
+    public bool isSelected { get; set; }
 
     private EcsWorld _world;
 

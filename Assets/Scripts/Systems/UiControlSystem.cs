@@ -2,7 +2,6 @@ using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
 using TMPro;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 
 public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
@@ -63,7 +62,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
     public void Init(IEcsSystems systems)
     {
-      //  Debug.Log("Check fast load");
+        //  Debug.Log("Check fast load");
         _sceneData.Value.dropedItemsUIView.Construct(_world.Value);
         _sceneData.Value.mainMenuView.buttons[0].onClick.AddListener(ContinueButtonAction);
         _sceneData.Value.mainMenuView.buttons[1].onClick.AddListener(OpenSettings);
@@ -101,7 +100,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
     public void ChangeGunDescription(ItemInfo item, GunInventoryCellComponent gunInInvCellCmp, GunLevelInfoElement weaponLevelCmp)
     {
-      //  Debug.Log(Mathf.CeilToInt((float)item.gunInfo.damage * (1 + (weaponLevelCmp.weaponExpLevel * 0.02f))) + "+dam" + item.gunInfo.damage + "defdam");
+        //  Debug.Log(Mathf.CeilToInt((float)item.gunInfo.damage * (1 + (weaponLevelCmp.weaponExpLevel * 0.02f))) + "+dam" + item.gunInfo.damage + "defdam");
         _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Gun info" + "\n" + "Damage: " + Mathf.CeilToInt((float)item.gunInfo.damage * (1 + (weaponLevelCmp.weaponExpLevel * 0.02f))) + "\n" + "Shot couldown: " + item.gunInfo.attackCouldown + "\n" + "Max magazine capacity: " + item.gunInfo.magazineCapacity + "\n" + "Reload time: " + item.gunInfo.reloadDuration
                         + "\n" + "Spread: " + item.gunInfo.minSpread + "to" + item.gunInfo.maxSpread + "\n" + "Shot distance: " + item.gunInfo.attackLenght + "\n" + "Shot sound distance: " + item.gunInfo.shotSoundDistance + "\n" + "Bullet: " + _sceneData.Value.idItemslist.items[item.gunInfo.bulletTypeId].itemName + "\n";
 
@@ -250,17 +249,22 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         {
             var gunPartCellView = _changeGunPartDescriptionEvent.Value.Get(chGunPartDescriptionEntity).gunPartCellView;
             var gunPartItemInfo = _sceneData.Value.idItemslist.items[_gunInventoryCellComponentsPool.Value.Get(_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell).gunPartsId[(int)gunPartCellView.cellGunPartType]];//получаем айтем инфу обвеса
+            ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             if (gunPartCellView.isSelected)
             {
                 _sceneData.Value.dropedItemsUIView.itemDescriptionText.text = "<b>" + gunPartItemInfo.itemName + "</b>" + "\n" + "Type: " + gunPartItemInfo.type + "\n";
                 ChangeGunPartDescription(gunPartItemInfo);
+                _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "снять" + gunPartItemInfo.itemName;
+                menuStatesCmp.isGunPartDescription = true;
+                menuStatesCmp.currentMarkedGunPart = (int)gunPartCellView.cellGunPartType;
             }
             else
             {
+
+                menuStatesCmp.isGunPartDescription = false;
                 int gunEntity = _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell;
-                // Debug.Log("changed gun desc" + gunEntity + " gp desc " + (_gunInventoryCellComponentsPool.Value.Get(_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell).gunPartsId[(int)gunPartCellView.cellGunPartType]));
                 var gunItem = _inventoryItemComponentPool.Value.Get(gunEntity).itemInfo;
-                //  Debug.Log(gunItem.itemName);
+                _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "экипировать " + gunItem.itemName;
                 _sceneData.Value.dropedItemsUIView.itemDescriptionText.text = "<b>" + gunItem.itemName + "</b>" + "\n" + "Type: " + gunItem.type + "\n" + "Weight: " + _gunInventoryCellComponentsPool.Value.Get(_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell).currentGunWeight + "\n";
                 ChangeGunDescription(gunItem, _gunInventoryCellComponentsPool.Value.Get(gunEntity), _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[gunItem.itemId]);
             }
@@ -272,7 +276,8 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             if (_equipGunPartEventsFilter.Value.GetEntitiesCount() > 0) return;
             var gunPartCellView = _tryEquipGunPartEventsPool.Value.Get(tryEquipGunPart).cellViewGunPart;
             _equipGunPartEventsPool.Value.Add(tryEquipGunPart).cellGunPartType = gunPartCellView.cellGunPartType;
-            Debug.Log("Equip");
+            //  Debug.Log("Equip");
+            _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).isGunPartDescription = true;
             _sceneData.Value.dropedItemsUIView.markInventoryCellBorder.transform.position = gunPartCellView.transform.position;
             _tryEquipGunPartEventsPool.Value.Del(tryEquipGunPart);
             //выделение этой клетки
@@ -308,7 +313,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         {
             var mainMenuView = _sceneData.Value.mainMenuView;
             ChangeMainMenuState(ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity), true);
-          //  _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).mainMenuState = MenuStatesComponent.MainMenuState.none;
+            //  _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).mainMenuState = MenuStatesComponent.MainMenuState.none;
             mainMenuView.buttons[0].GetComponentInChildren<TMP_Text>().text = "continue";
             mainMenuView.buttons[1].gameObject.SetActive(true);
         }
@@ -339,6 +344,11 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
             foreach (var tryEquipGunPartEntity in _equipGunPartEventsFilter.Value)
             {
+                if (!menuStatesCmp.isGunPartDescription)
+                {
+                    _equipGunPartEventsPool.Value.Del(tryEquipGunPartEntity);
+                    continue;
+                }
                 ref var tryEquipGunCmp = ref _equipGunPartEventsPool.Value.Get(tryEquipGunPartEntity);
                 int curWeaponLevel = _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[_inventoryItemComponentPool.Value.Get(menuStatesCmp.lastMarkedCell).itemInfo.itemId].weaponExpLevel;
                 if (item.itemInfo.type == ItemInfo.itemType.gunPart)
@@ -379,15 +389,23 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                     _sceneData.Value.ShowWarningText("you need gun part to equip");
                 _equipGunPartEventsPool.Value.Del(tryEquipGunPartEntity);
             }
-
             var invCellCmp = _inventoryCellComponentPool.Value.Get(desription);
+
             if (menuStatesCmp.lastMarkedCell == desription) continue;
             invCellCmp.cellView.inventoryCellAnimator.SetBool("buttonIsActive", true);
+
             if (menuStatesCmp.lastMarkedCell != 0)
                 _inventoryCellComponentPool.Value.Get(menuStatesCmp.lastMarkedCell).cellView.inventoryCellAnimator.SetBool("buttonIsActive", false);
+
+            else if (menuStatesCmp.lastMarkedCell == 0 && menuStatesCmp.isGunPartDescription)
+            {
+                menuStatesCmp.isGunPartDescription = false;
+                for (int i = 0; i < _sceneData.Value.dropedItemsUIView.gunPartCells.Length; i++)
+                    _sceneData.Value.dropedItemsUIView.gunPartCells[i].isSelected = false;
+            }
             _sceneData.Value.dropedItemsUIView.markInventoryCellBorder.transform.position = invCellCmp.cellView.transform.position;
             menuStatesCmp.lastMarkedCell = desription;
-
+            Debug.Log(desription + " NEW DESC");
             if (item.itemInfo.type == ItemInfo.itemType.gun)
                 _sceneData.Value.dropedItemsUIView.gunPartsCellsContainer.gameObject.SetActive(true);
             else
@@ -523,25 +541,6 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(false);
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(true);
                 _sceneData.Value.dropedItemsUIView.secondButtonActionText.text = "read";
-                /* _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "added " + item.itemInfo.expAddedInfo.addedExpCount + " exp points to";
-                 switch (item.itemInfo.expAddedInfo.statId)
-                 {
-                     case 0:
-                         _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += " movement speed stat\n";
-                         break;
-                     case 1:
-                         _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += " possession of guns stat\n";
-                         break;
-                     case 2:
-                         _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += " possession of melee weapons stat\n";
-                         break;
-                     case 3:
-                         _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += " endurance stat\n";
-                         break;
-                     case 4:
-                         _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += " healing speed stat\n";
-                         break;
-                 }*/
 
             }
 
@@ -554,8 +553,6 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 //var healItemCellCmp = _inventoryCellComponentPool.Value.Get(descriptionEvt.itemEntity);
                 if (item.itemInfo.type == ItemInfo.itemType.heal || item.itemInfo.type == ItemInfo.itemType.randomHeal)
                 {
-                    //  _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Healed health points: " + item.itemInfo.healInfo.healingHealthPoints + "\n" + "Heal time: " + item.itemInfo.healInfo.healingTime + "\n";
-                    //кнопка использовать
                     _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(true);
                     if (item.itemInfo.type == ItemInfo.itemType.heal && item.itemInfo.healInfo.recoveringHungerPoints != 0 || item.itemInfo.type == ItemInfo.itemType.randomHeal)
                         _sceneData.Value.dropedItemsUIView.secondButtonActionText.text = "eating";
@@ -569,8 +566,6 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 }
                 if (desription == _sceneData.Value.healingItemCellView._entity || desription == _sceneData.Value.grenadeCellView._entity /*&& !healItemCellCmp.isEmpty*/)
                 {
-                    // if (menusStatesCmp.inStorageState)
-                    //  _sceneData.Value.dropedItemsUIView.storageUIContainer.gameObject.SetActive(false);
                     _sceneData.Value.dropedItemsUIView.divideItemsUI.gameObject.SetActive(false);
                     _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "take off all";
                 }
@@ -591,14 +586,6 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             }
             else if (item.itemInfo.itemId == 44)
             {
-                // var flashlightItemCellCmp = _inventoryCellComponentPool.Value.Get(descriptionEvt.itemEntity);
-                // ref var globalTimeCmp = ref _globalTimeComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-                // float curTime = 1440 * globalTimeCmp.currentDayTime / _sceneData.Value.dayTime;
-
-                // int hours = (int)(curTime / 60) + _sceneData.Value.timeHourOffset;
-                //  if (hours > 23)
-                //     hours -= 24;
-                // _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Time: " + hours.ToString() + ":" + ((int)(curTime % 60)).ToString("00") + "\n";
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(false);
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(false);
             }//watch
@@ -649,10 +636,6 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
             else if (item.itemInfo.type == ItemInfo.itemType.sheild || item.itemInfo.type == ItemInfo.itemType.helmet || item.itemInfo.type == ItemInfo.itemType.bodyArmor)
             {
-                /* _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Remaining durability : " + ((int)_shieldComponentsPool.Value.Get(desription).currentDurability).ToString() + " / " + item.itemInfo.sheildInfo.sheildDurability + "\n" + " shield recovery cost " + item.itemInfo.sheildInfo.sheildRecoveryCost + "\n"
-                     + " block damage " + (item.itemInfo.sheildInfo.damagePercent * 100) + "%\n" + " added recoil and reduce hit lenght/angle " + ((1 - item.itemInfo.sheildInfo.recoilPercent) * 100) + "%\n";*/
-
-                // _sceneData.Value.dropedItemsUIView.divideItemsUI.gameObject.SetActive(true);//
                 if (menuStatesCmp.inGunWorkshopState || (item.itemInfo.type == ItemInfo.itemType.helmet && item.itemInfo.helmetInfo.addedLightIntancity != 0 && menuStatesCmp.inStorageState))
                 {
                     _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(true);
@@ -675,10 +658,6 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                     _sceneData.Value.dropedItemsUIView.divideItemsUI.gameObject.SetActive(false);
                     _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "take off";
                 }
-                /*  else if (_storageCellTagsPool.Value.Has(descriptionEvt.itemEntity))
-                  {
-                      _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "charge";
-                  }*/
                 else
                 {
                     _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "equip";
@@ -711,7 +690,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         {
             if ((Input.GetKeyDown(KeyCode.I) || (Input.GetKeyDown(KeyCode.Escape)) && _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inInventoryState))
             {
-               // Debug.Log("open inv");
+                // Debug.Log("open inv");
                 ref var menusStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                 if (menusStatesCmp.mainMenuState != MenuStatesComponent.MainMenuState.none) return;
                 _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
@@ -755,10 +734,10 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 ChangeMainMenuState(ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity), false);
             }
         }
-        if(_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).invCellRectTransform != null)
+        if (_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).invCellRectTransform != null)
         {
             var menuStatesCmp = _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-               var cellTransform = menuStatesCmp.invCellRectTransform;
+            var cellTransform = menuStatesCmp.invCellRectTransform;
             // cellTransform.anchoredPosition = new Vector2(Input.mousePosition.x - cellTransform.parent.gameObject.transform.position.x, Input.mousePosition.y - cellTransform.parent.gameObject.transform.position.y)/ _sceneData.Value.mainMenuView.uiMenusToScale[0].localScale.y;
             cellTransform.anchoredPosition = (Input.mousePosition - cellTransform.parent.gameObject.transform.position) / /*(cellTransform.anchoredPosition - */_sceneData.Value.mainCanvas.localScale.x / _sceneData.Value.mainMenuView.uiMenusToScale[0].localScale.x;
             Debug.Log("moveCell" + _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).invCellRectTransform.anchoredPosition);
@@ -976,6 +955,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             _sceneData.Value.statsInventoryText.text = inventoryCmp.weight.ToString("0.0") + "kg/ " + inventoryCmp.currentMaxWeight + "kg \n max cells " + inventoryCmp.currentCellCount;
             _sceneData.Value.depthOfFieldMainBg.focalLength.value = 300f;
             _sceneData.Value.uiAudioSourse.clip = _sceneData.Value.openInventorySound;
+            menusStatesCmp.isGunPartDescription = false;
             _sceneData.Value.uiAudioSourse.Play();
         }
         else

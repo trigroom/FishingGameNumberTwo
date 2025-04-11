@@ -1686,11 +1686,11 @@ public class AttackSystem : IEcsRunSystem
                     curBulletUI.gameObject.SetActive(false);
                 }
             }
-            if (playerGunCmp.bulletUIObjects[0].sprite != gunInfo.bulletUISprite)
+            if (playerGunCmp.bulletUIObjects[gunInfo.magazineCapacity-1].sprite != gunInfo.bulletUISprite)
                 for (int i = 0; i < gunInfo.magazineCapacity; i++)
                     playerGunCmp.bulletUIObjects[i].sprite = gunInfo.bulletUISprite;
 
-            if (playerGunCmp.bulletUIObjects[0].rectTransform.sizeDelta != gunInfo.bulletUISize)
+            if (playerGunCmp.bulletUIObjects[gunInfo.magazineCapacity-1].rectTransform.sizeDelta != gunInfo.bulletUISize)
                 for (int i = 0; i < gunInfo.magazineCapacity; i++)
                     playerGunCmp.bulletUIObjects[i].rectTransform.sizeDelta = gunInfo.bulletUISize;
         }

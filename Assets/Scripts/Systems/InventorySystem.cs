@@ -628,6 +628,7 @@ public class InventorySystem : IEcsRunSystem
             ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             menuStatesCmp.invCellRectTransform.localPosition = Vector2.zero;
             menuStatesCmp.invCellRectTransform = null;
+            menuStatesCmp.isGunPartDescription = false;
         }
         foreach (var tryCraftItem in _tryCraftItemEventsFilter.Value)
         {
@@ -1262,7 +1263,8 @@ public class InventorySystem : IEcsRunSystem
             else if (itemCmp.itemInfo.type == ItemInfo.itemType.gun)
             {
                 ref var gunInInvCellCmp = ref _gunInventoryCellComponentsPool.Value.Get(usedItemEntity);
-                var menuStatesCmp = _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+                ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+              
                 if (menuStatesCmp.inStorageState)
                 {
                     ref var laserPointerCmp = ref _laserPointerForGunComponentsPool.Value.Get(usedItemEntity);
@@ -1309,14 +1311,7 @@ public class InventorySystem : IEcsRunSystem
                     }
                     invCmp.moneyCount -= itemCmp.itemInfo.gunInfo.upgradeCost;
                     invCmp.weight -= gunInInvCellCmp.currentGunWeight;
-                    /*  DeleteItem(ref itemCmp, ref invCellCmp, 1, usedItemEntity);
-                      ref var upgradedWeaponItemCmp = ref _inventoryItemComponentsPool.Value.Add(usedItemEntity);
-                      upgradedWeaponItemCmp.itemInfo = upgradedGun;
-                      invCellCmp.isEmpty = false;
-                      //  invCellCmp.cellView.inventoryCellButton.enabled = true;
-                      AddItem(ref invCellCmp, ref upgradedWeaponItemCmp, 1, usedItemEntity);
-                      TryAddSpecialItemComponent(itemCmp.itemInfo, usedItemEntity);
-                      gunInInvCellCmp.isEquipedWeapon = true;*/
+                    menuStatesCmp.lastMarkedCell = 0;
                     if (_shieldComponentsPool.Value.Has(usedItemEntity))
                         _shieldComponentsPool.Value.Del(usedItemEntity);
 
@@ -1414,6 +1409,45 @@ public class InventorySystem : IEcsRunSystem
             {
                 ref var playerWeaponsInInvCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                 ref var gunInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(movedToFastCellWeapon);
+                ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity); 
+                if (menuStatesCmp.isGunPartDescription && gunInvCmp.gunPartsId[menuStatesCmp.currentMarkedGunPart] != 0)
+                {
+                    var gunPartItemInfo = _sceneData.Value.idItemslist.items[gunInvCmp.gunPartsId[menuStatesCmp.currentMarkedGunPart]];
+                    _sceneData.Value.dropedItemsUIView.gunPartCells[menuStatesCmp.currentMarkedGunPart].gunPartImage.sprite = _sceneData.Value.transparentSprite;
+
+                    if (CanAddItems(gunPartItemInfo, 1, false))
+                        AddItemToInventory(gunPartItemInfo, 1, false);
+                    else
+                    {
+                        _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity).weight -= gunPartItemInfo.itemWeight;
+                        var droppedItem = _world.Value.NewEntity();
+                        ref var droppedItemComponent = ref _droppedItemComponents.Value.Add(droppedItem);
+
+                        droppedItemComponent.currentItemsCount = 1;
+
+                        droppedItemComponent.itemInfo = gunPartItemInfo;
+
+                        droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(_movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform.position, gunPartItemInfo, droppedItem);
+                        _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItem).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.gameObject.transform.GetChild(0) };
+
+                    }
+
+                    _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
+                    menuStatesCmp.isGunPartDescription = false;
+                    gunInvCmp.gunPartsId[menuStatesCmp.currentMarkedGunPart] = 0;
+
+                    if (_sceneData.Value.firstGunCellView._entity == movedToFastCellWeapon)
+                        _changeWeaponFromInventoryEventsPool.Value.Add(movedToFastCellWeapon).SetValues(true, 0);
+
+                    else
+                        _changeWeaponFromInventoryEventsPool.Value.Add(movedToFastCellWeapon).SetValues(true, 1);
+
+
+                    return;
+                }
+                menuStatesCmp.isGunPartDescription = false;
+
+
                 if (_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inGunWorkshopState)
                 {
                     ref var invCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity);

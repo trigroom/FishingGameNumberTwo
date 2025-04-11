@@ -16,7 +16,7 @@ MonoBehaviour:
   attackLenght: 22
   shotSoundDistance: 25
   reloadDuration: 1.3
-  magazineCapacity: 15
+  magazineCapacity: 20
   damage: 24
   attackCouldown: 0.1
   maxSpread: 20
@@ -82,21 +82,26 @@ MonoBehaviour:
   shotFlashIntance: 10
   shotFlashAngle: 50
   bulletsUIPositions:
-  - {x: 0, y: 105.2}
-  - {x: 2.28, y: 90.38}
-  - {x: -2.38, y: 76.36}
-  - {x: 2.28, y: 62.31}
-  - {x: -2.38, y: 48.29}
-  - {x: 2.28, y: 34.25}
-  - {x: -2.38, y: 20.23}
-  - {x: 2.28, y: 6.27}
-  - {x: -2.38, y: -7.75}
-  - {x: 2.28, y: -21.81}
-  - {x: -2.38, y: -35.83}
-  - {x: 2.28, y: -49.78}
-  - {x: -2.38, y: -63.82}
-  - {x: 2.28, y: -77.77}
-  - {x: -2.38, y: -91.75}
+  - {x: 0, y: 139.9}
+  - {x: 2.28, y: 125.08}
+  - {x: -2.38, y: 111.06}
+  - {x: 2.28, y: 97.01}
+  - {x: -2.38, y: 82.99}
+  - {x: 2.28, y: 68.95}
+  - {x: -2.38, y: 54.93}
+  - {x: 2.28, y: 40.97}
+  - {x: -2.38, y: 26.95}
+  - {x: 2.28, y: 12.89}
+  - {x: -2.38, y: -1.13}
+  - {x: 2.28, y: -15.08}
+  - {x: -2.38, y: -29.12}
+  - {x: 2.28, y: -43.07}
+  - {x: -2.38, y: -57.05}
+  - {x: 2.28, y: -70.9}
+  - {x: -2.38, y: -85}
+  - {x: 2.28, y: -99.1}
+  - {x: -2.38, y: -112.9}
+  - {x: 2.28, y: -127}
   bulletUISprite: {fileID: 21300000, guid: 76dded18b3f1faf449cbb67a700fa60f, type: 3}
   magUISprite: {fileID: 21300000, guid: 898988cd0f301e54bb18c0e3c96d4668, type: 3}
   magUISize: {x: 23.5, y: 202}

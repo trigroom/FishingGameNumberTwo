@@ -12,10 +12,12 @@ public struct MenuStatesComponent
     public MainMenuState mainMenuState;
     public bool inCraftingTableState;
     public RectTransform invCellRectTransform;
+    public bool isGunPartDescription;
 
     public int lastMarkedCell;
     public int lastDraggedCell;
     public int currentGuidePage;
+    public int currentMarkedGunPart;
 
     public CurrentItemShowedInfoState currentItemShowedInfo;
     public CurrentBookShowState currentBookShowState;
