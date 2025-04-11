@@ -467,6 +467,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                         _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = " recovery durability " + item.itemInfo.gunInfo.durabilityRecoveryCost + "$";
                         if (item.itemInfo.gunInfo.upgradedGunId != 0)
                         {
+                            _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(true);
                             _sceneData.Value.dropedItemsUIView.secondButtonActionText.text = "upgrade " + item.itemInfo.gunInfo.upgradeCost + "$";
                             _sceneData.Value.dropedItemsUIView.currentGunImage.sprite = item.itemInfo.itemSprite;
                             var upgradedItem = _sceneData.Value.idItemslist.items[item.itemInfo.gunInfo.upgradedGunId];

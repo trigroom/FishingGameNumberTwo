@@ -108,7 +108,7 @@ MonoBehaviour:
   shotSound: {fileID: 8300000, guid: 9fff401a335a4d547bf8044d3c7035e9, type: 3}
   startReloadSound: {fileID: 0}
   endReloadSound: {fileID: 0}
-  upgradeCost: 0
-  upgradedGunId: 0
-  neededGunLevelToUpgrade: 0
+  upgradeCost: 50
+  upgradedGunId: 142
+  neededGunLevelToUpgrade: 3
   gunParts: 9

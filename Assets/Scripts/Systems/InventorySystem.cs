@@ -604,6 +604,7 @@ public class InventorySystem : IEcsRunSystem
                             flashLightObject.pointLightOuterAngle = flashlightItem.spotAngle;
                         }
                     }
+
                     else if (_sceneData.Value.helmetCellView._entity == curCheckedCell)
                     {
                         ChangeHelmetItemInSpecialSlot();
@@ -1105,7 +1106,7 @@ public class InventorySystem : IEcsRunSystem
 
         foreach (var usedItemEntity in _healFromInventoryEventsFilter.Value)
         {
-            var itemCmp = _inventoryItemComponentsPool.Value.Get(usedItemEntity);
+            ref var itemCmp = ref _inventoryItemComponentsPool.Value.Get(usedItemEntity);
 
             var playerAttackCmp = _attackComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             if (_currentHealingItemComponentsPool.Value.Get(_sceneData.Value.playerEntity).isHealing || playerAttackCmp.weaponIsChanged)
@@ -1289,7 +1290,7 @@ public class InventorySystem : IEcsRunSystem
                     var upgradedGun = _sceneData.Value.idItemslist.items[itemCmp.itemInfo.gunInfo.upgradedGunId];
                     ref var invCellCmp = ref _inventoryCellsComponents.Value.Get(usedItemEntity);
                     ref var playerCmp = ref _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-                    var invCmp = _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity);
+                    ref var invCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity);
                     // Debug.Log((upgradedGun.itemWeight - itemCmp.itemInfo.itemWeight + _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity).weight > _sceneData.Value.maxInInventoryWeight || (playerCmp.money - itemCmp.itemInfo.gunInfo.upgradeCost) < 0) + "Upg gun");
                     if ((invCmp.moneyCount - itemCmp.itemInfo.gunInfo.upgradeCost) < 0)
                     {
@@ -1307,22 +1308,82 @@ public class InventorySystem : IEcsRunSystem
                         return;
                     }
                     invCmp.moneyCount -= itemCmp.itemInfo.gunInfo.upgradeCost;
-                    DeleteItem(ref itemCmp, ref invCellCmp, 1, usedItemEntity);
-                    ref var upgradedWeaponItemCmp = ref _inventoryItemComponentsPool.Value.Add(usedItemEntity);
-                    upgradedWeaponItemCmp.itemInfo = upgradedGun;
-                    invCellCmp.isEmpty = false;
-                    //  invCellCmp.cellView.inventoryCellButton.enabled = true;
-                    AddItem(ref invCellCmp, ref upgradedWeaponItemCmp, 1, usedItemEntity);
-                    TryAddSpecialItemComponent(itemCmp.itemInfo, usedItemEntity);
-                    gunInInvCellCmp.isEquipedWeapon = true;
+                    invCmp.weight -= gunInInvCellCmp.currentGunWeight;
+                    /*  DeleteItem(ref itemCmp, ref invCellCmp, 1, usedItemEntity);
+                      ref var upgradedWeaponItemCmp = ref _inventoryItemComponentsPool.Value.Add(usedItemEntity);
+                      upgradedWeaponItemCmp.itemInfo = upgradedGun;
+                      invCellCmp.isEmpty = false;
+                      //  invCellCmp.cellView.inventoryCellButton.enabled = true;
+                      AddItem(ref invCellCmp, ref upgradedWeaponItemCmp, 1, usedItemEntity);
+                      TryAddSpecialItemComponent(itemCmp.itemInfo, usedItemEntity);
+                      gunInInvCellCmp.isEquipedWeapon = true;*/
+                    if (_shieldComponentsPool.Value.Has(usedItemEntity))
+                        _shieldComponentsPool.Value.Del(usedItemEntity);
+
+                    invCellCmp.cellView.ChangeCellItemSprite(upgradedGun.itemSprite);
+                    if (gunInInvCellCmp.currentAmmo != 0)
+                    {
+                        var bulletItemInfo = _sceneData.Value.idItemslist.items[itemCmp.itemInfo.gunInfo.bulletTypeId];
+                        if (CanAddItems(bulletItemInfo, gunInInvCellCmp.currentAmmo, false))
+                        {
+                            AddItemToInventory(bulletItemInfo, gunInInvCellCmp.currentAmmo, false);
+                            invCmp.weight += bulletItemInfo.itemWeight * gunInInvCellCmp.currentAmmo;
+                        }
+                        else
+                        {
+                            var droppedItem = _world.Value.NewEntity();
+                            ref var droppedItemComponent = ref _droppedItemComponents.Value.Add(droppedItem);
+
+                            droppedItemComponent.currentItemsCount = gunInInvCellCmp.currentAmmo;
+
+                            droppedItemComponent.itemInfo = bulletItemInfo;
+
+                            droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(_movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform.position, bulletItemInfo, droppedItem);
+                            _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItem).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.gameObject.transform.GetChild(0) };
+
+                        }
+                        gunInInvCellCmp.currentAmmo = 0;
+                    }
+                    itemCmp.itemInfo = upgradedGun;
+                    gunInInvCellCmp.currentGunWeight = upgradedGun.itemWeight;
+                    invCmp.weight += upgradedGun.itemWeight;
+                    
+                    for (int i = 0; i < gunInInvCellCmp.gunPartsId.Length; i++)
+                    {
+                        if (gunInInvCellCmp.gunPartsId[i] != 0)
+                        {
+                            var gunPartItemInfo = _sceneData.Value.idItemslist.items[gunInInvCellCmp.gunPartsId[i]];
+                            if (CanAddItems(gunPartItemInfo, 1, false))
+                            {
+                                AddItemToInventory(gunPartItemInfo, 1, false);
+                                invCmp.weight += gunPartItemInfo.itemWeight;
+                            }
+                            else
+                            {
+                                var droppedItem = _world.Value.NewEntity();
+                                ref var droppedItemComponent = ref _droppedItemComponents.Value.Add(droppedItem);
+
+                                droppedItemComponent.currentItemsCount = 1;
+
+                                droppedItemComponent.itemInfo = gunPartItemInfo;
+
+                                droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(_movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform.position, gunPartItemInfo, droppedItem);
+                                _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItem).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.gameObject.transform.GetChild(0) };
+
+                            }
+
+                            gunInInvCellCmp.gunPartsId[i] = 0;
+                        }
+                    }
                     gunInInvCellCmp.gunDurability = upgradedGun.gunInfo.maxDurabilityPoints;
                     //invCellCmp.inventoryItemComponent = upgradedWeaponItemCmp;
                     ref var weaponsInInventoryCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                     if (_sceneData.Value.firstGunCellView._entity == usedItemEntity)
                         _changeWeaponFromInventoryEventsPool.Value.Add(usedItemEntity).SetValues(false, 0);
 
-                    else
+                    else if (_sceneData.Value.secondGunCellView._entity == usedItemEntity)
                         _changeWeaponFromInventoryEventsPool.Value.Add(usedItemEntity).SetValues(false, 1);
+                    _sceneData.Value.statsInventoryText.text = invCmp.weight.ToString("0.0") + "kg/ " + invCmp.currentMaxWeight + "kg \n max cells " + invCmp.currentCellCount;
                     _sceneData.Value.moneyText.text = invCmp.moneyCount + "$";
 
                     _sceneData.Value.dropedItemsUIView.currentGunImage.sprite = _sceneData.Value.transparentSprite;

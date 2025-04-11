@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7718247f6aa85b84f813578fb0d5b327, type: 3}
-  m_Name: S&WVictoryGunInfo
+  m_Name: S&WVictoryMGunInfo
   m_EditorClassIdentifier: 
   gunType: 3
   attackLenght: 15
@@ -29,8 +29,8 @@ MonoBehaviour:
   isOneBulletReloaded: 1
   maxDurabilityPoints: 550
   bulletShellIndex: 4
-  firepointPosition: {x: 0.13, y: 0.055}
-  bulletShellPointPosition: {x: -0.02, y: 0.02}
+  firepointPosition: {x: 0.135, y: 0.06}
+  bulletShellPointPosition: {x: -0.035, y: 0.045}
   bulletShellSpawnOnShot: 0
   durabilityRecoveryCost: 10
   isOneHandedGun: 1
@@ -72,12 +72,12 @@ MonoBehaviour:
   laserPointerPosition: {x: 0, y: 0}
   gunPartsInGamePositions:
   - {x: -0.13, y: -0.07}
-  - {x: 0, y: 0}
-  - {x: 0, y: 0}
-  - {x: 0.13, y: 0.06}
+  - {x: 0.005, y: 0.095}
+  - {x: 0.085, y: 0.025}
+  - {x: 0.135, y: 0.065}
   spriteScaleMultiplayer: 2.5
   spriteRotation: 90
-  weaponSprite: {fileID: 21300000, guid: 2d236aae946c35f499938423cedbc160, type: 3}
+  weaponSprite: {fileID: 21300000, guid: 2cc3dc19c502d3746bd27472d79b5345, type: 3}
   shotFlashDistance: 3
   shotFlashIntance: 10
   shotFlashAngle: 50
@@ -99,7 +99,7 @@ MonoBehaviour:
   shotSound: {fileID: 8300000, guid: 38654f4852b5ec745b45f35dabec6c2a, type: 3}
   startReloadSound: {fileID: 8300000, guid: a65ba32ba0094164a90be57b3afe8c29, type: 3}
   endReloadSound: {fileID: 8300000, guid: ee9d5e36eaec97d48ae170d3f477e698, type: 3}
-  upgradeCost: 25
-  upgradedGunId: 143
-  neededGunLevelToUpgrade: 1
-  gunParts: 9
+  upgradeCost: 0
+  upgradedGunId: 0
+  neededGunLevelToUpgrade: 0
+  gunParts: -1

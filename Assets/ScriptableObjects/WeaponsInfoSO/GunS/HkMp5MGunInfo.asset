@@ -10,30 +10,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7718247f6aa85b84f813578fb0d5b327, type: 3}
-  m_Name: S&WVictoryGunInfo
+  m_Name: HkMp5MGunInfo
   m_EditorClassIdentifier: 
-  gunType: 3
-  attackLenght: 15
+  gunType: 4
+  attackLenght: 20
   shotSoundDistance: 20
-  reloadDuration: 1
-  magazineCapacity: 6
-  damage: 25
-  attackCouldown: 0.4
-  maxSpread: 12
-  minSpread: 2
-  addedSpread: 2
-  weaponChangeSpeed: 1
-  isAuto: 0
-  bulletTypeId: 1
+  reloadDuration: 1.5
+  magazineCapacity: 15
+  damage: 20
+  attackCouldown: 0.08
+  maxSpread: 25
+  minSpread: 1
+  addedSpread: 1
+  weaponChangeSpeed: 1.4
+  isAuto: 1
+  bulletTypeId: 4
   bulletCount: 1
-  isOneBulletReloaded: 1
-  maxDurabilityPoints: 550
+  isOneBulletReloaded: 0
+  maxDurabilityPoints: 2200
   bulletShellIndex: 4
-  firepointPosition: {x: 0.13, y: 0.055}
-  bulletShellPointPosition: {x: -0.02, y: 0.02}
-  bulletShellSpawnOnShot: 0
+  firepointPosition: {x: 0.18, y: 0.035}
+  bulletShellPointPosition: {x: -0.02, y: 0.045}
+  bulletShellSpawnOnShot: 1
   durabilityRecoveryCost: 10
-  isOneHandedGun: 1
+  isOneHandedGun: 0
   laserPointer:
     laserMaxLenght: 0
     laserPosition: {x: 0, y: 0}
@@ -71,35 +71,44 @@ MonoBehaviour:
       m_NumAlphaKeys: 2
   laserPointerPosition: {x: 0, y: 0}
   gunPartsInGamePositions:
-  - {x: -0.13, y: -0.07}
-  - {x: 0, y: 0}
-  - {x: 0, y: 0}
-  - {x: 0.13, y: 0.06}
+  - {x: -0.17, y: 0.035}
+  - {x: -0.11, y: 0.085}
+  - {x: 0.1, y: 0.015}
+  - {x: 0.18, y: 0.035}
   spriteScaleMultiplayer: 2.5
   spriteRotation: 90
-  weaponSprite: {fileID: 21300000, guid: 2d236aae946c35f499938423cedbc160, type: 3}
+  weaponSprite: {fileID: 21300000, guid: 059fae638ce051a43bb1de6b43391fd0, type: 3}
   shotFlashDistance: 3
   shotFlashIntance: 10
   shotFlashAngle: 50
   bulletsUIPositions:
-  - {x: 0, y: 20.7}
-  - {x: -17.7, y: 9.95}
-  - {x: -17.7, y: -9.95}
-  - {x: 0, y: -20.7}
-  - {x: 17.7, y: -9.95}
-  - {x: 17.7, y: 9.95}
+  - {x: 0, y: 105.2}
+  - {x: 2.28, y: 90.38}
+  - {x: -2.38, y: 76.36}
+  - {x: 2.28, y: 62.31}
+  - {x: -2.38, y: 48.29}
+  - {x: 2.28, y: 34.25}
+  - {x: -2.38, y: 20.23}
+  - {x: 2.28, y: 6.27}
+  - {x: -2.38, y: -7.75}
+  - {x: 2.28, y: -21.81}
+  - {x: -2.38, y: -35.83}
+  - {x: 2.28, y: -49.78}
+  - {x: -2.38, y: -63.82}
+  - {x: 2.28, y: -77.77}
+  - {x: -2.38, y: -91.75}
   bulletUISprite: {fileID: 21300000, guid: 76dded18b3f1faf449cbb67a700fa60f, type: 3}
-  magUISprite: {fileID: 21300000, guid: 4f628d27227a1e24788f374c4ecf5f3e, type: 3}
-  magUISize: {x: 70, y: 70}
-  magUIPosition: {x: 0, y: 0}
-  bulletUISize: {x: 17, y: 17}
+  magUISprite: {fileID: 21300000, guid: 898988cd0f301e54bb18c0e3c96d4668, type: 3}
+  magUISize: {x: 23.5, y: 202}
+  magUIPosition: {x: 17, y: 80}
+  bulletUISize: {x: 14, y: 14}
   scopeMultiplicity: 1
   blackBGSize: 0
   centreCrossSprite: {fileID: 0}
-  shotSound: {fileID: 8300000, guid: 38654f4852b5ec745b45f35dabec6c2a, type: 3}
-  startReloadSound: {fileID: 8300000, guid: a65ba32ba0094164a90be57b3afe8c29, type: 3}
-  endReloadSound: {fileID: 8300000, guid: ee9d5e36eaec97d48ae170d3f477e698, type: 3}
-  upgradeCost: 25
-  upgradedGunId: 143
-  neededGunLevelToUpgrade: 1
-  gunParts: 9
+  shotSound: {fileID: 8300000, guid: 9fff401a335a4d547bf8044d3c7035e9, type: 3}
+  startReloadSound: {fileID: 0}
+  endReloadSound: {fileID: 0}
+  upgradeCost: 0
+  upgradedGunId: 0
+  neededGunLevelToUpgrade: 0
+  gunParts: -1
