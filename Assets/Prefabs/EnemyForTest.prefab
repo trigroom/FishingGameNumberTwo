@@ -1110,7 +1110,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: e688bd424d1a24541af901a8cec18f79, type: 2}
-  m_CullingMode: 0
+  m_CullingMode: 2
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
@@ -1377,6 +1377,7 @@ MonoBehaviour:
   <characterHeadCollaider>k__BackingField: {fileID: 2484764596064306563}
   <headColliderView>k__BackingField: {fileID: 7552811881782205356}
   <interestObjectView>k__BackingField: {fileID: 0}
+  <_entity>k__BackingField: 0
 --- !u!114 &7671032249824552012
 MonoBehaviour:
   m_ObjectHideFlags: 0

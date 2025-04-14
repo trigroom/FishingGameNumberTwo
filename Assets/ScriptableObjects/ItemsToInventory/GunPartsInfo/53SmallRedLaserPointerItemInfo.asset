@@ -15,7 +15,7 @@ MonoBehaviour:
   itemSprite: {fileID: 21300000, guid: b8824c7316b168f4b8cb94a471605802, type: 3}
   type: 8
   maxCount: 1
-  itemWeight: 0.5
+  itemWeight: 0.15
   itemId: 53
   itemName: small red laser pointer
   itemDescription: 
@@ -25,5 +25,10 @@ MonoBehaviour:
   grenadeInfo: {fileID: 0}
   healInfo: {fileID: 0}
   flashlightInfo: {fileID: 0}
-  cellsCount: 0
+  backpackInfo: {fileID: 0}
   gunPartInfo: {fileID: 11400000, guid: 836a8cb22a32aa74a81f89a26fef9b3e, type: 2}
+  expAddedInfo: {fileID: 0}
+  sheildInfo: {fileID: 0}
+  helmetInfo: {fileID: 0}
+  bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

@@ -15,7 +15,7 @@ MonoBehaviour:
   itemSprite: {fileID: 21300000, guid: ad6e68e9c8492c94eb3779ef20bf6380, type: 3}
   type: 0
   maxCount: 1
-  itemWeight: 1
+  itemWeight: 1.07
   itemId: 11
   itemName: Colt Python
   itemDescription: 
@@ -29,3 +29,6 @@ MonoBehaviour:
   gunPartInfo: {fileID: 0}
   expAddedInfo: {fileID: 0}
   sheildInfo: {fileID: 0}
+  helmetInfo: {fileID: 0}
+  bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

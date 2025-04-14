@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GrenadeInfoMine
   m_EditorClassIdentifier: 
   explodeRadius: 6
-  damage: 50
+  damage: 70
   maxThrowDistance: 0
   timeToExplode: 5
   grenadeSprite: {fileID: 21300000, guid: 6f8dd4fa6336c1d4a99e025d5eb5a226, type: 3}

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b18e5041c0566641bf5c5e28b3d2ef7, type: 3}
   m_Name: ShildOfRoadSighnsCraftingRecipeInfo
   m_EditorClassIdentifier: 
-  neededCount: 01000000
-  neededId: 50000000
+  neededCount: 04000000080000000800000003000000
+  neededId: 4e0000004c0000005600000052000000
   craftedItemId: 58
   craftedItemsCount: 1
   needCraftingTableLevel: 1

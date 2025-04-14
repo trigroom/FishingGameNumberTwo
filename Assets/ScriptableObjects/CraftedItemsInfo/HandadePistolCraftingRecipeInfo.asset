@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b18e5041c0566641bf5c5e28b3d2ef7, type: 3}
   m_Name: HandadePistolCraftingRecipeInfo
   m_EditorClassIdentifier: 
-  neededCount: 01000000
-  neededId: 50000000
+  neededCount: 0100000003000000020000000200000001000000
+  neededId: 4d0000004e000000500000004a0000004c000000
   craftedItemId: 67
   craftedItemsCount: 1
   needCraftingTableLevel: 0

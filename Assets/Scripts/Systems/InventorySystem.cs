@@ -2,6 +2,7 @@ using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class InventorySystem : IEcsRunSystem
 {
@@ -84,9 +85,12 @@ public class InventorySystem : IEcsRunSystem
     private EcsFilterInject<Inc<SpecialInventoryCellTag, InventoryItemComponent>> _specialItemsFilter;
     private void CopySpecialComponents(int srcEntity, int needEntity, ItemInfo itemInfo)
     {
-        if (itemInfo.type == ItemInfo.itemType.gun)
+        if (itemInfo.type == ItemInfo.itemType.gun || itemInfo.type == ItemInfo.itemType.gunPart)
         {
-            _gunInventoryCellComponentsPool.Value.Copy(srcEntity, needEntity);
+            if (itemInfo.type == ItemInfo.itemType.gun)
+                _gunInventoryCellComponentsPool.Value.Copy(srcEntity, needEntity);
+
+            Debug.Log("has laser poiinter" + _laserPointerForGunComponentsPool.Value.Has(srcEntity));
             if (_laserPointerForGunComponentsPool.Value.Has(srcEntity))
                 _laserPointerForGunComponentsPool.Value.Copy(srcEntity, needEntity);
         }
@@ -101,9 +105,10 @@ public class InventorySystem : IEcsRunSystem
     }
     private void DelSpecialComponents(int delEntity, ItemInfo itemInfo)
     {
-        if (itemInfo.type == ItemInfo.itemType.gun)
+        if (itemInfo.type == ItemInfo.itemType.gun || itemInfo.type == ItemInfo.itemType.gunPart)
         {
-            _gunInventoryCellComponentsPool.Value.Del(delEntity);
+            if (itemInfo.type == ItemInfo.itemType.gun)
+                _gunInventoryCellComponentsPool.Value.Del(delEntity);
             if (_laserPointerForGunComponentsPool.Value.Has(delEntity))
                 _laserPointerForGunComponentsPool.Value.Del(delEntity);
         }
@@ -171,8 +176,8 @@ public class InventorySystem : IEcsRunSystem
         foreach (var dropDrag in _endItemDragEventsFilter.Value)
         {
             ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-            Debug.Log("dropDrag");
-            if (menuStatesCmp.lastDraggedCell != dropDrag && !_gunComponentsPool.Value.Get(_sceneData.Value.playerEntity).isReloading && !_attackComponentsPool.Value.Get(_sceneData.Value.playerEntity).weaponIsChanged)
+            Debug.Log("dropDrag"+ menuStatesCmp.lastDraggedCell);
+            if (menuStatesCmp.lastDraggedCell != dropDrag && !_gunComponentsPool.Value.Get(_sceneData.Value.playerEntity).isReloading && !_attackComponentsPool.Value.Get(_sceneData.Value.playerEntity).weaponIsChanged && menuStatesCmp.lastDraggedCell != 0)
             {
                 ref var draggedInvCell = ref _inventoryCellsComponents.Value.Get(menuStatesCmp.lastDraggedCell);
                 ref var draggedItem = ref _inventoryItemComponentsPool.Value.Get(menuStatesCmp.lastDraggedCell);
@@ -1264,7 +1269,7 @@ public class InventorySystem : IEcsRunSystem
             {
                 ref var gunInInvCellCmp = ref _gunInventoryCellComponentsPool.Value.Get(usedItemEntity);
                 ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-              
+
                 if (menuStatesCmp.inStorageState)
                 {
                     ref var laserPointerCmp = ref _laserPointerForGunComponentsPool.Value.Get(usedItemEntity);
@@ -1342,7 +1347,7 @@ public class InventorySystem : IEcsRunSystem
                     itemCmp.itemInfo = upgradedGun;
                     gunInInvCellCmp.currentGunWeight = upgradedGun.itemWeight;
                     invCmp.weight += upgradedGun.itemWeight;
-                    
+
                     for (int i = 0; i < gunInInvCellCmp.gunPartsId.Length; i++)
                     {
                         if (gunInInvCellCmp.gunPartsId[i] != 0)
@@ -1387,6 +1392,27 @@ public class InventorySystem : IEcsRunSystem
                     return;
                 }
             }
+           /* else if (itemCmp.itemInfo.type == ItemInfo.itemType.gunPart && itemCmp.itemInfo.gunPartInfo.laserLightTime != 0)
+            {
+                ref var laserCmp = ref _laserPointerForGunComponentsPool.Value.Get(usedItemEntity);
+                if (laserCmp.remainingLaserPointerTime != itemCmp.itemInfo.gunPartInfo.laserLightTime)
+                {
+                    var laserGunPartInfo = itemCmp.itemInfo.gunPartInfo;
+                    float needEnergy = electricityGeneratorCmp.currentElectricityEnergy - laserGunPartInfo.energyToCharge * (1 - laserCmp.remainingLaserPointerTime / laserGunPartInfo.laserLightTime);
+
+                    // Debug.Log(needEnergy + " needenergy");
+                    if (needEnergy > 0)
+                    {
+                        laserCmp.remainingLaserPointerTime = laserGunPartInfo.laserLightTime;
+                        electricityGeneratorCmp.currentElectricityEnergy = needEnergy;
+                        _sceneData.Value.dropedItemsUIView.solarBatteryenergyText.text = (int)electricityGeneratorCmp.currentElectricityEnergy + "mAh/ \n" + _sceneData.Value.solarEnergyGeneratorMaxCapacity + "mAh";
+                    }
+                    else
+                        _sceneData.Value.ShowWarningText("need " + (needEnergy * -1) + "more mA to charge nvg");
+                }
+                else
+                    _sceneData.Value.ShowWarningText("laser pointer charge is full");
+            }*/
         }
         foreach (var healItemEntity in _healFromHealItemCellEventsFilter.Value)
         {
@@ -1409,28 +1435,44 @@ public class InventorySystem : IEcsRunSystem
             {
                 ref var playerWeaponsInInvCmp = ref _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                 ref var gunInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(movedToFastCellWeapon);
-                ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity); 
+                ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                 if (menuStatesCmp.isGunPartDescription && gunInvCmp.gunPartsId[menuStatesCmp.currentMarkedGunPart] != 0)
                 {
                     var gunPartItemInfo = _sceneData.Value.idItemslist.items[gunInvCmp.gunPartsId[menuStatesCmp.currentMarkedGunPart]];
                     _sceneData.Value.dropedItemsUIView.gunPartCells[menuStatesCmp.currentMarkedGunPart].gunPartImage.sprite = _sceneData.Value.transparentSprite;
 
+                        _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity).weight -= gunPartItemInfo.itemWeight;
                     if (CanAddItems(gunPartItemInfo, 1, false))
-                        AddItemToInventory(gunPartItemInfo, 1, false);
+                    {
+                        if (gunPartItemInfo.gunPartInfo.laserLightTime != 0)
+                        {
+                            int count = 0;
+                            List<int> cells = new List<int>();
+                            (count, cells) = AddItemToInventoryWithCellNumbers(gunPartItemInfo, 1, cells, false);
+                            _laserPointerForGunComponentsPool.Value.Copy(movedToFastCellWeapon, cells[0]);
+                            _laserPointerForGunComponentsPool.Value.Del(movedToFastCellWeapon);
+                        }
+                        else
+                            AddItemToInventory(gunPartItemInfo, 1, false);
+                    }
                     else
                     {
-                        _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity).weight -= gunPartItemInfo.itemWeight;
                         var droppedItem = _world.Value.NewEntity();
                         ref var droppedItemComponent = ref _droppedItemComponents.Value.Add(droppedItem);
 
                         droppedItemComponent.currentItemsCount = 1;
-
+                        if (gunPartItemInfo.gunPartInfo.laserLightTime != 0)
+                        {
+                            _laserPointerForGunComponentsPool.Value.Copy(movedToFastCellWeapon, droppedItem);
+                            _laserPointerForGunComponentsPool.Value.Del(movedToFastCellWeapon);
+                        }
                         droppedItemComponent.itemInfo = gunPartItemInfo;
 
                         droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(_movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform.position, gunPartItemInfo, droppedItem);
                         _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItem).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.gameObject.transform.GetChild(0) };
 
                     }
+
 
                     _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
                     menuStatesCmp.isGunPartDescription = false;
@@ -1509,53 +1551,6 @@ public class InventorySystem : IEcsRunSystem
                 else if (!gunInvCmp.isEquipedWeapon && playerWeaponsInInvCmp.curEquipedWeaponsCount < 3)
                 {
                     playerWeaponsInInvCmp.curEquipedWeaponsCount++;
-
-                    /*  if (_inventoryCellsComponents.Value.Get(_sceneData.Value.firstGunCellView._entity).isEmpty)
-                      {
-                          int firstGunCellEntity = _sceneData.Value.firstGunCellView._entity;
-
-                          _inventoryItemComponentsPool.Value.Copy(movedToFastCellWeapon, firstGunCellEntity);
-                          _gunInventoryCellComponentsPool.Value.Copy(movedToFastCellWeapon, firstGunCellEntity);
-                          if (_laserPointerForGunComponentsPool.Value.Has(movedToFastCellWeapon))
-                              _laserPointerForGunComponentsPool.Value.Copy(movedToFastCellWeapon, firstGunCellEntity);
-
-                          ref var gunCellCmp = ref _inventoryCellsComponents.Value.Get(firstGunCellEntity);
-                          gunCellCmp.isEmpty = false;
-
-                          ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(firstGunCellEntity);
-
-                          gunInInvCmp.isEquipedWeapon = true;
-
-                          ref var curInvCell = ref _inventoryItemComponentsPool.Value.Get(firstGunCellEntity);
-                          var curCellView = _sceneData.Value.firstGunCellView;
-
-                          curCellView.ChangeCellItemSprite(curInvCell.itemInfo.itemSprite);
-                          curCellView.ChangeCellItemCount(curInvCell.currentItemsCount);
-                          _changeWeaponFromInventoryEventsPool.Value.Add(firstGunCellEntity).SetValues(false, 0);
-                      }
-                      else if (_inventoryCellsComponents.Value.Get(_sceneData.Value.secondGunCellView._entity).isEmpty)
-                      {
-                          int secondGunCellEntity = _sceneData.Value.secondGunCellView._entity;
-
-                          _inventoryItemComponentsPool.Value.Copy(movedToFastCellWeapon, secondGunCellEntity);
-                          _gunInventoryCellComponentsPool.Value.Copy(movedToFastCellWeapon, secondGunCellEntity);
-                          if (_laserPointerForGunComponentsPool.Value.Has(movedToFastCellWeapon))
-                              _laserPointerForGunComponentsPool.Value.Copy(movedToFastCellWeapon, secondGunCellEntity);
-
-                          ref var gunCellCmp = ref _inventoryCellsComponents.Value.Get(secondGunCellEntity);
-                          gunCellCmp.isEmpty = false;
-
-                          ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(secondGunCellEntity);
-
-                          gunInInvCmp.isEquipedWeapon = true;
-
-                          ref var curInvCell = ref _inventoryItemComponentsPool.Value.Get(secondGunCellEntity);
-                          var curCellView = _sceneData.Value.secondGunCellView;
-
-                          curCellView.ChangeCellItemSprite(curInvCell.itemInfo.itemSprite);
-                          curCellView.ChangeCellItemCount(curInvCell.currentItemsCount);
-                          _changeWeaponFromInventoryEventsPool.Value.Add(secondGunCellEntity).SetValues(false, 1);
-                      }*/
 
                     int needCellNum = _inventoryCellsComponents.Value.Get(_sceneData.Value.firstGunCellView._entity).isEmpty ? 0 : 1;
                     var needCellView = needCellNum == 0 ? _sceneData.Value.firstGunCellView : _sceneData.Value.secondGunCellView;
@@ -1850,6 +1845,28 @@ public class InventorySystem : IEcsRunSystem
                 }
                 _sceneData.Value.dropedItemsUIView.itemInfoContainer.gameObject.SetActive(false);
             }
+            else if (oldInvItemCmp.itemInfo.type == ItemInfo.itemType.gunPart && oldInvItemCmp.itemInfo.gunPartInfo.laserLightTime != 0)
+            {
+                ref var laserCmp = ref _laserPointerForGunComponentsPool.Value.Get(movedToFastCellWeapon);
+                if (laserCmp.remainingLaserPointerTime != oldInvItemCmp.itemInfo.gunPartInfo.laserLightTime)
+                {
+                    var laserGunPartInfo = oldInvItemCmp.itemInfo.gunPartInfo;
+                    float needEnergy = electricityGeneratorCmp.currentElectricityEnergy - laserGunPartInfo.energyToCharge * (1 - laserCmp.remainingLaserPointerTime / laserGunPartInfo.laserLightTime);
+
+                    // Debug.Log(needEnergy + " needenergy");
+                    if (needEnergy > 0)
+                    {
+                        laserCmp.remainingLaserPointerTime = laserGunPartInfo.laserLightTime;
+                        electricityGeneratorCmp.currentElectricityEnergy = needEnergy;
+                        _sceneData.Value.dropedItemsUIView.solarBatteryenergyText.text = (int)electricityGeneratorCmp.currentElectricityEnergy + "mAh/ \n" + _sceneData.Value.solarEnergyGeneratorMaxCapacity + "mAh";
+                    }
+                    else
+                        _sceneData.Value.ShowWarningText("need " + (needEnergy * -1) + "more mA to charge nvg");
+                }
+                else
+                    _sceneData.Value.ShowWarningText("laser pointer charge is full");
+            }
+
             _sceneData.Value.uiAudioSourse.clip = _sceneData.Value.equipItemSound;
             _sceneData.Value.uiAudioSourse.Play();
         }
@@ -1885,7 +1902,8 @@ public class InventorySystem : IEcsRunSystem
 
             }
 
-            else if (dropItem.itemInfo.type == ItemInfo.itemType.flashlight || dropItem.itemInfo.type == ItemInfo.itemType.meleeWeapon || dropItem.itemInfo.type == ItemInfo.itemType.sheild || dropItem.itemInfo.type == ItemInfo.itemType.bodyArmor || dropItem.itemInfo.type == ItemInfo.itemType.helmet)
+            else if (dropItem.itemInfo.type == ItemInfo.itemType.flashlight || dropItem.itemInfo.type == ItemInfo.itemType.meleeWeapon || dropItem.itemInfo.type == ItemInfo.itemType.sheild || dropItem.itemInfo.type == ItemInfo.itemType.bodyArmor || dropItem.itemInfo.type == ItemInfo.itemType.helmet ||
+                (dropItem.itemInfo.type == ItemInfo.itemType.gunPart && dropItem.itemInfo.gunPartInfo.laserLightTime != 0))
             {
                 List<int> addedInvCell = new List<int>();
                 (dropItem.currentItemsCount, addedInvCell) = AddItemToInventoryWithCellNumbers(dropItem.itemInfo, dropItem.currentItemsCount, addedInvCell, false);
@@ -2386,7 +2404,7 @@ public class InventorySystem : IEcsRunSystem
 
         _inventoryCellsComponents.Value.Get(swappedCellFirst).cellView.ChangeCellItemSprite(fastCellItemCmp.itemInfo.itemSprite);
     }
-    private void AddItem(ref InventoryCellComponent invCellCmp, ref InventoryItemComponent itemCmp, int addedItemsCount, int cellEntity)//��� ��� ������������ ������
+    private void AddItem(ref InventoryCellComponent invCellCmp, ref InventoryItemComponent itemCmp, int addedItemsCount, int cellEntity)
     {
         if (itemCmp.currentItemsCount == 0)
         {
@@ -2668,7 +2686,7 @@ public class InventorySystem : IEcsRunSystem
 
         droppedItemComponent.itemInfo = invItemCmp.itemInfo;
 
-        Debug.Log(droppedItemComponent.itemInfo);
+      //  Debug.Log(droppedItemComponent.itemInfo);
         droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(_movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform.position, droppedItemComponent.itemInfo, droppedItem);
         _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItem).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.gameObject.transform.GetChild(0) };
         CopySpecialComponents(itemInventoryCell, droppedItem, droppedItemComponent.itemInfo);
@@ -2902,5 +2920,7 @@ public class InventorySystem : IEcsRunSystem
         }
         else if (itemInfo.type == ItemInfo.itemType.sheild)
             _shieldComponentsPool.Value.Add(cell);
+        else if (itemInfo.type == ItemInfo.itemType.gunPart && itemInfo.gunPartInfo.laserLightTime != 0)
+            _laserPointerForGunComponentsPool.Value.Add(cell).remainingLaserPointerTime = itemInfo.gunPartInfo.laserLightTime;
     }
 }

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b18e5041c0566641bf5c5e28b3d2ef7, type: 3}
   m_Name: HandadeSMGCraftingRecipeInfo
   m_EditorClassIdentifier: 
-  neededCount: 01000000
-  neededId: 50000000
+  neededCount: 010000000400000006000000020000000200000002000000
+  neededId: 4d0000004e000000500000004a0000004c0000004f000000
   craftedItemId: 69
   craftedItemsCount: 1
   needCraftingTableLevel: 2

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b18e5041c0566641bf5c5e28b3d2ef7, type: 3}
   m_Name: LightButtCraftInfo
   m_EditorClassIdentifier: 
-  neededCount: 03000000
+  neededCount: 02000000
   neededId: 4e000000
   craftedItemId: 112
   craftedItemsCount: 1

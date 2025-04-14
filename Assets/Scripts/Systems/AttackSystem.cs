@@ -661,7 +661,7 @@ public class AttackSystem : IEcsRunSystem
                         {
                             laserPointerCmp.remainingLaserPointerTime -= Time.deltaTime;
                             var laserPointerContainer = playerView.laserPointerTransform;
-                            var ray = Physics2D.Raycast(laserPointerContainer.position, laserPointerContainer.up, laserInfo.laserMaxLenght, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy") | LayerMask.GetMask("InteractedCharacter"));
+                            var ray = Physics2D.Raycast(laserPointerContainer.position, laserPointerContainer.right, laserInfo.laserMaxLenght, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy") | LayerMask.GetMask("InteractedCharacter"));
                             if (ray.collider != null)
                             {
                                 playerView.laserPointerLineRenderer.SetPosition(1, ray.point);
@@ -683,7 +683,7 @@ public class AttackSystem : IEcsRunSystem
                             }
                             else
                             {
-                                var raySecond = new Ray2D(laserPointerContainer.position, laserPointerContainer.up);
+                                var raySecond = new Ray2D(laserPointerContainer.position, laserPointerContainer.right);
                                 playerView.laserPointerLineRenderer.SetPosition(1, raySecond.origin + (raySecond.direction * laserInfo.laserMaxLenght));
                             }
                             playerView.laserPointerLineRenderer.SetPosition(0, laserPointerContainer.position);

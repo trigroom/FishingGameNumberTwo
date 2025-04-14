@@ -19,10 +19,10 @@ MonoBehaviour:
   magazineCapacity: 5
   damage: 12
   attackCouldown: 0.8
-  maxSpread: 15
+  maxSpread: 20
   minSpread: 5
   addedSpread: 2
-  weaponChangeSpeed: 1
+  weaponChangeSpeed: 3
   isAuto: 0
   bulletTypeId: 3
   bulletCount: 5
@@ -94,7 +94,7 @@ MonoBehaviour:
   shotSound: {fileID: 8300000, guid: 8a284414b28254c4aa30fc4905fcb3a0, type: 3}
   startReloadSound: {fileID: 0}
   endReloadSound: {fileID: 8300000, guid: 0976c7283e9febb49828ebe4dfd684ff, type: 3}
-  upgradeCost: 0
-  upgradedGunId: 0
+  upgradeCost: 40
+  upgradedGunId: 146
   neededGunLevelToUpgrade: 0
   gunParts: 0

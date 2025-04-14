@@ -579,7 +579,8 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                     if (itemCmp.itemInfo.type == ItemInfo.itemType.helmet && itemCmp.itemInfo.helmetInfo.addedLightIntancity != 0)
                         _shieldComponentsPool.Value.Add(cellEntity).currentDurability = laserPoinerRemainingTimeForSaveDataList[item.itemCellId];
                 }
-
+                else if (itemCmp.itemInfo.type == ItemInfo.itemType.gunPart && itemCmp.itemInfo.gunPartInfo.laserLightTime != 0)
+                    _laserPointerForGunComponentsPool.Value.Add(cellEntity).remainingLaserPointerTime = laserPoinerRemainingTimeForSaveDataList[item.itemCellId];
                 else if (itemCmp.itemInfo.type == ItemInfo.itemType.sheild)
                 {
                     _shieldComponentsPool.Value.Add(cellEntity).currentDurability = durabilityItemsForSaveDataList[item.itemCellId];
@@ -914,6 +915,10 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                     if (gunInInvCmp.gunPartsId[3] != 0)
                         barrelGunPartForSaveData.Add(new NumAndIdForSafeData(i, gunInInvCmp.gunPartsId[3]));
 
+                }
+                else if (invItemCmp.itemInfo.type == ItemInfo.itemType.gunPart && invItemCmp.itemInfo.gunPartInfo.laserLightTime != 0)
+                {
+                    laserPointerRemainingTimeForSaveData.Add(new NumAndIdForSafeData(i, (int)_laserPointerForGunComponentsPool.Value.Get(cellsInventory[i]._entity).remainingLaserPointerTime));
                 }
                 else if (invItemCmp.itemInfo.type == ItemInfo.itemType.flashlight || invItemCmp.itemInfo.type == ItemInfo.itemType.bodyArmor || invItemCmp.itemInfo.type == ItemInfo.itemType.helmet)
                 {

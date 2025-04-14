@@ -15,7 +15,7 @@ MonoBehaviour:
   itemSprite: {fileID: 21300000, guid: b92b4f4c976c02b4cbff8566f90f97ef, type: 3}
   type: 8
   maxCount: 1
-  itemWeight: 0.5
+  itemWeight: 0.2
   itemId: 50
   itemName: gun lever default
   itemDescription: 
@@ -25,5 +25,10 @@ MonoBehaviour:
   grenadeInfo: {fileID: 0}
   healInfo: {fileID: 0}
   flashlightInfo: {fileID: 0}
-  cellsCount: 0
+  backpackInfo: {fileID: 0}
   gunPartInfo: {fileID: 11400000, guid: 55c7dda2b4fdeaf42a678aa712b79bb8, type: 2}
+  expAddedInfo: {fileID: 0}
+  sheildInfo: {fileID: 0}
+  helmetInfo: {fileID: 0}
+  bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

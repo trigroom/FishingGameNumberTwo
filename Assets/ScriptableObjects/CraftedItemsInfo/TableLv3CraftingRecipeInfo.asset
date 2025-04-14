@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b18e5041c0566641bf5c5e28b3d2ef7, type: 3}
   m_Name: TableLv3CraftingRecipeInfo
   m_EditorClassIdentifier: 
-  neededCount: 01000000
-  neededId: 01000000
+  neededCount: 040000000a0000000a00000006000000
+  neededId: 4b0000004c000000560000004f000000
   craftedItemId: 999
   craftedItemsCount: 2
   needCraftingTableLevel: 1

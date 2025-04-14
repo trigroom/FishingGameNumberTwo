@@ -15,7 +15,7 @@ MonoBehaviour:
   itemSprite: {fileID: 21300000, guid: 186574c34b54cd44295ce3689a527f50, type: 3}
   type: 8
   maxCount: 1
-  itemWeight: 0.5
+  itemWeight: 0.15
   itemId: 51
   itemName: small green laser pointer
   itemDescription: 
@@ -25,5 +25,10 @@ MonoBehaviour:
   grenadeInfo: {fileID: 0}
   healInfo: {fileID: 0}
   flashlightInfo: {fileID: 0}
-  cellsCount: 0
+  backpackInfo: {fileID: 0}
   gunPartInfo: {fileID: 11400000, guid: 89b60291aafcd444aa6b4b5744744e03, type: 2}
+  expAddedInfo: {fileID: 0}
+  sheildInfo: {fileID: 0}
+  helmetInfo: {fileID: 0}
+  bodyArmorInfo: {fileID: 0}
+  randomHealInfo: {fileID: 0}

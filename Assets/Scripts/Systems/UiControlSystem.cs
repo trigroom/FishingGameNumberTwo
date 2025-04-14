@@ -360,7 +360,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
                         gunInInvCmp.gunPartsId[needIndex] = item.itemInfo.itemId;
                         if (item.itemInfo.gunPartInfo.energyToCharge != 0)
-                            _laserPointerForGunComponentsPool.Value.Add(menuStatesCmp.lastMarkedCell).remainingLaserPointerTime = item.itemInfo.gunPartInfo.laserLightTime;
+                            _laserPointerForGunComponentsPool.Value.Copy(desription,menuStatesCmp.lastMarkedCell);
 
                         _sceneData.Value.dropedItemsUIView.gunPartCells[needIndex].gunPartImage.sprite = item.itemInfo.itemSprite;
                         _sceneData.Value.dropedItemsUIView.gunPartCells[needIndex].isUsed = true;
@@ -405,7 +405,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             }
             _sceneData.Value.dropedItemsUIView.markInventoryCellBorder.transform.position = invCellCmp.cellView.transform.position;
             menuStatesCmp.lastMarkedCell = desription;
-            Debug.Log(desription + " NEW DESC");
+           // Debug.Log(desription + " NEW DESC");
             if (item.itemInfo.type == ItemInfo.itemType.gun)
                 _sceneData.Value.dropedItemsUIView.gunPartsCellsContainer.gameObject.SetActive(true);
             else
@@ -515,6 +515,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                         if (_laserPointerForGunComponentsPool.Value.Has(desription))
                         {
                             _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(true);
+                            if(item.itemInfo.type == ItemInfo.itemType.gun)
                             _sceneData.Value.dropedItemsUIView.secondButtonActionText.text = "charge laser pointer " + _sceneData.Value.idItemslist.items[gunInInvCellCmp.gunPartsId[2]].gunPartInfo.energyToCharge + "mAh";
                         }
                         if (_storageCellTagsPool.Value.Has(desription))
@@ -582,6 +583,12 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             {
                 ChangeGunPartDescription(item.itemInfo);
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(false);
+                if(item.itemInfo.gunPartInfo.laserLightTime != 0 && menuStatesCmp.inStorageState)
+                {
+                    _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(true);
+                    _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "charge laser pointer " + item.itemInfo.gunPartInfo.energyToCharge + "mAh";
+                }
+                else
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(false);
             }
             else if (item.itemInfo.itemId == 44)
