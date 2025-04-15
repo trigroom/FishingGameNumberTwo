@@ -1,6 +1,5 @@
 using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 
 public class HealthSystem : IEcsRunSystem, IEcsInitSystem

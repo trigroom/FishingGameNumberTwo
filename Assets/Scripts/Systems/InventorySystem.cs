@@ -2,7 +2,6 @@ using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class InventorySystem : IEcsRunSystem
 {
