@@ -326,31 +326,31 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             }
         }
 
-      /*  List<NumAndIdForSafeData> weaponsListCheck = new List<NumAndIdForSafeData>();
-        for (int i = 0; i < gameData.weaponsCurrentExpForSaveData.Length; i++)
-            weaponsListCheck.Add(new NumAndIdForSafeData(gameData.weaponsCurrentExpForSaveData[i].cellId, gameData.weaponsCurrentExpForSaveData[i].num));
-        int curWeaponsCount = 0;
-        for (int i = 0; i < _sceneData.Value.idItemslist.items.Length; i++)
-        {
-            var weapon = _sceneData.Value.idItemslist.items[i];
-            if (weapon != null && (weapon.type == ItemInfo.itemType.gun || weapon.type == ItemInfo.itemType.meleeWeapon))
-            {
-                curWeaponsCount++;
-                if (weaponsListCheck.Count <= curWeaponsCount)
-                    weaponsListCheck.Add(new NumAndIdForSafeData(weapon.itemId, 0));
-            }
-        }
+        /*  List<NumAndIdForSafeData> weaponsListCheck = new List<NumAndIdForSafeData>();
+          for (int i = 0; i < gameData.weaponsCurrentExpForSaveData.Length; i++)
+              weaponsListCheck.Add(new NumAndIdForSafeData(gameData.weaponsCurrentExpForSaveData[i].cellId, gameData.weaponsCurrentExpForSaveData[i].num));
+          int curWeaponsCount = 0;
+          for (int i = 0; i < _sceneData.Value.idItemslist.items.Length; i++)
+          {
+              var weapon = _sceneData.Value.idItemslist.items[i];
+              if (weapon != null && (weapon.type == ItemInfo.itemType.gun || weapon.type == ItemInfo.itemType.meleeWeapon))
+              {
+                  curWeaponsCount++;
+                  if (weaponsListCheck.Count <= curWeaponsCount)
+                      weaponsListCheck.Add(new NumAndIdForSafeData(weapon.itemId, 0));
+              }
+          }
 
-        gameData.weaponsCurrentExpForSaveData = new NumAndIdForSafeData[weaponsListCheck.Count];
-        for (int i = 0; i < weaponsListCheck.Count; i++)
-            gameData.weaponsCurrentExpForSaveData[i] = weaponsListCheck[i];*/
+          gameData.weaponsCurrentExpForSaveData = new NumAndIdForSafeData[weaponsListCheck.Count];
+          for (int i = 0; i < weaponsListCheck.Count; i++)
+              gameData.weaponsCurrentExpForSaveData[i] = weaponsListCheck[i];*/
 
 
 
         for (int i = 0; i < gameData.shoppersInfoForSafeData.Length; i++)
         {
             ref var needShopper = ref _shopCharacterComponentsPool.Value.Get(_sceneData.Value.interactCharacters[gameData.shoppersInfoForSafeData[i].questNPCId]._entity);
-           // Debug.Log("rem shop items" + gameData.shoppersInfoForSafeData[i].collectedItems.Length);
+            // Debug.Log("rem shop items" + gameData.shoppersInfoForSafeData[i].collectedItems.Length);
 
             needShopper.remainedMoneyToBuy = gameData.shoppersInfoForSafeData[i].currentQuest;
             if (Application.isEditor)
@@ -422,7 +422,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             while (curExp >= _sceneData.Value.levelExpCounts[curLevel])
                 curLevel++;
             playerStats.weaponsExp.Add(weaponExp.cellId, new GunLevelInfoElement((int)curExp, curLevel));
-         //   Debug.Log(weaponExp.cellId + " weapon in exp cmp" + curExp);
+            //   Debug.Log(weaponExp.cellId + " weapon in exp cmp" + curExp);
         }
 
         playerStats.statLevels = new int[3];
@@ -438,7 +438,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         }
 
         invCmp.currentMaxWeight = _sceneData.Value.maxInInventoryWeight + playerStats.statLevels[0] * _sceneData.Value.maxInInventoryWeight / 50f;
-     //   Debug.Log("max inv veidht def " + _sceneData.Value.maxInInventoryWeight + " buffed " + invCmp.currentMaxWeight);
+        //   Debug.Log("max inv veidht def " + _sceneData.Value.maxInInventoryWeight + " buffed " + invCmp.currentMaxWeight);
         ref var storageCmp = ref _inventoryComponent.Value.Add(_sceneData.Value.storageEntity);
         storageCmp.currentMaxWeight = _sceneData.Value.maxInStorageWeight;
         storageCmp.currentCellCount = _sceneData.Value.storageCellsCount;
@@ -503,9 +503,9 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             foreach (var item in this.gameData.itemsCellinfo)
             {
                 // if (item.itemId == 0) continue;
-               // Debug.Log(item.itemCellId + " ned cell id");
+                // Debug.Log(item.itemCellId + " ned cell id");
                 int cellEntity = cellsCmp.cells[item.itemCellId]._entity;
-              //  Debug.Log(cellEntity + " add item from gamedata" + item.itemId);
+                //  Debug.Log(cellEntity + " add item from gamedata" + item.itemId);
                 ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cellEntity);
                 ref var invCellCmp = ref _inventoryCellsComponentsPool.Value.Get(cellEntity);
                 invCellCmp.isEmpty = false;
@@ -551,7 +551,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
 
                     //выгрузка айдишников в компонент из сэйва
-                 //   Debug.Log(itemCmp.itemInfo.itemName + " gun " + itemCmp.itemInfo.itemId + "id");
+                    //   Debug.Log(itemCmp.itemInfo.itemName + " gun " + itemCmp.itemInfo.itemId + "id");
                     gunInInvCmp.currentAmmo = bulletsWeaponForSaveDataList[item.itemCellId];
                     gunInInvCmp.gunDurability = durabilityItemsForSaveDataList[item.itemCellId];
 
@@ -559,7 +559,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
                     if (cellEntity == _sceneData.Value.firstGunCellView._entity)
                     {
-                //        Debug.Log("gun added" + cellEntity);
+                        //        Debug.Log("gun added" + cellEntity);
                         playerWeaponsInInvCmp.curEquipedWeaponsCount++;
                         gunInInvCmp.isEquipedWeapon = true;
                     }
@@ -570,7 +570,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                     }
 
 
-                  //  Debug.Log(itemCmp.currentItemsCount + " count " + itemCmp.itemInfo.itemWeight + "kg " + itemCmp.itemInfo.itemId + "id " + cellEntity + "cellEntity");
+                    //  Debug.Log(itemCmp.currentItemsCount + " count " + itemCmp.itemInfo.itemWeight + "kg " + itemCmp.itemInfo.itemId + "id " + cellEntity + "cellEntity");
                 }
                 else if (itemCmp.itemInfo.type == ItemInfo.itemType.flashlight || itemCmp.itemInfo.type == ItemInfo.itemType.bodyArmor || itemCmp.itemInfo.type == ItemInfo.itemType.helmet)
                 {
@@ -615,7 +615,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             }
         int meleeCellNum = _sceneData.Value.storageCellsCount + 2;
         ref var invItemCmp = ref _inventoryItemComponentsPool.Value.Get(cells[meleeCellNum]._entity);
-   //     Debug.Log(cells[2]._entity + "ent " + _inventoryItemComponentsPool.Value.Has(cells[meleeCellNum]._entity));
+        //     Debug.Log(cells[2]._entity + "ent " + _inventoryItemComponentsPool.Value.Has(cells[meleeCellNum]._entity));
         ref var meleeCmp = ref _meleeWeaponComponentsPool.Value.Get(playerEntity);
         ref var curAttackCmp = ref _attackComponentsPool.Value.Get(playerEntity);
         ref var meleeInvCellCmp = ref _inventoryCellsComponentsPool.Value.Get(cells[meleeCellNum]._entity);
@@ -637,6 +637,9 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             globalTimeCmp.currentDayTime = this.gameData.currentDayTime;
 
         }
+
+        _sceneData.Value.secondLocationEntryCollider.gameObject.SetActive(this.gameData.currentMaxLocationNum < 1);//if first location complete
+        globalTimeCmp.maxLocationNum = this.gameData.currentMaxLocationNum;
 
         meleeInvCellCmp.isEmpty = false;
         playerWeaponsInInvCmp.curEquipedWeaponsCount++;
@@ -663,7 +666,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                 ref var questNPC = ref _sceneData.Value.interactCharacters[quest.questNPCId];
                 ref var questNPCCmp = ref _questNPCComponentsPool.Value.Get(_sceneData.Value.interactCharacters[quest.questNPCId]._entity);
                 questNPCCmp.currentQuest = quest.currentQuest;
-                Debug.Log((quest.collectedItems.Length != 0) + " load quest"+ quest.questNPCId);
+                Debug.Log((quest.collectedItems.Length != 0) + " load quest" + quest.questNPCId);
                 if (quest.collectedItems.Length != 0)
                 {
                     questNPCCmp.questIsGiven = true;
@@ -712,7 +715,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             if (helmetItemInfo.dropTransparentMultiplayer != 0)
             {
                 int curDurability = Mathf.FloorToInt((_flashLightInInventoryComponentsPool.Value.Get(_sceneData.Value.helmetCellView._entity).currentDurability / helmetItemInfo.armorDurability) * 4);
-       //         Debug.Log(curDurability + " cur dur index of helmet" + (_flashLightInInventoryComponentsPool.Value.Get(_sceneData.Value.helmetCellView._entity).currentDurability / helmetItemInfo.armorDurability));
+                //         Debug.Log(curDurability + " cur dur index of helmet" + (_flashLightInInventoryComponentsPool.Value.Get(_sceneData.Value.helmetCellView._entity).currentDurability / helmetItemInfo.armorDurability));
                 if (curDurability < 3 && _sceneData.Value.dropedItemsUIView.crackedGlassHelmetUI.sprite != _sceneData.Value.dropedItemsUIView.crackedGlassSprites[curDurability])
                 {
                     _sceneData.Value.dropedItemsUIView.crackedGlassHelmetUI.sprite = _sceneData.Value.dropedItemsUIView.crackedGlassSprites[curDurability];
@@ -777,6 +780,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
         gameData.generatorElectricity = _solarPanelElectricGeneratorComponentsPool.Value.Get(playerEntity).currentElectricityEnergy;
         gameData.craftingTableLevel = _craftingTableComponentsPool.Value.Get(_sceneData.Value.playerEntity).craftingTableLevel;
+        this.gameData.currentMaxLocationNum = globalTimeCmp.maxLocationNum;
 
         List<QuestInfoForSafeData> questsInfoForSafeData = new List<QuestInfoForSafeData>();
         foreach (var questNPC in _sceneData.Value.interactCharacters)

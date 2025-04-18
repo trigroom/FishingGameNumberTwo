@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: M1GarandGunInfo
   m_EditorClassIdentifier: 
   gunType: 2
-  attackLenght: 35
+  attackLenght: 40
   shotSoundDistance: 40
   reloadDuration: 0.6
   magazineCapacity: 8
   damage: 50
-  attackCouldown: 0.25
+  attackCouldown: 0.85
   maxSpread: 23
   minSpread: 1
   addedSpread: 5
@@ -100,7 +100,7 @@ MonoBehaviour:
   centreCrossSprite: {fileID: 0}
   shotSound: {fileID: 8300000, guid: aefd479d22ff15a4ba582e8fc214f127, type: 3}
   startReloadSound: {fileID: 8300000, guid: f98f99850e2994a41a7a376120a11ff5, type: 3}
-  endReloadSound: {fileID: 0}
+  endReloadSound: {fileID: 8300000, guid: dfa2d673db2ee484fbcfbe947202b8da, type: 3}
   upgradeCost: 0
   upgradedGunId: 0
   neededGunLevelToUpgrade: 0

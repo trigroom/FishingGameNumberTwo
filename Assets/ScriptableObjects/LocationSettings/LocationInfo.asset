@@ -20,3 +20,4 @@ MonoBehaviour:
   locationName: Village
   shoppers: 0400000000000000
   nightShoppers: 02000000
+  locationNumber: 1

@@ -159,6 +159,72 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: TraktorAndFirstBoss_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 12
+        width: 11
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b96c97dffbd57f4a90a48cd6b833298
+      internalID: 2058481971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TraktorAndFirstBoss_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 18
+        width: 11
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2df3a602aefe4b4b8bd838e62f79665
+      internalID: 260906546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TraktorAndFirstBoss_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 24
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3424f278b85fc494b813105c622c4599
+      internalID: -77499603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -175,6 +241,10 @@ TextureImporter:
     nameFileIdTable:
       TraktorAndFirstBoss_0: 6625317031032271073
       TraktorAndFirstBoss_1: 2472433083123627163
+      TraktorAndFirstBoss_2: -428013443
+      TraktorAndFirstBoss_3: 2058481971
+      TraktorAndFirstBoss_4: 260906546
+      TraktorAndFirstBoss_5: -77499603
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

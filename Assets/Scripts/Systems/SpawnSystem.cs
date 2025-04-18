@@ -22,6 +22,7 @@ public class SpawnSystem : IEcsRunSystem
     private EcsPoolInject<HealingItemComponent> _currentHealingItemComponentsPool;
     private EcsPoolInject<CreatureInventoryComponent> _creatureInventoryComponentsPool;
     private EcsPoolInject<CurrentLocationComponent> _currentLocationComponentsPool;
+    private EcsPoolInject<SpawnFirstBossEvent> _spawnFirstBossEventsPool;
     private EcsPoolInject<HidedObjectOutsideFOVComponent> _hidedObjectOutsideFOVComponentsPool;
 
     private EcsFilterInject<Inc<ActiveSpawnComponent>> _activeSpawnComponentsFilter;
@@ -31,6 +32,7 @@ public class SpawnSystem : IEcsRunSystem
     private EcsFilterInject<Inc<ChangeToDayEvent>> _changeToDayEventsFilter;
     private EcsFilterInject<Inc<ChangeToNightEvent>> _changeToNightEventsFilter;
     private EcsFilterInject<Inc<CreatureAIComponent>> _creatureAIComponentsFilter;
+    private EcsFilterInject<Inc<SpawnFirstBossEvent>> _spawnFirstBossEventsFilter;
 
 
     public void Run(IEcsSystems systems)
@@ -47,40 +49,19 @@ public class SpawnSystem : IEcsRunSystem
             curLocationCmp.currentEnemySpawns.RemoveAt(needEnemySpawnPositionIndex);
             CreatureSpawn(creatureEntity, ref creatureAiStatesCmp);
         }
-
-    /*    foreach (var entryZoneEvent in _entrySpawnZoneEventsFilter.Value)
+        foreach(var bossSpawn in _spawnFirstBossEventsFilter.Value)
         {
-            var currentTimeCmp = _globalTimeComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-            ref var zone = ref _entrySpawnZoneEventsPool.Value.Get(entryZoneEvent).zoneView;
-            //повесить спавн тэг како нибудь, чтобы энтити не удалялась
-            int spawnCmpEntity = -1;
-            if (zone._entity == -1)
-            {
-                spawnCmpEntity = _world.Value.NewEntity();
-                zone.Construct(spawnCmpEntity);
-                _spawnZoneTagsPool.Value.Add(spawnCmpEntity);
-            }
-            else
-                spawnCmpEntity = zone._entity;
-
-            if (!_activeSpawnComponentsPool.Value.Has(spawnCmpEntity))
-            {
-                ref var spawnCmp = ref _activeSpawnComponentsPool.Value.Add(spawnCmpEntity);
-                spawnCmp.zoneView = zone;
-                spawnCmp.spawnTime = zone.spawnTime;
-                if (!currentTimeCmp.isNight)
-                    spawnCmp.currentSpawnCreaturesPool = zone.daySpawnCreaturesPool;
-                else
-                    spawnCmp.currentSpawnCreaturesPool = zone.nightSpawnCreaturesPool;
-            }
+            ref var curLocationCmp = ref _currentLocationComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+          
+            int creatureEntity = _world.Value.NewEntity();
+            ref var creatureAiStatesCmp = ref _creatureAIComponentsPool.Value.Add(creatureEntity);
+            creatureAiStatesCmp.creatureView =   _spawnFirstBossEventsPool.Value.Get(bossSpawn).creatureView;
+            CreatureSpawn(creatureEntity, ref creatureAiStatesCmp);
+            _spawnFirstBossEventsPool.Value.Del(bossSpawn);
+            _movementComponentsPool.Value.Get(creatureEntity).moveSpeed = 0;
         }
 
-        foreach (var exitZoneEvent in _exitSpawnZoneEventsFilter.Value)
-        {
-            ref var zone = ref _exitCollisionWithSpawnZoneEventsPool.Value.Get(exitZoneEvent).zoneView;
-
-            _activeSpawnComponentsPool.Value.Del(zone._entity);
-        }*/
+   
     }
     private void CreatureSpawn(int creatureEntity, ref CreatureAIComponent creatureAiStatesCmp)
     {
@@ -155,7 +136,6 @@ public class SpawnSystem : IEcsRunSystem
             creatureAiStatesCmp.followDistance = 12 * visionZoneMultiplayer;
         }
 
-        Debug.Log("follow " + creatureAiStatesCmp.followDistance + " safe " + creatureAiStatesCmp.safeDistance + " min " + creatureAiStatesCmp.minSafeDistance);
 
         creatureAiStatesCmp.needSightOnTargetTime = creatureInventoryCmp.enemyClassSettingInfo.needSightOnTargetTime;
         creatureAiStatesCmp.isAttackWhenRetreat = creatureAiStatesCmp.creatureView.aiCreatureView.isAttackWhenRetreat;

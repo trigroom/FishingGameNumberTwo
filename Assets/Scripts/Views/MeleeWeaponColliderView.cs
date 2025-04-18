@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class MeleeWeaponColliderView : MonoBehaviour
 {
-    private EcsWorld _world;
+    public EcsWorld _world;
     [SerializeField] private int targetLayer;
-    private int _entity;
+    public int _entity;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

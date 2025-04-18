@@ -26,6 +26,7 @@ public class AttackSystem : IEcsRunSystem
     private EcsPoolInject<HealingItemComponent> _currentHealingItemComponentsPool;
     private EcsPoolInject<PlayerGunComponent> _playerGunComponentsPool;
     private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
+    private EcsPoolInject<ChangeFirstBossPhaseEvent> _changeFirstBossPhaseEventsPool;
     private EcsPoolInject<NowUsedWeaponTag> _nowUsedWeaponTagsPool { get; set; }
     private EcsPoolInject<MeleeWeaponComponent> _meleeWeaponComponentsPool;
     private EcsPoolInject<PlayerMeleeWeaponComponent> _playerMeleeWeaponComponentsPool;
@@ -69,6 +70,7 @@ public class AttackSystem : IEcsRunSystem
     private EcsFilterInject<Inc<GrenadeExplodeComponent>> _grenadeExplodeComponentsFilter;
     private EcsFilterInject<Inc<CalculateRecoilEvent>> _calculateRecoilEventsFilter;
     private EcsFilterInject<Inc<MineExplodeEvent>> _mineExplodeEventsFilter;
+    private EcsFilterInject<Inc<ChangeFirstBossPhaseEvent>> _changeFirstBossPhaseEventsFilter;
     private Vector3 GetVectorFromAngle(float angle)
     {
         float angleRad = angle * (Mathf.PI / 180f);
@@ -547,7 +549,18 @@ public class AttackSystem : IEcsRunSystem
             _changeWeaponFromInventoryEventsPool.Value.Del(changeWeaponFromInvEvt);
         }
 
+        foreach(var boss in _changeFirstBossPhaseEventsFilter.Value)
+        {
+            ref var creatureAI = ref _creatureInventoryComponentsPool.Value.Get(boss);
+            ref var moveCmp = ref _movementComponentsPool.Value.Get(boss);
+            ref var creatureCmp = ref _creatureAIComponentsPool.Value.Get(boss);
 
+            moveCmp.moveSpeed = creatureAI.enemyClassSettingInfo.movementSpeed;
+            creatureCmp.creatureView.healthView.characterMainCollaider.enabled = true;
+            creatureCmp.creatureView.healthView.headColliderView.enabled = true;
+
+            _changeFirstBossPhaseEventsPool.Value.Del(boss);
+        }
         foreach (var entity in _playerComponentFilter.Value)
         {
             var inventoryGunsCmp = _playerWeaponsInInventoryComponentsPool.Value.Get(playerEntity);

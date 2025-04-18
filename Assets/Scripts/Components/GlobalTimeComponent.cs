@@ -19,6 +19,7 @@ public struct GlobalTimeComponent
     public bool thuderIsLighting;
     public float lastThunderTime;
 
+    public int maxLocationNum;
     public enum WeatherType
     {
         none,

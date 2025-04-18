@@ -8,4 +8,5 @@ public class LocationSettingsInfo : ScriptableObject
     public string locationName;
     public int[] shoppers;
     public int[] nightShoppers;
+    public int locationNumber;
 }

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f676ca6178d26441a77fefead282fc2, type: 3}
+  m_Name: LocationSecondInfo
+  m_EditorClassIdentifier: 
+  levels:
+  - {fileID: 11400000, guid: ee5c3099a19b1d147bb8cb8fe01a6555, type: 2}
+  - {fileID: 11400000, guid: 16d315c96c87d7f4ca018d1f21402917, type: 2}
+  locationName: Test
+  shoppers: 0400000000000000
+  nightShoppers: 02000000
+  locationNumber: 1
