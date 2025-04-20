@@ -20,7 +20,7 @@ public struct CreatureAIComponent
     public CreatureView creatureView;
     public bool isPeaceful;
     public float timeToUpdate;
-    public float timeFromLastTargetSeen;
+    public float timeFromLastTargetSeen{  get; set; }
 
     public Transform currentTarget;
     public List<Transform> targets;
@@ -29,7 +29,7 @@ public struct CreatureAIComponent
     public float[] dangersResultTemp;
     public float[] interstsTemp;
     public bool isLeftMoveCircle;
-    public int randomMoveDirectionIndex {  get; set; }
+    public int randomMoveDirectionIndex ;
     public float timeFromLastChangeLeftMoveCircle;
     public bool isStoppedMoveInIdleState;
     public Vector2 targetPositionCached;

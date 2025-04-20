@@ -2,13 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [CreateAssetMenu(fileName = "BulletInfo", menuName = "ScriptableObjects/BulletInfo", order = 4)]
-public class BulletInfo : ItemInfo
+public class BulletInfo : ScriptableObject
 {
     public float addedSpreadMultiplayer;
     public float addedLenghtMultiplayer;
+    public float addedBleedingMultiplayer;
+    public float addedStunMultiplayer;
     public float addedDamageMultiplayer;
+    public float removedGunDurability;
     public int bulletCount = 1;
     public BulletType bulletType;
+    public Sprite bulletCase;
+    public Color uiBulletColor;
 
     public enum BulletType
     {

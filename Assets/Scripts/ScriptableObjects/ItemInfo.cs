@@ -19,6 +19,7 @@ public class ItemInfo : ScriptableObject
         sheild,
         helmet,
         bodyArmor,
+        bullet
     }
     [Header("Item stats")]
     public Sprite itemSprite;
@@ -50,4 +51,6 @@ public class ItemInfo : ScriptableObject
     public BodyArmorInfo bodyArmorInfo;
     [Header("Random Heal items")]
     public RandomHealItemInfo randomHealInfo;
+    [Header("Bullet items")]
+    public BulletInfo bulletInfo;
 }

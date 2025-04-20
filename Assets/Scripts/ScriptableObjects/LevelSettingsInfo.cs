@@ -10,6 +10,7 @@ public class LevelSettingsInfo : ScriptableObject
     public ItemInfo[] bodyArmorsInfo;
     public ItemInfo[] helmetsInfo;
     public ItemInfo[] gunsInfo;
+    public ItemInfoArrayElement[] bulletsInfoArray = new ItemInfoArrayElement[7];
     public ItemInfo[] meleeWeaponsInfo;
     public ItemInfo[] healingItemsInfo;
     public ItemInfo[] shieldItemsInfo;

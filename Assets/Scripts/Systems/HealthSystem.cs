@@ -1,5 +1,7 @@
 using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class HealthSystem : IEcsRunSystem, IEcsInitSystem
@@ -323,8 +325,8 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             ref var curLocationCmp = ref _currentLocationComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             if (curLocationCmp.levelNum != 0)
             {
-                curLocationCmp.levelNum = curLocationCmp.currentLocation.levels.Length;
-                // curLocationCmp.levelNum =0;
+               // curLocationCmp.levelNum = curLocationCmp.currentLocation.levels.Length;
+                curLocationCmp.levelNum = 1;
                 _entryInNewLocationEventsPool.Value.Add(_world.Value.NewEntity());
             }
             else
@@ -512,7 +514,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             int hpEvent = changeHealthEventCmp.changedEntity;
             bool isHeadshot = changeHealthEventCmp.isHeadshot;
             int changedHealthCount = changeHealthEventCmp.changedHealth;
-
+            float stunMultiplayer = changeHealthEventCmp.changedStunMultiplayer;
             if (changedHealthCount > 0)
             {
                 if (_playerComponentsPool.Value.Has(hpEvent))//если игрок
@@ -573,7 +575,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                         _offInScopeStateEventsPool.Value.Add(_world.Value.NewEntity());
 
                     ref var moveCmp = ref _movementComponentsPool.Value.Get(hpEvent);
-                    moveCmp.speedMultiplayer += (1 - moveCmp.speedMultiplayer) * changedHealthCount * 0.03f * painkillersMultiplayer;
+                    moveCmp.speedMultiplayer += (1 - moveCmp.speedMultiplayer) * changedHealthCount * 0.03f * painkillersMultiplayer * stunMultiplayer;
 
                     float alpfaMultiplayer = 1;
                     bool isAutoCleanBlood = false;
@@ -778,7 +780,8 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
 
                     ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(droppedItemEntity);
                     gunInInvCmp.gunDurability = Random.Range(0, gunItem.maxDurabilityPoints + 1);
-                    gunInInvCmp.currentAmmo = Random.Range(0, gunItem.magazineCapacity + 1);
+                    gunInInvCmp.currentAmmo = Enumerable.Repeat(creatureInventoryCmp.bulletItem.itemId, Random.Range(1, gunItem.magazineCapacity + 1)).ToList();
+
                     gunInInvCmp.gunPartsId = new int[4];
                 }
                 else if(percentDrop < 21 && creatureInventoryCmp.meleeWeaponItem != null)
@@ -808,7 +811,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 else if (percentDrop <61 && creatureInventoryCmp.gunItem != null)
                 {
                     int droppedItemEntity = _world.Value.NewEntity();
-                    ref var droppedItemComponent = ref SpawnDroppedItem(droppedItemEntity, Random.Range(1, creatureInventoryCmp.gunItem.gunInfo.magazineCapacity*2 + 1), deathPos, _sceneData.Value.idItemslist.items[ creatureInventoryCmp.gunItem.gunInfo.bulletTypeId]);
+                    ref var droppedItemComponent = ref SpawnDroppedItem(droppedItemEntity, Random.Range(1, creatureInventoryCmp.gunItem.gunInfo.magazineCapacity*2 + 1), deathPos, _sceneData.Value.idItemslist.items[ creatureInventoryCmp.bulletItem.itemId]);
                 }
                 // }
 

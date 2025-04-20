@@ -429,7 +429,14 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     ref var curLocationCmp = ref _currentLocationComponentsPool.Value.Get(_sceneService.Value.playerEntity);
                     if (curLocationCmp.levelNum == curLocationCmp.currentLocation.levels.Length && _globalTimeComponentsPool.Value.Get(_sceneService.Value.playerEntity).maxLocationNum < curLocationCmp.currentLocation.locationNumber)
+                    {
                         _globalTimeComponentsPool.Value.Get(_sceneService.Value.playerEntity).maxLocationNum = curLocationCmp.currentLocation.locationNumber;
+                        if (curLocationCmp.currentLocation.locationNumber == 1)
+                            _sceneService.Value.secondLocationEntryCollider.gameObject.SetActive(true);
+                        else if (curLocationCmp.currentLocation.locationNumber == 2)
+                            Debug.Log("location 2 is complete");
+
+                    }
                     Debug.Log(" cur max loc " + _globalTimeComponentsPool.Value.Get(_sceneService.Value.playerEntity).maxLocationNum);
                     curLocationCmp.currentLocation = null;
                 }

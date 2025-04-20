@@ -27,6 +27,17 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f18c5d37fa947a74fb10f528e896795c, type: 2}
   - {fileID: 11400000, guid: 4f3a5f55296bb5c41a82a83bf62619e3, type: 2}
   - {fileID: 11400000, guid: c21a8554740886843853f934666f02f0, type: 2}
+  bulletsInfoArray:
+  - items:
+    - {fileID: 11400000, guid: 9ac8f08188f655445bf9e163ca4d9655, type: 2}
+  - items: []
+  - items:
+    - {fileID: 11400000, guid: 61b81eecae6f38947a729145a4447523, type: 2}
+    - {fileID: 11400000, guid: 382f0e147547d414b9a81695c68f8149, type: 2}
+  - items: []
+  - items: []
+  - items: []
+  - items: []
   meleeWeaponsInfo:
   - {fileID: 11400000, guid: d2b5610d0b3ebe848b27b296d902d41e, type: 2}
   - {fileID: 11400000, guid: 2c3d42fc41a757a42bfebeb24c5f0578, type: 2}

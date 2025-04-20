@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f192c51e95837cb4fbd1decd8f0a37dc, type: 3}
+  m_Name: Handmade9x19BulletInfo
+  m_EditorClassIdentifier: 
+  addedSpreadMultiplayer: 1.2
+  addedLenghtMultiplayer: 0.8
+  addedBleedingMultiplayer: 1
+  addedStunMultiplayer: 1
+  addedDamageMultiplayer: 0.85
+  removedGunDurability: 2
+  bulletCount: 1
+  bulletType: 3
+  bulletCase: {fileID: 21300000, guid: 9fc18e0cc420dd84b88c6017d87f3431, type: 3}
+  uiBulletColor: {r: 0.6016376, g: 0.6755943, b: 0.754717, a: 1}

@@ -2,6 +2,7 @@ using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class InventorySystem : IEcsRunSystem
 {
@@ -1320,20 +1321,22 @@ public class InventorySystem : IEcsRunSystem
                         _shieldComponentsPool.Value.Del(usedItemEntity);
 
                     invCellCmp.cellView.ChangeCellItemSprite(upgradedGun.itemSprite);
-                    if (gunInInvCellCmp.currentAmmo != 0)
+                    if (gunInInvCellCmp.currentAmmo.Count != 0)
                     {
-                        var bulletItemInfo = _sceneData.Value.idItemslist.items[itemCmp.itemInfo.gunInfo.bulletTypeId];
-                        if (CanAddItems(bulletItemInfo, gunInInvCellCmp.currentAmmo, false))
+                        foreach(var bulletId in gunInInvCellCmp.currentAmmo)
                         {
-                            AddItemToInventory(bulletItemInfo, gunInInvCellCmp.currentAmmo, false);
-                            invCmp.weight += bulletItemInfo.itemWeight * gunInInvCellCmp.currentAmmo;
+                        var bulletItemInfo = _sceneData.Value.idItemslist.items[bulletId];
+                        if (CanAddItems(bulletItemInfo, 1, false))
+                        {
+                            AddItemToInventory(bulletItemInfo, 1, false);
+                            invCmp.weight += bulletItemInfo.itemWeight;
                         }
                         else
                         {
                             var droppedItem = _world.Value.NewEntity();
                             ref var droppedItemComponent = ref _droppedItemComponents.Value.Add(droppedItem);
 
-                            droppedItemComponent.currentItemsCount = gunInInvCellCmp.currentAmmo;
+                            droppedItemComponent.currentItemsCount = 1;
 
                             droppedItemComponent.itemInfo = bulletItemInfo;
 
@@ -1341,7 +1344,8 @@ public class InventorySystem : IEcsRunSystem
                             _hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItem).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.gameObject.transform.GetChild(0) };
 
                         }
-                        gunInInvCellCmp.currentAmmo = 0;
+                        }
+                        gunInInvCellCmp.currentAmmo = null;
                     }
                     itemCmp.itemInfo = upgradedGun;
                     gunInInvCellCmp.currentGunWeight = upgradedGun.itemWeight;
@@ -2075,7 +2079,7 @@ public class InventorySystem : IEcsRunSystem
 
             if (_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).inStorageState)
                 seekBulletsinStorage = true;
-            int possibleBulletsToReload = FindItemCountInInventory(playerGunCmp.bulletTypeId, seekBulletsinStorage);
+            (int possibleBulletsToReload,int bulletId) = FindBulletItem(playerGunCmp.gunInfo.bulletType, seekBulletsinStorage);
             ref var invCmp = ref _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity);
             if (possibleBulletsToReload == 0)
             {
@@ -2088,25 +2092,28 @@ public class InventorySystem : IEcsRunSystem
 
             else if (gunCmp.isOneBulletReload)
             {
-                var oneBulletWeight = _sceneData.Value.idItemslist.items[playerGunCmp.bulletTypeId].itemWeight;
+                var oneBulletWeight = _sceneData.Value.idItemslist.items[bulletId].itemWeight;
                 invCmp.weight += oneBulletWeight;
                 gunInInvCmp.currentGunWeight += oneBulletWeight;
 
-                FindItem(1, playerGunCmp.bulletTypeId, true, seekBulletsinStorage);
+                FindItem(1, bulletId, true, seekBulletsinStorage);
                 playerGunCmp.bulletCountToReload = 1;
+                playerGunCmp.bulletIdToreload = bulletId;
                 _endReloadEventsPool.Value.Add(reloadEvent);
                 return;
             }
 
-            else if (gunCmp.magazineCapacity - gunInInvCmp.currentAmmo < possibleBulletsToReload)
-                possibleBulletsToReload = gunCmp.magazineCapacity - gunInInvCmp.currentAmmo;
+            else if (gunCmp.magazineCapacity - gunInInvCmp.currentAmmo.Count < possibleBulletsToReload)
+                possibleBulletsToReload = gunCmp.magazineCapacity - gunInInvCmp.currentAmmo.Count;
 
-            var bulletWeight = _sceneData.Value.idItemslist.items[playerGunCmp.bulletTypeId].itemWeight * possibleBulletsToReload;
+            var bulletWeight = _sceneData.Value.idItemslist.items[bulletId].itemWeight * possibleBulletsToReload;
             invCmp.weight += bulletWeight;
             gunInInvCmp.currentGunWeight += bulletWeight;
 
-            FindItem(possibleBulletsToReload, playerGunCmp.bulletTypeId, true, seekBulletsinStorage);
+            FindItem(possibleBulletsToReload, bulletId, true, seekBulletsinStorage);
             playerGunCmp.bulletCountToReload = possibleBulletsToReload;
+            playerGunCmp.bulletIdToreload = bulletId;
+            
             _endReloadEventsPool.Value.Add(reloadEvent);
         }
         #endregion
@@ -2637,6 +2644,35 @@ public class InventorySystem : IEcsRunSystem
         return false;
     }
 
+    private (int, int) FindBulletItem(BulletInfo.BulletType bulletType, bool seekInStorage)
+    {
+        int curFindedItems = 0;
+        int curFindedBulletId = 0;
+        foreach (var invItem in _inventoryItemsFilter.Value)
+        {
+            var invItemCmp = _inventoryItemComponentsPool.Value.Get(invItem);
+            if ((curFindedBulletId == 0 && invItemCmp.itemInfo.type == ItemInfo.itemType.bullet && invItemCmp.itemInfo.bulletInfo.bulletType == bulletType) || invItemCmp.itemInfo.itemId == curFindedBulletId)
+            {
+                curFindedItems += invItemCmp.currentItemsCount;
+                curFindedBulletId = invItemCmp.itemInfo.itemId;
+            }
+        }
+
+        if (seekInStorage)
+            foreach (var invItem in _storageItemsFilter.Value)
+            {
+                var invItemCmp = _inventoryItemComponentsPool.Value.Get(invItem);
+                if ((curFindedBulletId == 0 && invItemCmp.itemInfo.type == ItemInfo.itemType.bullet && invItemCmp.itemInfo.bulletInfo.bulletType == bulletType) || invItemCmp.itemInfo.itemId == curFindedBulletId)
+                {
+                    curFindedItems += invItemCmp.currentItemsCount;
+                    curFindedBulletId = invItemCmp.itemInfo.itemId;
+                }
+            }
+
+       
+        return (curFindedItems, curFindedBulletId);
+    }
+
     private int FindItemCountInInventory(int itemId, bool seekInStorage)
     {
         int findedItemsCount = 0;
@@ -2910,6 +2946,8 @@ public class InventorySystem : IEcsRunSystem
             gunInvCmp.currentGunWeight = itemInfo.itemWeight;
             gunInvCmp.gunPartsId = new int[4];
             gunInvCmp.isEquipedWeapon = false;
+            gunInvCmp.currentAmmo = new List<int>();
+            gunInvCmp.bulletShellsToReload = new List<int>();
         }
         else if (itemInfo.type == ItemInfo.itemType.flashlight || itemInfo.type == ItemInfo.itemType.bodyArmor || itemInfo.type == ItemInfo.itemType.helmet)
         {

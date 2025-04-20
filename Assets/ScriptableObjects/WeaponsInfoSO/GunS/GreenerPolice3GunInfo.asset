@@ -24,7 +24,7 @@ MonoBehaviour:
   addedSpread: 8
   weaponChangeSpeed: 1.7
   isAuto: 0
-  bulletTypeId: 3
+  bulletType: 2
   bulletCount: 6
   isOneBulletReloaded: 1
   maxDurabilityPoints: 350
@@ -69,6 +69,12 @@ MonoBehaviour:
       m_ColorSpace: -1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
+  laserPointerPosition: {x: 0, y: 0}
+  gunPartsInGamePositions:
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
   spriteScaleMultiplayer: 2.5
   spriteRotation: 90
   weaponSprite: {fileID: 21300000, guid: 9a69260787927724aab30675d57bf8df, type: 3}
@@ -86,8 +92,9 @@ MonoBehaviour:
   blackBGSize: 0
   centreCrossSprite: {fileID: 0}
   shotSound: {fileID: 8300000, guid: 9fff401a335a4d547bf8044d3c7035e9, type: 3}
-  reloadSound: {fileID: 8300000, guid: d9def0d3917c33c48a1f52e67ecdf7e3, type: 3}
+  startReloadSound: {fileID: 0}
+  endReloadSound: {fileID: 0}
   upgradeCost: 0
   upgradedGunId: 0
-  neededGunsmithLevelToUpgrade: 0
+  neededGunLevelToUpgrade: 0
   gunParts: 0

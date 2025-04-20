@@ -13,4 +13,5 @@ public struct CreatureInventoryComponent
     public ItemInfo helmetItem;
     public ItemInfo shieldItem;
     public EnemyClassSettingsInfo enemyClassSettingInfo;
+    public ItemInfo bulletItem;
 }

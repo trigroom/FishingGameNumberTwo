@@ -24,7 +24,7 @@ MonoBehaviour:
   addedSpread: 2.5
   weaponChangeSpeed: 2
   isAuto: 0
-  bulletTypeId: 3
+  bulletType: 2
   bulletCount: 5
   isOneBulletReloaded: 1
   maxDurabilityPoints: 700
@@ -70,6 +70,11 @@ MonoBehaviour:
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
   laserPointerPosition: {x: 0, y: 0}
+  gunPartsInGamePositions:
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
   spriteScaleMultiplayer: 2.5
   spriteRotation: 90
   weaponSprite: {fileID: 21300000, guid: f1fee9c7639fba74db7af82e644800a4, type: 3}

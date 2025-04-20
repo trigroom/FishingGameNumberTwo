@@ -17,11 +17,10 @@ public class GunInfo : ScriptableObject
     public float addedSpread;
     public float weaponChangeSpeed = 2;//скорость с мены на это оружие, а не с него
     public bool isAuto;
-    public int bulletTypeId;
-    public int bulletCount = 1;
+    public BulletInfo.BulletType bulletType;
+   // public int bulletCount = 1;
     public bool isOneBulletReloaded;
     public int maxDurabilityPoints;
-    public int bulletShellIndex;
 
    // public float maxCameraSpread;
    // public float addedCameraSpread;

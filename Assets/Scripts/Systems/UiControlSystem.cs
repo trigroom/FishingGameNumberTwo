@@ -102,7 +102,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     {
         //  Debug.Log(Mathf.CeilToInt((float)item.gunInfo.damage * (1 + (weaponLevelCmp.weaponExpLevel * 0.02f))) + "+dam" + item.gunInfo.damage + "defdam");
         _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Gun info" + "\n" + "Damage: " + Mathf.CeilToInt((float)item.gunInfo.damage * (1 + (weaponLevelCmp.weaponExpLevel * 0.02f))) + "\n" + "Shot couldown: " + item.gunInfo.attackCouldown + "\n" + "Max magazine capacity: " + item.gunInfo.magazineCapacity + "\n" + "Reload time: " + item.gunInfo.reloadDuration
-                        + "\n" + "Spread: " + item.gunInfo.minSpread + "to" + item.gunInfo.maxSpread + "\n" + "Shot distance: " + item.gunInfo.attackLenght + "\n" + "Shot sound distance: " + item.gunInfo.shotSoundDistance + "\n" + "Bullet: " + _sceneData.Value.idItemslist.items[item.gunInfo.bulletTypeId].itemName + "\n";
+                        + "\n" + "Spread: " + item.gunInfo.minSpread + "to" + item.gunInfo.maxSpread + "\n" + "Shot distance: " + item.gunInfo.attackLenght + "\n" + "Shot sound distance: " + item.gunInfo.shotSoundDistance + "\n" + "Bullet: " + _sceneData.Value.bulletsName[(int)item.gunInfo.bulletType] + "\n";
 
         _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "Durability points: " + gunInInvCellCmp.gunDurability + "/" + item.gunInfo.maxDurabilityPoints + "\n";
 
@@ -491,7 +491,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                             var upgradedItem = _sceneData.Value.idItemslist.items[item.itemInfo.gunInfo.upgradedGunId];
                             _sceneData.Value.dropedItemsUIView.upgradedGunImage.sprite = upgradedItem.itemSprite;
                             _sceneData.Value.dropedItemsUIView.upgradedGunText.text = "Gun info" + "\n" + "Damage: " + upgradedItem.gunInfo.damage + "\n" + "Shot couldown: " + upgradedItem.gunInfo.attackCouldown + "\n" + "Max magazine capacity: " + upgradedItem.gunInfo.magazineCapacity + "\n" + "Reload time: " + upgradedItem.gunInfo.reloadDuration
-                        + "\n" + "Spread: " + upgradedItem.gunInfo.minSpread + "to" + upgradedItem.gunInfo.maxSpread + "\n" + "Shot distance: " + upgradedItem.gunInfo.attackLenght + "\n" + "Bullet: " + _sceneData.Value.idItemslist.items[upgradedItem.gunInfo.bulletTypeId].itemName + "\n";
+                        + "\n" + "Spread: " + upgradedItem.gunInfo.minSpread + "to" + upgradedItem.gunInfo.maxSpread + "\n" + "Shot distance: " + upgradedItem.gunInfo.attackLenght + "\n" + "Bullet: " + _sceneData.Value.bulletsName[(int)upgradedItem.gunInfo.bulletType] + "\n";
                             _sceneData.Value.dropedItemsUIView.upgradedGunText.text += "max Durability points: " + upgradedItem.gunInfo.maxDurabilityPoints + "\n";
                             if (upgradedItem.gunInfo.isOneBulletReloaded)
                                 _sceneData.Value.dropedItemsUIView.upgradedGunText.text += "reloads one bullet at a time" + "\n";
@@ -868,6 +868,14 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         else if (item.itemInfo.type == ItemInfo.itemType.gunPart)
         {
             ChangeGunPartDescription(item.itemInfo);
+        }
+        else if (item.itemInfo.type == ItemInfo.itemType.bullet)
+        {
+            _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += " type: " + item.itemInfo.bulletInfo.bulletType + "\nx" + item.itemInfo.bulletInfo.addedDamageMultiplayer + " damage multiplayer \nx" + item.itemInfo.bulletInfo.addedSpreadMultiplayer + " spread multiplayer \nx" +
+                item.itemInfo.bulletInfo.addedLenghtMultiplayer + " lenght multiplayer \n" + item.itemInfo.bulletInfo.addedBleedingMultiplayer + " bleeding chance and duration multiplayer\n" + item.itemInfo.bulletInfo.addedStunMultiplayer + " stun multiplayer\n"
+                + item.itemInfo.bulletInfo.removedGunDurability + " removed gun durability\n";
+            if (item.itemInfo.bulletInfo.bulletCount != 1)
+                _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "bullets parts count " + item.itemInfo.bulletInfo.bulletCount +"\n";
         }
         else if (item.itemInfo.itemId == 44)
         {

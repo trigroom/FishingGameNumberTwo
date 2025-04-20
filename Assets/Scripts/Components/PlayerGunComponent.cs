@@ -5,9 +5,10 @@ public struct PlayerGunComponent
 {
     public GunInfo gunInfo;
 
+    public int bulletCountToReload { get; set; }
+    public int bulletIdToreload;
+
     public bool isAuto;
-    public int bulletCountToReload;
-    public int bulletTypeId;
     public bool isContinueReload;
 
     public int misfirePercent;

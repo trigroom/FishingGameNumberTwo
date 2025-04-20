@@ -1,6 +1,7 @@
 using Leopotam.EcsLite;
 using Leopotam.EcsLite.Di;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -222,7 +223,6 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         #endregion
 
 
-        // _nowUsedWeaponTagsPool.Value.Add(_sceneData.Value.meleeWeaponCellView._entity);
 
         //5 спец клеток
 
@@ -458,7 +458,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
 
         Dictionary<int, int> durabilityItemsForSaveDataList = new Dictionary<int, int>();
-        Dictionary<int, int> bulletsWeaponForSaveDataList = new Dictionary<int, int>();
+        Dictionary<int, int[]> bulletsWeaponForSaveDataList = new Dictionary<int, int[]>();
         Dictionary<int, int> laserPoinerRemainingTimeForSaveDataList = new Dictionary<int, int>();
 
         Dictionary<int, int> buttGunPartsWithId = new Dictionary<int, int>();
@@ -474,7 +474,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
         if (gameData.bulletsWeaponForSaveData != null)
             foreach (var item in gameData.bulletsWeaponForSaveData)
-                bulletsWeaponForSaveDataList.Add(item.cellId, item.num);
+                bulletsWeaponForSaveDataList.Add(item.cellId, item.numArray);
 
         if (gameData.laserPoinerRemainingTimeForSaveData != null)
             foreach (var item in gameData.laserPoinerRemainingTimeForSaveData)
@@ -552,10 +552,17 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
                     //выгрузка айдишников в компонент из сэйва
                     //   Debug.Log(itemCmp.itemInfo.itemName + " gun " + itemCmp.itemInfo.itemId + "id");
-                    gunInInvCmp.currentAmmo = bulletsWeaponForSaveDataList[item.itemCellId];
+                    if (bulletsWeaponForSaveDataList.TryGetValue(item.itemCellId, out int[] ammo))
+                    {
+                        gunInInvCmp.currentAmmo = ammo.ToList();
+                        foreach (var curAmmo in gunInInvCmp.currentAmmo)
+                            gunInInvCmp.currentGunWeight += _sceneData.Value.idItemslist.items[curAmmo].itemWeight;
+                    }
+                    else
+                        gunInInvCmp.currentAmmo = new List<int>();
+                    gunInInvCmp.bulletShellsToReload = new List<int>();
                     gunInInvCmp.gunDurability = durabilityItemsForSaveDataList[item.itemCellId];
 
-                    gunInInvCmp.currentGunWeight += _sceneData.Value.idItemslist.items[itemCmp.itemInfo.gunInfo.bulletTypeId].itemWeight * gunInInvCmp.currentAmmo;
 
                     if (cellEntity == _sceneData.Value.firstGunCellView._entity)
                     {
@@ -872,7 +879,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
         ref var cellsInventory = ref _cellsListComponentsPool.Value.Get(playerEntity).cells;
 
-        List<NumAndIdForSafeData> bulletsWeaponForSaveData = new List<NumAndIdForSafeData>();
+        List<NumArrayAndIdForSaveData> bulletsWeaponForSaveData = new List<NumArrayAndIdForSaveData>();
         List<NumAndIdForSafeData> durabilityItemsForSaveData = new List<NumAndIdForSafeData>();
         List<NumAndIdForSafeData> laserPointerRemainingTimeForSaveData = new List<NumAndIdForSafeData>();
         //  List<NumAndIdForSafeData> expLevelWeaponForSaveData = new List<NumAndIdForSafeData>();
@@ -903,8 +910,11 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                 if (invItemCmp.itemInfo.type == ItemInfo.itemType.gun)
                 {
                     ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(cellsInventory[i]._entity);
-                    bulletsWeaponForSaveData.Add(new NumAndIdForSafeData(i, gunInInvCmp.currentAmmo));
-                    durabilityItemsForSaveData.Add(new NumAndIdForSafeData(i, gunInInvCmp.gunDurability));
+
+                    if (gunInInvCmp.currentAmmo.Count != 0)
+                        bulletsWeaponForSaveData.Add(new NumArrayAndIdForSaveData(i, gunInInvCmp.currentAmmo.ToArray()));
+
+                    durabilityItemsForSaveData.Add(new NumAndIdForSafeData(i, (int)gunInInvCmp.gunDurability));
 
                     if (gunInInvCmp.gunPartsId[0] != 0)
                         buttGunPartForSaveData.Add(new NumAndIdForSafeData(i, gunInInvCmp.gunPartsId[0]));
@@ -944,10 +954,12 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         {
             gameData.itemsCellinfo[i] = items[i];
         }
-        gameData.bulletsWeaponForSaveData = new NumAndIdForSafeData[bulletsWeaponForSaveData.Count];
+        this.gameData.bulletsWeaponForSaveData = new NumArrayAndIdForSaveData[bulletsWeaponForSaveData.Count];
         for (int i = 0; i < bulletsWeaponForSaveData.Count; i++)
         {
-            gameData.bulletsWeaponForSaveData[i] = bulletsWeaponForSaveData[i];
+            this.gameData.bulletsWeaponForSaveData[i] = bulletsWeaponForSaveData[i];
+            Debug.Log(this.gameData.bulletsWeaponForSaveData.Length + " ammo count " + bulletsWeaponForSaveData.Count);
+
         }
 
         gameData.durabilityItemsForSaveData = new NumAndIdForSafeData[durabilityItemsForSaveData.Count];

@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public class SceneService : MonoBehaviour
 {
+    [field: SerializeField] public string[] bulletsName { get; private set; }
     [field: SerializeField] public Transform secondLocationEntryCollider { get; private set; }
     [field: SerializeField] public Transform firstEntryGuide { get; private set; }
     [field: SerializeField] public AudioClip[] randomEmbientSounds { get; private set; }
@@ -43,7 +44,6 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public Animator fadeScreenAnimator { get; private set; }
     [field: SerializeField] public Transform locationsContainer { get; private set; }
     [field: SerializeField] public SpriteRenderer bulletShellPrefab { get; private set; }
-    [field: SerializeField] public Sprite[] bulletShellSprites { get; private set; }
     [field: SerializeField] public Transform startLocation { get; private set; }
     [field: SerializeField] public Transform rainEffectContainer { get; private set; }
   //  [field: SerializeField] public Transform playerSpriteContainer { get; private set; }

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f192c51e95837cb4fbd1decd8f0a37dc, type: 3}
+  m_Name: Buckshot38SpecialBulletInfo
+  m_EditorClassIdentifier: 
+  addedSpreadMultiplayer: 2.2
+  addedLenghtMultiplayer: 0.6
+  addedBleedingMultiplayer: 0.5
+  addedStunMultiplayer: 1.2
+  addedDamageMultiplayer: 0.3
+  removedGunDurability: 2.5
+  bulletCount: 7
+  bulletType: 0
+  bulletCase: {fileID: -649774401, guid: 20dafb7918ede51458c379eb4d3c856b, type: 3}
+  uiBulletColor: {r: 0.9339623, g: 0.61584395, b: 0.2687344, a: 1}

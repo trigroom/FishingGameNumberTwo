@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f192c51e95837cb4fbd1decd8f0a37dc, type: 3}
+  m_Name: ArmorBreaker12GaugeBulletInfo
+  m_EditorClassIdentifier: 
+  addedSpreadMultiplayer: 1.2
+  addedLenghtMultiplayer: 0.8
+  addedBleedingMultiplayer: 1.3
+  addedStunMultiplayer: 1.2
+  addedDamageMultiplayer: 1.5
+  removedGunDurability: 2
+  bulletCount: 10
+  bulletType: 2
+  bulletCase: {fileID: 21300000, guid: 335bfef1a9559d64e8195e125509f11a, type: 3}
+  uiBulletColor: {r: 0.16037738, g: 0.16037738, b: 0.16037738, a: 1}

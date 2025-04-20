@@ -49,19 +49,19 @@ public class SpawnSystem : IEcsRunSystem
             curLocationCmp.currentEnemySpawns.RemoveAt(needEnemySpawnPositionIndex);
             CreatureSpawn(creatureEntity, ref creatureAiStatesCmp);
         }
-        foreach(var bossSpawn in _spawnFirstBossEventsFilter.Value)
+        foreach (var bossSpawn in _spawnFirstBossEventsFilter.Value)
         {
             ref var curLocationCmp = ref _currentLocationComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-          
+
             int creatureEntity = _world.Value.NewEntity();
             ref var creatureAiStatesCmp = ref _creatureAIComponentsPool.Value.Add(creatureEntity);
-            creatureAiStatesCmp.creatureView =   _spawnFirstBossEventsPool.Value.Get(bossSpawn).creatureView;
+            creatureAiStatesCmp.creatureView = _spawnFirstBossEventsPool.Value.Get(bossSpawn).creatureView;
             CreatureSpawn(creatureEntity, ref creatureAiStatesCmp);
             _spawnFirstBossEventsPool.Value.Del(bossSpawn);
             _movementComponentsPool.Value.Get(creatureEntity).moveSpeed = 0;
         }
 
-   
+
     }
     private void CreatureSpawn(int creatureEntity, ref CreatureAIComponent creatureAiStatesCmp)
     {
@@ -120,9 +120,50 @@ public class SpawnSystem : IEcsRunSystem
         visionZoneMultiplayer *= creatureInventoryCmp.enemyClassSettingInfo.visionLenghtMultiplayer;
         _hidedObjectOutsideFOVComponentsPool.Value.Add(creatureEntity).hidedObjects = creatureAiStatesCmp.creatureView.gameObject.GetComponent<HidedOutsidePlayerFovView>().objectsToHide/*поменять если где то ещё понадобится этот спрайт рэндэр*/  ;
 
+        creatureAiStatesCmp.currentTarget = _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform;
+        moveCmp.movementView = creatureAiStatesCmp.creatureView.movementView;
+        moveCmp.entityTransform = moveCmp.movementView.objectTransform;
+
         if (creatureInventoryCmp.gunItem != null)
         {
-            creatureAiStatesCmp.safeDistance = (4+creatureInventoryCmp.gunItem.gunInfo.attackLenght / 8) * visionZoneMultiplayer;
+
+            var creatureGunInfo = creatureInventoryCmp.gunItem.gunInfo;
+            var bulletsInfo = curLevel.bulletsInfoArray[(int)creatureGunInfo.bulletType].items;
+            creatureInventoryCmp.bulletItem = bulletsInfo[Random.Range(0, bulletsInfo.Length)];
+
+            ref var gunCmp = ref _gunComponentsPool.Value.Add(creatureEntity);
+            gunCmp.currentBulletInfo = creatureInventoryCmp.bulletItem.bulletInfo;
+            gunCmp.reloadDuration = creatureGunInfo.reloadDuration;
+            gunCmp.isOneBulletReload = creatureGunInfo.isOneBulletReloaded;
+
+            gunCmp.currentAddedSpread = creatureGunInfo.addedSpread;
+            gunCmp.currentMaxSpread = creatureGunInfo.maxSpread;
+            gunCmp.currentMinSpread = creatureGunInfo.minSpread;
+            gunCmp.currentSpread = creatureGunInfo.minSpread;
+
+            gunCmp.attackLeght = creatureGunInfo.attackLenght;
+            gunCmp.magazineCapacity = creatureGunInfo.magazineCapacity;
+            gunCmp.currentMagazineCapacity = creatureGunInfo.magazineCapacity;
+            gunCmp.spreadRecoverySpeed = 2 * creatureInventoryCmp.enemyClassSettingInfo.recoverySpreadMultiplayer;
+            gunCmp.firePoint = moveCmp.movementView.firePoint;
+            gunCmp.weaponContainer = moveCmp.movementView.weaponContainer;
+            gunCmp.lightFromGunShot = creatureAiStatesCmp.creatureView.aiCreatureView.lightFromGunShot;
+            gunCmp.flashShotInstance = creatureInventoryCmp.gunItem.gunInfo.shotFlashIntance;
+
+            attackCmp.attackCouldown = creatureGunInfo.attackCouldown;
+            attackCmp.canAttack = true;
+            attackCmp.damage = creatureGunInfo.damage;
+
+            creatureAiStatesCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureGunInfo.weaponSprite;
+            creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localScale = new Vector3(1, -1, 1) * creatureGunInfo.spriteScaleMultiplayer;
+            creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureGunInfo.spriteRotation);
+
+            attackCmp.weaponRotateSpeed = (5f / (creatureInventoryCmp.gunItem.itemWeight) + 1.5f) * creatureInventoryCmp.enemyClassSettingInfo.weaponRotationSpeedMultiplayer;
+
+            moveCmp.movementView.bulletShellSpawnPoint.localPosition = creatureGunInfo.bulletShellPointPosition;
+
+
+            creatureAiStatesCmp.safeDistance = (4 + creatureInventoryCmp.gunItem.gunInfo.attackLenght / 8 * gunCmp.currentBulletInfo.addedLenghtMultiplayer) * visionZoneMultiplayer;
             if (creatureInventoryCmp.meleeWeaponItem != null)
                 creatureAiStatesCmp.minSafeDistance = 1.8f;
             else
@@ -141,9 +182,7 @@ public class SpawnSystem : IEcsRunSystem
         creatureAiStatesCmp.isAttackWhenRetreat = creatureAiStatesCmp.creatureView.aiCreatureView.isAttackWhenRetreat;
         //creatureAiStatesCmp.currentState = CreatureAIComponent.CreatureStates.idle;//
 
-        creatureAiStatesCmp.currentTarget = _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform;
-        moveCmp.movementView = creatureAiStatesCmp.creatureView.movementView;
-        moveCmp.entityTransform = moveCmp.movementView.objectTransform;
+
 
         float distanceBetweenTarget = Vector2.Distance(moveCmp.entityTransform.position, creatureAiStatesCmp.currentTarget.position);
 
@@ -165,7 +204,7 @@ public class SpawnSystem : IEcsRunSystem
         //добавить уравнение всяких оффсетов
         moveCmp.canMove = true;
 
-        if(creatureInventoryCmp.shieldItem != null)
+        if (creatureInventoryCmp.shieldItem != null)
         {
             moveCmp.movementView.shieldView.shieldSpriteRenderer.sprite = creatureInventoryCmp.shieldItem.sheildInfo.sheildSprite;
             moveCmp.movementView.shieldView.shieldCollider.size = creatureInventoryCmp.shieldItem.sheildInfo.sheildColliderScale;
@@ -176,41 +215,6 @@ public class SpawnSystem : IEcsRunSystem
         {
             ref var healItemCmp = ref _currentHealingItemComponentsPool.Value.Add(creatureEntity);
             healItemCmp.healingItemInfo = creatureInventoryCmp.healingItem.healInfo;
-        }
-
-        if (creatureInventoryCmp.gunItem != null)
-        {
-            var creatureGunInfo = creatureInventoryCmp.gunItem.gunInfo;
-            ref var gunCmp = ref _gunComponentsPool.Value.Add(creatureEntity);
-            gunCmp.reloadDuration = creatureGunInfo.reloadDuration;
-            gunCmp.isOneBulletReload = creatureGunInfo.isOneBulletReloaded;
-
-            gunCmp.currentAddedSpread = creatureGunInfo.addedSpread;
-            gunCmp.currentMaxSpread = creatureGunInfo.maxSpread;
-            gunCmp.currentMinSpread = creatureGunInfo.minSpread;
-            gunCmp.currentSpread = creatureGunInfo.minSpread;
-
-            gunCmp.attackLeght = creatureGunInfo.attackLenght;
-            gunCmp.bulletInShotCount = creatureGunInfo.bulletCount;
-            gunCmp.magazineCapacity = creatureGunInfo.magazineCapacity;
-            gunCmp.currentMagazineCapacity = creatureGunInfo.magazineCapacity;
-            gunCmp.spreadRecoverySpeed = 2 * creatureInventoryCmp.enemyClassSettingInfo.recoverySpreadMultiplayer;
-            gunCmp.firePoint = moveCmp.movementView.firePoint;
-            gunCmp.weaponContainer = moveCmp.movementView.weaponContainer;
-            gunCmp.lightFromGunShot = creatureAiStatesCmp.creatureView.aiCreatureView.lightFromGunShot;
-            gunCmp.flashShotInstance = creatureInventoryCmp.gunItem.gunInfo.shotFlashIntance;
-
-            attackCmp.attackCouldown = creatureGunInfo.attackCouldown;
-            attackCmp.canAttack = true;
-            attackCmp.damage = creatureGunInfo.damage;
-
-            creatureAiStatesCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureGunInfo.weaponSprite;
-            creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localScale = new Vector3(1, -1, 1) * creatureGunInfo.spriteScaleMultiplayer;
-            creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureGunInfo.spriteRotation);
-
-            attackCmp.weaponRotateSpeed = (30f / (attackCmp.damage * creatureInventoryCmp.gunItem.gunInfo.bulletCount) + 1.5f) * creatureInventoryCmp.enemyClassSettingInfo.weaponRotationSpeedMultiplayer;
-
-           moveCmp.movementView.bulletShellSpawnPoint.localPosition = creatureGunInfo.bulletShellPointPosition;
         }
 
         if (creatureInventoryCmp.meleeWeaponItem != null)
@@ -231,7 +235,7 @@ public class SpawnSystem : IEcsRunSystem
                 creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localScale = new Vector3(1, -1, 1) * meleeWeapon.spriteScaleMultiplayer;
                 creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, meleeWeapon.spriteRotation);
 
-                attackCmp.weaponRotateSpeed = (50f / attackCmp.damage+1) * creatureInventoryCmp.enemyClassSettingInfo.weaponRotationSpeedMultiplayer;
+                attackCmp.weaponRotateSpeed = (50f / (creatureInventoryCmp.meleeWeaponItem.itemWeight) + 1) * creatureInventoryCmp.enemyClassSettingInfo.weaponRotationSpeedMultiplayer;
             }
             else if (creatureAiStatesCmp.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget)
                 creatureInventoryCmp.isSecondWeaponUsed = true;

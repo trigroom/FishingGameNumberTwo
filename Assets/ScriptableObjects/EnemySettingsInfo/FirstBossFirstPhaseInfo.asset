@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d15cc0c722a71848bfd69b1c4699fc8, type: 3}
   m_Name: FirstBossFirstPhaseInfo
   m_EditorClassIdentifier: 
-  healthPoint: 150
-  staminaCount: 10
+  healthPoint: 75
+  staminaCount: 6.5
   visionLenghtMultiplayer: 3
   movementSpeed: 1.1
   dropPercentMultiplayer: 2.5

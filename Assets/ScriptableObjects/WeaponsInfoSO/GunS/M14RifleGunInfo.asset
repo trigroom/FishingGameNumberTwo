@@ -24,7 +24,7 @@ MonoBehaviour:
   addedSpread: 7
   weaponChangeSpeed: 3
   isAuto: 0
-  bulletTypeId: 7
+  bulletType: 6
   bulletCount: 1
   isOneBulletReloaded: 0
   maxDurabilityPoints: 500

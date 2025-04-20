@@ -14,9 +14,10 @@ public struct GunComponent
     public float currentAddedSpread;
     public float spreadRecoverySpeed;
     public bool isReloading;
-    public int bulletInShotCount;
     public bool isOneBulletReload;
     public float timeFromLastShot;
+
+    public BulletInfo currentBulletInfo;
     public float gunSpritePositionRecoil {  get; set; }
 
     public Light2D lightFromGunShot;

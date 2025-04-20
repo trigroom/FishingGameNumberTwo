@@ -13,7 +13,7 @@ public class GameData
     [Header("Inventory cells")]
     public ItemInfoForSaveData[] itemsCellinfo;
     public NumAndIdForSafeData[] durabilityItemsForSaveData;
-    public NumAndIdForSafeData[] bulletsWeaponForSaveData;
+    public NumArrayAndIdForSaveData[] bulletsWeaponForSaveData;
     public NumAndIdForSafeData[] laserPoinerRemainingTimeForSaveData;
     public NumAndIdForSafeData[] weaponsCurrentExpForSaveData;
 
