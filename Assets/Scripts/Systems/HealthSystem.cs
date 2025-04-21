@@ -862,6 +862,8 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                                     gunInvCmp.gunDurability = (int)Random.Range(droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints * 0.3f, droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints);
                                     gunInvCmp.gunPartsId = new int[4];
                                     gunInvCmp.isEquipedWeapon = false;
+                                    gunInvCmp.currentAmmo = new List<int>();
+                                    gunInvCmp.bulletShellsToReload = new List<int>();
                                 }
                                 else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.flashlight || droppedItemComponent.itemInfo.type == ItemInfo.itemType.bodyArmor || droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet)
                                 {
