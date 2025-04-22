@@ -57,7 +57,7 @@ public class MovementSystem : IEcsRunSystem
                     moveCmp.stunTime = 0;
                     moveCmp.isStunned = false;
                     if (!isPlayer)
-                        moveCmp.moveSpeed = moveCmp.movementView.moveSpeed;//временно и для игрока другое будет уравнение
+                        moveCmp.moveSpeed = moveCmp.movementView.moveSpeed;
                     else
                     {
                         ref var inventoryCmp = ref _inventoryComponentsPool.Value.Get(_sceneService.Value.inventoryEntity);
