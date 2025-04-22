@@ -781,7 +781,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                     ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(droppedItemEntity);
                     gunInInvCmp.gunDurability = Random.Range(0, gunItem.maxDurabilityPoints + 1);
                     gunInInvCmp.currentAmmo = Enumerable.Repeat(creatureInventoryCmp.bulletItem.itemId, Random.Range(1, gunItem.magazineCapacity + 1)).ToList();
-
+                    gunInInvCmp.bulletShellsToReload = new List<int>();
                     gunInInvCmp.gunPartsId = new int[4];
                 }
                 else if(percentDrop < 21 && creatureInventoryCmp.meleeWeaponItem != null)

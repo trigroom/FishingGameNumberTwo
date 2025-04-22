@@ -1311,7 +1311,7 @@ public class InventorySystem : IEcsRunSystem
                     }
                     if (itemCmp.itemInfo.gunInfo.neededGunLevelToUpgrade > _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[itemCmp.itemInfo.itemId].weaponExpLevel)
                     {
-                        _sceneData.Value.ShowWarningText(itemCmp.itemInfo.gunInfo.neededGunLevelToUpgrade + " or maor level nee to upgrade");
+                        _sceneData.Value.ShowWarningText(itemCmp.itemInfo.gunInfo.neededGunLevelToUpgrade + " or more level need to upgrade");
                         return;
                     }
                     invCmp.moneyCount -= itemCmp.itemInfo.gunInfo.upgradeCost;
@@ -1345,8 +1345,9 @@ public class InventorySystem : IEcsRunSystem
 
                         }
                         }
-                        gunInInvCellCmp.currentAmmo = null;
+                        gunInInvCellCmp.currentAmmo = new List<int>();
                     }
+                    gunInInvCellCmp.bulletShellsToReload = new List<int>();
                     itemCmp.itemInfo = upgradedGun;
                     gunInInvCellCmp.currentGunWeight = upgradedGun.itemWeight;
                     invCmp.weight += upgradedGun.itemWeight;

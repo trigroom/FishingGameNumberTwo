@@ -293,6 +293,8 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                                 gunInvCmp.currentGunWeight = droppedItemComponent.itemInfo.itemWeight;
                                 gunInvCmp.gunDurability = (int)Random.Range(droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints * 0.3f, droppedItemComponent.itemInfo.gunInfo.maxDurabilityPoints);
                                 gunInvCmp.gunPartsId = new int[4];
+                                gunInvCmp.bulletShellsToReload = new List<int>();
+                                gunInvCmp.currentAmmo = new List<int>();
                                 gunInvCmp.isEquipedWeapon = false;
                             }
                             else if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.flashlight || droppedItemComponent.itemInfo.type == ItemInfo.itemType.bodyArmor || droppedItemComponent.itemInfo.type == ItemInfo.itemType.helmet)

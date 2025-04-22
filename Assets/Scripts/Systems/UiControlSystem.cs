@@ -250,8 +250,10 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             var gunPartCellView = _changeGunPartDescriptionEvent.Value.Get(chGunPartDescriptionEntity).gunPartCellView;
             var gunPartItemInfo = _sceneData.Value.idItemslist.items[_gunInventoryCellComponentsPool.Value.Get(_menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell).gunPartsId[(int)gunPartCellView.cellGunPartType]];//получаем айтем инфу обвеса
             ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+            _sceneData.Value.dropedItemsUIView.gunPartCells[menuStatesCmp.currentMarkedGunPart].isSelected = false;
             if (gunPartCellView.isSelected)
             {
+                //при повторном нажатии на другую гп клетку если уже нажата не работает инвентарь мб делать все осталные неактивными
                 _sceneData.Value.dropedItemsUIView.itemDescriptionText.text = "<b>" + gunPartItemInfo.itemName + "</b>" + "\n" + "Type: " + gunPartItemInfo.type + "\n";
                 ChangeGunPartDescription(gunPartItemInfo);
                 _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "снять" + gunPartItemInfo.itemName;
@@ -260,7 +262,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             }
             else
             {
-
+                //menuStatesCmp.currentMarkedGunPart = 0;
                 menuStatesCmp.isGunPartDescription = false;
                 int gunEntity = _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).lastMarkedCell;
                 var gunItem = _inventoryItemComponentPool.Value.Get(gunEntity).itemInfo;
@@ -273,11 +275,20 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
         foreach (var tryEquipGunPart in _tryEquipGunPartEventsFilter.Value)
         {
-            if (_equipGunPartEventsFilter.Value.GetEntitiesCount() > 0) return;
-            var gunPartCellView = _tryEquipGunPartEventsPool.Value.Get(tryEquipGunPart).cellViewGunPart;
+            ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
+            if (_equipGunPartEventsFilter.Value.GetEntitiesCount() > 0)
+            {
+                Debug.Log(" double gp equip");
+                _tryEquipGunPartEventsPool.Value.Del(tryEquipGunPart);
+                menuStatesCmp.isGunPartDescription = false;
+                return;
+            }
+                var gunPartCellView = _tryEquipGunPartEventsPool.Value.Get(tryEquipGunPart).cellViewGunPart;
             _equipGunPartEventsPool.Value.Add(tryEquipGunPart).cellGunPartType = gunPartCellView.cellGunPartType;
+            _sceneData.Value.dropedItemsUIView.gunPartCells[menuStatesCmp.currentMarkedGunPart].isSelected = false;
+            menuStatesCmp.currentMarkedGunPart = (int)gunPartCellView.cellGunPartType;
             //  Debug.Log("Equip");
-            _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).isGunPartDescription = true;
+            menuStatesCmp.isGunPartDescription = true;
             _sceneData.Value.dropedItemsUIView.markInventoryCellBorder.transform.position = gunPartCellView.transform.position;
             _tryEquipGunPartEventsPool.Value.Del(tryEquipGunPart);
             //выделение этой клетки
@@ -349,10 +360,10 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                     _equipGunPartEventsPool.Value.Del(tryEquipGunPartEntity);
                     continue;
                 }
-                ref var tryEquipGunCmp = ref _equipGunPartEventsPool.Value.Get(tryEquipGunPartEntity);
-                int curWeaponLevel = _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[_inventoryItemComponentPool.Value.Get(menuStatesCmp.lastMarkedCell).itemInfo.itemId].weaponExpLevel;
                 if (item.itemInfo.type == ItemInfo.itemType.gunPart)
                 {
+                    ref var tryEquipGunCmp = ref _equipGunPartEventsPool.Value.Get(tryEquipGunPartEntity);
+                    int curWeaponLevel = _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[_inventoryItemComponentPool.Value.Get(menuStatesCmp.lastMarkedCell).itemInfo.itemId].weaponExpLevel;
                     if (_inventoryItemComponentPool.Value.Has(menuStatesCmp.lastMarkedCell) && item.itemInfo.gunPartInfo.gunPartType == tryEquipGunCmp.cellGunPartType && curWeaponLevel >= item.itemInfo.gunPartInfo.neededLevelToEquip)
                     {
                         ref var gunInInvCmp = ref _gunInventoryCellComponentsPool.Value.Get(menuStatesCmp.lastMarkedCell);
@@ -360,7 +371,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
 
                         gunInInvCmp.gunPartsId[needIndex] = item.itemInfo.itemId;
                         if (item.itemInfo.gunPartInfo.energyToCharge != 0)
-                            _laserPointerForGunComponentsPool.Value.Copy(desription,menuStatesCmp.lastMarkedCell);
+                            _laserPointerForGunComponentsPool.Value.Copy(desription, menuStatesCmp.lastMarkedCell);
 
                         _sceneData.Value.dropedItemsUIView.gunPartCells[needIndex].gunPartImage.sprite = item.itemInfo.itemSprite;
                         _sceneData.Value.dropedItemsUIView.gunPartCells[needIndex].isUsed = true;
@@ -405,7 +416,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             }
             _sceneData.Value.dropedItemsUIView.markInventoryCellBorder.transform.position = invCellCmp.cellView.transform.position;
             menuStatesCmp.lastMarkedCell = desription;
-           // Debug.Log(desription + " NEW DESC");
+            // Debug.Log(desription + " NEW DESC");
             if (item.itemInfo.type == ItemInfo.itemType.gun)
                 _sceneData.Value.dropedItemsUIView.gunPartsCellsContainer.gameObject.SetActive(true);
             else
@@ -515,8 +526,8 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                         if (_laserPointerForGunComponentsPool.Value.Has(desription))
                         {
                             _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(true);
-                            if(item.itemInfo.type == ItemInfo.itemType.gun)
-                            _sceneData.Value.dropedItemsUIView.secondButtonActionText.text = "charge laser pointer " + _sceneData.Value.idItemslist.items[gunInInvCellCmp.gunPartsId[2]].gunPartInfo.energyToCharge + "mAh";
+                            if (item.itemInfo.type == ItemInfo.itemType.gun)
+                                _sceneData.Value.dropedItemsUIView.secondButtonActionText.text = "charge laser pointer " + _sceneData.Value.idItemslist.items[gunInInvCellCmp.gunPartsId[2]].gunPartInfo.energyToCharge + "mAh";
                         }
                         if (_storageCellTagsPool.Value.Has(desription))
                             _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(false);
@@ -583,13 +594,13 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             {
                 ChangeGunPartDescription(item.itemInfo);
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(false);
-                if(item.itemInfo.gunPartInfo.laserLightTime != 0 && menuStatesCmp.inStorageState)
+                if (item.itemInfo.gunPartInfo.laserLightTime != 0 && menuStatesCmp.inStorageState)
                 {
                     _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(true);
                     _sceneData.Value.dropedItemsUIView.currentWeaponButtonActionText.text = "charge laser pointer " + item.itemInfo.gunPartInfo.energyToCharge + "mAh";
                 }
                 else
-                _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(false);
+                    _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(false);
             }
             else if (item.itemInfo.itemId == 44)
             {
@@ -875,7 +886,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 item.itemInfo.bulletInfo.addedLenghtMultiplayer + " lenght multiplayer \n" + item.itemInfo.bulletInfo.addedBleedingMultiplayer + " bleeding chance and duration multiplayer\n" + item.itemInfo.bulletInfo.addedStunMultiplayer + " stun multiplayer\n"
                 + item.itemInfo.bulletInfo.removedGunDurability + " removed gun durability\n";
             if (item.itemInfo.bulletInfo.bulletCount != 1)
-                _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "bullets parts count " + item.itemInfo.bulletInfo.bulletCount +"\n";
+                _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "bullets parts count " + item.itemInfo.bulletInfo.bulletCount + "\n";
         }
         else if (item.itemInfo.itemId == 44)
         {

@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public struct MenuStatesComponent 
+public struct MenuStatesComponent
 {
     public bool inInventoryState;
     public bool inShopState;
@@ -17,7 +15,7 @@ public struct MenuStatesComponent
     public int lastMarkedCell;
     public int lastDraggedCell;
     public int currentGuidePage;
-    public int currentMarkedGunPart;
+    public int currentMarkedGunPart { get; set; }
 
     public CurrentItemShowedInfoState currentItemShowedInfo;
     public CurrentBookShowState currentBookShowState;
@@ -34,8 +32,8 @@ public struct MenuStatesComponent
         guides
     }
 
-    public enum MainMenuState 
-    { 
+    public enum MainMenuState
+    {
         none,
         mainMenu,
         settings
