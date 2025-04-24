@@ -235,7 +235,7 @@ public class SpawnSystem : IEcsRunSystem
                 creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localScale = new Vector3(1, -1, 1) * meleeWeapon.spriteScaleMultiplayer;
                 creatureAiStatesCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, meleeWeapon.spriteRotation);
 
-                attackCmp.weaponRotateSpeed = (50f / (creatureInventoryCmp.meleeWeaponItem.itemWeight) + 1) * creatureInventoryCmp.enemyClassSettingInfo.weaponRotationSpeedMultiplayer;
+                attackCmp.weaponRotateSpeed = (5f / (creatureInventoryCmp.meleeWeaponItem.itemWeight) + 1) * creatureInventoryCmp.enemyClassSettingInfo.weaponRotationSpeedMultiplayer;
             }
             else if (creatureAiStatesCmp.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget)
                 creatureInventoryCmp.isSecondWeaponUsed = true;
@@ -263,6 +263,6 @@ public class SpawnSystem : IEcsRunSystem
         creatureHealthCmp.healthView = creatureAiStatesCmp.creatureView.healthView;
         creatureHealthCmp.healthView.Construct(creatureEntity);
         creatureHealthCmp.maxHealthPoint = creatureInventoryCmp.enemyClassSettingInfo.healthPoint;
-        creatureHealthCmp.healthPoint = creatureHealthCmp.maxHealthPoint; Debug.Log(creatureHealthCmp.healthPoint + "curEnemyHealth");
+        creatureHealthCmp.healthPoint = creatureHealthCmp.maxHealthPoint;
     }
 }

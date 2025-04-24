@@ -46,8 +46,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3b4bbf544b1652644ab63987d2b3d643, type: 2}
   - {fileID: 11400000, guid: 38d2ccfad73a19f4284cc844624bca26, type: 2}
   shieldItemsInfo: []
-  chanceToOneWeapon: 0.7
-  chanceToMeleeWeapon: 1
+  chanceToOneWeapon: 0.2
+  chanceToMeleeWeapon: 0.5
   chanceToHealingItem: 0.3
   chanceToBodyArmorItem: 0.2
   chanceToHelmetItem: 0.55

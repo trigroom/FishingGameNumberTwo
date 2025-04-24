@@ -349,7 +349,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         foreach (var desription in _setDescriptionItemEventsFilter.Value)
         {
             ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
-            var item = _inventoryItemComponentPool.Value.Get(desription);
+            InventoryItemComponent item = _inventoryItemComponentPool.Value.Get(desription);
 
             _sceneData.Value.dropedItemsUIView.weaponLevelExpContainer.gameObject.SetActive(item.itemInfo.type == ItemInfo.itemType.gun || item.itemInfo.type == ItemInfo.itemType.meleeWeapon);
 
@@ -553,9 +553,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateEquipButton(false);
                 _sceneData.Value.dropedItemsUIView.ChangeActiveStateIsUseButton(true);
                 _sceneData.Value.dropedItemsUIView.secondButtonActionText.text = "read";
-
             }
-
             else if (item.itemInfo.type == ItemInfo.itemType.heal || item.itemInfo.type == ItemInfo.itemType.randomHeal || item.itemInfo.type == ItemInfo.itemType.grenade)
             {
                 if (item.itemInfo.type != ItemInfo.itemType.randomHeal || _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).hasForestGuide)
@@ -756,9 +754,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         {
             var menuStatesCmp = _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             var cellTransform = menuStatesCmp.invCellRectTransform;
-            // cellTransform.anchoredPosition = new Vector2(Input.mousePosition.x - cellTransform.parent.gameObject.transform.position.x, Input.mousePosition.y - cellTransform.parent.gameObject.transform.position.y)/ _sceneData.Value.mainMenuView.uiMenusToScale[0].localScale.y;
-            cellTransform.anchoredPosition = (Input.mousePosition - cellTransform.parent.gameObject.transform.position) / /*(cellTransform.anchoredPosition - */_sceneData.Value.mainCanvas.localScale.x / _sceneData.Value.mainMenuView.uiMenusToScale[0].localScale.x;
-            Debug.Log("moveCell" + _menuStatesComponentsPool.Value.Get(_sceneData.Value.playerEntity).invCellRectTransform.anchoredPosition);
+            cellTransform.anchoredPosition = (Input.mousePosition - cellTransform.parent.gameObject.transform.position) / _sceneData.Value.mainCanvas.localScale.x / _sceneData.Value.mainMenuView.uiMenusToScale[0].localScale.x;
         }
     }
     private void ShowItemDescription()
@@ -798,8 +794,6 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         menusStatesCmp.currentItemShowedInfo = MenuStatesComponent.CurrentItemShowedInfoState.itemInfo;
         if (_inventoryItemComponentPool.Value.Has(menusStatesCmp.lastMarkedCell))
             SetItemInfo(menusStatesCmp.lastMarkedCell);
-        else
-            _sceneData.Value.dropedItemsUIView.itemDescriptionText.text = "Choose item to check info";
     }
 
     private void SetItemInfo(int desription)
@@ -883,7 +877,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         else if (item.itemInfo.type == ItemInfo.itemType.bullet)
         {
             _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += " type: " + item.itemInfo.bulletInfo.bulletType + "\nx" + item.itemInfo.bulletInfo.addedDamageMultiplayer + " damage multiplayer \nx" + item.itemInfo.bulletInfo.addedSpreadMultiplayer + " spread multiplayer \nx" +
-                item.itemInfo.bulletInfo.addedLenghtMultiplayer + " lenght multiplayer \n" + item.itemInfo.bulletInfo.addedBleedingMultiplayer + " bleeding chance and duration multiplayer\n" + item.itemInfo.bulletInfo.addedStunMultiplayer + " stun multiplayer\n"
+                item.itemInfo.bulletInfo.addedLenghtMultiplayer + " lenght multiplayer \nx" + item.itemInfo.bulletInfo.addedBleedingMultiplayer + " bleeding chance and duration multiplayer\nx" + item.itemInfo.bulletInfo.addedStunMultiplayer + " stun multiplayer\n"
                 + item.itemInfo.bulletInfo.removedGunDurability + " removed gun durability\n";
             if (item.itemInfo.bulletInfo.bulletCount != 1)
                 _sceneData.Value.dropedItemsUIView.itemDescriptionText.text += "bullets parts count " + item.itemInfo.bulletInfo.bulletCount + "\n";

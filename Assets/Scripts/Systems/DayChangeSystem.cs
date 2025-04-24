@@ -69,6 +69,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 _world.Value.DelEntity(item);
             }
             foreach (var trap in curLocationCmp.trapsPrefabs)//фиксит пжпжпжпжп
+                if(trap != null)
                 _sceneService.Value.DestroyLevel(trap);//сделать пул ловушек
 
             foreach (var healthEntity in _healthComponentsFilter.Value)

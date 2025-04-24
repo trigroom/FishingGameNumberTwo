@@ -9,13 +9,13 @@ public struct MenuStatesComponent
     public bool inQuestHelperState;
     public MainMenuState mainMenuState;
     public bool inCraftingTableState;
-    public RectTransform invCellRectTransform;
+    public RectTransform invCellRectTransform{ get; set; }
     public bool isGunPartDescription;
 
     public int lastMarkedCell;
     public int lastDraggedCell;
     public int currentGuidePage;
-    public int currentMarkedGunPart { get; set; }
+    public int currentMarkedGunPart ;
 
     public CurrentItemShowedInfoState currentItemShowedInfo;
     public CurrentBookShowState currentBookShowState;

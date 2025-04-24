@@ -75,9 +75,7 @@ public class InventoryCellView : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     public void OnDrag(PointerEventData eventData)
     {
-      //  if (!inventoryCellButton.interactable) return;
 
-       // invCellRectTransform.anchoredPosition += eventData.delta / mainCanvas.scaleFactor;
     }
 
     public void OnBeginDrag(PointerEventData eventData)

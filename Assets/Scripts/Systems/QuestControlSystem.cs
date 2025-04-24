@@ -159,16 +159,6 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
                     _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(true);
                     _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(true);
                 }
-                //  curDialogPlayerCmp.currentPageNumber = 0;
-                /* if (_questComponentsFilter.Value.GetEntitiesCount() <= 3)
-                     _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(false);
-                 else
-                     _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(true);
-                 if (curDialogPlayerCmp.currentPageNumber == 0)
-                     _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(false);
-                 else
-                     _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(true);*/
-
                 UpdateQuestHelperPage(curDialogPlayerCmp.currentPageNumber);
             }
         }
@@ -181,13 +171,11 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
             ref var questNPCCmp = ref _questNPCComponentsPool.Value.Get(_currentInteractedCharactersComponentsPool.Value.Get(_sceneService.Value.playerEntity).interactCharacterView._entity);
             if (curDialogPlayerCmp.currentDialogeNumber >= curNPC.questNode[questNPCCmp.currentQuest].dialogeText.Length)
             {
-                //добавление квеста в список
-               // Debug.Log("quest added");
                 questNPCCmp.questIsGiven = true;
                 ref var questCmp = ref _questComponentsPool.Value.Add(curNPC.GetComponent<InteractCharacterView>()._entity);
                 questCmp.curerntCollectedItems = new int[curNPC.questNode[questNPCCmp.currentQuest].tasks.Length];
                 questCmp.questCharacterId = curNPC.characterId;
-                questCmp.quest = curNPC.questNode[questNPCCmp.currentQuest];//под вопросом
+                questCmp.quest = curNPC.questNode[questNPCCmp.currentQuest];
 
                 curDialogPlayerCmp.dialogeIsStarted = false;
                 curDialogPlayerCmp.currentDialogeNumber = 0;
@@ -198,7 +186,6 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
                 _sceneService.Value.dropedItemsUIView.charactersInteractText.text = " (нажми F чтобы зайти в магазин\nPress T to give quest " + curNPC.characterName + ")";
                 return;
             }
-            //Debug.Log(questNPCCmp.currentQuest + " cur dialog num " + curDialogPlayerCmp.currentDialogeNumber);
             _sceneService.Value.dropedItemsUIView.dialogeText.text = curNPC.questNode[questNPCCmp.currentQuest].dialogeText[curDialogPlayerCmp.currentDialogeNumber];
         }
     }
@@ -225,15 +212,6 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
             _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(true);
             _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(true);
         }
-        //   if (_questComponentsFilter.Value.GetEntitiesCount() <= 3)
-        //       _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(false);
-        //  else
-        //      _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(true);
-        //  if (pageNumber == 0)
-        //       _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(false);
-        //   else
-        //      _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(true);
-
         _sceneService.Value.questDescription[1].gameObject.SetActive(true);
         _sceneService.Value.questDescription[2].gameObject.SetActive(true);
         _sceneService.Value.dropedItemsUIView.guideImage.gameObject.SetActive(false);
@@ -255,7 +233,6 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
 
         _sceneService.Value.dropedItemsUIView.guideImage.gameObject.SetActive(true);
         UpdateGuidePage(menuStatesCmp.currentGuidePage);
-        Debug.Log("open guide");
     }
     public void NextQuestPage()
     {
@@ -268,10 +245,6 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
 
             if (_questComponentsFilter.Value.GetEntitiesCount() / 3 + 1 == curDialogPlayerCmp.currentPageNumber)
                 curDialogPlayerCmp.currentPageNumber = 0;
-            // if (_questComponentsFilter.Value.GetEntitiesCount() <= (curDialogPlayerCmp.currentPageNumber + 1) * 3)
-            //      _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(false);
-            // if (!_sceneService.Value.dropedItemsUIView.questDescriptionLastButton.IsActive())
-            //     _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(true);
             UpdateQuestHelperPage(curDialogPlayerCmp.currentPageNumber);
         }
         else
@@ -293,12 +266,6 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
 
             if (curDialogPlayerCmp.currentPageNumber <= -1)
                 curDialogPlayerCmp.currentPageNumber = _questComponentsFilter.Value.GetEntitiesCount() / 3;
-            //    if (curDialogPlayerCmp.currentPageNumber == 0)
-            ///       _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(false);
-            //   else
-            //      _sceneService.Value.dropedItemsUIView.questDescriptionLastButton.gameObject.SetActive(true);
-            //   if (!_sceneService.Value.dropedItemsUIView.questDescriptionNextButton.IsActive())
-            //    _sceneService.Value.dropedItemsUIView.questDescriptionNextButton.gameObject.SetActive(true);
             UpdateQuestHelperPage(curDialogPlayerCmp.currentPageNumber);
         }
         else
@@ -353,11 +320,11 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
                         if (task.killTaskInfo.maxTimeToKill != 0 && task.killTaskInfo.minTimeToKill != 0)
                         {
                             var curTime = _globalTimeComponentsPool.Value.Get(_sceneService.Value.playerEntity).currentDayTime;
-                            int maxTime = /*curTime +*/ _sceneService.Value.timeHourOffset + task.killTaskInfo.maxTimeToKill;
+                            int maxTime =  _sceneService.Value.timeHourOffset + task.killTaskInfo.maxTimeToKill;
                             if (maxTime > 24)
                                 maxTime -= 24;
 
-                            int minTime = /*curTime +*/ _sceneService.Value.timeHourOffset + task.killTaskInfo.minTimeToKill;
+                            int minTime =  _sceneService.Value.timeHourOffset + task.killTaskInfo.minTimeToKill;
                             if (minTime > 24)
                                 minTime -= 24;
 
@@ -379,12 +346,10 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
                         questDescription.text += "neutalized " + (TrapView.TrapType)task.neededId + " " + questCmp.curerntCollectedItems[i] + "/" + task.neededCount;
                     questDescription.text += "\n";
                 }
-                //kill an enemy with a rifle at a distance of 30 meters in the head with a knife at night in the last location
                 questDescription.text += "reward: " + "\n";
 
                 for (int i = 0; i < questNPC.questNode[questNPCCmp.currentQuest].rewards.Length; i++)
                 {
-                    Debug.Log(questNPCCmp.currentQuest + "quest NPC NUM" + questNPC.characterId);
                     var reward = questNPC.questNode[questNPCCmp.currentQuest].rewards[i];
 
                     if (reward.rewardItemId != 0)

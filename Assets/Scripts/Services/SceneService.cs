@@ -195,8 +195,11 @@ public class SceneService : MonoBehaviour
     }
     public void ReleaseEffecticonView(EffectIconView view)
     {
+        if(view.gameObject.activeInHierarchy)
+        {
         view.gameObject.SetActive(false);
         _effectIconViewsPool.Release(view);
+        }
     }
     public LineRenderer GetBulletTracer()
     {
@@ -334,9 +337,11 @@ public class SceneService : MonoBehaviour
     public void ReleaseParticlePrefab(ParticleSystem particles)
     {
         particles.gameObject.transform.SetParent(null);
+        if (particles.gameObject.activeInHierarchy)
+        {
         particles.gameObject.SetActive(false);
-
         _particlesPool.Release(particles);
+        }
     }
 
     public InventoryCellView GetItemCell(Transform cellsContainer)

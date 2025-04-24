@@ -82,6 +82,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 bool isNewEffect = true;
                 //Debug.Log("try add effect entity" + effectEntity);
                 //  int delEntity = 0;
+
                 foreach (var checkedEffectEntity in _effectComponentsFilter.Value)
                 {
                     if (checkedEffectEntity != effectEntity && effectCmp.effectEntity == _effectComponentsPool.Value.Get(checkedEffectEntity).effectEntity/*|| !_effectComponentsPool.Value.Has(checkedEffectEntity)*/)
@@ -114,20 +115,12 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                                 if (isPlayer)
                                     checkedEffectCmp.effectIconView.effectTimerText.text = ((int)checkedEffectCmp.effectDuration).ToString();//
                             }
-                            if (isNewEffect)
-                            {
-                                // _world.Value.DelEntity(effectEntity);
+                            if (isNewEffect && !_destroyComponentInNextFrameTagsPool.Value.Has(effectEntity))
                                 _destroyComponentInNextFrameTagsPool.Value.Add(effectEntity);
-                                //  Debug.Log("destroy effect entity" + effectEntity);
 
-                            }
-                            else
-                            {
-                                // delEntity = checkedEffectEntity;
-                                //_world.Value.DelEntity(checkedEffectEntity);
+                            else if (!_destroyComponentInNextFrameTagsPool.Value.Has(checkedEffectEntity))
                                 _destroyComponentInNextFrameTagsPool.Value.Add(checkedEffectEntity);
-                                //    Debug.Log("destroy effect entity" + checkedEffectEntity);
-                            }
+
                             break;
                         }
                     }
@@ -162,7 +155,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
 
                         _movementComponentsPool.Value.Get(effectCmp.effectEntity).isTrapped = true;
                     }
-                    else if (effectCmp.effectType == EffectInfo.EffectType.bleeding)
+                    else if (effectCmp.effectType == EffectInfo.EffectType.bleeding && !_particleLifetimeComponentsPool.Value.Has(effectCmp.effectEntity))
                     {
                         ref var lifetimeCmp = ref _particleLifetimeComponentsPool.Value.Add(effectCmp.effectEntity);
                         _effectParticleLifetimeTagsPool.Value.Add(effectCmp.effectEntity);
@@ -260,7 +253,9 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
         }
         foreach (var destroyEffect in _destroyComponentInNextFrameTagsFilter.Value)
         {
-            _world.Value.DelEntity(destroyEffect);
+            Debug.Log("destroy effect" + destroyEffect);
+            if (destroyEffect != _sceneData.Value.playerEntity)
+                _world.Value.DelEntity(destroyEffect);
         }
         foreach (var revivePlayer in _revivePlayerEventsFilter.Value)
         {
@@ -295,9 +290,9 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 }
                 else if (effectCmp.effectType == EffectInfo.EffectType.bleeding)
                 {
-                    _effectParticleLifetimeTagsPool.Value.Del(effectCmp.effectEntity);
+                    /*_effectParticleLifetimeTagsPool.Value.Del(effectCmp.effectEntity);
                     _sceneData.Value.ReleaseParticlePrefab(_particleLifetimeComponentsPool.Value.Get(effectCmp.effectEntity).objectToHide);
-                    _particleLifetimeComponentsPool.Value.Del(effectCmp.effectEntity);
+                    _particleLifetimeComponentsPool.Value.Del(effectCmp.effectEntity);*/
                 }
                 else if (effectCmp.effectType == EffectInfo.EffectType.painkillers)
                     _playerComponentsPool.Value.Get(effectCmp.effectEntity).levelOfPainkillers = 0;
@@ -318,14 +313,20 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             foreach (var particleEntity in _paricleLifetimeComponentsFilter.Value)
             {
                 _sceneData.Value.ReleaseParticlePrefab(_particleLifetimeComponentsPool.Value.Get(particleEntity).objectToHide);
-
+                Debug.Log(" particleEntity" + particleEntity);
+                if (_particleLifetimeComponentsPool.Value.Has(particleEntity) && particleEntity == _sceneData.Value.playerEntity)
+                {
+                    _particleLifetimeComponentsPool.Value.Del(particleEntity);
+                    _effectParticleLifetimeTagsPool.Value.Del(particleEntity);
+                }
+                else
                 _world.Value.DelEntity(particleEntity);
             }
 
             ref var curLocationCmp = ref _currentLocationComponentsPool.Value.Get(_sceneData.Value.playerEntity);
             if (curLocationCmp.levelNum != 0)
             {
-               // curLocationCmp.levelNum = curLocationCmp.currentLocation.levels.Length;
+                // curLocationCmp.levelNum = curLocationCmp.currentLocation.levels.Length;
                 curLocationCmp.levelNum = 1;
                 _entryInNewLocationEventsPool.Value.Add(_world.Value.NewEntity());
             }
@@ -733,7 +734,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 int curWaeponsCellEntity = _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity).curEquipedWeaponCellEntity;
                 // ref var weaponLevelCmp = ref _weaponLevelComponentsComponentsPool.Value.Get(curWaeponsCellEntity);
                 var creatureInventoryCmp = _creatureInventoryComponentsPool.Value.Get(hpEvent);
-                var enemyInfo = creatureInventoryCmp.enemyClassSettingInfo;  
+                var enemyInfo = creatureInventoryCmp.enemyClassSettingInfo;
                 var curWeaponItemCmp = _inventoryItemComponentsPool.Value.Get(curWaeponsCellEntity);
                 var weaponLevelStats = _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[curWeaponItemCmp.itemInfo.itemId];
                 weaponLevelStats.weaponCurrentExp += enemyInfo.expPointsForKill;
@@ -749,7 +750,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 }
                 int percentDrop = Random.Range(0, 101);
                 int curItems = 0;
-                        Vector2 deathPos = _movementComponentsPool.Value.Get(hpEvent).entityTransform.position;
+                Vector2 deathPos = _movementComponentsPool.Value.Get(hpEvent).entityTransform.position;
                 for (int i = 0; i < curLevelDroppedItems.Length; i++)
                 {
                     if (percentDrop <= curLevelDroppedItems[i].dropPercent * enemyInfo.dropPercentMultiplayer)
@@ -770,9 +771,9 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                             break;
                     }
                 }
-              
+
                 percentDrop = Random.Range(0, 101);
-                if( percentDrop < 11 && creatureInventoryCmp.gunItem != null)
+                if (percentDrop < 11 && creatureInventoryCmp.gunItem != null)
                 {
                     var gunItem = creatureInventoryCmp.gunItem.gunInfo;
                     int droppedItemEntity = _world.Value.NewEntity();
@@ -784,7 +785,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                     gunInInvCmp.bulletShellsToReload = new List<int>();
                     gunInInvCmp.gunPartsId = new int[4];
                 }
-                else if(percentDrop < 21 && creatureInventoryCmp.meleeWeaponItem != null)
+                else if (percentDrop < 21 && creatureInventoryCmp.meleeWeaponItem != null)
                 {
                     int droppedItemEntity = _world.Value.NewEntity();
                     ref var droppedItemComponent = ref SpawnDroppedItem(droppedItemEntity, 1, deathPos, creatureInventoryCmp.meleeWeaponItem);
@@ -794,7 +795,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                     int droppedItemEntity = _world.Value.NewEntity();
                     ref var droppedItemComponent = ref SpawnDroppedItem(droppedItemEntity, 1, deathPos, creatureInventoryCmp.helmetItem);
                     _durabilityInInventoryComponentsPool.Value.Add(droppedItemEntity).currentDurability = Random.Range(0, creatureInventoryCmp.helmetItem.helmetInfo.armorDurability);
-                    if(creatureInventoryCmp.helmetItem.helmetInfo.addedLightIntancity != 0)
+                    if (creatureInventoryCmp.helmetItem.helmetInfo.addedLightIntancity != 0)
                         _shieldComponentsPool.Value.Add(droppedItemEntity).currentDurability = Random.Range(0, creatureInventoryCmp.helmetItem.helmetInfo.armorDurability);
                 }
                 else if (percentDrop < 41 && creatureInventoryCmp.bodyArmorItem != null)
@@ -806,12 +807,12 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 else if (percentDrop < 51 && creatureInventoryCmp.healingItem != null)
                 {
                     int droppedItemEntity = _world.Value.NewEntity();
-                    ref var droppedItemComponent = ref SpawnDroppedItem(droppedItemEntity, Random.Range(1, creatureInventoryCmp.healingItem.maxCount+1), deathPos, creatureInventoryCmp.healingItem);
+                    ref var droppedItemComponent = ref SpawnDroppedItem(droppedItemEntity, Random.Range(1, creatureInventoryCmp.healingItem.maxCount + 1), deathPos, creatureInventoryCmp.healingItem);
                 }
-                else if (percentDrop <61 && creatureInventoryCmp.gunItem != null)
+                else if (percentDrop < 61 && creatureInventoryCmp.gunItem != null)
                 {
                     int droppedItemEntity = _world.Value.NewEntity();
-                    ref var droppedItemComponent = ref SpawnDroppedItem(droppedItemEntity, Random.Range(1, creatureInventoryCmp.gunItem.gunInfo.magazineCapacity*2 + 1), deathPos, _sceneData.Value.idItemslist.items[ creatureInventoryCmp.bulletItem.itemId]);
+                    ref var droppedItemComponent = ref SpawnDroppedItem(droppedItemEntity, Random.Range(1, creatureInventoryCmp.gunItem.gunInfo.magazineCapacity * 2 + 1), deathPos, _sceneData.Value.idItemslist.items[creatureInventoryCmp.bulletItem.itemId]);
                 }
                 // }
 
@@ -854,7 +855,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                                 //  droppedItemComponent.itemInfo = droppedItemInfo.dropElements[i].droopedItem;
                                 // droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(deathPos, droppedItemInfo.dropElements[i].droopedItem, droppedItemEntity);
                                 //_hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItemEntity).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.transform.GetChild(0) };
-                                ref var droppedItemComponent = ref SpawnDroppedItem( droppedItemEntity, droopedCount, deathPos, droppedItemInfo.dropElements[i].droopedItem);
+                                ref var droppedItemComponent = ref SpawnDroppedItem(droppedItemEntity, droopedCount, deathPos, droppedItemInfo.dropElements[i].droopedItem);
                                 if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.gun)
                                 {
                                     ref var gunInvCmp = ref _gunInventoryCellComponentsPool.Value.Add(droppedItemEntity);

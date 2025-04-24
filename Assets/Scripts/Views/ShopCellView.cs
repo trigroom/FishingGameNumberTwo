@@ -31,7 +31,7 @@ public class ShopCellView : MonoBehaviour
             string itemCount = shopItemInfo.count != 1 ? shopItemInfo.count+" " : "";
 
          //   shopItemButtonText.text = " упить";
-            shopItemNameAndCount.text = itemCount + shopItemInfo.itemInfo.itemName + " за " + shopItemInfo.price + " $";
+            shopItemNameAndCount.text = itemCount + shopItemInfo.itemInfo.itemName + "\n за " + shopItemInfo.price + " $";
             shopButton.enabled = true;
             if (shopItemIcon.color != Color.white)
                 shopItemIcon.color = Color.white;

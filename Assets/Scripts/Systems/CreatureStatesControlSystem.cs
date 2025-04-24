@@ -191,7 +191,6 @@ public class CreatureStatesControlSystem : IEcsRunSystem
         {
             for (int i = 0; i < interest.Length; i++)
             {
-                Debug.Log("circleMove");
                 int needDirection = i;
                 if (aiCmp.isLeftMoveCircle)
                 {
@@ -219,7 +218,6 @@ public class CreatureStatesControlSystem : IEcsRunSystem
             if (((aiCmp.currentState == CreatureAIComponent.CreatureStates.runAwayFromTarget && !_creatureInventoryComponentsPool.Value.Get(aiEntity).isSecondWeaponUsed && aiCmp.teammatesCount > 1) || (aiCmp.currentState == CreatureAIComponent.CreatureStates.shootingToTarget && _creatureInventoryComponentsPool.Value.Get(aiEntity).isSecondWeaponUsed)) && !_creatureChangeWeaponEventsPool.Value.Has(aiEntity) && !isHealing)
             {
                 _creatureChangeWeaponEventsPool.Value.Add(aiEntity);
-                Debug.Log("creature change weapon");
             }
         }
 
@@ -355,7 +353,6 @@ public class CreatureStatesControlSystem : IEcsRunSystem
             {
                 if (aiCmp.colliders == null)
                 {
-                    //       Debug.Log("Сообщить о игроке");
                     Collider2D[] closestEnemies = Physics2D.OverlapCircleAll(moveCmp.entityTransform.position, 6f, LayerMask.GetMask("Enemy"));
                     foreach (var enemy in closestEnemies)
                     {
@@ -384,13 +381,9 @@ public class CreatureStatesControlSystem : IEcsRunSystem
                                         teammateAiCmp.timeFromLastTargetSeen = 0f;
                                         teammateAiCmp.currentState = CreatureAIComponent.CreatureStates.follow;
                                     }
-                                    Debug.Log("thanks for info");
                                 }
                             }
-
-
                         }
-                        //
                     }
                 }
                 aiCmp.colliders = new List<Transform>() { playerCollider.transform };

@@ -1300,7 +1300,7 @@ public class AttackSystem : IEcsRunSystem
 
             attackCmp.attackCouldown = meleeWeaponView.attackCouldown;
             attackCmp.damage = meleeWeaponView.damage;
-            attackCmp.weaponRotateSpeed = (50f / (creatureAiInvCmp.meleeWeaponItem.itemWeight) + 1) * creatureAiInvCmp.enemyClassSettingInfo.weaponRotationSpeedMultiplayer;
+            attackCmp.weaponRotateSpeed = (5f / (creatureAiInvCmp.meleeWeaponItem.itemWeight) + 1) * creatureAiInvCmp.enemyClassSettingInfo.weaponRotationSpeedMultiplayer;
         }
         else
         {
