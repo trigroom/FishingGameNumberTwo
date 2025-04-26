@@ -1265,61 +1265,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 angle += angleIncrease;
             }
 
-            /*   if (playerCmp.useFlashlight && _globalTimeComponentsPool.Value.Get(_playerEntity).isNight)
-               {
-                   var flashlightInfo = _inventoryItemComponentsPool.Value.Get(_sceneService.Value.flashlightItemCellView._entity).itemInfo.flashlightInfo;
-                   origin = playerCmp.view.movementView.nonWeaponContainer.transform.position;
-                   var ray = Physics2D.Raycast(origin, playerCmp.view.movementView.nonWeaponContainer.up, flashlightInfo.lightRange * 2, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy"));
-                   if (ray.collider != null && ray.collider.gameObject.layer == 7)
-                   {
-                       int enemyEntity = ray.transform.gameObject.GetComponent<HealthView>()._entity;
-                       ref var aiCmpEnemy = ref _creatureAIComponentsPool.Value.Get(enemyEntity);
-                       var enemySpriteTransform = aiCmpEnemy.creatureView.movementView.characterSpriteTransform;
-
-                       if ((enemySpriteTransform.localScale.x > 0 && playerCmp.view.movementView.transform.position.x > enemySpriteTransform.position.x) || (enemySpriteTransform.localScale.x < 0 && playerCmp.view.movementView.transform.position.x < enemySpriteTransform.position.x))//see the player
-                       {
-                           aiCmpEnemy.targetPositionCached = playerCmp.view.transform.position;
-                           aiCmpEnemy.reachedLastTarget = false;
-                           if (aiCmpEnemy.currentState == CreatureAIComponent.CreatureStates.idle)
-                           {
-                               aiCmpEnemy.timeFromLastTargetSeen = 0f;
-                               aiCmpEnemy.currentState = CreatureAIComponent.CreatureStates.follow;
-                           }
-                       }
-                   }
-                   rayCount = (int)(flashlightInfo.spotAngle / 7);
-                   angleIncrease = flashlightInfo.spotAngle / (flashlightInfo.spotAngle / 7);
-                   for (int i = 0; i < rayCount; i++)
-                   {
-                       RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), flashlightInfo.lightRange, LayerMask.GetMask("Obstacle") | LayerMask.GetMask("Enemy"));
-                       Debug.DrawRay(origin, GetVectorFromAngle(angle) * flashlightInfo.lightRange, Color.green);
-                       if (raycastHit2D.collider != null)
-                       {
-                           bool isHasThisCollider = false;
-                           foreach (var col in checkedColliders)
-                               if (col == raycastHit2D.collider)
-                                   isHasThisCollider = true;
-                           if (!isHasThisCollider)
-                           {
-                               checkedColliders.Add(raycastHit2D.collider);
-                               if (raycastHit2D.collider.gameObject.layer == 7)
-                               {
-                                   int enemyEntity = raycastHit2D.transform.gameObject.GetComponent<HealthView>()._entity;
-                                   ref var aiCmpEnemy = ref _creatureAIComponentsPool.Value.Get(enemyEntity);
-                                   aiCmpEnemy.targetPositionCached = playerCmp.view.transform.position;
-                                   aiCmpEnemy.reachedLastTarget = false;
-                                   if (aiCmpEnemy.currentState == CreatureAIComponent.CreatureStates.idle)
-                                   {
-                                       aiCmpEnemy.timeFromLastTargetSeen = 0f;
-                                       aiCmpEnemy.currentState = CreatureAIComponent.CreatureStates.follow;
-                                   }
-
-                               }
-                           }
-                       }
-                       angle += angleIncrease;
-                   }
-               }*/
         }
     }
 

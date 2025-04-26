@@ -17,6 +17,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dc6430b296c45ba4c8e3dd01df002c64, type: 2}
   - {fileID: 11400000, guid: 02bfe4fd3f9b09348b8d2458cf6d6f58, type: 2}
   - {fileID: 11400000, guid: 097f07dae2624204c87b77b12924604b, type: 2}
+  - {fileID: 11400000, guid: 16d315c96c87d7f4ca018d1f21402917, type: 2}
   locationName: Village
   shoppers: 0400000000000000
   nightShoppers: 02000000

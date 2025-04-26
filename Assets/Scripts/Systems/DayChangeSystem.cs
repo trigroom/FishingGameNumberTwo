@@ -61,8 +61,6 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
 
         else
         {
-
-
             foreach (var item in _droppedItemComponentsFilter.Value)
             {
                 _droppedItemComponentsPool.Value.Get(item).droppedItemView.DestroyItemFromGround();
@@ -102,12 +100,11 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
         }
         else
         {
-            Debug.Log("inst level");
             curLocationCmp.currentLevelPrefab = _sceneService.Value.InstantiateLevel(needLocation.levels[curLocationCmp.levelNum].levelPrefab.transform);
             curLocationCmp.currentEnemySpawns = new List<Vector2>();
             var curLevelView = curLocationCmp.currentLevelPrefab.GetComponent<LevelSceneView>();
 
-            if (curLocationCmp.levelNum == curLocationCmp.currentLocation.levels.Length - 1)
+            if (curLocationCmp.levelNum == curLocationCmp.currentLocation.levels.Length-1)
             {
                 if (curLocationCmp.currentLocation.locationNumber == 1)
                 {
@@ -125,8 +122,6 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 if (globalTimeCmp.currentDayTime == 0 || globalTimeCmp.currentDayTime == 12)
                 {
                     globalTimeCmp.currentGlobalLightIntensity = 0.45f;
-                    //   if (globalTimeCmp.currentDayTime == 12)
-                    //     globalTimeCmp.isNight = true;
                     _sceneService.Value.gloabalLight.color = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? _sceneService.Value.globalLightColors[1] : _sceneService.Value.globalLightColors[4];
                 }
                 else if (globalTimeCmp.currentDayTime < 12)
@@ -167,11 +162,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                     curNeedColor = _sceneService.Value.globalLightColors[2];
                 else
                     curNeedColor = globalTimeCmp.currentWeatherType == GlobalTimeComponent.WeatherType.none ? _sceneService.Value.globalLightColors[0] : _sceneService.Value.globalLightColors[3];
-                /*    foreach (var houseLight in curLevelView.lightsInHouses)
-                    {
-                        houseLight.intensity = globalTimeCmp.currentGlobalLightIntensity * 3;
-                        houseLight.color = curNeedColor;
-                    }*/
+              
                 _sceneService.Value.gloabalLight.intensity = globalTimeCmp.currentGlobalLightIntensity;
             }
 
@@ -271,7 +262,6 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     if (interestObjectSpawnView.spawnChances[i] >= randomNum)
                     {
-                        Debug.Log(interestObjectSpawnView.spawnChances[i] + "spawn item");
                         var iterestObjectPrefab = _sceneService.Value.InstantiateObject(interestObjectSpawnView.interestsObjects[i].transform, interestObjectSpawnView.transform.position);
                         iterestObjectPrefab.transform.SetParent(curLocationCmp.currentLevelPrefab);
                         var needInterestObject = iterestObjectPrefab.GetComponent<InterestObjectOnLocationView>();
