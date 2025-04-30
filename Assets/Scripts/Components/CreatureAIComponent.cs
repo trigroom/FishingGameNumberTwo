@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public struct CreatureAIComponent 
 {
@@ -49,6 +50,8 @@ public struct CreatureAIComponent
 
     public BodyArmorInfo armorInfo;
     public HelmetInfo helmetInfo;
+
+    public Image indicator;
 
     //public float panStereoForPlayer;
     //public float volumeForPlayer;

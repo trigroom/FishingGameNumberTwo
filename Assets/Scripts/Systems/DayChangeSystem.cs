@@ -23,6 +23,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<SecondDurabilityComponent> _shieldComponentsPool;
     private EcsPoolInject<DurabilityInInventoryComponent> _durabilityInInventoryComponentsPool;
     private EcsPoolInject<HidedObjectOutsideFOVComponent> _hidedObjectOutsideFOVComponentsPool;
+    private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
     private EcsPoolInject<SolarPanelElectricGeneratorComponent> _solarPanelElectricGeneratorComponentsPool;
     private EcsPoolInject<GunInventoryCellComponent> _gunInventoryCellComponentsPool;
     private EcsPoolInject<SpawnFirstBossEvent> _spawnFirstBossEventsPool;
@@ -71,7 +72,16 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 _sceneService.Value.DestroyLevel(trap);//сделать пул ловушек
 
             foreach (var healthEntity in _healthComponentsFilter.Value)
+            {
+                if (_creatureAIComponentsPool.Value.Has(healthEntity))
+                {
+                    var healthView = _healthComponentsPool.Value.Get(healthEntity).healthView;
+                    healthView.characterHeadCollaider.enabled = false;
+                    healthView.characterMainCollaider.enabled = false;
+                    _sceneService.Value.ReleaseEnemyIndicator(_creatureAIComponentsPool.Value.Get(healthEntity).indicator);
+                }
                 _world.Value.DelEntity(healthEntity);
+            }
             foreach (var iteractChar in _sceneService.Value.interactCharacters)
                 iteractChar.gameObject.SetActive(false);
 

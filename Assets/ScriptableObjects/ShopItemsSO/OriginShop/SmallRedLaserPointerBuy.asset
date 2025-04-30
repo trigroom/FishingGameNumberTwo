@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemInfo: {fileID: 11400000, guid: f49b8f221b28bf740a4e6196aab5988f, type: 2}
   count: 1
-  price: 20
+  price: 12
   needSkillLevelToUnlock: 1
   needSkillToUnlock: 999
   itemsCountToBuy: 1

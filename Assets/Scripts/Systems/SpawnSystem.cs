@@ -215,6 +215,7 @@ public class SpawnSystem : IEcsRunSystem
         {
             ref var healItemCmp = ref _currentHealingItemComponentsPool.Value.Add(creatureEntity);
             healItemCmp.healingItemInfo = creatureInventoryCmp.healingItem.healInfo;
+            creatureInventoryCmp.healthItemsCount = Random.Range(1, creatureInventoryCmp.healingItem.maxCount);
         }
 
         if (creatureInventoryCmp.meleeWeaponItem != null)
@@ -260,6 +261,7 @@ public class SpawnSystem : IEcsRunSystem
             moveCmp.movementView.hairSpriteRenderer.sprite = randomHair.sprites[1];
         moveCmp.movementView.hairSpriteRenderer.color = _sceneData.Value.hairsColors[Random.Range(0, _sceneData.Value.hairsColors.Length)];
 
+        creatureAiStatesCmp.indicator = _sceneData.Value.GetEnemyIndicator();
         creatureHealthCmp.healthView = creatureAiStatesCmp.creatureView.healthView;
         creatureHealthCmp.healthView.Construct(creatureEntity);
         creatureHealthCmp.maxHealthPoint = creatureInventoryCmp.enemyClassSettingInfo.healthPoint;

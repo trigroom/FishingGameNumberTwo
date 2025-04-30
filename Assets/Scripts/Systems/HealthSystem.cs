@@ -320,7 +320,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                     _effectParticleLifetimeTagsPool.Value.Del(particleEntity);
                 }
                 else
-                _world.Value.DelEntity(particleEntity);
+                    _world.Value.DelEntity(particleEntity);
             }
 
             ref var curLocationCmp = ref _currentLocationComponentsPool.Value.Get(_sceneData.Value.playerEntity);
@@ -454,6 +454,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                                 creatureAiCmp.currentState = CreatureAIComponent.CreatureStates.runAwayFromTarget;
                         }
 
+                        creatureAiInvCmp.healthItemsCount--;
                         //if (_currentHealingItemComponentsPool.Value.Has(curHealingItem) && _currentHealingItemComponentsPool.Value.Get(curHealingItem).isHealing) return;
                         if (_creatureInventoryComponentsPool.Value.Get(curHealingItem).isSecondWeaponUsed || creatureAiInvCmp.gunItem == null)//смена на мили
                         {
@@ -619,33 +620,6 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
             //   Debug.Log(changedHealthCount + " damage taken " + isHeadshot + " isHead");
             ChangeHealth(hpEvent, changedHealthCount, isHeadshot);
         }
-
-        #region -enemy healing item using ai-
-        foreach (var aiCreature in _creatureAIComponentsFilter.Value)
-        {
-            if (_currentHealingItemComponentsPool.Value.Has(aiCreature))
-            {
-                // _creatureAIComponentsPool.Value.Get();
-                ref var healthCmp = ref _healthComponentsPool.Value.Get(aiCreature);
-                ref var healthItemCmp = ref _currentHealingItemComponentsPool.Value.Get(aiCreature);
-
-                if (healthCmp.healthPoint < healthCmp.maxHealthPoint * 0.3f && !healthItemCmp.isHealing)
-                {
-                    healthItemCmp.isHealing = true;
-                    ref var creatureAiCmp = ref _creatureAIComponentsPool.Value.Get(aiCreature);
-                    var creatureAiInvCmp = _creatureInventoryComponentsPool.Value.Get(aiCreature);
-                    creatureAiCmp.currentState = CreatureAIComponent.CreatureStates.runAwayFromTarget;
-                    _attackComponentsPool.Value.Get(aiCreature).canAttack = false;
-
-                    creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureAiInvCmp.healingItem.healInfo.inGameHealingItemSprite;
-
-                    creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = Vector3.one * creatureAiInvCmp.healingItem.healInfo.scaleMultplayer;
-                    creatureAiCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureAiInvCmp.healingItem.healInfo.rotationZ);
-                }
-            }
-        }
-
-        #endregion
     }
 
     private void ChangeHealth(int hpEvent, int changedHealthCount, bool isHeadshot)
@@ -661,6 +635,27 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 healthCmp.healthPoint = healthCmp.maxHealthPoint;
             if (hpEvent == _sceneData.Value.playerEntity)
                 ChangeHealthBarInfo(healthCmp);
+            else
+            {
+                if (_currentHealingItemComponentsPool.Value.Has(hpEvent))
+                {
+                    ref var healthItemCmp = ref _currentHealingItemComponentsPool.Value.Get(hpEvent);
+                    var creatureAiInvCmp = _creatureInventoryComponentsPool.Value.Get(hpEvent);
+
+                    if (healthCmp.healthPoint < healthCmp.maxHealthPoint * 0.3f && !healthItemCmp.isHealing && creatureAiInvCmp.healthItemsCount > 0)
+                    {
+                        healthItemCmp.isHealing = true;
+                        ref var creatureAiCmp = ref _creatureAIComponentsPool.Value.Get(hpEvent);
+                        creatureAiCmp.currentState = CreatureAIComponent.CreatureStates.runAwayFromTarget;
+                        _attackComponentsPool.Value.Get(hpEvent).canAttack = false;
+
+                        creatureAiCmp.creatureView.aiCreatureView.itemSpriteRenderer.sprite = creatureAiInvCmp.healingItem.healInfo.inGameHealingItemSprite;
+
+                        creatureAiCmp.creatureView.aiCreatureView.itemTransform.localScale = Vector3.one * creatureAiInvCmp.healingItem.healInfo.scaleMultplayer;
+                        creatureAiCmp.creatureView.aiCreatureView.itemTransform.localEulerAngles = new Vector3(0, 0, creatureAiInvCmp.healingItem.healInfo.rotationZ);
+                    }
+                }
+            }
         }
 
         /* else if (_armorComponentsPool.Value.Has(hpEvent))
@@ -721,7 +716,6 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                             _particleLifetimeComponentsPool.Value.Del(effectCmp.effectEntity);
                         }
 
-                        // _sceneData.Value.ReleaseEffecticonView(effectCmp.effectIconView);
                         _effectComponentsPool.Value.Del(effectEntity);
                     }
 
@@ -732,13 +726,12 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 var curLocCmp = _currentLocationComponentsPool.Value.Get(_sceneData.Value.playerEntity);
                 var curLevelDroppedItems = curLocCmp.currentLocation.levels[curLocCmp.levelNum - 1].droopedItems;
                 int curWaeponsCellEntity = _playerWeaponsInInventoryComponentsPool.Value.Get(_sceneData.Value.playerEntity).curEquipedWeaponCellEntity;
-                // ref var weaponLevelCmp = ref _weaponLevelComponentsComponentsPool.Value.Get(curWaeponsCellEntity);
                 var creatureInventoryCmp = _creatureInventoryComponentsPool.Value.Get(hpEvent);
                 var enemyInfo = creatureInventoryCmp.enemyClassSettingInfo;
                 var curWeaponItemCmp = _inventoryItemComponentsPool.Value.Get(curWaeponsCellEntity);
                 var weaponLevelStats = _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[curWeaponItemCmp.itemInfo.itemId];
                 weaponLevelStats.weaponCurrentExp += enemyInfo.expPointsForKill;
-                //Debug.Log(enemyInfo.expPointsForKill + " + exp" + weaponLevelStats.weaponCurrentExp);
+                _sceneData.Value.ReleaseEnemyIndicator(_creatureAIComponentsPool.Value.Get(hpEvent).indicator);
 
                 if (weaponLevelStats.weaponCurrentExp >= _sceneData.Value.levelExpCounts[weaponLevelStats.weaponExpLevel])
                 {
@@ -814,7 +807,6 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                     int droppedItemEntity = _world.Value.NewEntity();
                     ref var droppedItemComponent = ref SpawnDroppedItem(droppedItemEntity, Random.Range(1, creatureInventoryCmp.gunItem.gunInfo.magazineCapacity * 2 + 1), deathPos, _sceneData.Value.idItemslist.items[creatureInventoryCmp.bulletItem.itemId]);
                 }
-                // }
 
                 healthCmp.healthPoint = 0;
 
@@ -848,13 +840,8 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                                 percentDrop = Random.Range(0, 101);
                                 int droppedItemEntity = _world.Value.NewEntity();
                                 curItems++;
-                                // ref var droppedItemComponent = ref _droppedItemComponentsPool.Value.Add(droppedItemEntity);
-                                // droppedItemComponent.currentItemsCount = droopedCount;
 
                                 Vector2 deathPos = healthCmp.healthView.gameObject.transform.position;
-                                //  droppedItemComponent.itemInfo = droppedItemInfo.dropElements[i].droopedItem;
-                                // droppedItemComponent.droppedItemView = _sceneData.Value.SpawnDroppedItem(deathPos, droppedItemInfo.dropElements[i].droopedItem, droppedItemEntity);
-                                //_hidedObjectOutsideFOVComponentsPool.Value.Add(droppedItemEntity).hidedObjects = new Transform[] { droppedItemComponent.droppedItemView.transform.GetChild(0) };
                                 ref var droppedItemComponent = ref SpawnDroppedItem(droppedItemEntity, droopedCount, deathPos, droppedItemInfo.dropElements[i].droopedItem);
                                 if (droppedItemComponent.itemInfo.type == ItemInfo.itemType.gun)
                                 {

@@ -315,6 +315,11 @@ public class AttackSystem : IEcsRunSystem
         foreach (var aiCreature in _gunCreatureAiComponentsFilter.Value)
         {
             ref var creatureAi = ref _creatureAIComponentsPool.Value.Get(aiCreature);
+            if (creatureAi.indicator.color.a != 0)
+                creatureAi.indicator.color = new Color(1, 1, 1, creatureAi.indicator.color.a - Time.deltaTime * 0.2f);
+            else if(creatureAi.indicator.color.a < 0)
+                creatureAi.indicator.color = new Color(1, 1, 1, 0);
+
             if (creatureAi.isPeaceful) continue;
             ref var creatureAiInventory = ref _creatureInventoryComponentsPool.Value.Get(aiCreature);
 
@@ -332,7 +337,8 @@ public class AttackSystem : IEcsRunSystem
                 var gunItem = creatureAiInventory.gunItem.gunInfo;
                 if (creatureAi.currentState != CreatureAIComponent.CreatureStates.idle)
                 {
-                    if (!gunCmp.isReloading && attackCmp.currentAttackCouldown >= attackCmp.attackCouldown && gunCmp.currentMagazineCapacity > 0 && attackCmp.canAttack && creatureAi.sightOnTarget && (creatureAi.needSightOnTargetTime + (Vector2.Distance(creatureAi.currentTarget.position, creatureAi.creatureView.transform.position) * 0.1f)) < creatureAi.sightOnTargetTime)
+                    if (!gunCmp.isReloading && attackCmp.currentAttackCouldown >= attackCmp.attackCouldown && gunCmp.currentMagazineCapacity > 0 && attackCmp.canAttack && creatureAi.currentTarget != null && creatureAi.sightOnTarget && 
+                        (creatureAi.needSightOnTargetTime + (Vector2.Distance(creatureAi.currentTarget.position, creatureAi.creatureView.transform.position) * 0.1f)) < creatureAi.sightOnTargetTime)
                     {
                         float distanceToPlayer = Vector2.Distance(moveCmp.entityTransform.position, playerPosition);
 
@@ -390,8 +396,8 @@ public class AttackSystem : IEcsRunSystem
                                 if (i % 2 == 0)
                                     spawnPosition = new Vector2(spawnPosition.x, spawnPosition.y + 0.1f);
                             }
-                            creatureAi.bulletShellsToReload = 0;
                         }
+                            creatureAi.bulletShellsToReload = 0;
                         gunCmp.currentReloadDuration = 0;
                         gunCmp.isReloading = false;
                         if (creatureAiInventory.gunItem.gunInfo.endReloadSound)

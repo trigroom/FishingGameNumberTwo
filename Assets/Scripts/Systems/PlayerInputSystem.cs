@@ -707,7 +707,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     ref var playerStats = ref _playerUpgradedStatsPool.Value.Get(_playerEntity);
 
-
                     playerStats.currentStatsExp[2] += Time.fixedDeltaTime * 0.5f;
                     if (playerStats.currentStatsExp[2] >= _sceneService.Value.levelExpCounts[playerStats.statLevels[2]] && !_upgradePlayerStatEventsPool.Value.Has(_sceneService.Value.playerEntity))
                         _upgradePlayerStatEventsPool.Value.Add(_sceneService.Value.playerEntity).statIndex = 2;
@@ -1098,10 +1097,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
                             break;
                     }
                 }
-
-
-
-
             }
             Debug.Log("WinGame");
         }

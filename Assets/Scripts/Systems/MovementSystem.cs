@@ -16,6 +16,8 @@ public class MovementSystem : IEcsRunSystem
     private EcsPoolInject<FadedParticleOnScreenComponent> _fadedParticleOnScreenComponentsPool;
     private EcsPoolInject<BuildingCheckerComponent> _buildingCheckerComponentsPool;
     private EcsPoolInject<AttackComponent> _attackComponentsPool;
+    private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
+    private EcsPoolInject<HidedObjectOutsideFOVComponent> _hidedObjectOutsideFOVComponentsPool;
 
     private EcsFilterInject<Inc<MovementComponent>> _movementComponentFilter;
     private EcsFilterInject<Inc<FadedParticleOnScreenComponent>> _fadedParticleOnScreenComponentsFilter;
@@ -112,7 +114,7 @@ public class MovementSystem : IEcsRunSystem
 
                             _fadedParticleOnScreenComponentsPool.Value.Add(_world.Value.NewEntity()).particleImage = _sceneService.Value.GetParticleOnScreen(_sceneService.Value.grassParticleOnScreenColor, alpfaMultiplayer, false);
                         }
-                        else if(!isPlayer && moveCmp.isRun)
+                        else if (!isPlayer && moveCmp.isRun)
                             moveCmp.timeFromLastStep = 0.4f;
                         else
                             moveCmp.timeFromLastStep = 0.8f;
@@ -124,13 +126,55 @@ public class MovementSystem : IEcsRunSystem
                             float distanceToPlayer = Vector2.Distance(moveCmp.entityTransform.position, (Vector2)playerPosition);
                             if (distanceToPlayer <= playerCmp.currentAudibility * 10)
                             {
+                            Debug.Log(1-(distanceToPlayer / (playerCmp.currentAudibility * 10f)) + " currentAudibility");
                                 Vector2 directionToPlayer = (_movementComponentPool.Value.Get(_sceneService.Value.playerEntity).entityTransform.position - moveCmp.entityTransform.position).normalized;
                                 RaycastHit2D hit = Physics2D.Raycast(moveCmp.entityTransform.position, directionToPlayer, 20f, LayerMask.GetMask("Obstacle", "Player"));
 
                                 if (hit.collider != null && (LayerMask.GetMask("Player") & (1 << hit.collider.gameObject.layer)) != 0)
-                                    moveCmp.movementView.weaponAudioSource.volume = playerCmp.currentAudibility * 10f / distanceToPlayer;
+                                    moveCmp.movementView.weaponAudioSource.volume = 1 - (distanceToPlayer / (playerCmp.currentAudibility * 10f));
                                 else
-                                    moveCmp.movementView.weaponAudioSource.volume = playerCmp.currentAudibility * 10f / distanceToPlayer * 0.7f;
+                                    moveCmp.movementView.weaponAudioSource.volume = 1 - (distanceToPlayer / (playerCmp.currentAudibility * 10f)) * 0.7f;
+
+                                //
+                                if(_hidedObjectOutsideFOVComponentsPool.Value.Get(movableObject).timeBeforeHide <= 0)
+                                {
+                                    var enemyIndicator = _creatureAIComponentsPool.Value.Get(movableObject).indicator;
+                                    enemyIndicator.color = new Color(1, 1, 1, 1 - (distanceToPlayer / (playerCmp.currentAudibility * 10f)));
+                                    var canvasRect = _sceneService.Value.mainCanvas;
+                                    Vector3 viewportPos = _sceneService.Value.mainCamera.WorldToViewportPoint(moveCmp.entityTransform.position);
+                                    if (viewportPos.z < 0) viewportPos *= -1;
+
+                                    Vector2 center = new Vector2(0.5f, 0.5f * (1.77f / _sceneService.Value.aspectRatio));
+                                    Vector2 directionEnemy = ((Vector2)viewportPos - center).normalized;
+
+                                    // Находим точку пересечения с краем экрана
+                                    Vector2 edgePoint = center;
+                                    if (Mathf.Abs(directionEnemy.x) > Mathf.Abs(directionEnemy.y))
+                                    {
+                                        edgePoint.x = directionEnemy.x > 0 ? 1 : 0;
+                                        edgePoint.y = (center.y + directionEnemy.y * (edgePoint.x - center.x) / directionEnemy.x) * (1.77f / _sceneService.Value.aspectRatio);
+                                    }
+                                    else
+                                    {
+                                        edgePoint.y = directionEnemy.y > 0 ? 1.77f / _sceneService.Value.aspectRatio : 0;
+                                        edgePoint.x = center.x + directionEnemy.x * (edgePoint.y - center.y) / directionEnemy.y / (1.77f / _sceneService.Value.aspectRatio);
+                                    }
+
+                                    // Применяем отступ от края
+                                    edgePoint = Vector2.Lerp(edgePoint, center, 5 / canvasRect.sizeDelta.x);
+                                    Debug.Log(center.y + " edgePoint.y " + canvasRect.sizeDelta.y + "   "+ _sceneService.Value.aspectRatio);
+                                    // Конвертируем в координаты UI
+                                    Vector2 canvasPos = new Vector2(
+                                        (edgePoint.x - 0.5f) * canvasRect.sizeDelta.x,
+                                        ((edgePoint.y - 0.5f)/ (1.77f/_sceneService.Value.aspectRatio)) * canvasRect.sizeDelta.y);
+
+                                    // Устанавливаем позицию и поворот
+                                    enemyIndicator.rectTransform.anchoredPosition = canvasPos;
+                                    float angle = Mathf.Atan2(directionEnemy.y, directionEnemy.x) * Mathf.Rad2Deg - 90;
+                                    enemyIndicator.rectTransform.localEulerAngles = new Vector3(0, 0, angle);
+                                }
+
+                                //
 
                                 moveCmp.movementView.weaponAudioSource.panStereo = (moveCmp.entityTransform.position.x - playerPosition.x) / 10f;
                                 moveCmp.movementView.weaponAudioSource.PlayOneShot(_sceneService.Value.stepsOnGrassSounds[Random.Range(0, _sceneService.Value.stepsOnGrassSounds.Length)]);
@@ -140,7 +184,7 @@ public class MovementSystem : IEcsRunSystem
                     }
                 }
                 if (!isPlayer && !moveCmp.isRun && moveCmp.currentRunTime < moveCmp.maxRunTime)
-                  moveCmp.currentRunTime += Time.deltaTime * moveCmp.currentRunTimeRecoverySpeed;
+                    moveCmp.currentRunTime += Time.deltaTime * moveCmp.currentRunTimeRecoverySpeed;
             }
 
             if (_meleeWeaponComponentsPool.Value.Has(movableObject) && _meleeWeaponComponentsPool.Value.Get(movableObject).isHitting) continue; //возможно что то поправить
@@ -157,13 +201,13 @@ public class MovementSystem : IEcsRunSystem
             float rotY = moveCmp.movementView.characterSpriteTransform.rotation.y;
 
 
-           if (moveCmp.movementView.weaponSpriteRenderer.transform.localRotation.y == 0 && rotateZ > -85 && rotateZ < 85)
-                  moveCmp.movementView.weaponSpriteRenderer.transform.localRotation = Quaternion.Euler(0, -180, moveCmp.movementView.weaponSpriteRenderer.transform.localEulerAngles.z);
-              else if (moveCmp.movementView.weaponSpriteRenderer.transform.localRotation.y != 0 && (rotateZ < -95 || rotateZ > 95))
-                  moveCmp.movementView.weaponSpriteRenderer.transform.localRotation = Quaternion.Euler(0, 0, moveCmp.movementView.weaponSpriteRenderer.transform.localEulerAngles.z);
-           // var weaponTransform = moveCmp.movementView.weaponSpriteRenderer.transform;
-           // if ((weaponTransform.localScale.x < 0 && rotateZ > -85 && rotateZ < 85)||(weaponTransform.localScale.x > 0 && (rotateZ < -95 || rotateZ > 95)))
-           //     weaponTransform.localScale = new Vector2 (-weaponTransform.localScale.x, weaponTransform.localScale.y);
+            if (moveCmp.movementView.weaponSpriteRenderer.transform.localRotation.y == 0 && rotateZ > -85 && rotateZ < 85)
+                moveCmp.movementView.weaponSpriteRenderer.transform.localRotation = Quaternion.Euler(0, -180, moveCmp.movementView.weaponSpriteRenderer.transform.localEulerAngles.z);
+            else if (moveCmp.movementView.weaponSpriteRenderer.transform.localRotation.y != 0 && (rotateZ < -95 || rotateZ > 95))
+                moveCmp.movementView.weaponSpriteRenderer.transform.localRotation = Quaternion.Euler(0, 0, moveCmp.movementView.weaponSpriteRenderer.transform.localEulerAngles.z);
+            // var weaponTransform = moveCmp.movementView.weaponSpriteRenderer.transform;
+            // if ((weaponTransform.localScale.x < 0 && rotateZ > -85 && rotateZ < 85)||(weaponTransform.localScale.x > 0 && (rotateZ < -95 || rotateZ > 95)))
+            //     weaponTransform.localScale = new Vector2 (-weaponTransform.localScale.x, weaponTransform.localScale.y);
 
             if (_meleeWeaponComponentsPool.Value.Has(movableObject) && !_meleeWeaponComponentsPool.Value.Get(movableObject).isHitting && moveCmp.movementView.nonWeaponContainer != null)
             {
@@ -174,13 +218,11 @@ public class MovementSystem : IEcsRunSystem
 
                 moveCmp.movementView.RotateNonWeaponCentre(needRotation);
             }
-             if (direction.x < 0 && rotateZ < -95 || rotateZ > 95)
-                 moveCmp.movementView.characterSpriteTransform.localRotation = Quaternion.Euler(0, -180, 0);
-             else if (direction.x > 0 && rotateZ > -85 && rotateZ < 85)
-                 moveCmp.movementView.characterSpriteTransform.localRotation = Quaternion.Euler(0, 0, 0);
+            if (direction.x < 0 && rotateZ < -95 || rotateZ > 95)
+                moveCmp.movementView.characterSpriteTransform.localRotation = Quaternion.Euler(0, -180, 0);
+            else if (direction.x > 0 && rotateZ > -85 && rotateZ < 85)
+                moveCmp.movementView.characterSpriteTransform.localRotation = Quaternion.Euler(0, 0, 0);
 
-          //  if ((direction.x < 0 && moveCmp.movementView.characterSpriteTransform.localScale.x > 0) ||(direction.x > 0 && moveCmp.movementView.characterSpriteTransform.localScale.x < 0) )
-           //     moveCmp.movementView.characterSpriteTransform.localScale = new Vector2(-moveCmp.movementView.characterSpriteTransform.localScale.x, moveCmp.movementView.characterSpriteTransform.localScale.y);
         }
     }
 

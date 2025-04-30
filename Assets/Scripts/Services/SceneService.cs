@@ -46,7 +46,7 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public SpriteRenderer bulletShellPrefab { get; private set; }
     [field: SerializeField] public Transform startLocation { get; private set; }
     [field: SerializeField] public Transform rainEffectContainer { get; private set; }
-  //  [field: SerializeField] public Transform playerSpriteContainer { get; private set; }
+    //  [field: SerializeField] public Transform playerSpriteContainer { get; private set; }
     [field: SerializeField] public ParticleSettingsInfo bloodParticleInfo { get; private set; }
     [field: SerializeField] public ParticleSettingsInfo sparcleParticleInfo { get; private set; }
     [field: SerializeField] public ParticleSettingsInfo smallBloodParticleInfo { get; private set; }
@@ -84,6 +84,7 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public Transform questsDescriptionsContainer { get; private set; }
     [field: SerializeField] public Transform storageCellsContainer { get; private set; }
     [field: SerializeField] public Transform effectsIconsContainer { get; private set; }
+    [field: SerializeField] public Transform enemyIndicatorsContainer { get; private set; }
     [field: SerializeField] public Transform shopCellsContainer { get; private set; }
     [field: SerializeField] public GameObject inventoryCell { get; private set; }
     [field: SerializeField] public int storageCellsCount { get; private set; }
@@ -109,7 +110,7 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public TMP_Text[] questDescription { get; private set; }
     [field: SerializeField] public AudioSource soundFXObject { get; private set; }
     //[field: SerializeField] public int cameraMoveSpeed { get; private set; }
-   // [field: SerializeField] public ShopCharacterView[] shoppers { get; private set; }
+    // [field: SerializeField] public ShopCharacterView[] shoppers { get; private set; }
     [field: SerializeField] public EffectIconView effectIconViewPrefab { get; private set; }
     [field: SerializeField] public Sprite transparentSprite { get; private set; }
     private ObjectPool<LineRenderer> _bulletTracersPool;
@@ -120,6 +121,7 @@ public class SceneService : MonoBehaviour
     private ObjectPool<EffectIconView> _effectIconViewsPool;
     private ObjectPool<SpriteRenderer> _bulletShellsPool;
     private ObjectPool<Image> _particlesOnScreenImagesPool;
+    private ObjectPool<Image> _enemyIndicatorsOnScreenImagesPool;
     private ObjectPool<InventoryCellView> _inventoryCellViewsPool;//
     public InventoryCellView[] _inventoryCellsViewsPool;//задавать номер в массиве в тэгах клетки инвентаря
 
@@ -134,6 +136,7 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public int playerStartArmor { get; private set; }
     [field: SerializeField] public float playerStartArmorRecoverySpeed { get; private set; }
     [field: SerializeField] public Image bloodParticleOnScreen { get; private set; }
+    [field: SerializeField] public Image enemyIndicatorOnScreen { get; private set; }
     [field: SerializeField] public Sprite[] bloodParticlesSprites { get; private set; }
     [field: SerializeField] public Transform particlesOnScreenContainer { get; private set; }
     [field: SerializeField] public Color bloodParticleOnScreenColor { get; private set; }
@@ -145,8 +148,9 @@ public class SceneService : MonoBehaviour
     [field: SerializeField] public Bloom bloomMainBg;
     [field: SerializeField] public Sprite[] bloodEffectsSprites { get; private set; }
     [field: SerializeField] public Sprite[] rainDropsEffectsSprites { get; private set; }
+    public float aspectRatio;
 
-    [HideInInspector]
+[HideInInspector]
     public List<Vector2> eightDirections = new List<Vector2>
     {
         new Vector2(0,1).normalized,
@@ -162,10 +166,10 @@ public class SceneService : MonoBehaviour
     private void Awake()
     {
         gameVersionText.text = Application.version.ToString();
-       // Instantiate(playerSpriteContainer);
+        // Instantiate(playerSpriteContainer);
         volumeMainBg.profile.TryGet(out depthOfFieldMainBg);
         volumeMainBg.profile.TryGet(out bloomMainBg);
-
+        aspectRatio = mainCanvas.rect.width / mainCanvas.rect.height;
         _effectIconViewsPool = new ObjectPool<EffectIconView>(() => Instantiate(effectIconViewPrefab, effectsIconsContainer));
         _bulletTracersPool = new ObjectPool<LineRenderer>(() => Instantiate(bulletTracer));
         _bulletTracersPool = new ObjectPool<LineRenderer>(() => Instantiate(bulletTracer));
@@ -174,6 +178,7 @@ public class SceneService : MonoBehaviour
         _bulletShellsPool = new ObjectPool<SpriteRenderer>(() => Instantiate(bulletShellPrefab));
         _oneShotSoundsPool = new ObjectPool<AudioSource>(() => Instantiate(soundFXObject));
         _particlesOnScreenImagesPool = new ObjectPool<Image>(() => Instantiate(bloodParticleOnScreen, particlesOnScreenContainer));
+        _enemyIndicatorsOnScreenImagesPool = new ObjectPool<Image>(() => Instantiate(enemyIndicatorOnScreen, enemyIndicatorsContainer));
         _bulletsForMagUIImagesPool = new ObjectPool<Image>(() => Instantiate(bulletForMagUI, dropedItemsUIView.gunMagazineUI.transform));
         _inventoryCellViewsPool = new ObjectPool<InventoryCellView>(() => Instantiate(inventoryCell).GetComponentInChildren<InventoryCellView>());//пока так
         mainCamera = Camera.main;
@@ -193,12 +198,26 @@ public class SceneService : MonoBehaviour
         view.gameObject.SetActive(true);
         return view;
     }
+
+    public Image GetEnemyIndicator()
+    {
+        var indicator = _enemyIndicatorsOnScreenImagesPool.Get();
+        indicator.gameObject.SetActive(true);
+        if (indicator.color.a != 0)
+            indicator.color = new Color(1, 1, 1, 0);
+        return indicator;
+    }
+    public void ReleaseEnemyIndicator(Image indicator)
+    {
+        indicator.gameObject.SetActive(false);
+        _enemyIndicatorsOnScreenImagesPool.Release(indicator);
+    }
     public void ReleaseEffecticonView(EffectIconView view)
     {
-        if(view.gameObject.activeInHierarchy)
+        if (view.gameObject.activeInHierarchy)
         {
-        view.gameObject.SetActive(false);
-        _effectIconViewsPool.Release(view);
+            view.gameObject.SetActive(false);
+            _effectIconViewsPool.Release(view);
         }
     }
     public LineRenderer GetBulletTracer()
@@ -241,12 +260,12 @@ public class SceneService : MonoBehaviour
         else
         {
             int needRainDropIndex = 0;
-            if(Random.value < 0.1f)
+            if (Random.value < 0.1f)
                 needRainDropIndex = 2;
-            else if(Random.value < 0.35f)
+            else if (Random.value < 0.35f)
                 needRainDropIndex = 1;
             screenParticle.sprite = rainDropsEffectsSprites[needRainDropIndex];
-            screenParticle.rectTransform.localScale = Vector2.one * 0.2f * (needRainDropIndex+1);
+            screenParticle.rectTransform.localScale = Vector2.one * 0.2f * (needRainDropIndex + 1);
         }
 
         if (Random.value > 0.5f)
@@ -339,8 +358,8 @@ public class SceneService : MonoBehaviour
         particles.gameObject.transform.SetParent(null);
         if (particles.gameObject.activeInHierarchy)
         {
-        particles.gameObject.SetActive(false);
-        _particlesPool.Release(particles);
+            particles.gameObject.SetActive(false);
+            _particlesPool.Release(particles);
         }
     }
 
@@ -406,7 +425,7 @@ public class SceneService : MonoBehaviour
 
     public void ShowWarningText(string needText)
     {
-        var screenPoint =(Input.mousePosition-mainCanvas.position)/mainCanvas.localScale.x;
+        var screenPoint = (Input.mousePosition - mainCanvas.position) / mainCanvas.localScale.x;
         warningInfoText.rectTransform.anchoredPosition = screenPoint;
         warningInfoTextAnimator.SetTrigger("SetText");
         warningInfoText.text = needText;

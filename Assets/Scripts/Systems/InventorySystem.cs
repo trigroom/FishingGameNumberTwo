@@ -62,7 +62,7 @@ public class InventorySystem : IEcsRunSystem
     private EcsFilterInject<Inc<AddItemEvent>> _addItemEventsFilter;
     private EcsFilterInject<Inc<AddItemFromCellEvent>, Exc<StorageCellTag>> _addItemToStorageEventsFilter;
     private EcsFilterInject<Inc<AddItemFromCellEvent, StorageCellTag>> _addItemFromStorageEventsFilter;
-    private EcsFilterInject<Inc<DeathEvent, PlayerComponent>> _playerDeathEventsFilter { get; set; }
+    private EcsFilterInject<Inc<DeathEvent, PlayerComponent>> _playerDeathEventsFilter;
     private EcsFilterInject<Inc<DropItemsIvent>> _dropItemEventsFilter;
     private EcsFilterInject<Inc<DropDraggedItemEvent>> _dropDraggedItemEventsFilter;
     private EcsFilterInject<Inc<EndItemDragEvent>> _endItemDragEventsFilter;
@@ -72,7 +72,7 @@ public class InventorySystem : IEcsRunSystem
     private EcsFilterInject<Inc<MoveSpecialItemToInventoryEvent>> _moveWeaponToInventoryEventsFilter;
     private EcsFilterInject<Inc<HealFromInventoryEvent>> _healFromInventoryEventsFilter;
     private EcsFilterInject<Inc<HealFromHealItemCellEvent>> _healFromHealItemCellEventsFilter;
-    private EcsFilterInject<Inc<CheckComplitedQuestEvent>> _checkComplitedQuestEventsFilter;
+    private EcsFilterInject<Inc<CheckComplitedQuestEvent>> _checkComplitedQuestEventsFilter { get; set; }
     private EcsFilterInject<Inc<ThrowGrenadeEvent>> _throwGrenadeEventsFilter;
     private EcsFilterInject<Inc<GrenadeComponent>> _grenadeComponentsFilter;
     private EcsFilterInject<Inc<DivideItemEvent>> _divideItemEventsFilter;
