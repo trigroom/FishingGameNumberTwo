@@ -43,11 +43,13 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<FieldOfViewComponent> _fieldOfViewComponentsPool;
     private EcsPoolInject<QuestNPCComponent> _questNPCComponentsPool;
     private EcsPoolInject<MenuStatesComponent> _menuStatesComponentsPool;
+    private EcsPoolInject<CurrentLocationComponent> _currentLocationComponentsPool;
     private EcsPoolInject<ShopCharacterComponent> _shopCharacterComponentsPool;
 
     private EcsFilterInject<Inc<SaveGameEvent>> _saveGameEventsFilter;
     private EcsFilterInject<Inc<InventoryItemComponent>> _inventoryItemComponentsFilter;
     private EcsFilterInject<Inc<DeathEvent, PlayerComponent>> _playerDeathEventsFilter;
+    private EcsFilterInject<Inc<ExitFromGameEvent>> _exitFromGameEventsFilter;
 
     private GameData gameData;
     private string fileName = "bestgamewithfishevernumtwo";
@@ -67,6 +69,12 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
     }
     public void Run(IEcsSystems systems)
     {
+        foreach(var exit in _exitFromGameEventsFilter.Value)
+        {
+            if(_currentLocationComponentsPool.Value.Get(_sceneData.Value.playerEntity).levelNum == 0)
+            SaveGame(SavePriority.fullSave);
+            Application.Quit();
+        }
         foreach (var save in _saveGameEventsFilter.Value)
         {
             SaveGame(_saveGameEventsPool.Value.Get(save).type);

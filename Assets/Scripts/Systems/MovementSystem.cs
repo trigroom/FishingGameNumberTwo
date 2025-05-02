@@ -17,6 +17,7 @@ public class MovementSystem : IEcsRunSystem
     private EcsPoolInject<BuildingCheckerComponent> _buildingCheckerComponentsPool;
     private EcsPoolInject<AttackComponent> _attackComponentsPool;
     private EcsPoolInject<CreatureAIComponent> _creatureAIComponentsPool;
+    private EcsPoolInject<CreatureInventoryComponent> _creatureInventoryComponentsPool;
     private EcsPoolInject<HidedObjectOutsideFOVComponent> _hidedObjectOutsideFOVComponentsPool;
 
     private EcsFilterInject<Inc<MovementComponent>> _movementComponentFilter;
@@ -59,7 +60,7 @@ public class MovementSystem : IEcsRunSystem
                     moveCmp.stunTime = 0;
                     moveCmp.isStunned = false;
                     if (!isPlayer)
-                        moveCmp.moveSpeed = moveCmp.movementView.moveSpeed;
+                        moveCmp.moveSpeed = _creatureInventoryComponentsPool.Value.Get(movableObject).enemyClassSettingInfo.movementSpeed;
                     else
                     {
                         ref var inventoryCmp = ref _inventoryComponentsPool.Value.Get(_sceneService.Value.inventoryEntity);
@@ -126,7 +127,7 @@ public class MovementSystem : IEcsRunSystem
                             float distanceToPlayer = Vector2.Distance(moveCmp.entityTransform.position, (Vector2)playerPosition);
                             if (distanceToPlayer <= playerCmp.currentAudibility * 10)
                             {
-                            Debug.Log(1-(distanceToPlayer / (playerCmp.currentAudibility * 10f)) + " currentAudibility");
+                          //  Debug.Log(1-(distanceToPlayer / (playerCmp.currentAudibility * 10f)) + " currentAudibility");
                                 Vector2 directionToPlayer = (_movementComponentPool.Value.Get(_sceneService.Value.playerEntity).entityTransform.position - moveCmp.entityTransform.position).normalized;
                                 RaycastHit2D hit = Physics2D.Raycast(moveCmp.entityTransform.position, directionToPlayer, 20f, LayerMask.GetMask("Obstacle", "Player"));
 
@@ -162,7 +163,7 @@ public class MovementSystem : IEcsRunSystem
 
                                     // Применяем отступ от края
                                     edgePoint = Vector2.Lerp(edgePoint, center, 5 / canvasRect.sizeDelta.x);
-                                    Debug.Log(center.y + " edgePoint.y " + canvasRect.sizeDelta.y + "   "+ _sceneService.Value.aspectRatio);
+                                   // Debug.Log(center.y + " edgePoint.y " + canvasRect.sizeDelta.y + "   "+ _sceneService.Value.aspectRatio);
                                     // Конвертируем в координаты UI
                                     Vector2 canvasPos = new Vector2(
                                         (edgePoint.x - 0.5f) * canvasRect.sizeDelta.x,

@@ -150,8 +150,6 @@ public class PlayerInputSystem : IEcsRunSystem, IEcsInitSystem
             _inventoryComponentsPool.Value.Get(_sceneService.Value.inventoryEntity).moneyCount += 50;
 
 
-        //  if (Input.GetKeyDown(KeyCode.X))
-        //   StartLockMinigame(2);
         //del in full game
 
 

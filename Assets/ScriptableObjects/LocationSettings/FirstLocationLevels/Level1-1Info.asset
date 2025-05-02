@@ -62,8 +62,8 @@ MonoBehaviour:
   - 0.25
   - 1
   enemyClassSettingsInfo:
-  - {fileID: 11400000, guid: f3eef4b0762baa944ad72d7305151363, type: 2}
-  - {fileID: 11400000, guid: f3eef4b0762baa944ad72d7305151363, type: 2}
+  - {fileID: 11400000, guid: 0bb5c293973f6ba4a9c114ee1c537e87, type: 2}
+  - {fileID: 11400000, guid: 6dc09f2b46fe568498ec325d45ebb338, type: 2}
   droopedItems:
   - <droopedItem>k__BackingField: {fileID: 11400000, guid: 94325c9a2c879b6458395bd6a778c06d, type: 2}
     <itemsCountMax>k__BackingField: 1

@@ -259,6 +259,8 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
         }
         foreach (var revivePlayer in _revivePlayerEventsFilter.Value)
         {
+            _sceneData.Value.dropedItemsUIView.exitGameButtonText.text = "Save and exit";
+
             ref var healthCmp = ref _healthComponentsPool.Value.Get(revivePlayer);
             ref var moveCmp = ref _movementComponentsPool.Value.Get(revivePlayer);
 

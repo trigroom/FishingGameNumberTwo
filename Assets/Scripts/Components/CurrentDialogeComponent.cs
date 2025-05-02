@@ -5,7 +5,7 @@ using UnityEngine;
 public struct CurrentDialogeComponent 
 {
     public int currentDialogeNumber;
-    public bool dialogeIsStarted;
+    public bool dialogeIsStarted{ get;set; }
     public int npcId;
     public int currentPageNumber;
 }

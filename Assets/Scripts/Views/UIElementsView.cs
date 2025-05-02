@@ -94,10 +94,12 @@ public class UIElementsView : MonoBehaviour
     [Header("Player stats UI")]
     [field: SerializeField] public Image[] statsFilledBarsImages { get; private set; }
     [field: SerializeField] public TMP_Text[] statsFilledBarsText { get; private set; }
+    [field: SerializeField] public TMP_Text statsDescriptionText { get; private set; }
     [field: SerializeField] public Image crackedGlassHelmetUI { get; private set; }
     [field: SerializeField] public Sprite[] crackedGlassSprites { get; private set; }
     [Header("Main Menu UI")]
     [field: SerializeField] public TMP_Text restartGameButtonText { get; private set; }
+    [field: SerializeField] public TMP_Text exitGameButtonText { get; private set; }
     [field: SerializeField] public Button restartGameButton { get; private set; }
     [field: SerializeField] public Button thirdActionButton { get; private set; }
     [field: SerializeField] public Transform settingsContainer { get; set; }

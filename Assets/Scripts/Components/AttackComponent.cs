@@ -5,9 +5,9 @@ using UnityEngine;
 public struct AttackComponent
 {
     public bool canAttack;
-    public bool weaponIsChanged { get; set; }
+    public bool weaponIsChanged;
     public bool weaponSpriteIsChanged;
-    public int damage;
+    public int damage { get; set; }
 
     public float currentAttackCouldown;
     public float attackCouldown;

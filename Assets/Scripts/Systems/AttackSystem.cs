@@ -857,7 +857,7 @@ public class AttackSystem : IEcsRunSystem
                     playerAttackCmp.currentAttackCouldown = 0;
 
                     ref var playerStats = ref _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity);
-                    playerStats.currentStatsExp[1] += playerAttackCmp.damage * gunCmp.currentBulletInfo.bulletCount * Mathf.Pow(0.95f, gunCmp.currentBulletInfo.bulletCount) * 0.05f;
+                    playerStats.currentStatsExp[0] += playerAttackCmp.damage * gunCmp.currentBulletInfo.bulletCount * Mathf.Pow(0.95f, gunCmp.currentBulletInfo.bulletCount) * 0.05f;
                     if (playerStats.currentStatsExp[0] >= _sceneData.Value.levelExpCounts[playerStats.statLevels[0]])//0 потому что стат sili
                     {
                         playerStats.statLevels[0]++;
@@ -1028,7 +1028,7 @@ public class AttackSystem : IEcsRunSystem
                     }
                     else
                         meleeAttackCmp.startRotation = _playerComponentsPool.Value.Get(playerEntity).view.movementView.weaponContainer.transform.eulerAngles.z;
-                    Debug.Log(meleeAttackCmp.startRotation + " needAngle");
+                  //  Debug.Log(meleeAttackCmp.startRotation + " needAngle");
                     playerAttackCmp.currentAttackCouldown = 0;
                     meleeAttackCmp.isHitting = true;
                     meleeAttackCmp.moveInAttackSide = true;
@@ -1051,7 +1051,7 @@ public class AttackSystem : IEcsRunSystem
                             if ((int)weaponContainerTransform.transform.eulerAngles.z == Mathf.CeilToInt( neededAngle) || (int)weaponContainerTransform.transform.eulerAngles.z == Mathf.FloorToInt(neededAngle))
                                 meleeAttackCmp.attackState = 3;
 
-                            Debug.Log((int)neededAngle + " needAngle" + Mathf.CeilToInt(neededAngle) + "max" + Mathf.FloorToInt(neededAngle));
+                            //Debug.Log((int)neededAngle + " needAngle" + Mathf.CeilToInt(neededAngle) + "max" + Mathf.FloorToInt(neededAngle));
                         }
                         else if(meleeAttackCmp.attackState == 1)
                         {
@@ -1066,7 +1066,7 @@ public class AttackSystem : IEcsRunSystem
                             }
                             if ((int)weaponContainerTransform.transform.eulerAngles.z == Mathf.CeilToInt(neededAngle) || (int)weaponContainerTransform.transform.eulerAngles.z == Mathf.FloorToInt(neededAngle))
                                 meleeAttackCmp.attackState = 2;
-                            Debug.Log((int)neededAngle + " needAngle" + Mathf.CeilToInt(neededAngle) + "max" + Mathf.FloorToInt(neededAngle));
+                          //  Debug.Log((int)neededAngle + " needAngle" + Mathf.CeilToInt(neededAngle) + "max" + Mathf.FloorToInt(neededAngle));
                         }
                         else if(meleeAttackCmp.attackState == 3)
                         {
@@ -1079,7 +1079,7 @@ public class AttackSystem : IEcsRunSystem
                                 meleeAttackCmp.isHitting = false;
                                 _playerComponentsPool.Value.Get(playerEntity).view.movementView.weaponCollider.enabled = false;
                             }
-                            Debug.Log((int)neededAngle + " needAngle" + Mathf.CeilToInt(meleeAttackCmp.startRotation) + "max" + Mathf.FloorToInt(meleeAttackCmp.startRotation));
+                           // Debug.Log((int)neededAngle + " needAngle" + Mathf.CeilToInt(meleeAttackCmp.startRotation) + "max" + Mathf.FloorToInt(meleeAttackCmp.startRotation));
                         }
                         //доделать
                     }
@@ -1344,7 +1344,7 @@ public class AttackSystem : IEcsRunSystem
                  gunCmp.currentMinSpread += playerGunComponent.minSpread / scopeRecoilMultiplayer;
              }*/
         }
-        float statRecoil = _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).statLevels[0] / 50f;
+        float statRecoil = (float)_playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).statLevels[0] / 50f;
         gunCmp.currentAddedSpread -= playerGunComponent.addedSpread * statRecoil;
         gunCmp.currentMaxSpread -= playerGunComponent.maxSpread * statRecoil;
         gunCmp.currentMinSpread -= playerGunComponent.minSpread * statRecoil;
@@ -1483,8 +1483,8 @@ public class AttackSystem : IEcsRunSystem
         ref var meleeWeaponCmp = ref _meleeWeaponComponentsPool.Value.Get(_sceneData.Value.playerEntity);
         curAttackCmp.attackCouldown = meleeWeaponInfo.attackCouldown;
         curAttackCmp.changeWeaponTime = meleeWeaponInfo.weaponChangeSpeed;
-
-        playerMeleeWeaponCmp.isAuto = _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[_inventoryItemComponentsPool.Value.Get(_sceneData.Value.meleeWeaponCellView._entity).itemInfo.itemId].weaponExpLevel >= 5;
+        var weaponLevel = _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).weaponsExp[_inventoryItemComponentsPool.Value.Get(_sceneData.Value.meleeWeaponCellView._entity).itemInfo.itemId].weaponExpLevel;
+        playerMeleeWeaponCmp.isAuto = weaponLevel >= 5;
 
         playerMeleeWeaponCmp.weaponInfo = meleeWeaponInfo;
         var playerView = _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).view;
@@ -1502,7 +1502,7 @@ public class AttackSystem : IEcsRunSystem
             meleeWeaponCmp.curAttackLenghtMultiplayer = meleeWeaponInfo.attackLenght * _inventoryItemComponentsPool.Value.Get(_sceneData.Value.shieldCellView._entity).itemInfo.sheildInfo.recoilPercent;
         //curAttackCmp.damage = Mathf.CeilToInt(meleeWeaponInfo.damage + (meleeWeaponInfo.damage * _playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).statLevels[2] * 0.05f));
         //   Debug.Log("def m d" + meleeWeaponInfo.damage + " cur m d " + curAttackCmp.damage);
-        curAttackCmp.damage = meleeWeaponInfo.damage;//от левела оружия зависит
+        curAttackCmp.damage = Mathf.CeilToInt(meleeWeaponInfo.damage * (1+weaponLevel*0.02f));//от левела оружия зависит
         ref var playerGunCmp = ref _playerGunComponentsPool.Value.Get(_sceneData.Value.playerEntity);
         _sceneData.Value.dropedItemsUIView.gunMagazineUI.gameObject.SetActive(false);
         for (int i = 0; i < playerGunCmp.bulletUIObjects.Count; i++)
@@ -1630,9 +1630,10 @@ public class AttackSystem : IEcsRunSystem
         gunCmp.currentMinSpread = gunInfo.minSpread;
         gunCmp.currentSpread = gunInfo.minSpread;
 
-        playerGunCmp.maxSpread = gunInfo.maxSpread;
-        playerGunCmp.minSpread = gunInfo.minSpread;
-        playerGunCmp.addedSpread = gunInfo.addedSpread + playerGunCmp.sumAddedSpreadMultiplayer * gunInfo.addedSpread;
+        float statRecoil = (1-(float)_playerUpgradedStatsPool.Value.Get(_sceneData.Value.playerEntity).statLevels[0] / 50f) + (1-playerGunCmp.durabilityGunMultiplayer);
+        playerGunCmp.maxSpread = gunInfo.maxSpread * statRecoil;
+        playerGunCmp.minSpread = gunInfo.minSpread * statRecoil;
+        playerGunCmp.addedSpread = (gunInfo.addedSpread - playerGunCmp.sumAddedSpreadMultiplayer * gunInfo.addedSpread) * statRecoil;
 
         if (gunInInvCmp.gunPartsId[2] != 0 && _sceneData.Value.idItemslist.items[gunInInvCmp.gunPartsId[2]].gunPartInfo.laserMaxLenght != 0)//
         {

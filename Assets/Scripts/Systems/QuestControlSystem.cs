@@ -70,15 +70,13 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
         foreach (var npc in _npcStartDialogeEventsFilter.Value)
         {
             int npcId = _npcStartDialogeEventsPool.Value.Get(npc).questNPCId;
-            curDialogPlayerCmp.dialogeIsStarted = true;
             curDialogPlayerCmp.npcId = npcId;
             var curNPC = _sceneService.Value.interactCharacters[npcId].GetComponent<QuestCharacterView>();
             var questNPCCmp = _questNPCComponentsPool.Value.Get(_currentInteractedCharactersComponentsPool.Value.Get(_sceneService.Value.playerEntity).interactCharacterView._entity);
             _sceneService.Value.dropedItemsUIView.dialogeText.text = curNPC.questNode[questNPCCmp.currentQuest].dialogeText[0];
             _sceneService.Value.dropedItemsUIView.characterNameText.text = curNPC.characterName;
+            curDialogPlayerCmp.dialogeIsStarted = true;
 
-
-            Debug.Log("npcId " + npcId);
         }
         foreach (var trap in _trapIsNeutralizedEventsFilter.Value)
         {
@@ -90,7 +88,7 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
                 // if (questCmp.questComplited) continue;
                 var questNPCCmp = _questNPCComponentsPool.Value.Get(_sceneService.Value.interactCharacters[questCmp.questCharacterId]._entity);
                 var questNPC = _sceneService.Value.interactCharacters[questCmp.questCharacterId].GetComponent<QuestCharacterView>();
-                Debug.Log(questNPC.characterName + " cur npc quest checked");
+                //Debug.Log(questNPC.characterName + " cur npc quest checked");
                 for (int i = 0; i < questNPC.questNode[questNPCCmp.currentQuest].tasks.Length; i++)
                     if (questNPC.questNode[questNPCCmp.currentQuest].tasks[i].questType == QuestNodeElement.QuestType.neutralizeTrap && questNPC.questNode[questNPCCmp.currentQuest].tasks[i].neededId == trapType)
                         questCmp.curerntCollectedItems[i]++;
@@ -98,7 +96,7 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
         }
         foreach (var enemyDeath in _creatureDeathEventsFilter.Value)
         {
-         //   Debug.Log("EnemyIsKilled");
+            //   Debug.Log("EnemyIsKilled");
             bool isHeadshot = _deathEventsPool.Value.Get(enemyDeath).isHeadshot;
             string curLocation = _currentLocationComponentsPool.Value.Get(_sceneService.Value.playerEntity).currentLocation.locationName;
             var creatureInventory = _creatureInventoryComponentsPool.Value.Get(enemyDeath);
@@ -164,35 +162,38 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
         }
         //прогонять через фильтр смертей все квесты
 
-        if (curDialogPlayerCmp.dialogeIsStarted && Input.GetKeyDown(KeyCode.Space))
+        if (Input.anyKeyDown && curDialogPlayerCmp.dialogeIsStarted)
         {
-            curDialogPlayerCmp.currentDialogeNumber++;
-            var curNPC = _sceneService.Value.interactCharacters[curDialogPlayerCmp.npcId].GetComponent<QuestCharacterView>();
-            ref var questNPCCmp = ref _questNPCComponentsPool.Value.Get(_currentInteractedCharactersComponentsPool.Value.Get(_sceneService.Value.playerEntity).interactCharacterView._entity);
-            if (curDialogPlayerCmp.currentDialogeNumber >= curNPC.questNode[questNPCCmp.currentQuest].dialogeText.Length)
+            if (curDialogPlayerCmp.currentDialogeNumber != 0)
             {
-                questNPCCmp.questIsGiven = true;
-                ref var questCmp = ref _questComponentsPool.Value.Add(curNPC.GetComponent<InteractCharacterView>()._entity);
-                questCmp.curerntCollectedItems = new int[curNPC.questNode[questNPCCmp.currentQuest].tasks.Length];
-                questCmp.questCharacterId = curNPC.characterId;
-                questCmp.quest = curNPC.questNode[questNPCCmp.currentQuest];
+                var curNPC = _sceneService.Value.interactCharacters[curDialogPlayerCmp.npcId].GetComponent<QuestCharacterView>();
+                ref var questNPCCmp = ref _questNPCComponentsPool.Value.Get(_currentInteractedCharactersComponentsPool.Value.Get(_sceneService.Value.playerEntity).interactCharacterView._entity);
+                if (curDialogPlayerCmp.currentDialogeNumber >= curNPC.questNode[questNPCCmp.currentQuest].dialogeText.Length)
+                {
+                    questNPCCmp.questIsGiven = true;
+                    ref var questCmp = ref _questComponentsPool.Value.Add(curNPC.GetComponent<InteractCharacterView>()._entity);
+                    questCmp.curerntCollectedItems = new int[curNPC.questNode[questNPCCmp.currentQuest].tasks.Length];
+                    questCmp.questCharacterId = curNPC.characterId;
+                    questCmp.quest = curNPC.questNode[questNPCCmp.currentQuest];
 
-                curDialogPlayerCmp.dialogeIsStarted = false;
-                curDialogPlayerCmp.currentDialogeNumber = 0;
-                _sceneService.Value.dropedItemsUIView.dialogeText.text = "";
-                _sceneService.Value.dropedItemsUIView.characterNameText.text = "";
-                _currentInteractedCharactersComponentsPool.Value.Get(_sceneService.Value.playerEntity).isNPCNowIsUsed = false;
+                    curDialogPlayerCmp.dialogeIsStarted = false;
+                    curDialogPlayerCmp.currentDialogeNumber = 0;
+                    _sceneService.Value.dropedItemsUIView.dialogeText.text = "";
+                    _sceneService.Value.dropedItemsUIView.characterNameText.text = "";
+                    _currentInteractedCharactersComponentsPool.Value.Get(_sceneService.Value.playerEntity).isNPCNowIsUsed = false;
 
-                _sceneService.Value.dropedItemsUIView.charactersInteractText.text = " (нажми F чтобы зайти в магазин\nPress T to give quest " + curNPC.characterName + ")";
-                return;
+                    _sceneService.Value.dropedItemsUIView.charactersInteractText.text = " (нажми F чтобы зайти в магазин\nPress T to give quest " + curNPC.characterName + ")";
+                    return;
+                }
+                _sceneService.Value.dropedItemsUIView.dialogeText.text = curNPC.questNode[questNPCCmp.currentQuest].dialogeText[curDialogPlayerCmp.currentDialogeNumber];
             }
-            _sceneService.Value.dropedItemsUIView.dialogeText.text = curNPC.questNode[questNPCCmp.currentQuest].dialogeText[curDialogPlayerCmp.currentDialogeNumber];
+            curDialogPlayerCmp.currentDialogeNumber++;
         }
     }
 
     public void ChangeBookmarkToQuest()
     {
-        Debug.Log("close guide");
+        // Debug.Log("close guide");
 
         ref var menuStatesCmp = ref _menuStatesComponentsPool.Value.Get(_sceneService.Value.playerEntity);
 
@@ -294,7 +295,7 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
                 ref var questCmp = ref _questComponentsPool.Value.Get(quest);
                 ref var questNPCCmp = ref _questNPCComponentsPool.Value.Get(_sceneService.Value.interactCharacters[questCmp.questCharacterId]._entity);
                 var questNPC = _sceneService.Value.interactCharacters[questCmp.questCharacterId].GetComponent<QuestCharacterView>();
-                Debug.Log("quest desc num" + curDescription);
+                //Debug.Log("quest desc num" + curDescription);
                 ref var questDescription = ref _sceneService.Value.questDescription[curDescription];
                 questDescription.text = "<b>" + questNPC.questNode[questNPCCmp.currentQuest].questName + "</b>" + "\n";
                 questDescription.text += questNPC.questNode[questNPCCmp.currentQuest].questDescription + "\n";
@@ -320,11 +321,11 @@ public class QuestControlSystem : IEcsInitSystem, IEcsRunSystem
                         if (task.killTaskInfo.maxTimeToKill != 0 && task.killTaskInfo.minTimeToKill != 0)
                         {
                             var curTime = _globalTimeComponentsPool.Value.Get(_sceneService.Value.playerEntity).currentDayTime;
-                            int maxTime =  _sceneService.Value.timeHourOffset + task.killTaskInfo.maxTimeToKill;
+                            int maxTime = _sceneService.Value.timeHourOffset + task.killTaskInfo.maxTimeToKill;
                             if (maxTime > 24)
                                 maxTime -= 24;
 
-                            int minTime =  _sceneService.Value.timeHourOffset + task.killTaskInfo.minTimeToKill;
+                            int minTime = _sceneService.Value.timeHourOffset + task.killTaskInfo.minTimeToKill;
                             if (minTime > 24)
                                 minTime -= 24;
 

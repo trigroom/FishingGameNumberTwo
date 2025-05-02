@@ -69,6 +69,7 @@ public class EcsStartUp : MonoBehaviour
         .DelHere<GunWorkshopOpenEvent>()
         .DelHere<CalculateRecoilEvent>()
         .DelHere<DivideItemEvent>()
+        .DelHere<ExitFromGameEvent>()
         .DelHere<OpenCraftingTableEvent>()
         .DelHere<TryCraftItemEvent>()
         .DelHere<ShowCraftItemRecipeEvent>()

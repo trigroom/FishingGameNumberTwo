@@ -57,6 +57,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
         {
             _sceneService.Value.firstEntryGuide.gameObject.SetActive(false);
             _sceneService.Value.startLocation.gameObject.SetActive(false);
+            _sceneService.Value.dropedItemsUIView.exitGameButtonText.text = "Death and exit";
             curLocationCmp.currentLocation = needLocation;
         }
 
@@ -98,7 +99,7 @@ public class DayChangeSystem : IEcsRunSystem, IEcsInitSystem
                 _setupShoppersOnNewLocationEventsPool.Value.Add(_sceneService.Value.interactCharacters[shopperIndex]._entity);
             }
             _sceneService.Value.startLocation.gameObject.SetActive(true);
-
+            _sceneService.Value.dropedItemsUIView.exitGameButtonText.text = "Save and exit";
             if (curLocationCmp.levelNum != 0)
                 _saveGameEventsPool.Value.Add(_sceneService.Value.playerEntity).type = DataPersistenceManagerSystem.SavePriority.fullSave;
 

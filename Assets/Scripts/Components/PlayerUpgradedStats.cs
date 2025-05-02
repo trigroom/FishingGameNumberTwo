@@ -7,7 +7,7 @@ using UnityEngine;
 3.Max weight*/
 public struct PlayerUpgradedStats 
 {
-    public int[] statLevels {  get; set; }
+    public int[] statLevels { get; set; }
     public float[] currentStatsExp;
     public enum StatType
     {
@@ -16,5 +16,5 @@ public struct PlayerUpgradedStats
         stamina
     }
 
-    public Dictionary <int ,GunLevelInfoElement> weaponsExp;
+    public Dictionary <int ,GunLevelInfoElement> weaponsExp{  get; set; }
 }

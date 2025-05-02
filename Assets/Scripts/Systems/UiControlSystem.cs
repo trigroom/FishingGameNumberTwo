@@ -25,6 +25,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     private EcsPoolInject<OpenQuestHelperEvent> _openQuestHelperEventsPool;
     private EcsPoolInject<CurrentDialogeComponent> _currentDialogeComponentsPool;
     private EcsPoolInject<CameraComponent> _cameraComponentsPool;
+    private EcsPoolInject<ExitFromGameEvent> _exitFromGameEventsPool;
     private EcsPoolInject<DurabilityInInventoryComponent> _flashlightInInventoryComponentsPool;
     private EcsPoolInject<OffInScopeStateEvent> _offInScopeStateEventsPool;
     private EcsPoolInject<RevivePlayerEvent> _revivePlayerEventsPool;
@@ -66,6 +67,7 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
         _sceneData.Value.dropedItemsUIView.Construct(_world.Value);
         _sceneData.Value.mainMenuView.buttons[0].onClick.AddListener(ContinueButtonAction);
         _sceneData.Value.mainMenuView.buttons[1].onClick.AddListener(OpenSettings);
+        _sceneData.Value.mainMenuView.buttons[2].onClick.AddListener(ExitGame);
         _sceneData.Value.dropedItemsUIView.showItemDescriptionButton.onClick.AddListener(ShowItemDescription);
         _sceneData.Value.dropedItemsUIView.showItemInfoButton.onClick.AddListener(ShowItemInfo);
         _sceneData.Value.dropedItemsUIView.showPlayerStatsButton.onClick.AddListener(ShowPlayerStats);
@@ -962,6 +964,11 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
             _sceneData.Value.dropedItemsUIView.statsFilledBarsText[i].text = (int)playerStats.currentStatsExp[i] + "/" + _sceneData.Value.levelExpCounts[playerStats.statLevels[i]] + " lvl:" + playerStats.statLevels[i];
             _sceneData.Value.dropedItemsUIView.statsFilledBarsImages[i].fillAmount = playerStats.currentStatsExp[i] / _sceneData.Value.levelExpCounts[playerStats.statLevels[i]];
         }
+
+        _sceneData.Value.dropedItemsUIView.statsDescriptionText.text = "Выносливость улучшается при беге и прицеливании и даёт\n+ " +
+            (playerStats.statLevels[2] * 2)+ "% стамины\n -" + (playerStats.statLevels[2] * 2) + "% траты стамины при ударах\nСила улучшется после ударов оружием ближнего боя и перетаскивании тяжёлых грузов и даёт\n- " 
+            + (playerStats.statLevels[0] * 2) + "% к отдаче\n+ " + (playerStats.statLevels[0] * 2) + "% к переносимому весу\n" +
+            "ловкость улучшается при использовании еды/медецины, перезарядке оружия и даёт\n +" + (playerStats.statLevels[1] * 2) + " % к скорости перезарядки и смены оружия";
     }
 
     private void ChangeInventoryMenuState(ref MenuStatesComponent menusStatesCmp)
@@ -1102,5 +1109,10 @@ public class UiControlSystem : IEcsRunSystem, IEcsInitSystem
     public void TryCraftItem()
     {
         _tryCraftItemEventsPool.Value.Add(_world.Value.NewEntity());
+    }
+
+    public void ExitGame()
+    {
+        _exitFromGameEventsPool.Value.Add(_world.Value.NewEntity());
     }
 }
