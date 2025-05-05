@@ -18,6 +18,6 @@ public struct MovementComponent
 
     public bool isRun;
     public float currentRunTime;
-    public float currentRunTimeRecoverySpeed{ get; set; }
-    public float maxRunTime;
+    public float currentRunTimeRecoverySpeed;
+    public float maxRunTime{ get; set; }
 }

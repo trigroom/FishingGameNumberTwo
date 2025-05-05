@@ -176,7 +176,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
 
                         var playerCmp = _playerComponentsPool.Value.Get(effectCmp.effectEntity);
                         ref var moveCmp = ref _movementComponentsPool.Value.Get(effectCmp.effectEntity);
-                        moveCmp.maxRunTime = playerCmp.view.runTime * (1 + _playerUpgradedStatsPool.Value.Get(effectCmp.effectEntity).statLevels[2] + (effectCmp.effectLevel * 0.3f));
+                        moveCmp.maxRunTime = playerCmp.view.runTime * (1 + _playerUpgradedStatsPool.Value.Get(effectCmp.effectEntity).statLevels[2]*0.02f + (effectCmp.effectLevel * 0.3f));
                         moveCmp.currentRunTimeRecoverySpeed = playerCmp.view.runTimeRecoverySpeed * (1 + (effectCmp.effectLevel * 0.3f));
                     }
                     if (isPlayer)
@@ -206,7 +206,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     var playerCmp = _playerComponentsPool.Value.Get(effectCmp.effectEntity);
                     ref var moveCmp = ref _movementComponentsPool.Value.Get(effectCmp.effectEntity);
-                    moveCmp.maxRunTime = playerCmp.view.runTime * (1 + _playerUpgradedStatsPool.Value.Get(effectCmp.effectEntity).statLevels[2]);
+                    moveCmp.maxRunTime = playerCmp.view.runTime * (1 + _playerUpgradedStatsPool.Value.Get(effectCmp.effectEntity).statLevels[2]*0.02f);
                     moveCmp.currentRunTimeRecoverySpeed = playerCmp.view.runTimeRecoverySpeed;
                     if (moveCmp.currentRunTime > moveCmp.maxRunTime)
                         moveCmp.currentRunTime = moveCmp.maxRunTime;
@@ -301,7 +301,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 else if (effectCmp.effectType == EffectInfo.EffectType.cheerfulness)
                 {
                     var playerCmp = _playerComponentsPool.Value.Get(revivePlayer);
-                    moveCmp.maxRunTime = playerCmp.view.runTime * (1 + _playerUpgradedStatsPool.Value.Get(effectCmp.effectEntity).statLevels[2]);
+                    moveCmp.maxRunTime = playerCmp.view.runTime * (1 + _playerUpgradedStatsPool.Value.Get(effectCmp.effectEntity).statLevels[2] * 0.02f);
                     if (moveCmp.currentRunTime > moveCmp.maxRunTime)
                         moveCmp.currentRunTime = moveCmp.maxRunTime;
                     moveCmp.currentRunTimeRecoverySpeed = playerCmp.view.runTimeRecoverySpeed;
@@ -789,6 +789,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     int droppedItemEntity = _world.Value.NewEntity();
                     ref var droppedItemComponent = ref SpawnDroppedItem(droppedItemEntity, 1, deathPos, creatureInventoryCmp.helmetItem);
+                    _movementComponentsPool.Value.Get(hpEvent).movementView.helmetSpriteRenderer.sprite = _sceneData.Value.transparentSprite;
                     _durabilityInInventoryComponentsPool.Value.Add(droppedItemEntity).currentDurability = Random.Range(0, creatureInventoryCmp.helmetItem.helmetInfo.armorDurability);
                     if (creatureInventoryCmp.helmetItem.helmetInfo.addedLightIntancity != 0)
                         _shieldComponentsPool.Value.Add(droppedItemEntity).currentDurability = Random.Range(0, creatureInventoryCmp.helmetItem.helmetInfo.armorDurability);
@@ -797,6 +798,7 @@ public class HealthSystem : IEcsRunSystem, IEcsInitSystem
                 {
                     int droppedItemEntity = _world.Value.NewEntity();
                     ref var droppedItemComponent = ref SpawnDroppedItem(droppedItemEntity, 1, deathPos, creatureInventoryCmp.bodyArmorItem);
+                    _movementComponentsPool.Value.Get(hpEvent).movementView.bodyArmorSpriteRenderer.sprite = _sceneData.Value.transparentSprite;
                     _durabilityInInventoryComponentsPool.Value.Add(droppedItemEntity).currentDurability = Random.Range(0, creatureInventoryCmp.bodyArmorItem.bodyArmorInfo.armorDurability);
                 }
                 else if (percentDrop < 51 && creatureInventoryCmp.healingItem != null)

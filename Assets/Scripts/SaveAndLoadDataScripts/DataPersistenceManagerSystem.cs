@@ -232,7 +232,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
 
 
-        //5 спец клеток
+        //спец клетки
 
 
         this.gameData = dataHandler.Load();
@@ -317,7 +317,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             }
         }
         //перенести в проверку обновления версии игры
-        if (_sceneData.Value.startShoppers.Length > gameData.shoppersInfoForSafeData.Length)
+        if (_sceneData.Value.startShoppers.Length-1 != gameData.shoppersInfoForSafeData.Length)
         {
             gameData.shoppersInfoForSafeData = new QuestInfoForSafeData[_sceneData.Value.startShoppers.Length - 1];
             for (int i = 0; i < _sceneData.Value.startShoppers.Length; i++)
@@ -730,7 +730,6 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             if (helmetItemInfo.dropTransparentMultiplayer != 0)
             {
                 int curDurability = Mathf.FloorToInt((_flashLightInInventoryComponentsPool.Value.Get(_sceneData.Value.helmetCellView._entity).currentDurability / helmetItemInfo.armorDurability) * 4);
-                //         Debug.Log(curDurability + " cur dur index of helmet" + (_flashLightInInventoryComponentsPool.Value.Get(_sceneData.Value.helmetCellView._entity).currentDurability / helmetItemInfo.armorDurability));
                 if (curDurability < 3 && _sceneData.Value.dropedItemsUIView.crackedGlassHelmetUI.sprite != _sceneData.Value.dropedItemsUIView.crackedGlassSprites[curDurability])
                 {
                     _sceneData.Value.dropedItemsUIView.crackedGlassHelmetUI.sprite = _sceneData.Value.dropedItemsUIView.crackedGlassSprites[curDurability];
@@ -796,7 +795,6 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
         gameData.generatorElectricity = _solarPanelElectricGeneratorComponentsPool.Value.Get(playerEntity).currentElectricityEnergy;
         gameData.craftingTableLevel = _craftingTableComponentsPool.Value.Get(_sceneData.Value.playerEntity).craftingTableLevel;
         this.gameData.currentMaxLocationNum = globalTimeCmp.maxLocationNum;
-
         List<QuestInfoForSafeData> questsInfoForSafeData = new List<QuestInfoForSafeData>();
         foreach (var questNPC in _sceneData.Value.interactCharacters)
         {
@@ -841,7 +839,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
             gameData.playerHunger = (int)_playerMoveComponentsPool.Value.Get(_sceneData.Value.playerEntity).currentHungerPoints;
             gameData.playerHP = _healthComponentsPool.Value.Get(playerEntity).healthPoint;
-            //  gameData.shoppersInfoForSafeData = new QuestInfoForSafeData[_sceneData.Value.startShoppers.Length - 1];
+              gameData.shoppersInfoForSafeData = new QuestInfoForSafeData[_sceneData.Value.startShoppers.Length - 1];
             for (int i = 0; i < _sceneData.Value.startShoppers.Length; i++)
             {
                 if (_sceneData.Value.startShoppers[i] == 1) continue;
@@ -853,7 +851,8 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
 
                 gameData.shoppersInfoForSafeData[i].collectedItems = new int[needShopper.remainedShopItems.Length];
                 for (int j = 0; j < needShopper.remainedShopItems.Length; j++)
-                    gameData.shoppersInfoForSafeData[i].collectedItems[j] = needShopper.remainedShopItems[j];
+                    gameData.shoppersInfoForSafeData[i].collectedItems[j] = needShopper.remainedShopItems[j]; 
+                Debug.Log(gameData.shoppersInfoForSafeData[i].collectedItems.Length + " collectedItems");
             }
         }
         else if (savePriority == SavePriority.startLocationSave)
@@ -862,7 +861,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
             gameData.playerHunger = (int)_playerMoveComponentsPool.Value.Get(_sceneData.Value.playerEntity).maxHungerPoints / 2;
             gameData.playerHP = _healthComponentsPool.Value.Get(playerEntity).maxHealthPoint / 2;
             gameData.invCellsCount = 4;
-            // gameData.shoppersInfoForSafeData = new QuestInfoForSafeData[_sceneData.Value.startShoppers.Length - 1];
+            gameData.shoppersInfoForSafeData = new QuestInfoForSafeData[_sceneData.Value.startShoppers.Length - 1];
 
             for (int i = 0; i < _sceneData.Value.startShoppers.Length; i++)
             {
@@ -874,6 +873,7 @@ public class DataPersistenceManagerSystem : IEcsRunSystem, IEcsInitSystem
                 gameData.shoppersInfoForSafeData[i].collectedItems = new int[needShopper.remainedShopItems.Length];
                 for (int j = 0; j < needShopper.remainedShopItems.Length; j++)
                     gameData.shoppersInfoForSafeData[i].collectedItems[j] = needShopper.characterView.shopItems[j].itemsCountToBuy;
+               
             }
         }
         else

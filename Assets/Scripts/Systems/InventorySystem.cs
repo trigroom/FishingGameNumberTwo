@@ -309,64 +309,6 @@ public class InventorySystem : IEcsRunSystem
                             continue;
                         }
                     }
-                    /*  if (_specialInventoryCellTagsPool.Value.Has(menuStatesCmp.lastDraggedCell) && _inventoryItemComponentsPool.Value.Has(dropDrag))
-                      {
-                          var newItemToChange = _inventoryItemComponentsPool.Value.Get(dropDrag);
-
-                          if (newItemToChange.itemInfo.type == ItemInfo.itemType.gun)
-                          {
-                              if (_sceneData.Value.firstGunCellView._entity == menuStatesCmp.lastDraggedCell || _sceneData.Value.secondGunCellView._entity == menuStatesCmp.lastDraggedCell)
-                              {
-
-                              }
-                              else
-                              {
-                                  _sceneData.Value.ShowWarningText(newItemToChange.itemInfo.itemName + " can be equip only in first and second gun slots");
-                                  continue;
-                              }
-                          }
-                          else if (newItemToChange.itemInfo.type == ItemInfo.itemType.meleeWeapon)
-                          {
-                              if (_sceneData.Value.meleeWeaponCellView._entity == menuStatesCmp.lastDraggedCell)
-                              {
-
-                              }
-                              else
-                              {
-                                  _sceneData.Value.ShowWarningText(newItemToChange.itemInfo.itemName + " can be equip only in melee weapon slot");
-                                  continue;
-                              }
-                          }
-                          else if (newItemToChange.itemInfo.type == ItemInfo.itemType.flashlight)
-                          {
-                              if (_sceneData.Value.flashlightItemCellView._entity == menuStatesCmp.lastDraggedCell)
-                              {
-                                  _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity).useFlashlight = false;
-                              }
-                              else
-                              {
-                                  _sceneData.Value.ShowWarningText(newItemToChange.itemInfo.itemName + " can be equip only in flashlight slot");
-                                  continue;
-                              }
-                          }
-                          else if (newItemToChange.itemInfo.type == ItemInfo.itemType.heal)
-                          {
-                              if (_sceneData.Value.healingItemCellView._entity == menuStatesCmp.lastDraggedCell)
-                              {
-
-                              }
-                              else
-                              {
-                                  _sceneData.Value.ShowWarningText(newItemToChange.itemInfo.itemName + " can be equip only in heal items slot");
-                                  continue;
-                              }
-                          }
-                          else
-                          {
-                              _sceneData.Value.ShowWarningText(newItemToChange.itemInfo.itemName + " can't be equip in any special slot");
-                              continue;
-                          }
-                      }*/
 
                     if (!_inventoryItemComponentsPool.Value.Has(dropDrag))
                     {
@@ -441,7 +383,6 @@ public class InventorySystem : IEcsRunSystem
                         }
                         else
                         {
-
                             if (_storageCellTagsPool.Value.Has(menuStatesCmp.lastDraggedCell) && !_storageCellTagsPool.Value.Has(dropDrag) || !_storageCellTagsPool.Value.Has(menuStatesCmp.lastDraggedCell) && _storageCellTagsPool.Value.Has(dropDrag))
                             {
                                 float firstWeight = draggedItem.itemInfo.type == ItemInfo.itemType.gun ? _gunInventoryCellComponentsPool.Value.Get(menuStatesCmp.lastDraggedCell).currentGunWeight : draggedItem.currentItemsCount * draggedItem.itemInfo.itemWeight;
@@ -790,29 +731,6 @@ public class InventorySystem : IEcsRunSystem
             if (!isDevide)
                 _sceneData.Value.ShowWarningText("there are no free cells to move the " + currentItem.itemInfo.itemName);
 
-            //  }
-            /*   else
-               {
-                   foreach (var cellEntity in _storageCellsFilter.Value)
-                   {
-                       ref var cellCmp = ref _inventoryCellsComponents.Value.Get(cellEntity);
-                       if (cellCmp.isEmpty)
-                       {
-                           ref var itemCmp = ref _inventoryItemComponentsPool.Value.Add(cellEntity);
-                           ref var oldItemCmp = ref _inventoryItemComponentsPool.Value.Get(divideEventCell);
-                           itemCmp.itemInfo = oldItemCmp.itemInfo;
-                           ref var oldCellCmp = ref _inventoryCellsComponents.Value.Get(cellEntity);
-                           int neededItemCount = (int)_sceneData.Value.dropedItemsUIView.generalSlider.value;
-                           //  Debug.Log(neededItemCount + "needed items count");
-
-                           CopySpecialComponents(divideEventCell, cellEntity, oldItemCmp.itemInfo);
-
-                           AddItem(ref cellCmp, ref itemCmp, neededItemCount, cellEntity);
-                           _deleteItemEventsPool.Value.Add(divideEventCell).count = neededItemCount;
-                           break;
-                       }
-                   }
-               }*/
         }
         foreach (var deleteItem in _deleteItemEventsFilter.Value)
         {
@@ -946,7 +864,6 @@ public class InventorySystem : IEcsRunSystem
         foreach (var playerDeath in _playerDeathEventsFilter.Value)
         {
             var playerPosition = _movementComponentsPool.Value.Get(_sceneData.Value.playerEntity).entityTransform.position;
-
             if (_inventoryItemComponentsPool.Value.Has(_sceneData.Value.backpackCellView._entity))
             {
                 ChangeInventoryCellCount(_sceneData.Value.dropedItemsUIView.startBackpackInfo.cellsCount - _inventoryComponent.Value.Get(_sceneData.Value.inventoryEntity).currentCellCount);
@@ -2265,7 +2182,6 @@ public class InventorySystem : IEcsRunSystem
     }
     private void ChangeHelmetItemInSpecialSlot()
     {
-        Debug.Log("try equip helmet");
         ref var playerCmp = ref _playerComponentsPool.Value.Get(_sceneData.Value.playerEntity);
 
         playerCmp.nvgIsUsed = false;
@@ -2302,6 +2218,8 @@ public class InventorySystem : IEcsRunSystem
                     _sceneData.Value.dropedItemsUIView.crackedGlassHelmetUI.gameObject.SetActive(true);
                 }
             }
+            else
+                _sceneData.Value.dropedItemsUIView.crackedGlassHelmetUI.gameObject.SetActive(false);
 
             if (itemCmp.itemInfo.helmetInfo.fowAngleRemove != 0)
             {

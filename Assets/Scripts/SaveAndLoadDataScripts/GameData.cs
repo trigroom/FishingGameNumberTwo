@@ -34,9 +34,9 @@ public class GameData
     public int maxFPS;
     public float currentUIScaleMultiplayer;
     [Header("Quests")]
-    public QuestInfoForSafeData[] questsInfoForSafeData; 
+    public QuestInfoForSafeData[] questsInfoForSafeData;
     [Header("Shoppers")]
-    public QuestInfoForSafeData[] shoppersInfoForSafeData{ get; set; }
+    public QuestInfoForSafeData[] shoppersInfoForSafeData;
     [Header("Player stats")]
     public float[] currentStatsExp;
     public int craftingTableLevel;

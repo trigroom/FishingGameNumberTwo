@@ -15,6 +15,6 @@ MonoBehaviour:
   itemInfo: {fileID: 11400000, guid: b1760362b42f117499cf4a01d31543a7, type: 2}
   count: 1
   price: 120
-  needSkillLevelToUnlock: 3
+  needSkillLevelToUnlock: 2
   needSkillToUnlock: 999
   itemsCountToBuy: 1
